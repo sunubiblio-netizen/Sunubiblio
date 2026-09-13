@@ -5,9 +5,10 @@ import Link from 'next/link';
 
 interface NavbarProps {
   onOpenAuth?: (mode: 'login' | 'register') => void;
+  activePage?: 'accueil' | 'bibliotheque' | 'concours' | 'tarifs' | 'apropos' | 'contact' | string;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, activePage = 'accueil' }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [navSearch, setNavSearch] = useState('');
 
@@ -89,26 +90,31 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
           </span>
         </Link>
 
-        {/* Center Nav Links */}
+        {/* Center Nav Links: fixed navigation items */}
         <nav className="nav-links desktop-only">
-          <Link href="/" className="nav-link active">
+          <Link href="/" className={`nav-link ${activePage === 'accueil' ? 'active' : ''}`}>
             Accueil
-            <span className="active-indicator" />
+            {activePage === 'accueil' && <span className="active-indicator" />}
           </Link>
-          <Link href="#bibliotheque" className="nav-link">
+          <Link href="/bibliotheque" className={`nav-link ${activePage === 'bibliotheque' ? 'active' : ''}`}>
             Bibliothèque
+            {activePage === 'bibliotheque' && <span className="active-indicator" />}
           </Link>
-          <Link href="#concours" className="nav-link">
+          <Link href="/education" className={`nav-link ${activePage === 'education' ? 'active' : ''}`}>
+            Éducation
+            {activePage === 'education' && <span className="active-indicator" />}
+          </Link>
+          <Link href="/concours" className={`nav-link ${activePage === 'concours' ? 'active' : ''}`}>
             Concours
+            {activePage === 'concours' && <span className="active-indicator" />}
           </Link>
-          <Link href="#tarifs" className="nav-link">
+          <Link href="/tarifs" className={`nav-link ${activePage === 'tarifs' ? 'active' : ''}`}>
             Tarifs
+            {activePage === 'tarifs' && <span className="active-indicator" />}
           </Link>
-          <Link href="#apropos" className="nav-link">
+          <Link href="/a-propos" className={`nav-link ${activePage === 'apropos' ? 'active' : ''}`}>
             À propos
-          </Link>
-          <Link href="#contact" className="nav-link">
-            Contact
+            {activePage === 'apropos' && <span className="active-indicator" />}
           </Link>
         </nav>
 
@@ -127,8 +133,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
           />
         </div>
 
-        {/* Actions (Login / Register) */}
+        {/* Actions (Contact Link + Login + Register) */}
         <div className="nav-actions desktop-only">
+          <Link
+            href="/contact"
+            className={`nav-contact-link ${activePage === 'contact' ? 'is-active' : ''}`}
+            title="Assistance & Contact"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            <span>Contact</span>
+          </Link>
           <button
             type="button"
             className="btn-secondary nav-btn"
@@ -176,12 +192,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth }) => {
             />
           </div>
           <div className="mobile-nav-items">
-            <Link href="/" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-item active">Accueil</Link>
-            <Link href="#bibliotheque" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-item">Bibliothèque</Link>
-            <Link href="#concours" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-item">Concours</Link>
-            <Link href="#tarifs" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-item">Tarifs</Link>
-            <Link href="#apropos" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-item">À propos</Link>
-            <Link href="#contact" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-item">Contact</Link>
+            <Link href="/" onClick={() => setMobileMenuOpen(false)} className={`mobile-nav-item ${activePage === 'accueil' ? 'active' : ''}`}>Accueil</Link>
+            <Link href="/bibliotheque" onClick={() => setMobileMenuOpen(false)} className={`mobile-nav-item ${activePage === 'bibliotheque' ? 'active' : ''}`}>Bibliothèque</Link>
+            <Link href="/education" onClick={() => setMobileMenuOpen(false)} className={`mobile-nav-item ${activePage === 'education' ? 'active' : ''}`}>Éducation</Link>
+            <Link href="/concours" onClick={() => setMobileMenuOpen(false)} className={`mobile-nav-item ${activePage === 'concours' ? 'active' : ''}`}>Concours</Link>
+            <Link href="/tarifs" onClick={() => setMobileMenuOpen(false)} className={`mobile-nav-item ${activePage === 'tarifs' ? 'active' : ''}`}>Tarifs</Link>
+            <Link href="/a-propos" onClick={() => setMobileMenuOpen(false)} className={`mobile-nav-item ${activePage === 'apropos' ? 'active' : ''}`}>À propos</Link>
+            <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className={`mobile-nav-item ${activePage === 'contact' ? 'active' : ''}`}>Contact</Link>
           </div>
           <div className="mobile-auth-actions">
             <button

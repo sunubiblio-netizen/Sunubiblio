@@ -31,6 +31,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
+
 export default function RootLayout({
   children,
 }: {
@@ -42,7 +44,10 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <MobileBottomNav />
+      </body>
     </html>
   );
 }

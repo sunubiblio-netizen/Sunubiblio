@@ -114,8 +114,9 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelectCategory }) 
         {/* 8 Cards Grid */}
         <div className="categories-grid">
           {CATEGORIES.map((cat) => (
-            <div
+            <Link
               key={cat.id}
+              href={cat.href}
               onClick={() => onSelectCategory && onSelectCategory(cat)}
               className="category-card"
             >
@@ -127,7 +128,7 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelectCategory }) 
               </div>
               <h3 className="category-title">{cat.title}</h3>
               <p className="category-subtitle">{cat.subtitle}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

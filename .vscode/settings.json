@@ -1,0 +1,7 @@
+{
+  "antigravity.agent.autoAcceptEdits": true,
+  "antigravity.agent.autoAcceptChanges": true,
+  "antigravity.agent.reviewPolicy": "always-proceed",
+  "antigravity.agent.toolExecutionPolicy": "always-proceed",
+  "chat.tools.autoAccept": true
+}
