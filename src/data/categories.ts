@@ -59,7 +59,7 @@ export const CATEGORIES: CategoryItem[] = [
     iconColor: '#f59e0b',
     borderColor: 'rgba(245, 158, 11, 0.2)',
     href: '/religion',
-    icon: 'home',
+    icon: 'feather',
   },
   {
     id: 'ia-assistant',

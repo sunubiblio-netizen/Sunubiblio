@@ -42,7 +42,7 @@ export const Footer: React.FC = () => {
             <h5 className="footer-col-heading">Ressources</h5>
             <ul className="footer-links-list">
               <li><Link href="/documents">Documents administratifs</Link></li>
-              <li><Link href="#religion">Spiritualité & Philosophie</Link></li>
+              <li><Link href="/religion">Spiritualité & Philosophie</Link></li>
               <li><Link href="#communaute">Groupes d'entraide</Link></li>
               <li><Link href="#telechargements">Accès hors-ligne</Link></li>
               <li><Link href="#tarifs">Plans & Abonnements</Link></li>
