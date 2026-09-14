@@ -94,8 +94,22 @@ export const RELIGION_TRADITIONS: ReligionTradition[] = [
     resourceCount: 1,
   },
   {
+    id: 'taoisme',
+    title: 'Taoïsme',
+    subtitle: 'Voie du Tao, non-agir (Wu Wei) & harmonie cosmique',
+    description:
+      'Sagesse antique de Lao Tseu et du Daodejing : équilibre des polarités Yin/Yang, simplicité et harmonie spontanée.',
+    badge: 'Voie & Harmonie',
+    accentColor: '#0d9488',
+    bgLight: 'rgba(13, 148, 136, 0.08)',
+    borderColor: 'rgba(13, 148, 136, 0.25)',
+    iconName: 'yin-yang',
+    branchesCount: 1,
+    resourceCount: 1,
+  },
+  {
     id: 'religions-traditionnelles-africaines',
-    title: 'Religions traditionnelles africaines',
+    title: 'Spiritualités traditionnelles africaines',
     subtitle: 'Cosmogonies ancestrales, sagesse orale & valeurs',
     description:
       'Transmissions initiatiques orales (Hampâté Bâ), sacralité de la nature, respect des anciens et spiritualité enracinée.',
@@ -310,6 +324,20 @@ export const RELIGION_BRANCHES: ReligionBranch[] = [
     accentColor: '#b45309',
     bgLight: 'rgba(180, 83, 9, 0.08)',
     borderColor: 'rgba(180, 83, 9, 0.2)',
+    resourceCount: 1,
+  },
+  {
+    id: 'taoisme-philosophique',
+    traditionId: 'taoisme',
+    title: 'Taoïsme Philosophique',
+    subtitle: 'Lao Tseu & Tchouang-tseu',
+    location: 'Chine antique & Universel',
+    description:
+      'Méditation sur le Tao indicible, pratique de la simplicité et retour à l’harmonie spontanée avec l’ordre de la nature.',
+    badge: 'Voie du Tao',
+    accentColor: '#0d9488',
+    bgLight: 'rgba(13, 148, 136, 0.08)',
+    borderColor: 'rgba(13, 148, 136, 0.2)',
     resourceCount: 1,
   },
   {
@@ -1225,6 +1253,41 @@ export const INITIAL_RELIGION_RESOURCES: ReligionResource[] = [
     downloadsCount: 340,
     tags: ['Parole', 'Afrique', 'Cosmogonie', 'Sagesse'],
     source: 'Archives Présence Africaine',
+  },
+
+  // --- TAOÏSME ---
+  {
+    id: 'taoisme-001',
+    slug: 'daodejing-livre-voie-vertu',
+    titre: 'Daodejing (Le Livre de la Voie et de la Vertu)',
+    description:
+      'Classique fondateur attribué à Lao Tseu, composé de 81 aphorismes poétiques sur l’humilité, le non-agir (Wu Wei) et l’harmonie profonde avec la nature.',
+    auteur: 'Lao Tseu',
+    auteurBio: 'Sage et philosophe chinois antique (VIe – IVe siècle av. J.-C.).',
+    traditionId: 'taoisme',
+    branchId: 'taoisme-philosophique',
+    themeCategoryId: 'livres',
+    contentType: 'livre',
+    year: -400,
+    period: 'Antiquité',
+    language: 'Chinois classique & Traduction annotée en Français',
+    coverPattern: 'geometric-cyan',
+    fileUrl: '/api/religion/access?id=taoisme-001',
+    pagesCount: 112,
+    fileSize: '1.9 Mo',
+    status: 'disponible',
+    requiredPlan: 'gratuit',
+    publishedAt: '2025-02-10',
+    viewsCount: 650,
+    downloadsCount: 290,
+    summary: [
+      'Le Tao indicible comme principe originel',
+      'Le non-agir (Wu Wei) et la flexibilité',
+      'L’eau comme modèle de vertu et de puissance douce',
+      'Modestie et harmonie avec le monde',
+    ],
+    tags: ['Taoïsme', 'Philosophie', 'Sagesse', 'Classique'],
+    source: 'Traduction historique française (Domaine public)',
   },
 
   // --- AUTRES TRADITIONS ---

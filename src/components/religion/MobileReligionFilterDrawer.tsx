@@ -10,7 +10,8 @@ import {
   ReligionBranchId,
   ReligionPlanRequired,
 } from '@/types/religion';
-import { RELIGION_CONTENT_TYPES } from '@/data/mockReligion';
+import { RELIGION_CONTENT_TYPES, INITIAL_RELIGION_RESOURCES } from '@/data/mockReligion';
+import { PRICING_PLANS } from '@/data/pricingPlans';
 
 interface MobileReligionFilterDrawerProps {
   isOpen: boolean;
@@ -50,6 +51,11 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
     filters.traditionId !== 'all'
       ? branches.filter((b) => b.traditionId === filters.traditionId)
       : branches;
+
+  const availableAuthors = React.useMemo(() => {
+    const set = new Set(INITIAL_RELIGION_RESOURCES.map((r) => r.auteur));
+    return Array.from(set).sort();
+  }, []);
 
   return (
     <div className="mobile-drawer-backdrop" onClick={onClose}>
@@ -144,6 +150,28 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
             </select>
           </div>
 
+          {/* Auteur */}
+          <div className="drawer-group">
+            <label className="drawer-label">Auteur</label>
+            <select
+              className="drawer-select"
+              value={filters.author}
+              onChange={(e) =>
+                onFilterChange({
+                  author: e.target.value,
+                  page: 1,
+                })
+              }
+            >
+              <option value="all">Tous les auteurs</option>
+              {availableAuthors.map((author) => (
+                <option key={author} value={author}>
+                  {author}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Année / Époque */}
           <div className="drawer-group">
             <label className="drawer-label">Époque / Période</label>
@@ -178,10 +206,21 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               }
             >
               <option value="all">Toutes les formules</option>
-              <option value="gratuit">Gratuit (0 FCFA)</option>
-              <option value="simple">Simple (3 000 FCFA)</option>
-              <option value="recommande">5 000 FCFA (Recommandé)</option>
-              <option value="gold">Gold (9 000 FCFA)</option>
+              {PRICING_PLANS.map((plan) => {
+                const planKey =
+                  plan.slug === 'gratuit'
+                    ? 'gratuit'
+                    : plan.slug === 'simple'
+                    ? 'simple'
+                    : plan.slug === 'recommande'
+                    ? 'recommande'
+                    : 'gold';
+                return (
+                  <option key={plan.id} value={planKey}>
+                    {plan.name} ({plan.formattedPrice})
+                  </option>
+                );
+              })}
             </select>
           </div>
 

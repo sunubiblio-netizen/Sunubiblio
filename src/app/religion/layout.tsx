@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Religion, Spiritualité & Philosophie | Sunubiblio',
+  title: 'Religion & Spiritualités | Sunubiblio',
   description:
-    'Explorez des ressources patrimoniales et authentiques pour approfondir vos connaissances, votre réflexion et votre spiritualité : Islam, Christianisme, Judaïsme, Philosophie, Histoire des religions et Traditions.',
+    'Explorez les grandes traditions spirituelles du monde et découvrez les ressources religieuses et spirituelles du Sénégal : Islam, Christianisme, Judaïsme, sagesses et textes authentiques.',
   openGraph: {
-    title: 'Religion, Spiritualité & Philosophie — Sunubiblio',
+    title: 'Religion & Spiritualités — Sunubiblio',
     description:
-      'Textes de référence, traités spirituels, philosophie et sagesses universelles en accès libre et guidé.',
+      'Explorez les grandes traditions spirituelles du monde et découvrez les ressources religieuses et spirituelles du Sénégal sur Sunubiblio.',
     url: 'https://sunubiblio.sn/religion',
     siteName: 'Sunubiblio',
     locale: 'fr_FR',

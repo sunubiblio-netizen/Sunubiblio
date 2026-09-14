@@ -11,6 +11,7 @@ export type ReligionTraditionId =
   | 'hindouisme'
   | 'bouddhisme'
   | 'sikhisme'
+  | 'taoisme'
   | 'religions-traditionnelles-africaines'
   | 'autres-traditions';
 
@@ -26,12 +27,19 @@ export type ReligionBranchId =
   | 'protestantisme'
   | 'orthodoxie'
   | 'autres-traditions-chretiennes'
-  // Autres traditions mondiales
+  // Judaïsme
   | 'judaisme-rabbinique'
+  // Hindouisme
   | 'hindouisme-vedique'
+  // Bouddhisme
   | 'bouddhisme-general'
+  // Sikhisme
   | 'sikhisme-gurmat'
+  // Taoïsme
+  | 'taoisme-philosophique'
+  // Spiritualités traditionnelles africaines
   | 'afrique-cosmogonies'
+  // Autres sagesses
   | 'autres-sagesses'
   | string;
 
