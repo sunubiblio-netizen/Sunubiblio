@@ -2,18 +2,31 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ReligionPedagogicalHero } from '@/types/religion';
+import { ReligionPedagogicalHero, ReligionResource } from '@/types/religion';
+import { ReligionContextualSearch } from './ReligionContextualSearch';
 
 interface PedagogyHeroProps {
   hero: ReligionPedagogicalHero;
+  traditionSlug: string;
+  activeBranchTitle?: string | null;
+  activeBranchId?: string | null;
   activeSection: string;
   onNavigateSection: (sectionId: string) => void;
+  onSelectResource: (resource: ReligionResource) => void;
+  onSelectBranch: (branchId: string) => void;
+  onApplyGlobalSearch: (query: string) => void;
 }
 
 export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
   hero,
+  traditionSlug,
+  activeBranchTitle,
+  activeBranchId,
   activeSection,
   onNavigateSection,
+  onSelectResource,
+  onSelectBranch,
+  onApplyGlobalSearch,
 }) => {
   const sections = [
     { id: 'comprendre', label: '1. Comprendre' },
@@ -76,6 +89,18 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Dedicated Contextual Search for this Religion */}
+        <ReligionContextualSearch
+          traditionSlug={traditionSlug}
+          traditionTitle={hero.title.replace('Découvrir ', '')}
+          activeBranchTitle={activeBranchTitle}
+          activeBranchId={activeBranchId}
+          onSelectResource={onSelectResource}
+          onSelectBranch={onSelectBranch}
+          onNavigateToSection={onNavigateSection}
+          onApplyGlobalSearch={onApplyGlobalSearch}
+        />
 
         {/* Floating Table of Contents Bar */}
         <div className="pedagogy-toc-bar">

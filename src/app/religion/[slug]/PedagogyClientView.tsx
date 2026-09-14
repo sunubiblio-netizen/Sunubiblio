@@ -11,6 +11,8 @@ import { PedagogyHistorySection } from '@/components/religion/pedagogy/PedagogyH
 import { PedagogyCurrentsSection } from '@/components/religion/pedagogy/PedagogyCurrentsSection';
 import { PedagogyDeepenSection } from '@/components/religion/pedagogy/PedagogyDeepenSection';
 
+import { ReligionResourceModal } from '@/components/religion/ReligionResourceModal';
+
 interface PedagogyClientViewProps {
   data: ReligionPedagogicalData;
   resources: ReligionResource[];
@@ -22,6 +24,11 @@ export const PedagogyClientView: React.FC<PedagogyClientViewProps> = ({
 }) => {
   const [activeSection, setActiveSection] = useState<string>('comprendre');
   const [selectedBranchFilter, setSelectedBranchFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [activeModalResource, setActiveModalResource] = useState<ReligionResource | null>(null);
+
+  const activeBranch = data.currentsAndBranches.find((b) => b.id === selectedBranchFilter);
+  const activeBranchTitle = activeBranch ? activeBranch.title : null;
 
   const scrollToSection = (sectionId: string) => {
     setActiveSection(sectionId);
@@ -39,16 +46,28 @@ export const PedagogyClientView: React.FC<PedagogyClientViewProps> = ({
   };
 
   const handleExploreTextResources = (textName: string) => {
+    setSearchQuery(textName);
+    scrollToSection('approfondir');
+  };
+
+  const handleApplySearch = (q: string) => {
+    setSearchQuery(q);
     scrollToSection('approfondir');
   };
 
   return (
     <div className="pedagogy-page-root">
-      {/* 1. Hero with Breadcrumb and Floating TOC */}
+      {/* 1. Hero with Breadcrumb, Contextual Search Bar, and Floating TOC */}
       <PedagogyHero
         hero={data.hero}
+        traditionSlug={data.slug}
+        activeBranchTitle={activeBranchTitle}
+        activeBranchId={selectedBranchFilter !== 'all' ? selectedBranchFilter : null}
         activeSection={activeSection}
         onNavigateSection={scrollToSection}
+        onSelectResource={(res) => setActiveModalResource(res)}
+        onSelectBranch={handleSelectBranch}
+        onApplyGlobalSearch={handleApplySearch}
       />
 
       <main className="pedagogy-main-container">
@@ -100,10 +119,19 @@ export const PedagogyClientView: React.FC<PedagogyClientViewProps> = ({
             resources={resources}
             accentColor={data.hero.accentColor}
             selectedBranchId={selectedBranchFilter}
+            externalSearchQuery={searchQuery}
             onClearBranchFilter={() => setSelectedBranchFilter('all')}
           />
         </div>
       </main>
+
+      {/* Modal pour afficher les détails et lire la ressource sélectionnée */}
+      {activeModalResource && (
+        <ReligionResourceModal
+          resource={activeModalResource}
+          onClose={() => setActiveModalResource(null)}
+        />
+      )}
 
       <style jsx>{`
         .pedagogy-page-root {

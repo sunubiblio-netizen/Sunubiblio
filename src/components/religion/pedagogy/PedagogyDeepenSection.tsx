@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ReligionResource, ReligionResourceType } from '@/types/religion';
 import { ReligionResourceCard } from '../ReligionResourceCard';
 import { ReligionResourceModal } from '../ReligionResourceModal';
@@ -16,6 +16,7 @@ interface PedagogyDeepenSectionProps {
   resources: ReligionResource[];
   accentColor: string;
   selectedBranchId?: string;
+  externalSearchQuery?: string;
   onClearBranchFilter?: () => void;
 }
 
@@ -25,11 +26,19 @@ export const PedagogyDeepenSection: React.FC<PedagogyDeepenSectionProps> = ({
   resources,
   accentColor,
   selectedBranchId,
+  externalSearchQuery = '',
   onClearBranchFilter,
 }) => {
   const [selectedFormat, setSelectedFormat] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>(externalSearchQuery);
   const [activeModalResource, setActiveModalResource] = useState<ReligionResource | null>(null);
+
+  // Synchroniser avec la recherche déclenchée depuis le haut
+  useEffect(() => {
+    if (externalSearchQuery !== undefined) {
+      setSearchQuery(externalSearchQuery);
+    }
+  }, [externalSearchQuery]);
 
   const formats = [
     { id: 'all', label: 'Tous les formats' },
