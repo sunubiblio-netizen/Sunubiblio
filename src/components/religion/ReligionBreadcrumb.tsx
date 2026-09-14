@@ -119,6 +119,118 @@ export const ReligionBreadcrumb: React.FC<ReligionBreadcrumbProps> = ({
           </ol>
         </div>
       </div>
+
+      <style jsx>{`
+        .religion-breadcrumb-nav {
+          padding: 8px 0;
+          margin-bottom: 20px;
+        }
+
+        .religion-breadcrumb-container {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .breadcrumb-back-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          color: #4f46e5;
+          font-size: 12.5px;
+          font-weight: 700;
+          padding: 5px 12px;
+          border-radius: 9999px;
+          cursor: pointer;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+          transition: all 0.15s ease;
+          flex-shrink: 0;
+        }
+
+        .breadcrumb-back-btn:hover {
+          background: #eef2ff;
+          border-color: #c7d2fe;
+          transform: translateX(-2px);
+        }
+
+        .breadcrumb-list {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          flex-wrap: wrap;
+          font-size: 13px;
+        }
+
+        .breadcrumb-item {
+          display: flex;
+          align-items: center;
+        }
+
+        .breadcrumb-link {
+          background: none;
+          border: none;
+          color: #64748b;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          padding: 4px 8px;
+          border-radius: 6px;
+          transition: all 0.15s ease;
+          text-decoration: none;
+        }
+
+        .breadcrumb-link:hover {
+          color: #0f172a;
+          background: #f1f5f9;
+        }
+
+        .breadcrumb-link.is-active {
+          color: #059669;
+          font-weight: 700;
+        }
+
+        .breadcrumb-separator {
+          color: #cbd5e1;
+          font-size: 11px;
+          user-select: none;
+        }
+
+        .breadcrumb-current {
+          font-size: 13px;
+          font-weight: 700;
+          color: #0f172a;
+          background: #f0fdf4;
+          padding: 3px 9px;
+          border-radius: 6px;
+          border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        @media (max-width: 640px) {
+          .religion-breadcrumb-container {
+            gap: 8px;
+          }
+
+          .breadcrumb-list {
+            font-size: 12px;
+            gap: 4px;
+          }
+
+          .breadcrumb-link {
+            font-size: 12px;
+            padding: 3px 6px;
+          }
+
+          .breadcrumb-current {
+            font-size: 12px;
+          }
+        }
+      `}</style>
     </nav>
   );
 };
