@@ -212,6 +212,45 @@ class ReligionService {
       };
     }
   }
+
+  /**
+   * Récupère l'espace pédagogique structuré d'une tradition par son slug
+   * Prêt pour Supabase : `select * from religion_pedagogy where slug = :slug`
+   */
+  async getPedagogicalData(slug: string): Promise<import('@/types/religion').ReligionPedagogicalData | null> {
+    const { RELIGION_PEDAGOGICAL_DATA } = await import('@/data/religionPedagogy');
+    // Normalisation des slugs alternatifs
+    let normalizedSlug = slug.toLowerCase().trim();
+    if (normalizedSlug === 'religions-traditionnelles-africaines' || normalizedSlug === 'spiritualites-africaines') {
+      normalizedSlug = 'spiritualites-africaines';
+    }
+    const found = RELIGION_PEDAGOGICAL_DATA[normalizedSlug];
+    return found || null;
+  }
+
+  /**
+   * Retourne tous les slugs pédagogiques gérés pour la génération statique Next.js
+   */
+  getAllPedagogicalSlugs(): string[] {
+    return [
+      'islam',
+      'christianisme',
+      'judaisme',
+      'hindouisme',
+      'bouddhisme',
+      'sikhisme',
+      'taoisme',
+      'spiritualites-africaines',
+    ];
+  }
+
+  /**
+   * Récupère l'ensemble des données pédagogiques
+   */
+  async getAllPedagogicalTraditions(): Promise<import('@/types/religion').ReligionPedagogicalData[]> {
+    const { RELIGION_PEDAGOGICAL_DATA } = await import('@/data/religionPedagogy');
+    return Object.values(RELIGION_PEDAGOGICAL_DATA);
+  }
 }
 
 export const religionService = new ReligionService();

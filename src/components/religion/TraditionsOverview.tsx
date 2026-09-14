@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { ReligionTradition, ReligionTraditionId } from '@/types/religion';
 
 interface TraditionsOverviewProps {
@@ -14,6 +15,17 @@ export const TraditionsOverview: React.FC<TraditionsOverviewProps> = ({
   selectedTraditionId,
   onSelectTradition,
 }) => {
+  const router = useRouter();
+
+  const getTraditionSlug = (id: ReligionTraditionId): string => {
+    if (id === 'religions-traditionnelles-africaines') return 'spiritualites-africaines';
+    return id;
+  };
+
+  const handleCardClick = (tradId: ReligionTraditionId) => {
+    const slug = getTraditionSlug(tradId);
+    router.push(`/religion/${slug}`);
+  };
   // Filter for the 8 primary world traditions in the required order
   const PRIMARY_IDS: ReligionTraditionId[] = [
     'islam',
@@ -129,12 +141,12 @@ export const TraditionsOverview: React.FC<TraditionsOverviewProps> = ({
               <div
                 key={trad.id}
                 className={`tradition-card ${isSelected ? 'is-active' : ''}`}
-                onClick={() => onSelectTradition(trad.id)}
+                onClick={() => handleCardClick(trad.id)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
-                    onSelectTradition(trad.id);
+                    handleCardClick(trad.id);
                   }
                 }}
               >
@@ -176,7 +188,7 @@ export const TraditionsOverview: React.FC<TraditionsOverviewProps> = ({
                     style={{ color: trad.accentColor }}
                     tabIndex={-1}
                   >
-                    <span>Explorer</span>
+                    <span>Découvrir</span>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="5" y1="12" x2="19" y2="12" />
                       <polyline points="12 5 19 12 12 19" />
