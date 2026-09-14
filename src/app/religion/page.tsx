@@ -6,10 +6,14 @@ import { Footer } from '@/components/layout/Footer';
 import { AuthModal } from '@/components/ui/AuthModal';
 import { ReligionHero } from '@/components/religion/ReligionHero';
 import { ReligionBreadcrumb } from '@/components/religion/ReligionBreadcrumb';
+import { IslamSenegalSection } from '@/components/religion/IslamSenegalSection';
+import { TraditionsOverview } from '@/components/religion/TraditionsOverview';
 import { ReligionFilters } from '@/components/religion/ReligionFilters';
 import { MobileReligionFilterDrawer } from '@/components/religion/MobileReligionFilterDrawer';
 import { ReligionHierarchyNavigator } from '@/components/religion/ReligionHierarchyNavigator';
+import { ReligionPopularResources } from '@/components/religion/ReligionPopularResources';
 import { ReligionResourceModal } from '@/components/religion/ReligionResourceModal';
+import { ReligionCTA } from '@/components/religion/ReligionCTA';
 import { religionService } from '@/services/religionService';
 import {
   ReligionTradition,
@@ -36,7 +40,7 @@ const DEFAULT_FILTERS: ReligionFilterState = {
   contentType: 'all',
   author: 'all',
   year: 'all',
-  accessLevel: 'all',
+  requiredPlan: 'all',
   sortBy: 'pertinence',
   page: 1,
   perPage: 12,
@@ -56,10 +60,11 @@ export default function ReligionPage() {
   });
 
   // Données
-  const [traditions, setTraditions] = useState<ReligionTradition[]>(RELIGION_TRADITIONS);
-  const [branches, setBranches] = useState<ReligionBranch[]>(RELIGION_BRANCHES);
-  const [themeCategories, setThemeCategories] = useState<ReligionThemeCategory[]>(RELIGION_THEME_CATEGORIES);
+  const [traditions] = useState<ReligionTradition[]>(RELIGION_TRADITIONS);
+  const [branches] = useState<ReligionBranch[]>(RELIGION_BRANCHES);
+  const [themeCategories] = useState<ReligionThemeCategory[]>(RELIGION_THEME_CATEGORIES);
   const [resources, setResources] = useState<ReligionResource[]>([]);
+  const [popularResources, setPopularResources] = useState<ReligionResource[]>([]);
   const [totalResources, setTotalResources] = useState(INITIAL_RELIGION_RESOURCES.length);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -93,7 +98,11 @@ export default function ReligionPage() {
     loadResources(filters);
   }, [filters, loadResources]);
 
-  // Synchronisation de la navigation hiérarchique vers les filtres
+  useEffect(() => {
+    religionService.getPopularResources().then(setPopularResources);
+  }, []);
+
+  // Synchronisation de la navigation hiérarchique
   const handleSelectTradition = (traditionId: ReligionTraditionId) => {
     setSelectedTraditionId(traditionId);
     setSelectedBranchId(null);
@@ -107,7 +116,6 @@ export default function ReligionPage() {
       page: 1,
     }));
 
-    // Scroll doux vers la section hiérarchique
     const el = document.getElementById('hierarchie-religion');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
@@ -116,8 +124,14 @@ export default function ReligionPage() {
     setSelectedBranchId(branchId);
     setSelectedThemeCategoryId('all');
 
+    const branch = branches.find((b) => b.id === branchId);
+    if (branch) {
+      setSelectedTraditionId(branch.traditionId);
+    }
+
     setFilters((prev) => ({
       ...prev,
+      traditionId: branch ? branch.traditionId : prev.traditionId,
       branchId: branchId || 'all',
       themeCategoryId: 'all',
       page: 1,
@@ -137,7 +151,7 @@ export default function ReligionPage() {
     }));
   };
 
-  // Reset total vers la racine de Religion
+  // Reset vers la racine Religion
   const handleResetNavigation = () => {
     setSelectedTraditionId(null);
     setSelectedBranchId(null);
@@ -152,12 +166,11 @@ export default function ReligionPage() {
     }));
   };
 
-  // Gestion des filtres de recherche
+  // Gestion des filtres
   const handleFilterChange = (newFilters: Partial<ReligionFilterState>) => {
     setFilters((prev) => {
       const updated = { ...prev, ...newFilters, page: newFilters.page || 1 };
 
-      // Si le filtre change la tradition ou la branche, synchroniser l'affichage
       if (newFilters.traditionId !== undefined) {
         setSelectedTraditionId(newFilters.traditionId === 'all' ? null : newFilters.traditionId);
       }
@@ -187,7 +200,6 @@ export default function ReligionPage() {
       ? themeCategories.find((th) => th.id === selectedThemeCategoryId) || null
       : null;
 
-  // Calcul du nombre de filtres actifs
   const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (filters.searchQuery.trim()) count++;
@@ -196,15 +208,13 @@ export default function ReligionPage() {
     if (filters.themeCategoryId !== 'all') count++;
     if (filters.contentType !== 'all') count++;
     if (filters.year !== 'all') count++;
-    if (filters.accessLevel !== 'all') count++;
+    if (filters.requiredPlan !== 'all') count++;
     return count;
   }, [filters]);
 
-  const handleExploreHeroClick = () => {
-    const target = document.getElementById('hierarchie-religion');
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth' });
-    }
+  const handleHeroSearchSubmit = () => {
+    const el = document.getElementById('hierarchie-religion');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -213,31 +223,43 @@ export default function ReligionPage() {
       <Navbar onOpenAuth={handleOpenAuth} activePage="religion" />
 
       <main className="religion-main-content">
-        {/* 2. Hero Section */}
-        <ReligionHero
-          totalCount={INITIAL_RELIGION_RESOURCES.length}
-          onExploreClick={handleExploreHeroClick}
-        />
-
-        {/* 3. Fil d'Ariane interactif et retour hiérarchique */}
+        {/* 2. Breadcrumb : Accueil → Religion */}
         <ReligionBreadcrumb
           tradition={currentTraditionObj}
           branch={currentBranchObj}
           themeCategory={currentThemeObj}
           onNavigateRoot={handleResetNavigation}
           onNavigateTradition={() => {
-            if (selectedTraditionId) {
-              handleSelectTradition(selectedTraditionId);
-            }
+            if (selectedTraditionId) handleSelectTradition(selectedTraditionId);
           }}
           onNavigateBranch={() => {
-            if (selectedBranchId) {
-              handleSelectBranch(selectedBranchId);
-            }
+            if (selectedBranchId) handleSelectBranch(selectedBranchId);
           }}
         />
 
-        {/* 4. Barre de Recherche et Filtres transversaux */}
+        {/* 3. Hero Section avec Titre « Religion », texte explicatif et recherche */}
+        <ReligionHero
+          searchQuery={filters.searchQuery}
+          onSearchChange={(q) => handleFilterChange({ searchQuery: q })}
+          onSearchSubmit={handleHeroSearchSubmit}
+          totalCount={INITIAL_RELIGION_RESOURCES.length}
+        />
+
+        {/* 4. Section prioritaire : Islam au Sénégal */}
+        <IslamSenegalSection
+          branches={branches}
+          selectedBranchId={selectedBranchId}
+          onSelectBranch={handleSelectBranch}
+        />
+
+        {/* 5. Section des 8 Grandes Traditions Religieuses */}
+        <TraditionsOverview
+          traditions={traditions}
+          selectedTraditionId={selectedTraditionId}
+          onSelectTradition={handleSelectTradition}
+        />
+
+        {/* 6. Barre de Recherche et Filtres transversaux */}
         <section className="religion-search-section">
           <div className="container">
             <ReligionFilters
@@ -252,8 +274,8 @@ export default function ReligionPage() {
           </div>
         </section>
 
-        {/* 5. Navigateur Hiérarchique Central :
-             Religion -> Tradition -> Courant / Confrérie -> Thème -> Ressources */}
+        {/* 7. Navigateur Hiérarchique Central :
+             Religion → Tradition → Courant / Branche → Sous-catégorie → Ressources */}
         <ReligionHierarchyNavigator
           traditions={traditions}
           branches={branches}
@@ -269,12 +291,21 @@ export default function ReligionPage() {
           onResetNavigation={handleResetNavigation}
           isLoading={isLoading}
         />
+
+        {/* 8. Ressources Phares & Populaires réelles */}
+        <ReligionPopularResources
+          resources={popularResources}
+          onConsultResource={(res) => setSelectedResource(res)}
+        />
+
+        {/* 9. CTA vers la bibliothèque générale */}
+        <ReligionCTA />
       </main>
 
-      {/* 6. Footer existant */}
+      {/* 10. Footer existant */}
       <Footer />
 
-      {/* 7. Tiroir mobile de filtres */}
+      {/* 11. Tiroir mobile de filtres */}
       <MobileReligionFilterDrawer
         isOpen={mobileDrawerOpen}
         onClose={() => setMobileDrawerOpen(false)}
@@ -286,7 +317,7 @@ export default function ReligionPage() {
         totalResults={totalResources}
       />
 
-      {/* 8. Modale de Consultation de ressource respectueuse */}
+      {/* 12. Modale de Consultation de ressource sécurisée */}
       <ReligionResourceModal
         resource={selectedResource}
         tradition={traditions.find((t) => t.id === selectedResource?.traditionId)}
@@ -295,7 +326,7 @@ export default function ReligionPage() {
         onOpenAuth={handleOpenAuth}
       />
 
-      {/* 9. Modale d'authentification */}
+      {/* 13. Modale d'authentification */}
       <AuthModal
         isOpen={authOpen}
         initialMode={authMode}

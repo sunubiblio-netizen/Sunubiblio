@@ -3,14 +3,24 @@
 import React from 'react';
 
 interface ReligionHeroProps {
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  onSearchSubmit: () => void;
   totalCount: number;
-  onExploreClick: () => void;
 }
 
 export const ReligionHero: React.FC<ReligionHeroProps> = ({
+  searchQuery,
+  onSearchChange,
+  onSearchSubmit,
   totalCount,
-  onExploreClick,
 }) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onSearchSubmit();
+    }
+  };
+
   return (
     <section className="religion-hero-section">
       <div className="religion-hero-bg-overlay" />
@@ -25,38 +35,73 @@ export const ReligionHero: React.FC<ReligionHeroProps> = ({
                 <path d="M2 12h20" />
               </svg>
             </span>
-            <span>Patrimoine Spirituel &amp; Quête de Sagesse</span>
+            <span>Patrimoine Spirituel, Éthique &amp; Connaissance</span>
           </div>
           <span className="religion-hero-count">
             {totalCount} œuvre{totalCount > 1 ? 's' : ''} et traité{totalCount > 1 ? 's' : ''} de référence
           </span>
         </div>
 
-        {/* Titre Principal exact demandé */}
+        {/* Titre Principal exact demandé : « Religion » */}
         <h1 className="religion-hero-title">
-          Religion, spiritualité <span className="religion-hero-gradient">&amp; connaissance</span>
+          Religion
         </h1>
 
-        {/* Sous-titre exact demandé */}
+        {/* Court texte explicatif */}
         <p className="religion-hero-subtitle">
-          Découvrez des ressources pour approfondir vos connaissances religieuses, spirituelles et culturelles.
+          Explorez les sources authentiques, traités théologiques et sagesses universelles de l'humanité, avec un éclairage privilégié sur le patrimoine spirituel du Sénégal.
         </p>
 
-        {/* CTA et navigation */}
-        <div className="religion-hero-actions">
+        {/* Champ de recherche direct dans le Hero */}
+        <div className="religion-hero-search-box">
+          <div className="hero-search-input-wrap">
+            <svg
+              className="hero-search-icon"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#64748b"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              className="hero-search-input"
+              placeholder="Rechercher un livre, auteur, enseignement (ex: Bamba, Malick Sy, Augustin...)..."
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                className="hero-search-clear"
+                onClick={() => onSearchChange('')}
+                title="Effacer"
+              >
+                ✕
+              </button>
+            )}
+          </div>
           <button
             type="button"
-            className="btn-primary religion-hero-cta"
-            onClick={onExploreClick}
+            className="btn-primary hero-search-btn"
+            onClick={onSearchSubmit}
           >
-            <span>Explorer les traditions &amp; ressources</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M7 13l5 5 5-5M12 4v14" />
+            <span>Rechercher</span>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14" />
+              <path d="M12 5l7 7-7 7" />
             </svg>
           </button>
         </div>
 
-        {/* 3 Piliers d'éthique et de neutralité */}
+        {/* Piliers d'intégrité */}
         <div className="religion-hero-pillars">
           <div className="religion-pillar-item">
             <div className="religion-pillar-icon">

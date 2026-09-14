@@ -8,6 +8,7 @@ import {
   ReligionResourceType,
   ReligionTraditionId,
   ReligionBranchId,
+  ReligionPlanRequired,
 } from '@/types/religion';
 import { RELIGION_CONTENT_TYPES } from '@/data/mockReligion';
 
@@ -157,13 +158,34 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               }
             >
               <option value="all">Toutes les époques</option>
-              <option value="before-1800">Classique &amp; Ancien (&lt; 1800)</option>
+              <option value="before-1800">Classique (&lt; 1800)</option>
               <option value="1800-1950">XIXe &amp; début XXe (1800-1950)</option>
               <option value="post-1950">Contemporain (&gt; 1950)</option>
             </select>
           </div>
 
-          {/* Tri */}
+          {/* Formule requise */}
+          <div className="drawer-group">
+            <label className="drawer-label">Formule d’abonnement</label>
+            <select
+              className="drawer-select"
+              value={filters.requiredPlan}
+              onChange={(e) =>
+                onFilterChange({
+                  requiredPlan: e.target.value as ReligionPlanRequired | 'all',
+                  page: 1,
+                })
+              }
+            >
+              <option value="all">Toutes les formules</option>
+              <option value="gratuit">Gratuit (0 FCFA)</option>
+              <option value="simple">Simple (3 000 FCFA)</option>
+              <option value="recommande">5 000 FCFA (Recommandé)</option>
+              <option value="gold">Gold (9 000 FCFA)</option>
+            </select>
+          </div>
+
+          {/* Ordre de tri */}
           <div className="drawer-group">
             <label className="drawer-label">Ordre de tri</label>
             <select
@@ -176,39 +198,11 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
                 })
               }
             >
-              <option value="pertinence">Pertinence</option>
+              <option value="pertinence">Pertinence &amp; Vues</option>
               <option value="recent">Année / Époque</option>
               <option value="titre">Titre (A-Z)</option>
               <option value="auteur">Auteur (A-Z)</option>
             </select>
-          </div>
-
-          {/* Niveau d'accès */}
-          <div className="drawer-group">
-            <label className="drawer-label">Niveau d’accès</label>
-            <div className="access-segmented-control w-full">
-              <button
-                type="button"
-                className={`segmented-btn flex-1 ${filters.accessLevel === 'all' ? 'active' : ''}`}
-                onClick={() => onFilterChange({ accessLevel: 'all', page: 1 })}
-              >
-                Tous
-              </button>
-              <button
-                type="button"
-                className={`segmented-btn flex-1 ${filters.accessLevel === 'free' ? 'active' : ''}`}
-                onClick={() => onFilterChange({ accessLevel: 'free', page: 1 })}
-              >
-                Gratuit
-              </button>
-              <button
-                type="button"
-                className={`segmented-btn flex-1 ${filters.accessLevel === 'premium' ? 'active' : ''}`}
-                onClick={() => onFilterChange({ accessLevel: 'premium', page: 1 })}
-              >
-                Premium
-              </button>
-            </div>
           </div>
         </div>
 
@@ -217,9 +211,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
           <button
             type="button"
             className="btn-secondary drawer-btn"
-            onClick={() => {
-              onResetFilters();
-            }}
+            onClick={onResetFilters}
           >
             Réinitialiser
           </button>

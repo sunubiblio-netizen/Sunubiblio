@@ -1,29 +1,45 @@
 /**
- * Modèle de données hiérarchique pour le module Religion de Sunubiblio.
- * Conçu pour correspondre directement à un schéma PostgreSQL / Supabase :
- * religion_traditions -> religion_branches -> religion_theme_categories -> religion_resources
+ * Modèle de données universel et hiérarchique pour le module Religion de Sunubiblio.
+ * Prêt pour PostgreSQL / Supabase :
+ * traditions -> branches -> theme_categories -> resources
  */
 
 export type ReligionTraditionId =
   | 'islam'
   | 'christianisme'
-  | 'autres-religions';
+  | 'judaisme'
+  | 'hindouisme'
+  | 'bouddhisme'
+  | 'sikhisme'
+  | 'religions-traditionnelles-africaines'
+  | 'autres-traditions';
 
 export type ReligionBranchId =
+  // Islam
   | 'mouride-touba'
   | 'tidiane-tivaouane'
   | 'niassene'
   | 'layene'
   | 'islam-autres'
-  | 'christianisme-general'
-  | 'autres-spiritualites'
+  // Christianisme
+  | 'catholicisme'
+  | 'protestantisme'
+  | 'orthodoxie'
+  | 'autres-traditions-chretiennes'
+  // Autres traditions mondiales
+  | 'judaisme-rabbinique'
+  | 'hindouisme-vedique'
+  | 'bouddhisme-general'
+  | 'sikhisme-gurmat'
+  | 'afrique-cosmogonies'
+  | 'autres-sagesses'
   | string;
 
 export type ReligionThemeCategoryId =
   | 'livres'
   | 'enseignements'
   | 'histoire'
-  | 'figures-importantes'
+  | 'figures'
   | 'textes'
   | 'conferences'
   | 'documents'
@@ -38,6 +54,10 @@ export type ReligionResourceType =
   | 'guide'
   | 'texte';
 
+export type ReligionResourceStatus = 'disponible' | 'en_numerisation' | 'archive';
+
+export type ReligionPlanRequired = 'gratuit' | 'simple' | 'recommande' | 'gold';
+
 export interface ReligionTradition {
   id: ReligionTraditionId;
   title: string;
@@ -50,6 +70,7 @@ export interface ReligionTradition {
   iconName: string;
   branchesCount: number;
   resourceCount: number;
+  isSenegalPriority?: boolean;
 }
 
 export interface ReligionBranch {
@@ -76,9 +97,10 @@ export interface ReligionThemeCategory {
 export interface ReligionResource {
   id: string;
   slug: string;
-  title: string;
-  author: string;
-  authorBio?: string;
+  titre: string;
+  description: string;
+  auteur: string;
+  auteurBio?: string;
   traditionId: ReligionTraditionId;
   branchId: ReligionBranchId;
   themeCategoryId: ReligionThemeCategoryId;
@@ -86,15 +108,26 @@ export interface ReligionResource {
   year?: number;
   period?: string;
   language: string;
-  accessLevel: 'free' | 'premium';
-  description: string;
-  summary?: string[];
-  coverUrl?: string;
-  coverPattern?: 'geometric-amber' | 'geometric-indigo' | 'geometric-emerald' | 'geometric-slate' | 'geometric-cyan';
+  couverture?: string;
+  coverPattern?:
+    | 'geometric-amber'
+    | 'geometric-indigo'
+    | 'geometric-emerald'
+    | 'geometric-slate'
+    | 'geometric-cyan'
+    | 'geometric-purple'
+    | 'geometric-rose';
+  fileUrl?: string;
   pagesCount?: number;
-  duration?: string;
-  source: string;
+  fileSize?: string;
+  status: ReligionResourceStatus;
+  requiredPlan: ReligionPlanRequired;
+  publishedAt: string;
+  viewsCount: number;
+  downloadsCount: number;
+  summary?: string[];
   tags: string[];
+  source: string;
   featured?: boolean;
 }
 
@@ -106,7 +139,7 @@ export interface ReligionFilterState {
   contentType: ReligionResourceType | 'all';
   author: string | 'all';
   year: string | 'all'; // 'all', 'before-1800', '1800-1950', 'post-1950'
-  accessLevel: 'all' | 'free' | 'premium';
+  requiredPlan: 'all' | ReligionPlanRequired;
   sortBy: 'pertinence' | 'recent' | 'titre' | 'auteur';
   page: number;
   perPage: number;

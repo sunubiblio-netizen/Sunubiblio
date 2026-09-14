@@ -44,7 +44,6 @@ export const ReligionHierarchyNavigator: React.FC<ReligionHierarchyNavigatorProp
   onResetNavigation,
   isLoading,
 }) => {
-  // Entités sélectionnées
   const currentTradition = traditions.find((t) => t.id === selectedTraditionId) || null;
   const currentBranch = branches.find((b) => b.id === selectedBranchId) || null;
   const currentTheme =
@@ -52,37 +51,9 @@ export const ReligionHierarchyNavigator: React.FC<ReligionHierarchyNavigatorProp
       ? themeCategories.find((th) => th.id === selectedThemeCategoryId) || null
       : null;
 
-  // Branches filtrées pour la tradition courante
   const availableBranches = selectedTraditionId
     ? branches.filter((b) => b.traditionId === selectedTraditionId)
     : [];
-
-  // Helper pour les icônes de tradition
-  const renderTraditionIcon = (iconName: string, color: string) => {
-    switch (iconName) {
-      case 'crescent':
-        return (
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-          </svg>
-        );
-      case 'cross':
-        return (
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="3" x2="12" y2="21" />
-            <line x1="6" y1="8" x2="18" y2="8" />
-          </svg>
-        );
-      case 'compass':
-      default:
-        return (
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
-          </svg>
-        );
-    }
-  };
 
   return (
     <section className="religion-hierarchy-section" id="hierarchie-religion">
@@ -94,9 +65,9 @@ export const ReligionHierarchyNavigator: React.FC<ReligionHierarchyNavigatorProp
           <div className="hierarchy-step-container">
             <div className="religion-section-header">
               <div className="section-pill-tag">Étape 1 sur 3 — Grande Tradition</div>
-              <h2 className="religion-section-title">Choisissez une tradition spirituelle</h2>
+              <h2 className="religion-section-title">Sélectionnez une tradition religieuse</h2>
               <p className="religion-section-subtitle">
-                Accédez aux enseignements, écrits fondamentaux et patrimoines classés par courant et confrérie.
+                Choisissez une tradition pour parcourir ses courants, confréries et catégories d'enseignements.
               </p>
             </div>
 
@@ -110,12 +81,13 @@ export const ReligionHierarchyNavigator: React.FC<ReligionHierarchyNavigatorProp
                   style={{ '--trad-accent': trad.accentColor } as React.CSSProperties}
                 >
                   <div className="tradition-card-top">
-                    <div
-                      className="tradition-icon-box"
-                      style={{ backgroundColor: trad.bgLight, color: trad.accentColor }}
-                    >
-                      {renderTraditionIcon(trad.iconName, trad.accentColor)}
-                    </div>
+                    <span className="tradition-icon-box" style={{ backgroundColor: trad.bgLight, color: trad.accentColor }}>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                      </svg>
+                    </span>
                     <span
                       className="tradition-badge-pill"
                       style={{
@@ -134,10 +106,10 @@ export const ReligionHierarchyNavigator: React.FC<ReligionHierarchyNavigatorProp
 
                   <div className="tradition-card-footer">
                     <span className="tradition-count-info">
-                      {trad.branchesCount} courant{trad.branchesCount > 1 ? 's' : ''} &bull; {trad.resourceCount} œuvres
+                      {trad.branchesCount} courant{trad.branchesCount > 1 ? 's' : ''} &bull; {trad.resourceCount} œuvre{trad.resourceCount > 1 ? 's' : ''}
                     </span>
                     <span className="tradition-cta-link" style={{ color: trad.accentColor }}>
-                      Explorer cette tradition &rarr;
+                      Voir les branches &rarr;
                     </span>
                   </div>
                 </button>
@@ -165,14 +137,14 @@ export const ReligionHierarchyNavigator: React.FC<ReligionHierarchyNavigatorProp
             </div>
 
             <div className="religion-section-header">
-              <div className="section-pill-tag">Étape 2 sur 3 — Courant &amp; Confrérie</div>
+              <div className="section-pill-tag">Étape 2 sur 3 — Courant / Branche</div>
               <h2 className="religion-section-title">
                 {currentTradition.id === 'islam'
                   ? 'Grandes Confréries & Courants de l’Islam'
-                  : `Courants & Domaines : ${currentTradition.title}`}
+                  : `Branches & Domaines : ${currentTradition.title}`}
               </h2>
               <p className="religion-section-subtitle">
-                Sélectionnez un sous-domaine pour explorer ses livres, enseignements, figures et textes de référence.
+                Sélectionnez une branche pour accéder à ses catégories thématiques (Livres, Enseignements, Histoire, Figures...).
               </p>
             </div>
 
@@ -217,10 +189,10 @@ export const ReligionHierarchyNavigator: React.FC<ReligionHierarchyNavigatorProp
 
                   <div className="branch-card-footer">
                     <span className="branch-res-count">
-                      {branch.resourceCount} ressource{branch.resourceCount > 1 ? 's' : ''} disponible{branch.resourceCount > 1 ? 's' : ''}
+                      {branch.resourceCount} ressource{branch.resourceCount > 1 ? 's' : ''} répertoriée{branch.resourceCount > 1 ? 's' : ''}
                     </span>
                     <span className="branch-cta-arrow" style={{ color: branch.accentColor }}>
-                      Voir les catégories &rarr;
+                      Explorer les thèmes &rarr;
                     </span>
                   </div>
                 </button>
@@ -230,7 +202,7 @@ export const ReligionHierarchyNavigator: React.FC<ReligionHierarchyNavigatorProp
         )}
 
         {/* =========================================================================
-            NIVEAU 3 & 4 : COURANT CHOISI -> ONGLETS THÉMATIQUES & GRILLE DES RESSOURCES
+            NIVEAU 3 & 4 : COURANT CHOISI -> 8 ONGLETS THÉMATIQUES & GRILLE DES RESSOURCES
            ========================================================================= */}
         {selectedTraditionId && selectedBranchId && currentBranch && (
           <div className="hierarchy-step-container">
@@ -241,9 +213,9 @@ export const ReligionHierarchyNavigator: React.FC<ReligionHierarchyNavigatorProp
                   type="button"
                   className="branch-back-btn"
                   onClick={() => onSelectBranch(null as any)}
-                  title="Changer de courant"
+                  title="Changer de branche"
                 >
-                  &larr; Autres courants ({currentTradition?.title})
+                  &larr; Revenir aux courants ({currentTradition?.title})
                 </button>
                 <div className="branch-title-wrap">
                   <h2 className="branch-active-title">{currentBranch.title}</h2>
@@ -253,14 +225,17 @@ export const ReligionHierarchyNavigator: React.FC<ReligionHierarchyNavigatorProp
                 </div>
               </div>
 
-              <div className="branch-active-badge-pill" style={{ color: currentBranch.accentColor, backgroundColor: currentBranch.bgLight }}>
+              <div
+                className="branch-active-badge-pill"
+                style={{ color: currentBranch.accentColor, backgroundColor: currentBranch.bgLight }}
+              >
                 {currentBranch.badge || 'Tradition'}
               </div>
             </div>
 
             <p className="branch-active-description">{currentBranch.description}</p>
 
-            {/* Barre des 8 Catégories Thématiques Universelles */}
+            {/* Barre des 8 Sous-catégories Thématiques Universelles */}
             <div className="theme-categories-bar-wrap">
               <div className="theme-categories-scroll">
                 <button
@@ -294,7 +269,7 @@ export const ReligionHierarchyNavigator: React.FC<ReligionHierarchyNavigatorProp
               </div>
             </div>
 
-            {/* En-tête de la liste des ressources filtrées */}
+            {/* En-tête de liste des ressources du courant */}
             <div className="branch-resources-header">
               <div>
                 <h3 className="resources-list-heading">

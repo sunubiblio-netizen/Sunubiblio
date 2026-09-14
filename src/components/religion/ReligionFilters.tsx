@@ -8,8 +8,10 @@ import {
   ReligionResourceType,
   ReligionTraditionId,
   ReligionBranchId,
+  ReligionPlanRequired,
 } from '@/types/religion';
 import { RELIGION_CONTENT_TYPES } from '@/data/mockReligion';
+import { PRICING_PLANS } from '@/data/pricingPlans';
 
 interface ReligionFiltersProps {
   filters: ReligionFilterState;
@@ -30,7 +32,6 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
   onOpenMobileDrawer,
   activeFiltersCount,
 }) => {
-  // Branches disponibles pour la tradition sélectionnée dans les filtres
   const availableBranches =
     filters.traditionId !== 'all'
       ? branches.filter((b) => b.traditionId === filters.traditionId)
@@ -58,7 +59,7 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
           <input
             type="text"
             className="religion-search-input"
-            placeholder="Rechercher par titre, auteur (ex: Bamba, Malick Sy, Augustin, Baye Niass...)..."
+            placeholder="Rechercher par titre ou auteur (ex: Bamba, Malick Sy, Augustin, Baye Niass...)..."
             value={filters.searchQuery}
             onChange={(e) =>
               onFilterChange({ searchQuery: e.target.value, page: 1 })
@@ -116,7 +117,7 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
               })
             }
           >
-            <option value="pertinence">Pertinence</option>
+            <option value="pertinence">Pertinence &amp; Vues</option>
             <option value="recent">Année / Époque</option>
             <option value="titre">Titre (A-Z)</option>
             <option value="auteur">Auteur (A-Z)</option>
@@ -124,7 +125,7 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
         </div>
       </div>
 
-      {/* Ligne 2 : Filtres Desktop (Tradition, Courant, Type de ressource, Année, Accès) */}
+      {/* Ligne 2 : Filtres Desktop (Tradition, Courant, Type, Année, Formule requise) */}
       <div className="religion-desktop-filters desktop-only">
         {/* Filtre Tradition */}
         <div className="filter-group">
@@ -207,38 +208,31 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
             }
           >
             <option value="all">Toutes les époques</option>
-            <option value="before-1800">Classique &amp; Ancien (&lt; 1800)</option>
+            <option value="before-1800">Classique (&lt; 1800)</option>
             <option value="1800-1950">XIXe &amp; début XXe (1800-1950)</option>
             <option value="post-1950">Contemporain (&gt; 1950)</option>
           </select>
         </div>
 
-        {/* Filtre Accès */}
+        {/* Filtre Formule requise */}
         <div className="filter-group">
-          <label className="filter-group-label">Accès</label>
-          <div className="access-segmented-control">
-            <button
-              type="button"
-              className={`segmented-btn ${filters.accessLevel === 'all' ? 'active' : ''}`}
-              onClick={() => onFilterChange({ accessLevel: 'all', page: 1 })}
-            >
-              Tous
-            </button>
-            <button
-              type="button"
-              className={`segmented-btn ${filters.accessLevel === 'free' ? 'active' : ''}`}
-              onClick={() => onFilterChange({ accessLevel: 'free', page: 1 })}
-            >
-              Gratuit
-            </button>
-            <button
-              type="button"
-              className={`segmented-btn ${filters.accessLevel === 'premium' ? 'active' : ''}`}
-              onClick={() => onFilterChange({ accessLevel: 'premium', page: 1 })}
-            >
-              Premium
-            </button>
-          </div>
+          <label className="filter-group-label">Formule</label>
+          <select
+            className="religion-select"
+            value={filters.requiredPlan}
+            onChange={(e) =>
+              onFilterChange({
+                requiredPlan: e.target.value as ReligionPlanRequired | 'all',
+                page: 1,
+              })
+            }
+          >
+            <option value="all">Toutes les formules</option>
+            <option value="gratuit">Gratuit (0 FCFA)</option>
+            <option value="simple">Simple (3 000 FCFA)</option>
+            <option value="recommande">5 000 FCFA (Recommandé)</option>
+            <option value="gold">Gold (9 000 FCFA)</option>
+          </select>
         </div>
 
         {/* Réinitialisation */}

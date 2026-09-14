@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import {
   ReligionTradition,
   ReligionBranch,
@@ -52,6 +53,15 @@ export const ReligionBreadcrumb: React.FC<ReligionBreadcrumbProps> = ({
           )}
 
           <ol className="breadcrumb-list">
+            {/* Niveau 0 : Accueil */}
+            <li className="breadcrumb-item">
+              <Link href="/" className="breadcrumb-link">
+                Accueil
+              </Link>
+            </li>
+
+            <li className="breadcrumb-separator" aria-hidden="true">&gt;</li>
+
             {/* Niveau 1 : Religion */}
             <li className="breadcrumb-item">
               <button
@@ -59,18 +69,14 @@ export const ReligionBreadcrumb: React.FC<ReligionBreadcrumbProps> = ({
                 className={`breadcrumb-link ${!tradition ? 'is-active' : ''}`}
                 onClick={onNavigateRoot}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                </svg>
-                <span>Religion</span>
+                Religion
               </button>
             </li>
 
             {/* Niveau 2 : Tradition */}
             {tradition && (
               <>
-                <li className="breadcrumb-separator" aria-hidden="true">/</li>
+                <li className="breadcrumb-separator" aria-hidden="true">&gt;</li>
                 <li className="breadcrumb-item">
                   <button
                     type="button"
@@ -86,7 +92,7 @@ export const ReligionBreadcrumb: React.FC<ReligionBreadcrumbProps> = ({
             {/* Niveau 3 : Courant / Branche */}
             {branch && (
               <>
-                <li className="breadcrumb-separator" aria-hidden="true">/</li>
+                <li className="breadcrumb-separator" aria-hidden="true">&gt;</li>
                 <li className="breadcrumb-item">
                   <button
                     type="button"
@@ -99,10 +105,10 @@ export const ReligionBreadcrumb: React.FC<ReligionBreadcrumbProps> = ({
               </>
             )}
 
-            {/* Niveau 4 : Thème de ressource */}
+            {/* Niveau 4 : Sous-catégorie thématique */}
             {themeCategory && (
               <>
-                <li className="breadcrumb-separator" aria-hidden="true">/</li>
+                <li className="breadcrumb-separator" aria-hidden="true">&gt;</li>
                 <li className="breadcrumb-item">
                   <span className="breadcrumb-current" aria-current="page">
                     {themeCategory.label}

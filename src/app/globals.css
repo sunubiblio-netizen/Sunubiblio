@@ -7142,5 +7142,662 @@ input {
 }
 
 /* ==========================================================================
+   RELIGION HERO & SEARCH BAR
+   ========================================================================== */
+.religion-hero-section {
+  position: relative;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 60%, #ffffff 100%);
+  padding: 44px 0 40px;
+  border-bottom: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.religion-hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.06) 0%, rgba(16, 185, 129, 0.04) 50%, transparent 80%);
+  pointer-events: none;
+}
+
+.religion-hero-container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.religion-hero-badge-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.religion-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #4338ca;
+}
+
+.religion-badge-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6366f1;
+}
+
+.religion-hero-count {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748b;
+  background: rgba(241, 245, 249, 0.8);
+  padding: 5px 12px;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+}
+
+.religion-hero-title {
+  font-size: clamp(34px, 5vw, 48px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+  margin: 0 0 14px 0;
+  line-height: 1.15;
+}
+
+.religion-hero-subtitle {
+  font-size: clamp(15px, 2vw, 17px);
+  line-height: 1.6;
+  color: #475569;
+  max-width: 680px;
+  margin: 0 0 28px 0;
+}
+
+.religion-hero-search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 660px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 9999px;
+  padding: 6px 8px 6px 18px;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08), 0 2px 8px rgba(99, 102, 241, 0.04);
+  transition: all 0.2s ease;
+  margin-bottom: 32px;
+}
+
+.religion-hero-search-box:focus-within {
+  border-color: #4f46e5;
+  box-shadow: 0 12px 35px -4px rgba(79, 70, 229, 0.2);
+  transform: translateY(-1px);
+}
+
+.hero-search-input-wrap {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 12px;
+  min-width: 0;
+}
+
+.hero-search-icon {
+  flex-shrink: 0;
+}
+
+.hero-search-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.hero-search-input::placeholder {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.hero-search-clear {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 14px;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: color 0.15s;
+}
+
+.hero-search-clear:hover {
+  color: #0f172a;
+}
+
+.hero-search-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.religion-hero-pillars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 820px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.religion-pillar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.religion-pillar-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pillar-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.pillar-desc {
+  display: block;
+  font-size: 11.5px;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+/* ==========================================================================
+   ISLAM AU SÉNÉGAL (Section Prioritaire)
+   ========================================================================== */
+.islam-senegal-section {
+  padding: 44px 0;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.islam-senegal-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 32px;
+}
+
+.senegal-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  margin-bottom: 12px;
+}
+
+.senegal-flag {
+  font-size: 15px;
+}
+
+.islam-senegal-title {
+  font-size: clamp(26px, 3.5vw, 34px);
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin: 0 0 10px 0;
+}
+
+.islam-senegal-subtitle {
+  font-size: 15px;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.islam-branches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 20px;
+}
+
+.islam-branch-card {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.islam-branch-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--branch-accent, #059669);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.07);
+}
+
+.islam-branch-card.is-selected {
+  border-color: var(--branch-accent, #059669);
+  background: #fcfdfd;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+}
+
+.branch-card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.branch-icon-indicator {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.islam-branch-name {
+  font-size: 19px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+}
+
+.islam-branch-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.islam-branch-desc {
+  font-size: 13.5px;
+  color: #475569;
+  line-height: 1.55;
+  margin: 0 0 20px 0;
+  flex: 1;
+}
+
+.islam-branch-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.islam-branch-count {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.islam-branch-action {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   LES 8 GRANDES TRADITIONS SPIRITUELLES
+   ========================================================================== */
+.traditions-overview-section {
+  padding: 44px 0;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.religion-section-header {
+  margin-bottom: 30px;
+}
+
+.section-pill-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #4f46e5;
+  background: #eef2ff;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  margin-bottom: 8px;
+}
+
+.religion-section-title {
+  font-size: clamp(24px, 3.2vw, 30px);
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.02em;
+}
+
+.religion-section-subtitle {
+  font-size: 15px;
+  color: #64748b;
+  margin: 0;
+  max-width: 720px;
+}
+
+.traditions-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.tradition-card-item {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 22px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.tradition-card-item:hover {
+  transform: translateY(-3px);
+  border-color: var(--trad-accent, #6366f1);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+}
+
+.tradition-card-item.is-selected {
+  border-color: var(--trad-accent, #6366f1);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  background: #fcfdfd;
+}
+
+.trad-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.trad-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trad-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  border: 1px solid;
+}
+
+.trad-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.trad-subtitle {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0 0 10px 0;
+}
+
+.trad-desc {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+  flex: 1;
+}
+
+.trad-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.trad-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.trad-arrow {
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   POPULAR RESOURCES & CTA
+   ========================================================================== */
+.religion-popular-section {
+  padding: 44px 0;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.religion-cta-section {
+  padding: 44px 0 60px;
+  background: #f8fafc;
+}
+
+.religion-cta-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #1e3a8a 100%);
+  border-radius: 24px;
+  padding: 40px 44px;
+  color: #ffffff;
+  box-shadow: 0 16px 40px rgba(30, 27, 75, 0.18);
+}
+
+.cta-left-content {
+  max-width: 660px;
+}
+
+.cta-badge {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  margin-bottom: 12px;
+}
+
+.cta-heading {
+  font-size: clamp(20px, 2.5vw, 26px);
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 10px 0;
+  line-height: 1.25;
+}
+
+.cta-paragraph {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+.cta-action-wrap {
+  flex-shrink: 0;
+}
+
+.cta-main-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  color: #1e1b4b;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 14px 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cta-main-btn:hover {
+  background: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* ==========================================================================
+   BADGES DE PLANS D'ABONNEMENT
+   ========================================================================== */
+.plan-badge-gold {
+  background: #fffbeb !important;
+  color: #b45309 !important;
+  border: 1px solid #fde68a !important;
+  font-weight: 700 !important;
+}
+
+.plan-badge-recommande {
+  background: #eef2ff !important;
+  color: #4338ca !important;
+  border: 1px solid #c7d2fe !important;
+  font-weight: 700 !important;
+}
+
+.plan-badge-simple {
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+  border: 1px solid #bfdbfe !important;
+  font-weight: 600 !important;
+}
+
+.plan-badge-free {
+  background: #f0fdf4 !important;
+  color: #15803d !important;
+  border: 1px solid #bbf7d0 !important;
+  font-weight: 600 !important;
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS (Religion Sections)
+   ========================================================================== */
+@media (max-width: 1100px) {
+  .traditions-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 860px) {
+  .religion-hero-section {
+    padding: 32px 0 28px;
+  }
+
+  .religion-hero-search-box {
+    flex-direction: column;
+    padding: 8px 12px;
+    border-radius: 18px;
+  }
+
+  .hero-search-input-wrap {
+    width: 100%;
+  }
+
+  .hero-search-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .religion-hero-pillars {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .religion-cta-box {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px 24px;
+    gap: 20px;
+  }
+
+  .cta-main-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .islam-branches-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .traditions-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
    FIN SECTION : MODULE RELIGION, SPIRITUALITÉ & PHILOSOPHIE
    ========================================================================== */
