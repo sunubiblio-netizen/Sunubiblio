@@ -6,25 +6,29 @@ import { ReligionPractice } from '@/types/religion';
 interface PedagogyPracticesSectionProps {
   practices: ReligionPractice[];
   accentColor: string;
+  hideHeader?: boolean;
 }
 
 export const PedagogyPracticesSection: React.FC<PedagogyPracticesSectionProps> = ({
   practices,
   accentColor,
+  hideHeader = false,
 }) => {
   if (!practices || practices.length === 0) return null;
 
   return (
-    <section className="pedagogy-section" id="pratiques">
-      <div className="section-head">
-        <div className="section-num-badge" style={{ backgroundColor: accentColor }}>4</div>
-        <div>
-          <h2 className="section-title">Pratiques & Spiritualité</h2>
-          <p className="section-subtitle">
-            Piliers d&apos;action, rituels quotidiens et dimension intérieure de purification.
-          </p>
+    <div className="pedagogy-section-inner">
+      {!hideHeader && (
+        <div className="section-head">
+          <div className="section-num-badge" style={{ backgroundColor: accentColor }}>4</div>
+          <div>
+            <h2 className="section-title">Pratiques & Spiritualité</h2>
+            <p className="section-subtitle">
+              Piliers d&apos;action, rituels quotidiens et dimension intérieure de purification.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="practices-grid">
         {practices.map((item, idx) => (
@@ -210,6 +214,6 @@ export const PedagogyPracticesSection: React.FC<PedagogyPracticesSectionProps> =
           }
         }
       `}</style>
-    </section>
+    </div>
   );
 };

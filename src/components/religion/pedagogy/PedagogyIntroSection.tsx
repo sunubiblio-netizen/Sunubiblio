@@ -8,6 +8,7 @@ interface PedagogyIntroSectionProps {
   intro: ReligionPedagogicalIntro;
   coreBeliefs: ReligionCoreBelief[];
   accentColor: string;
+  hideHeader?: boolean;
 }
 
 export const PedagogyIntroSection: React.FC<PedagogyIntroSectionProps> = ({
@@ -15,18 +16,21 @@ export const PedagogyIntroSection: React.FC<PedagogyIntroSectionProps> = ({
   intro,
   coreBeliefs,
   accentColor,
+  hideHeader = false,
 }) => {
   return (
-    <section className="pedagogy-section" id="comprendre">
-      <div className="section-head">
-        <div className="section-num-badge" style={{ backgroundColor: accentColor }}>1</div>
-        <div>
-          <h2 className="section-title">Comprendre {traditionTitle}</h2>
-          <p className="section-subtitle">
-            Définition, genèse historique, raison d&apos;être et fondements spirituels indispensables.
-          </p>
+    <div className="pedagogy-section-inner">
+      {!hideHeader && (
+        <div className="section-head">
+          <div className="section-num-badge" style={{ backgroundColor: accentColor }}>1</div>
+          <div>
+            <h2 className="section-title">Comprendre {traditionTitle}</h2>
+            <p className="section-subtitle">
+              Définition, genèse historique, raison d&apos;être et fondements spirituels indispensables.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 4 Pillars of Context Grid */}
       <div className="intro-grid">
@@ -353,6 +357,6 @@ export const PedagogyIntroSection: React.FC<PedagogyIntroSectionProps> = ({
           }
         }
       `}</style>
-    </section>
+    </div>
   );
 };

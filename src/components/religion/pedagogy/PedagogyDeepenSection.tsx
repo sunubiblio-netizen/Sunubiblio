@@ -18,6 +18,7 @@ interface PedagogyDeepenSectionProps {
   selectedBranchId?: string;
   externalSearchQuery?: string;
   onClearBranchFilter?: () => void;
+  hideHeader?: boolean;
 }
 
 export const PedagogyDeepenSection: React.FC<PedagogyDeepenSectionProps> = ({
@@ -28,6 +29,7 @@ export const PedagogyDeepenSection: React.FC<PedagogyDeepenSectionProps> = ({
   selectedBranchId,
   externalSearchQuery = '',
   onClearBranchFilter,
+  hideHeader = false,
 }) => {
   const [selectedFormat, setSelectedFormat] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>(externalSearchQuery);
@@ -76,16 +78,18 @@ export const PedagogyDeepenSection: React.FC<PedagogyDeepenSectionProps> = ({
   }, [resources, selectedBranchId, selectedFormat, searchQuery]);
 
   return (
-    <section className="pedagogy-section deepen-section" id="approfondir">
-      <div className="section-head">
-        <div className="section-num-badge" style={{ backgroundColor: accentColor }}>7</div>
-        <div>
-          <h2 className="section-title">Approfondir avec les Ressources</h2>
-          <p className="section-subtitle">
-            {summary.description}
-          </p>
+    <div className="pedagogy-section-inner deepen-section">
+      {!hideHeader && (
+        <div className="section-head">
+          <div className="section-num-badge" style={{ backgroundColor: accentColor }}>7</div>
+          <div>
+            <h2 className="section-title">Approfondir avec les Ressources</h2>
+            <p className="section-subtitle">
+              {summary.description}
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Recommended Themes Bar */}
       {summary.recommendedThemes && summary.recommendedThemes.length > 0 && (
@@ -422,6 +426,6 @@ export const PedagogyDeepenSection: React.FC<PedagogyDeepenSectionProps> = ({
           }
         }
       `}</style>
-    </section>
+    </div>
   );
 };

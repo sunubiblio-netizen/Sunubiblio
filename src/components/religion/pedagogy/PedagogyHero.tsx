@@ -15,6 +15,8 @@ interface PedagogyHeroProps {
   onSelectResource: (resource: ReligionResource) => void;
   onSelectBranch: (branchId: string) => void;
   onApplyGlobalSearch: (query: string) => void;
+  onOpenAllSections?: () => void;
+  onCloseAllSections?: () => void;
 }
 
 export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
@@ -27,6 +29,8 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
   onSelectResource,
   onSelectBranch,
   onApplyGlobalSearch,
+  onOpenAllSections,
+  onCloseAllSections,
 }) => {
   const sections = [
     { id: 'comprendre', label: '1. Comprendre' },
@@ -105,19 +109,54 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
         {/* Floating Table of Contents Bar */}
         <div className="pedagogy-toc-bar">
           <div className="toc-inner">
-            <span className="toc-title">Sommaire :</span>
-            <div className="toc-scroller">
-              {sections.map((sec) => (
-                <button
-                  key={sec.id}
-                  type="button"
-                  onClick={() => onNavigateSection(sec.id)}
-                  className={`toc-chip ${activeSection === sec.id ? 'active' : ''}`}
-                >
-                  {sec.label}
-                </button>
-              ))}
+            <div className="toc-left">
+              <span className="toc-title">Sommaire :</span>
+              <div className="toc-scroller">
+                {sections.map((sec) => (
+                  <button
+                    key={sec.id}
+                    type="button"
+                    onClick={() => onNavigateSection(sec.id)}
+                    className={`toc-chip ${activeSection === sec.id ? 'active' : ''}`}
+                  >
+                    {sec.label}
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {(onOpenAllSections || onCloseAllSections) && (
+              <div className="toc-global-actions">
+                {onOpenAllSections && (
+                  <button
+                    type="button"
+                    className="toc-action-btn"
+                    onClick={onOpenAllSections}
+                    title="Déplier toutes les sections"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="7 11 12 6 17 11" />
+                      <polyline points="7 18 12 13 17 18" />
+                    </svg>
+                    <span>Tout ouvrir</span>
+                  </button>
+                )}
+                {onCloseAllSections && (
+                  <button
+                    type="button"
+                    className="toc-action-btn"
+                    onClick={onCloseAllSections}
+                    title="Replier toutes les sections"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="7 13 12 18 17 13" />
+                      <polyline points="7 6 12 11 17 6" />
+                    </svg>
+                    <span>Tout fermer</span>
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -299,7 +338,47 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
         .toc-inner {
           display: flex;
           align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          width: 100%;
+        }
+
+        .toc-left {
+          display: flex;
+          align-items: center;
           gap: 14px;
+          min-width: 0;
+          flex: 1;
+        }
+
+        .toc-global-actions {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-shrink: 0;
+        }
+
+        .toc-action-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 9999px;
+          padding: 5px 12px;
+          font-size: 11.5px;
+          font-weight: 700;
+          color: #475569;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          white-space: nowrap;
+        }
+
+        .toc-action-btn:hover {
+          background: #eef2ff;
+          border-color: rgba(99, 102, 241, 0.4);
+          color: #4f46e5;
+          transform: translateY(-1px);
         }
 
         .toc-title {

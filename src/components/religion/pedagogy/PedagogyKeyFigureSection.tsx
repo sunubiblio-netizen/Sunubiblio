@@ -6,11 +6,13 @@ import { ReligionKeyFigure } from '@/types/religion';
 interface PedagogyKeyFigureSectionProps {
   figures: ReligionKeyFigure[];
   accentColor: string;
+  hideHeader?: boolean;
 }
 
 export const PedagogyKeyFigureSection: React.FC<PedagogyKeyFigureSectionProps> = ({
   figures,
   accentColor,
+  hideHeader = false,
 }) => {
   if (!figures || figures.length === 0) return null;
 
@@ -18,14 +20,16 @@ export const PedagogyKeyFigureSection: React.FC<PedagogyKeyFigureSectionProps> =
   const secondaryFigures = figures.slice(1);
 
   return (
-    <section className="pedagogy-section" id="figures">
-      <div className="section-head">
-        <div className="section-num-badge" style={{ backgroundColor: accentColor }}>2</div>
-        <div>
-          <h2 className="section-title">Figure Majeure : {mainFigure.name}</h2>
-          <p className="section-subtitle">{mainFigure.title} — Rôle, mission prophétique et jalons biographiques.</p>
+    <div className="pedagogy-section-inner">
+      {!hideHeader && (
+        <div className="section-head">
+          <div className="section-num-badge" style={{ backgroundColor: accentColor }}>2</div>
+          <div>
+            <h2 className="section-title">Figure Majeure : {mainFigure.name}</h2>
+            <p className="section-subtitle">{mainFigure.title} — Rôle, mission prophétique et jalons biographiques.</p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main Profile Hero Card */}
       <div className="figure-main-card">
@@ -418,6 +422,6 @@ export const PedagogyKeyFigureSection: React.FC<PedagogyKeyFigureSectionProps> =
           }
         }
       `}</style>
-    </section>
+    </div>
   );
 };

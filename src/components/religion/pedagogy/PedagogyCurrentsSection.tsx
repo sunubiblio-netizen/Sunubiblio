@@ -7,26 +7,30 @@ interface PedagogyCurrentsSectionProps {
   currents: ReligionCurrentBranch[];
   accentColor: string;
   onSelectCurrent: (branchId: string) => void;
+  hideHeader?: boolean;
 }
 
 export const PedagogyCurrentsSection: React.FC<PedagogyCurrentsSectionProps> = ({
   currents,
   accentColor,
   onSelectCurrent,
+  hideHeader = false,
 }) => {
   if (!currents || currents.length === 0) return null;
 
   return (
-    <section className="pedagogy-section" id="courants">
-      <div className="section-head">
-        <div className="section-num-badge" style={{ backgroundColor: accentColor }}>6</div>
-        <div>
-          <h2 className="section-title">Courants, Confréries & Traditions</h2>
-          <p className="section-subtitle">
-            Diversité des expressions spirituelles, enracinement local et grandes écoles de pensée.
-          </p>
+    <div className="pedagogy-section-inner">
+      {!hideHeader && (
+        <div className="section-head">
+          <div className="section-num-badge" style={{ backgroundColor: accentColor }}>6</div>
+          <div>
+            <h2 className="section-title">Courants, Confréries & Traditions</h2>
+            <p className="section-subtitle">
+              Diversité des expressions spirituelles, enracinement local et grandes écoles de pensée.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="currents-grid">
         {currents.map((branch) => (
@@ -258,6 +262,6 @@ export const PedagogyCurrentsSection: React.FC<PedagogyCurrentsSectionProps> = (
           }
         }
       `}</style>
-    </section>
+    </div>
   );
 };

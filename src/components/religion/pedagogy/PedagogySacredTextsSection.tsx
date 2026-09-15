@@ -7,26 +7,30 @@ interface PedagogySacredTextsSectionProps {
   texts: ReligionSacredText[];
   accentColor: string;
   onExploreTextResources: (textName: string) => void;
+  hideHeader?: boolean;
 }
 
 export const PedagogySacredTextsSection: React.FC<PedagogySacredTextsSectionProps> = ({
   texts,
   accentColor,
   onExploreTextResources,
+  hideHeader = false,
 }) => {
   if (!texts || texts.length === 0) return null;
 
   return (
-    <section className="pedagogy-section" id="textes">
-      <div className="section-head">
-        <div className="section-num-badge" style={{ backgroundColor: accentColor }}>3</div>
-        <div>
-          <h2 className="section-title">Les Textes Fondamentaux</h2>
-          <p className="section-subtitle">
-            Écritures sacrées, corpus normatifs et transmission scripturaire.
-          </p>
+    <div className="pedagogy-section-inner">
+      {!hideHeader && (
+        <div className="section-head">
+          <div className="section-num-badge" style={{ backgroundColor: accentColor }}>3</div>
+          <div>
+            <h2 className="section-title">Les Textes Fondamentaux</h2>
+            <p className="section-subtitle">
+              Écritures sacrées, corpus normatifs et transmission scripturaire.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="texts-list">
         {texts.map((text, idx) => (
@@ -384,6 +388,6 @@ export const PedagogySacredTextsSection: React.FC<PedagogySacredTextsSectionProp
           }
         }
       `}</style>
-    </section>
+    </div>
   );
 };

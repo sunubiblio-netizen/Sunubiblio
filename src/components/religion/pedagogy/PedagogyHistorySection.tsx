@@ -6,25 +6,29 @@ import { ReligionHistoryEvent } from '@/types/religion';
 interface PedagogyHistorySectionProps {
   milestones: ReligionHistoryEvent[];
   accentColor: string;
+  hideHeader?: boolean;
 }
 
 export const PedagogyHistorySection: React.FC<PedagogyHistorySectionProps> = ({
   milestones,
   accentColor,
+  hideHeader = false,
 }) => {
   if (!milestones || milestones.length === 0) return null;
 
   return (
-    <section className="pedagogy-section" id="histoire">
-      <div className="section-head">
-        <div className="section-num-badge" style={{ backgroundColor: accentColor }}>5</div>
-        <div>
-          <h2 className="section-title">Histoire & Rayonnement</h2>
-          <p className="section-subtitle">
-            Grandes époques historiques, essor des civilisations et diffusion géographique.
-          </p>
+    <div className="pedagogy-section-inner">
+      {!hideHeader && (
+        <div className="section-head">
+          <div className="section-num-badge" style={{ backgroundColor: accentColor }}>5</div>
+          <div>
+            <h2 className="section-title">Histoire & Rayonnement</h2>
+            <p className="section-subtitle">
+              Grandes époques historiques, essor des civilisations et diffusion géographique.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="milestones-grid">
         {milestones.map((m, idx) => (
@@ -140,6 +144,6 @@ export const PedagogyHistorySection: React.FC<PedagogyHistorySectionProps> = ({
           }
         }
       `}</style>
-    </section>
+    </div>
   );
 };
