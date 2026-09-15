@@ -11,7 +11,13 @@ import {
   ReligionPlanRequired,
 } from '@/types/religion';
 import { RELIGION_CONTENT_TYPES, INITIAL_RELIGION_RESOURCES } from '@/data/mockReligion';
-import { PRICING_PLANS } from '@/data/pricingPlans';
+
+const RELIGION_ACCESS_PLANS: { key: ReligionPlanRequired; label: string }[] = [
+  { key: 'gratuit', label: 'Gratuit' },
+  { key: 'simple', label: 'Simple' },
+  { key: 'recommande', label: 'Recommandé' },
+  { key: 'gold', label: 'Gold' },
+];
 
 interface MobileReligionFilterDrawerProps {
   isOpen: boolean;
@@ -232,24 +238,16 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               >
                 Toutes les formules
               </button>
-              {PRICING_PLANS.map((plan) => {
-                const planKey =
-                  plan.slug === 'gratuit'
-                    ? 'gratuit'
-                    : plan.slug === 'simple'
-                    ? 'simple'
-                    : plan.slug === 'recommande'
-                    ? 'recommande'
-                    : 'gold';
-                const isSelected = filters.requiredPlan === planKey;
+              {RELIGION_ACCESS_PLANS.map((plan) => {
+                const isSelected = filters.requiredPlan === plan.key;
                 return (
                   <button
-                    key={plan.id}
+                    key={plan.key}
                     type="button"
                     className={`drawer-pill ${isSelected ? 'active' : ''}`}
-                    onClick={() => onFilterChange({ requiredPlan: planKey, page: 1 })}
+                    onClick={() => onFilterChange({ requiredPlan: plan.key, page: 1 })}
                   >
-                    {plan.name} ({plan.formattedPrice})
+                    {plan.label}
                   </button>
                 );
               })}
@@ -442,15 +440,20 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
 
         .drawer-pill:hover {
           background: #f1f5f9;
-          border-color: #cbd5e1;
+          border-color: rgba(99, 102, 241, 0.3);
+          color: #4f46e5;
+        }
+
+        .drawer-pill:active {
+          transform: scale(0.97);
         }
 
         .drawer-pill.active {
-          background: #1e1b4b;
+          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #9333ea 100%);
           color: #ffffff;
-          border-color: #1e1b4b;
+          border-color: transparent;
           font-weight: 700;
-          box-shadow: 0 4px 12px rgba(30, 27, 75, 0.2);
+          box-shadow: 0 4px 14px -2px rgba(99, 102, 241, 0.4);
         }
 
         .drawer-footer {

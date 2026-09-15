@@ -11,7 +11,13 @@ import {
   ReligionPlanRequired,
 } from '@/types/religion';
 import { RELIGION_CONTENT_TYPES, INITIAL_RELIGION_RESOURCES } from '@/data/mockReligion';
-import { PRICING_PLANS } from '@/data/pricingPlans';
+
+const RELIGION_ACCESS_PLANS: { key: ReligionPlanRequired; label: string; dotColor: string }[] = [
+  { key: 'gratuit', label: 'Gratuit', dotColor: '#10b981' },
+  { key: 'simple', label: 'Simple', dotColor: '#3b82f6' },
+  { key: 'recommande', label: 'Recommandé', dotColor: '#6366f1' },
+  { key: 'gold', label: 'Gold', dotColor: '#f59e0b' },
+];
 
 interface ReligionFiltersProps {
   filters: ReligionFilterState;
@@ -49,7 +55,7 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
       {/* Barre Supérieure : Recherche Principale + Déclencheur Mobile + Tri */}
       <div className="filters-top-bar">
         {/* Capsule de recherche stylisée */}
-        <div className="filter-search-capsule">
+        <div className={`filter-search-capsule ${filters.searchQuery.trim() ? 'has-query' : ''}`}>
           <div className="search-icon-wrap">
             <svg
               width="18"
@@ -185,39 +191,22 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
             >
               Tous les accès
             </button>
-            {PRICING_PLANS.map((plan) => {
-              const planKey =
-                plan.slug === 'gratuit'
-                  ? 'gratuit'
-                  : plan.slug === 'simple'
-                  ? 'simple'
-                  : plan.slug === 'recommande'
-                  ? 'recommande'
-                  : 'gold';
-              const isActive = filters.requiredPlan === planKey;
+            {RELIGION_ACCESS_PLANS.map((plan) => {
+              const isActive = filters.requiredPlan === plan.key;
               return (
                 <button
-                  key={plan.id}
+                  key={plan.key}
                   type="button"
                   className={`filter-pill-chip ${isActive ? 'active' : ''}`}
-                  onClick={() => onFilterChange({ requiredPlan: planKey, page: 1 })}
+                  onClick={() => onFilterChange({ requiredPlan: plan.key, page: 1 })}
                 >
                   <span
                     className="plan-dot-indicator"
                     style={{
-                      backgroundColor:
-                        planKey === 'gold'
-                          ? '#f59e0b'
-                          : planKey === 'recommande'
-                          ? '#4f46e5'
-                          : planKey === 'simple'
-                          ? '#3b82f6'
-                          : '#10b981',
+                      backgroundColor: isActive ? '#ffffff' : plan.dotColor,
                     }}
                   />
-                  <span>
-                    {plan.name} ({plan.formattedPrice})
-                  </span>
+                  <span>{plan.label}</span>
                 </button>
               );
             })}
@@ -227,14 +216,14 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
         {/* 3. Sélecteurs Avancés en Capsules Élégantes : Tradition, Courant, Auteur, Époque */}
         <div className="advanced-capsules-grid">
           {/* Tradition */}
-          <div className="capsule-field">
+          <div className={`capsule-field ${filters.traditionId !== 'all' ? 'is-active' : ''}`}>
             <label htmlFor="tradition-capsule" className="capsule-label">
               Tradition
             </label>
             <div className="capsule-select-wrap">
               <select
                 id="tradition-capsule"
-                className="capsule-select"
+                className={`capsule-select ${filters.traditionId !== 'all' ? 'is-active' : ''}`}
                 value={filters.traditionId}
                 onChange={(e) =>
                   onFilterChange({
@@ -255,14 +244,14 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
           </div>
 
           {/* Courant / Confrérie */}
-          <div className="capsule-field">
+          <div className={`capsule-field ${filters.branchId !== 'all' ? 'is-active' : ''}`}>
             <label htmlFor="branch-capsule" className="capsule-label">
               Courant / Confrérie
             </label>
             <div className="capsule-select-wrap">
               <select
                 id="branch-capsule"
-                className="capsule-select"
+                className={`capsule-select ${filters.branchId !== 'all' ? 'is-active' : ''}`}
                 value={filters.branchId}
                 onChange={(e) =>
                   onFilterChange({
@@ -282,14 +271,14 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
           </div>
 
           {/* Auteur */}
-          <div className="capsule-field">
+          <div className={`capsule-field ${filters.author !== 'all' ? 'is-active' : ''}`}>
             <label htmlFor="author-capsule" className="capsule-label">
               Auteur / Figure
             </label>
             <div className="capsule-select-wrap">
               <select
                 id="author-capsule"
-                className="capsule-select"
+                className={`capsule-select ${filters.author !== 'all' ? 'is-active' : ''}`}
                 value={filters.author}
                 onChange={(e) =>
                   onFilterChange({
@@ -309,14 +298,14 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
           </div>
 
           {/* Époque */}
-          <div className="capsule-field">
+          <div className={`capsule-field ${filters.year !== 'all' ? 'is-active' : ''}`}>
             <label htmlFor="epoch-capsule" className="capsule-label">
               Époque / Siècle
             </label>
             <div className="capsule-select-wrap">
               <select
                 id="epoch-capsule"
-                className="capsule-select"
+                className={`capsule-select ${filters.year !== 'all' ? 'is-active' : ''}`}
                 value={filters.year}
                 onChange={(e) =>
                   onFilterChange({
@@ -365,10 +354,11 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
           transition: all 0.2s ease;
         }
 
-        .filter-search-capsule:focus-within {
+        .filter-search-capsule:focus-within,
+        .filter-search-capsule.has-query {
           background: #ffffff;
           border-color: #4f46e5;
-          box-shadow: 0 4px 14px rgba(79, 70, 229, 0.12);
+          box-shadow: 0 4px 14px rgba(79, 70, 229, 0.14);
         }
 
         .search-icon-wrap {
@@ -558,15 +548,29 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
 
         .filter-pill-chip:hover {
           background: #f1f5f9;
-          border-color: #cbd5e1;
-          color: #0f172a;
+          border-color: rgba(99, 102, 241, 0.3);
+          color: #4f46e5;
+          transform: translateY(-1px);
+        }
+
+        .filter-pill-chip:active {
+          transform: scale(0.97);
         }
 
         .filter-pill-chip.active {
-          background: #1e1b4b;
+          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #9333ea 100%);
           color: #ffffff;
-          border-color: #1e1b4b;
-          box-shadow: 0 3px 10px rgba(30, 27, 75, 0.18);
+          border-color: transparent;
+          font-weight: 700;
+          box-shadow: 0 4px 14px -2px rgba(99, 102, 241, 0.4);
+          transform: translateY(-1px);
+        }
+
+        .filter-pill-chip.active:hover {
+          background: linear-gradient(135deg, #4338ca 0%, #4f46e5 50%, #7e22ce 100%);
+          color: #ffffff;
+          border-color: transparent;
+          box-shadow: 0 6px 18px -2px rgba(99, 102, 241, 0.5);
         }
 
         .plan-dot-indicator {
@@ -574,6 +578,11 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
           height: 7px;
           border-radius: 50%;
           flex-shrink: 0;
+          transition: all 0.15s ease;
+        }
+
+        .filter-pill-chip.active .plan-dot-indicator {
+          box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.9);
         }
 
         /* Capsules Grid */
@@ -590,12 +599,17 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
           gap: 5px;
         }
 
+        .capsule-field.is-active .capsule-label {
+          color: #4f46e5;
+        }
+
         .capsule-label {
           font-size: 11.5px;
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.04em;
           color: #64748b;
+          transition: color 0.15s ease;
         }
 
         .capsule-select-wrap {
@@ -613,13 +627,26 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
           color: #1e293b;
           outline: none;
           cursor: pointer;
-          transition: all 0.15s ease;
+          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .capsule-select:hover,
         .capsule-select:focus {
           border-color: #4f46e5;
           box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+        }
+
+        .capsule-select.is-active {
+          background: #eef2ff;
+          border-color: #6366f1;
+          color: #3730a3;
+          font-weight: 700;
+          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.18);
+        }
+
+        .capsule-select.is-active:hover {
+          border-color: #4f46e5;
+          background: #e0e7ff;
         }
 
         @media (max-width: 960px) {

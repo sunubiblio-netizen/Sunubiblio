@@ -524,15 +524,22 @@ export default function ReligionPage() {
 
         .theme-tab-pill:hover {
           background: #f1f5f9;
-          color: #0f172a;
-          border-color: #cbd5e1;
+          color: #4f46e5;
+          border-color: rgba(99, 102, 241, 0.3);
+          transform: translateY(-1px);
+        }
+
+        .theme-tab-pill:active {
+          transform: scale(0.97);
         }
 
         .theme-tab-pill.active {
-          background: #1e1b4b;
+          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #9333ea 100%);
           color: #ffffff;
-          border-color: #1e1b4b;
-          box-shadow: 0 4px 14px rgba(30, 27, 75, 0.18);
+          border-color: transparent;
+          font-weight: 700;
+          box-shadow: 0 4px 14px -2px rgba(99, 102, 241, 0.4);
+          transform: translateY(-1px);
         }
 
         .religion-loading-box {
