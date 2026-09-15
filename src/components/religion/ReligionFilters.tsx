@@ -11,6 +11,7 @@ import {
   ReligionPlanRequired,
 } from '@/types/religion';
 import { RELIGION_CONTENT_TYPES, INITIAL_RELIGION_RESOURCES } from '@/data/mockReligion';
+import { CustomFilterDropdown, DropdownOption } from './CustomFilterDropdown';
 
 const RELIGION_ACCESS_PLANS: { key: ReligionPlanRequired; label: string; dotColor: string }[] = [
   { key: 'gratuit', label: 'Gratuit', dotColor: '#10b981' },
@@ -49,6 +50,58 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
     const set = new Set(INITIAL_RELIGION_RESOURCES.map((r) => r.auteur));
     return Array.from(set).sort();
   }, []);
+
+  const traditionOptions: DropdownOption[] = useMemo(() => {
+    return [
+      { value: 'all', label: 'Toutes les traditions' },
+      ...traditions.map((t) => ({
+        value: t.id,
+        label: t.title,
+        badge: t.badge,
+      })),
+    ];
+  }, [traditions]);
+
+  const branchOptions: DropdownOption[] = useMemo(() => {
+    return [
+      { value: 'all', label: 'Tous les courants' },
+      ...availableBranches.map((b) => ({
+        value: b.id,
+        label: b.title,
+        badge: b.badge,
+      })),
+    ];
+  }, [availableBranches]);
+
+  const authorOptions: DropdownOption[] = useMemo(() => {
+    return [
+      { value: 'all', label: 'Tous les auteurs' },
+      ...availableAuthors.map((author) => ({
+        value: author,
+        label: author,
+      })),
+    ];
+  }, [availableAuthors]);
+
+  const epochOptions: DropdownOption[] = useMemo(
+    () => [
+      { value: 'all', label: 'Toutes les époques' },
+      { value: 'before-1800', label: 'Classique (< 1800)', badge: 'Classique' },
+      { value: '1800-1950', label: 'XIXe & début XXe (1800-1950)', badge: 'XIXe-XXe' },
+      { value: 'post-1950', label: 'Contemporain (> 1950)', badge: 'Moderne' },
+    ],
+    []
+  );
+
+  const sortOptions: DropdownOption[] = useMemo(
+    () => [
+      { value: 'pertinence', label: 'Pertinence & Vues' },
+      { value: 'recent', label: 'Année / Époque' },
+      { value: 'titre', label: 'Titre (A-Z)' },
+      { value: 'auteur', label: 'Auteur (A-Z)' },
+    ],
+    []
+  );
 
   return (
     <div className="modern-religion-filters">
@@ -110,29 +163,21 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
           )}
         </button>
 
-        {/* Tri Desktop */}
+        {/* Tri Desktop avec CustomFilterDropdown */}
         <div className="sort-dropdown-box desktop-only">
-          <label htmlFor="religion-sort" className="sort-box-label">
-            Trier :
-          </label>
-          <div className="custom-select-wrap">
-            <select
-              id="religion-sort"
-              className="modern-select"
-              value={filters.sortBy}
-              onChange={(e) =>
-                onFilterChange({
-                  sortBy: e.target.value as ReligionFilterState['sortBy'],
-                  page: 1,
-                })
-              }
-            >
-              <option value="pertinence">Pertinence &amp; Vues</option>
-              <option value="recent">Année / Époque</option>
-              <option value="titre">Titre (A-Z)</option>
-              <option value="auteur">Auteur (A-Z)</option>
-            </select>
-          </div>
+          <CustomFilterDropdown
+            id="religion-sort"
+            label="Trier par"
+            value={filters.sortBy}
+            options={sortOptions}
+            onChange={(val) =>
+              onFilterChange({
+                sortBy: val as ReligionFilterState['sortBy'],
+                page: 1,
+              })
+            }
+            align="right"
+          />
         </div>
 
         {/* Reset général si filtres actifs */}
@@ -213,114 +258,66 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
           </div>
         </div>
 
-        {/* 3. Sélecteurs Avancés en Capsules Élégantes : Tradition, Courant, Auteur, Époque */}
+        {/* 3. Sélecteurs Avancés en Composants Personnalisés Élégants : Tradition, Courant, Auteur, Époque */}
         <div className="advanced-capsules-grid">
-          {/* Tradition */}
-          <div className={`capsule-field ${filters.traditionId !== 'all' ? 'is-active' : ''}`}>
-            <label htmlFor="tradition-capsule" className="capsule-label">
-              Tradition
-            </label>
-            <div className="capsule-select-wrap">
-              <select
-                id="tradition-capsule"
-                className={`capsule-select ${filters.traditionId !== 'all' ? 'is-active' : ''}`}
-                value={filters.traditionId}
-                onChange={(e) =>
-                  onFilterChange({
-                    traditionId: e.target.value as ReligionTraditionId | 'all',
-                    branchId: 'all',
-                    page: 1,
-                  })
-                }
-              >
-                <option value="all">Toutes les traditions</option>
-                {traditions.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.title}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+          <CustomFilterDropdown
+            id="tradition-dropdown"
+            label="Tradition"
+            value={filters.traditionId}
+            options={traditionOptions}
+            onChange={(val) =>
+              onFilterChange({
+                traditionId: val as ReligionTraditionId | 'all',
+                branchId: 'all',
+                page: 1,
+              })
+            }
+            enableSearch={true}
+            searchPlaceholder="Chercher une tradition..."
+          />
 
-          {/* Courant / Confrérie */}
-          <div className={`capsule-field ${filters.branchId !== 'all' ? 'is-active' : ''}`}>
-            <label htmlFor="branch-capsule" className="capsule-label">
-              Courant / Confrérie
-            </label>
-            <div className="capsule-select-wrap">
-              <select
-                id="branch-capsule"
-                className={`capsule-select ${filters.branchId !== 'all' ? 'is-active' : ''}`}
-                value={filters.branchId}
-                onChange={(e) =>
-                  onFilterChange({
-                    branchId: e.target.value as ReligionBranchId | 'all',
-                    page: 1,
-                  })
-                }
-              >
-                <option value="all">Tous les courants</option>
-                {availableBranches.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.title}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+          <CustomFilterDropdown
+            id="branch-dropdown"
+            label="Courant / Confrérie"
+            value={filters.branchId}
+            options={branchOptions}
+            onChange={(val) =>
+              onFilterChange({
+                branchId: val as ReligionBranchId | 'all',
+                page: 1,
+              })
+            }
+            enableSearch={true}
+            searchPlaceholder="Chercher un courant..."
+          />
 
-          {/* Auteur */}
-          <div className={`capsule-field ${filters.author !== 'all' ? 'is-active' : ''}`}>
-            <label htmlFor="author-capsule" className="capsule-label">
-              Auteur / Figure
-            </label>
-            <div className="capsule-select-wrap">
-              <select
-                id="author-capsule"
-                className={`capsule-select ${filters.author !== 'all' ? 'is-active' : ''}`}
-                value={filters.author}
-                onChange={(e) =>
-                  onFilterChange({
-                    author: e.target.value,
-                    page: 1,
-                  })
-                }
-              >
-                <option value="all">Tous les auteurs</option>
-                {availableAuthors.map((author) => (
-                  <option key={author} value={author}>
-                    {author}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+          <CustomFilterDropdown
+            id="author-dropdown"
+            label="Auteur / Figure"
+            value={filters.author}
+            options={authorOptions}
+            onChange={(val) =>
+              onFilterChange({
+                author: val,
+                page: 1,
+              })
+            }
+            enableSearch={true}
+            searchPlaceholder="Filtrer parmi les auteurs..."
+          />
 
-          {/* Époque */}
-          <div className={`capsule-field ${filters.year !== 'all' ? 'is-active' : ''}`}>
-            <label htmlFor="epoch-capsule" className="capsule-label">
-              Époque / Siècle
-            </label>
-            <div className="capsule-select-wrap">
-              <select
-                id="epoch-capsule"
-                className={`capsule-select ${filters.year !== 'all' ? 'is-active' : ''}`}
-                value={filters.year}
-                onChange={(e) =>
-                  onFilterChange({
-                    year: e.target.value,
-                    page: 1,
-                  })
-                }
-              >
-                <option value="all">Toutes les époques</option>
-                <option value="before-1800">Classique (&lt; 1800)</option>
-                <option value="1800-1950">XIXe &amp; début XXe (1800-1950)</option>
-                <option value="post-1950">Contemporain (&gt; 1950)</option>
-              </select>
-            </div>
-          </div>
+          <CustomFilterDropdown
+            id="epoch-dropdown"
+            label="Époque / Siècle"
+            value={filters.year}
+            options={epochOptions}
+            onChange={(val) =>
+              onFilterChange({
+                year: val,
+                page: 1,
+              })
+            }
+          />
         </div>
       </div>
 
@@ -439,40 +436,8 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
         }
 
         .sort-dropdown-box {
-          display: flex;
-          align-items: center;
-          gap: 8px;
+          min-width: 175px;
           flex-shrink: 0;
-        }
-
-        .sort-box-label {
-          font-size: 13px;
-          font-weight: 600;
-          color: #64748b;
-          white-space: nowrap;
-        }
-
-        .custom-select-wrap {
-          position: relative;
-        }
-
-        .modern-select {
-          appearance: none;
-          background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.95);
-          border-radius: 10px;
-          padding: 8px 30px 8px 12px;
-          font-size: 13px;
-          font-weight: 600;
-          color: #334155;
-          cursor: pointer;
-          outline: none;
-          transition: all 0.15s ease;
-        }
-
-        .modern-select:hover,
-        .modern-select:focus {
-          border-color: #4f46e5;
         }
 
         .reset-all-link {
@@ -591,62 +556,6 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
           grid-template-columns: repeat(4, 1fr);
           gap: 12px;
           padding-top: 6px;
-        }
-
-        .capsule-field {
-          display: flex;
-          flex-direction: column;
-          gap: 5px;
-        }
-
-        .capsule-field.is-active .capsule-label {
-          color: #4f46e5;
-        }
-
-        .capsule-label {
-          font-size: 11.5px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-          color: #64748b;
-          transition: color 0.15s ease;
-        }
-
-        .capsule-select-wrap {
-          position: relative;
-        }
-
-        .capsule-select {
-          width: 100%;
-          background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.95);
-          border-radius: 10px;
-          padding: 8px 12px;
-          font-size: 13px;
-          font-weight: 600;
-          color: #1e293b;
-          outline: none;
-          cursor: pointer;
-          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .capsule-select:hover,
-        .capsule-select:focus {
-          border-color: #4f46e5;
-          box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
-        }
-
-        .capsule-select.is-active {
-          background: #eef2ff;
-          border-color: #6366f1;
-          color: #3730a3;
-          font-weight: 700;
-          box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.18);
-        }
-
-        .capsule-select.is-active:hover {
-          border-color: #4f46e5;
-          background: #e0e7ff;
         }
 
         @media (max-width: 960px) {
