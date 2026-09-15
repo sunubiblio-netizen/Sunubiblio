@@ -128,15 +128,21 @@ export const CustomFilterDropdown: React.FC<CustomFilterDropdownProps> = ({
 
           <div className="trigger-actions">
             {isFiltered && (
-              <button
-                type="button"
+              <span
+                role="button"
+                tabIndex={0}
                 className="clear-filter-mini-btn"
                 onClick={handleClear}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleClear(e as unknown as React.MouseEvent);
+                  }
+                }}
                 title="Effacer ce filtre"
                 aria-label="Effacer le filtre"
               >
                 ✕
-              </button>
+              </span>
             )}
             <svg
               className={`chevron-arrow ${isOpen ? 'rotated' : ''}`}

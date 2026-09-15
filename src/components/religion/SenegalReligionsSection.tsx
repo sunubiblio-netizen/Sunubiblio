@@ -109,18 +109,16 @@ export const SenegalReligionsSection: React.FC<SenegalReligionsSectionProps> = (
                     <span className="branch-count">
                       {branch.resourceCount} œuvre{branch.resourceCount > 1 ? 's' : ''} disponible{branch.resourceCount > 1 ? 's' : ''}
                     </span>
-                    <button
-                      type="button"
+                    <span
                       className="branch-action-link"
                       style={{ color: branch.accentColor }}
-                      tabIndex={-1}
                     >
                       <span>{isSelected ? 'Sélectionné ✓' : 'Accéder au courant'}</span>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="5" y1="12" x2="19" y2="12" />
                         <polyline points="12 5 19 12 12 19" />
                       </svg>
-                    </button>
+                    </span>
                   </div>
                 </div>
               );
@@ -198,18 +196,16 @@ export const SenegalReligionsSection: React.FC<SenegalReligionsSectionProps> = (
                         ? `${branch.resourceCount} œuvre${branch.resourceCount > 1 ? 's' : ''}`
                         : 'En cours de numérisation'}
                     </span>
-                    <button
-                      type="button"
+                    <span
                       className="branch-action-link"
                       style={{ color: branch.accentColor }}
-                      tabIndex={-1}
                     >
                       <span>{isSelected ? 'Sélectionné ✓' : 'Découvrir'}</span>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="5" y1="12" x2="19" y2="12" />
                         <polyline points="12 5 19 12 12 19" />
                       </svg>
-                    </button>
+                    </span>
                   </div>
                 </div>
               );
@@ -278,18 +274,16 @@ export const SenegalReligionsSection: React.FC<SenegalReligionsSectionProps> = (
                     <span className="branch-count">
                       {branch.resourceCount} document{branch.resourceCount > 1 ? 's' : ''}
                     </span>
-                    <button
-                      type="button"
+                    <span
                       className="branch-action-link"
                       style={{ color: branch.accentColor }}
-                      tabIndex={-1}
                     >
                       <span>{isSelected ? 'Sélectionné ✓' : 'Consulter'}</span>
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="5" y1="12" x2="19" y2="12" />
                         <polyline points="12 5 19 12 12 19" />
                       </svg>
-                    </button>
+                    </span>
                   </div>
                 </div>
               );
