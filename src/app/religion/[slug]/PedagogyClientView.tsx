@@ -1,7 +1,11 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { ReligionPedagogicalData, ReligionResource } from '@/types/religion';
+import { ReligionPedagogicalData, ReligionResource, ReligionFilterState, ReligionThemeCategoryId, ReligionBranchId } from '@/types/religion';
+import { RELIGION_TRADITIONS, RELIGION_BRANCHES, RELIGION_THEME_CATEGORIES } from '@/data/mockReligion';
+import { religionService } from '@/services/religionService';
+import { PedagogyLibrarySection } from '@/components/religion/pedagogy/PedagogyLibrarySection';
+import { MobileReligionFilterDrawer } from '@/components/religion/MobileReligionFilterDrawer';
 import { PedagogyHero } from '@/components/religion/pedagogy/PedagogyHero';
 import { CollapsibleSection } from '@/components/religion/pedagogy/CollapsibleSection';
 import { PedagogyIntroSection } from '@/components/religion/pedagogy/PedagogyIntroSection';
@@ -11,7 +15,7 @@ import { PedagogyPracticesSection } from '@/components/religion/pedagogy/Pedagog
 import { PedagogyHistorySection } from '@/components/religion/pedagogy/PedagogyHistorySection';
 import { PedagogyCurrentsSection } from '@/components/religion/pedagogy/PedagogyCurrentsSection';
 import { PedagogyDeepenSection } from '@/components/religion/pedagogy/PedagogyDeepenSection';
-import { FloatingQuickNav } from '@/components/religion/pedagogy/FloatingQuickNav';
+
 import { ReligionResourceModal } from '@/components/religion/ReligionResourceModal';
 
 interface PedagogyClientViewProps {
@@ -27,6 +31,85 @@ export const PedagogyClientView: React.FC<PedagogyClientViewProps> = ({
   const [selectedBranchFilter, setSelectedBranchFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeModalResource, setActiveModalResource] = useState<ReligionResource | null>(null);
+
+  // === ETATS BIBLIOTHEQUE ===
+  const [filters, setFilters] = useState<ReligionFilterState>({
+    searchQuery: '',
+    traditionId: data.traditionId,
+    branchId: 'all',
+    themeCategoryId: 'all',
+    contentType: 'all',
+    author: 'all',
+    year: 'all',
+    requiredPlan: 'all',
+    sortBy: 'pertinence',
+    page: 1,
+    perPage: 9,
+  });
+
+  const [libraryResources, setLibraryResources] = useState<ReligionResource[]>(resources);
+  const [popularResources, setPopularResources] = useState<ReligionResource[]>([]);
+  const [totalResources, setTotalResources] = useState(resources.length);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLibraryLoading, setIsLibraryLoading] = useState(false);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+
+  // Charger les ressources filtrées
+  React.useEffect(() => {
+    let isMounted = true;
+    const fetchResources = async () => {
+      setIsLibraryLoading(true);
+      try {
+        const result = await religionService.getResources(filters);
+        const popular = await religionService.getPopularResources(filters.traditionId, filters.branchId);
+        
+        if (isMounted) {
+          setLibraryResources(result.resources);
+          setTotalResources(result.total);
+          setTotalPages(result.totalPages);
+          setPopularResources(popular);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        if (isMounted) setIsLibraryLoading(false);
+      }
+    };
+    fetchResources();
+    return () => { isMounted = false; };
+  }, [filters]);
+
+  const handleFilterChange = (newFilters: Partial<ReligionFilterState>) => {
+    setFilters((prev) => ({ ...prev, ...newFilters }));
+  };
+
+  const handleResetFilters = () => {
+    setFilters((prev) => ({
+      ...prev,
+      searchQuery: '',
+      branchId: 'all',
+      themeCategoryId: 'all',
+      contentType: 'all',
+      author: 'all',
+      year: 'all',
+      requiredPlan: 'all',
+      sortBy: 'pertinence',
+      page: 1,
+    }));
+  };
+
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filters.searchQuery.trim()) count++;
+    if (filters.branchId !== 'all') count++;
+    if (filters.themeCategoryId !== 'all') count++;
+    if (filters.contentType !== 'all') count++;
+    if (filters.author !== 'all') count++;
+    if (filters.year !== 'all') count++;
+    if (filters.requiredPlan !== 'all') count++;
+    return count;
+  }, [filters]);
+  // === FIN ETATS BIBLIOTHEQUE ===
 
   // État d'ouverture indépendant pour chacune des 7 grandes sections
   // Section 1 ("Comprendre") est ouverte par défaut pour débuter l'apprentissage
@@ -108,13 +191,23 @@ export const PedagogyClientView: React.FC<PedagogyClientViewProps> = ({
   };
 
   const handleExploreTextResources = (textName: string) => {
-    setSearchQuery(textName);
-    scrollToSection('approfondir');
+    setFilters((prev) => ({ ...prev, searchQuery: textName, page: 1 }));
+    const el = document.getElementById('bibliotheque');
+    if (el) {
+      const yOffset = -90;
+      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+    }
   };
 
   const handleApplySearch = (q: string) => {
-    setSearchQuery(q);
-    scrollToSection('approfondir');
+    setFilters((prev) => ({ ...prev, searchQuery: q, page: 1 }));
+    const el = document.getElementById('bibliotheque');
+    if (el) {
+      const yOffset = -90;
+      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+    }
   };
 
   // Compteur de sections ouvertes pour la barre d'outils secondaire
@@ -139,6 +232,24 @@ export const PedagogyClientView: React.FC<PedagogyClientViewProps> = ({
         onApplyGlobalSearch={handleApplySearch}
         onOpenAllSections={handleOpenAllSections}
         onCloseAllSections={handleCloseAllSections}
+      />
+
+      {/* 2. ESPACE BIBLIOTHÈQUE NUMÉRIQUE (Nouveau) */}
+      <PedagogyLibrarySection
+        filters={filters}
+        traditions={RELIGION_TRADITIONS.filter((t) => t.id === data.traditionId)}
+        branches={RELIGION_BRANCHES.filter((b) => b.traditionId === data.traditionId)}
+        themeCategories={RELIGION_THEME_CATEGORIES}
+        resources={libraryResources}
+        popularResources={popularResources}
+        totalResources={totalResources}
+        totalPages={totalPages}
+        isLoading={isLibraryLoading}
+        activeFiltersCount={activeFiltersCount}
+        onFilterChange={handleFilterChange}
+        onResetFilters={handleResetFilters}
+        onOpenMobileDrawer={() => setMobileDrawerOpen(true)}
+        onConsultResource={(res) => setActiveModalResource(res)}
       />
 
       <main className="pedagogy-main-container">
@@ -334,16 +445,27 @@ export const PedagogyClientView: React.FC<PedagogyClientViewProps> = ({
         </div>
       </main>
 
-      {/* Navigation rapide flottante Haut / Bas */}
-      <FloatingQuickNav />
-
       {/* Modal pour afficher les détails et lire la ressource sélectionnée */}
-      {activeModalResource && (
-        <ReligionResourceModal
-          resource={activeModalResource}
-          onClose={() => setActiveModalResource(null)}
-        />
-      )}
+      {/* Modal de consultation */}
+      <ReligionResourceModal
+        resource={activeModalResource}
+        onClose={() => setActiveModalResource(null)}
+        tradition={RELIGION_TRADITIONS.find(t => t.id === data.traditionId) || null}
+        branch={RELIGION_BRANCHES.find(b => b.id === (activeModalResource?.branchId || filters.branchId)) || null}
+        onOpenAuth={() => console.log('Ouvrir auth modal')}
+      />
+
+      {/* Tiroir mobile de filtres de la bibliothèque */}
+      <MobileReligionFilterDrawer
+        isOpen={mobileDrawerOpen}
+        onClose={() => setMobileDrawerOpen(false)}
+        filters={filters}
+        traditions={RELIGION_TRADITIONS.filter((t) => t.id === data.traditionId)}
+        branches={RELIGION_BRANCHES.filter((b) => b.traditionId === data.traditionId)}
+        onFilterChange={handleFilterChange}
+        onResetFilters={handleResetFilters}
+        totalResults={totalResources}
+      />
 
       <style jsx>{`
         .pedagogy-page-root {

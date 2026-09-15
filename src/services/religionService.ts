@@ -172,10 +172,19 @@ class ReligionService {
   /**
    * Récupère les œuvres phares et populaires authentiques
    */
-  async getPopularResources(): Promise<ReligionResource[]> {
+  async getPopularResources(
+    traditionId?: ReligionTraditionId | 'all',
+    branchId?: ReligionBranchId | 'all'
+  ): Promise<ReligionResource[]> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        const featured = INITIAL_RELIGION_RESOURCES.filter((r) => r.featured);
+        let featured = INITIAL_RELIGION_RESOURCES.filter((r) => r.featured);
+        if (traditionId && traditionId !== 'all') {
+          featured = featured.filter((r) => r.traditionId === traditionId);
+        }
+        if (branchId && branchId !== 'all') {
+          featured = featured.filter((r) => r.branchId === branchId);
+        }
         resolve(featured.slice(0, 4));
       }, 30);
     });

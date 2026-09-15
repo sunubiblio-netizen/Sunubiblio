@@ -32,6 +32,7 @@ export const metadata: Metadata = {
 };
 
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
+import { ScrollNavigation } from '@/components/shared/ScrollNavigation';
 
 export default function RootLayout({
   children,
@@ -46,6 +47,7 @@ export default function RootLayout({
       </head>
       <body>
         {children}
+        <ScrollNavigation />
         <MobileBottomNav />
       </body>
     </html>

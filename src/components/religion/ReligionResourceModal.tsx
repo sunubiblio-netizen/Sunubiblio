@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { ReligionResource, ReligionBranch, ReligionTradition } from '@/types/religion';
 import { religionService } from '@/services/religionService';
@@ -47,7 +48,13 @@ export const ReligionResourceModal: React.FC<ReligionResourceModalProps> = ({
     };
   }, [resource, onClose]);
 
-  if (!resource) return null;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!resource || !mounted || typeof document === 'undefined' || !document.body) return null;
 
   // Récupération dynamique du nom et tarif du plan requis sans jamais coder les prix en dur
   const requiredPlanObj = PRICING_PLANS.find(
@@ -72,8 +79,8 @@ export const ReligionResourceModal: React.FC<ReligionResourceModalProps> = ({
     }
   };
 
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
+  return createPortal(
+    <div className="modal-backdrop" onClick={onClose} style={{ zIndex: 9999999 }}>
       <div
         className="modal-container religion-resource-modal"
         onClick={(e) => e.stopPropagation()}
@@ -269,6 +276,7 @@ export const ReligionResourceModal: React.FC<ReligionResourceModalProps> = ({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

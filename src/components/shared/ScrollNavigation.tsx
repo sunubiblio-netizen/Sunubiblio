@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 
-export const FloatingQuickNav: React.FC = () => {
+export const ScrollNavigation: React.FC = () => {
   const [canScrollUp, setCanScrollUp] = useState(false);
   const [canScrollDown, setCanScrollDown] = useState(true);
 
@@ -31,7 +31,7 @@ export const FloatingQuickNav: React.FC = () => {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Évaluation initiale
+    setTimeout(handleScroll, 100); 
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
@@ -52,34 +52,23 @@ export const FloatingQuickNav: React.FC = () => {
     });
   }, []);
 
-  // Si aucun bouton n'est pertinent (page très courte), ne rien afficher
   if (!canScrollUp && !canScrollDown) {
     return null;
   }
 
   return (
-    <aside aria-label="Navigation rapide haut et bas" className="floating-quick-nav">
-      <div className="floating-nav-card">
+    <aside aria-label="Navigation rapide haut et bas" className="scroll-navigation-global">
+      <div className="scroll-nav-card">
         {/* Bouton Revenir en haut */}
         <button
           type="button"
-          className={`quick-nav-btn ${!canScrollUp ? 'is-disabled' : ''}`}
+          className={`scroll-nav-btn ${!canScrollUp ? 'is-disabled' : ''}`}
           onClick={handleScrollToTop}
           disabled={!canScrollUp}
-          aria-label="Revenir en haut de la page"
-          title="Revenir en haut"
+          aria-label="Monter en haut de la page"
+          title="Monter en haut"
         >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <polyline points="18 15 12 9 6 15" />
           </svg>
           <span className="sr-only">Haut</span>
@@ -90,23 +79,13 @@ export const FloatingQuickNav: React.FC = () => {
         {/* Bouton Aller en bas */}
         <button
           type="button"
-          className={`quick-nav-btn ${!canScrollDown ? 'is-disabled' : ''}`}
+          className={`scroll-nav-btn ${!canScrollDown ? 'is-disabled' : ''}`}
           onClick={handleScrollToBottom}
           disabled={!canScrollDown}
-          aria-label="Aller en bas de la page"
-          title="Aller en bas"
+          aria-label="Descendre en bas de la page"
+          title="Descendre en bas"
         >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <polyline points="6 9 12 15 18 9" />
           </svg>
           <span className="sr-only">Bas</span>
@@ -114,15 +93,15 @@ export const FloatingQuickNav: React.FC = () => {
       </div>
 
       <style jsx>{`
-        .floating-quick-nav {
+        .scroll-navigation-global {
           position: fixed;
           right: 28px;
           bottom: 40px;
-          z-index: 100;
+          z-index: 9999;
           animation: fade-in-float 0.25s ease-out;
         }
 
-        .floating-nav-card {
+        .scroll-nav-card {
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -136,12 +115,12 @@ export const FloatingQuickNav: React.FC = () => {
           transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .floating-nav-card:hover {
+        .scroll-nav-card:hover {
           box-shadow: 0 16px 36px -4px rgba(79, 70, 229, 0.22), 0 6px 14px rgba(0, 0, 0, 0.06);
           transform: translateY(-2px);
         }
 
-        .quick-nav-btn {
+        .scroll-nav-btn {
           width: 42px;
           height: 42px;
           border-radius: 50%;
@@ -156,17 +135,17 @@ export const FloatingQuickNav: React.FC = () => {
           outline: none;
         }
 
-        .quick-nav-btn:hover:not(:disabled) {
+        .scroll-nav-btn:hover:not(:disabled) {
           background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #9333ea 100%);
           color: #ffffff;
           box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
         }
 
-        .quick-nav-btn:focus-visible {
+        .scroll-nav-btn:focus-visible {
           box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35);
         }
 
-        .quick-nav-btn.is-disabled {
+        .scroll-nav-btn.is-disabled {
           opacity: 0.25;
           cursor: not-allowed;
           pointer-events: none;
@@ -204,17 +183,17 @@ export const FloatingQuickNav: React.FC = () => {
 
         /* Responsive Mobile : compact & positionné strictement AU-DESSUS de la nav mobile globale (72px) */
         @media (max-width: 768px) {
-          .floating-quick-nav {
+          .scroll-navigation-global {
             right: 14px;
             bottom: calc(76px + env(safe-area-inset-bottom, 0px));
           }
 
-          .quick-nav-btn {
+          .scroll-nav-btn {
             width: 36px;
             height: 36px;
           }
 
-          .quick-nav-btn svg {
+          .scroll-nav-btn svg {
             width: 16px;
             height: 16px;
           }

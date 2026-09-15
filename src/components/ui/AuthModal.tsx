@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   initialMode = 'login',
   onClose,
 }) => {
+  const [mounted, setMounted] = useState(false);
   const [mode, setMode] = useState<'login' | 'register'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,7 +22,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [isOpen]);
+
+  if (!isOpen || !mounted || typeof document === 'undefined' || !document.body) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,8 +51,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     }, 1000);
   };
 
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
+  return createPortal(
+    <div className="modal-backdrop" onClick={onClose} style={{ zIndex: 9999999 }}>
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
         {/* Close button */}
         <button className="close-btn" onClick={onClose} aria-label="Fermer">
@@ -338,6 +354,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           to { transform: rotate(360deg); }
         }
       `}</style>
-    </div>
+    </div>,
+    document.body
   );
 };
