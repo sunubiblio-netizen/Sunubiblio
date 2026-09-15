@@ -44,8 +44,9 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
 
   return (
     <div className="pedagogy-hero-wrapper">
-      {/* Ambient background blobs matching Sunubiblio */}
-      <div className="hero-ambient-blob" />
+      {/* Ambient blobs */}
+      <div className="hero-blob-1" />
+      <div className="hero-blob-2" style={{ background: `radial-gradient(circle, ${hero.accentColor}18 0%, transparent 70%)` }} />
 
       <div className="container">
         {/* Navigation bar & Breadcrumb */}
@@ -66,45 +67,33 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
           </nav>
         </div>
 
-        {/* Hero Main Content */}
+        {/* Hero Main Content — centré et minimaliste */}
         <div className="pedagogy-hero-content">
-          <div className="hero-badge-pill" style={{ backgroundColor: hero.bgLight, color: hero.accentColor, borderColor: hero.borderColor }}>
+          <div
+            className="hero-badge-pill"
+            style={{ backgroundColor: hero.bgLight, color: hero.accentColor, borderColor: hero.borderColor }}
+          >
             <span className="badge-dot" style={{ backgroundColor: hero.accentColor }} />
             <span>{hero.badge}</span>
           </div>
 
           <h1 className="pedagogy-title">{hero.title}</h1>
           <p className="pedagogy-subtitle">{hero.subtitle}</p>
-          <p className="pedagogy-tagline">{hero.tagline}</p>
-
-          {/* Key Facts Pills */}
-          <div className="pedagogy-facts-row">
-            <div className="fact-card">
-              <span className="fact-label">Présence mondiale</span>
-              <span className="fact-value">{hero.keyStat}</span>
-            </div>
-            <div className="fact-card">
-              <span className="fact-label">Origine historique</span>
-              <span className="fact-value">{hero.periodOrigin}</span>
-            </div>
-            <div className="fact-card">
-              <span className="fact-label">Berceau géographique</span>
-              <span className="fact-value">{hero.geographicOrigin}</span>
-            </div>
-          </div>
         </div>
 
-        {/* Dedicated Contextual Search for this Religion */}
-        <ReligionContextualSearch
-          traditionSlug={traditionSlug}
-          traditionTitle={hero.title.replace('Découvrir ', '')}
-          activeBranchTitle={activeBranchTitle}
-          activeBranchId={activeBranchId}
-          onSelectResource={onSelectResource}
-          onSelectBranch={onSelectBranch}
-          onNavigateToSection={onNavigateSection}
-          onApplyGlobalSearch={onApplyGlobalSearch}
-        />
+        {/* Search */}
+        <div className="hero-search-wrapper">
+          <ReligionContextualSearch
+            traditionSlug={traditionSlug}
+            traditionTitle={hero.title.replace('Découvrir ', '')}
+            activeBranchTitle={activeBranchTitle}
+            activeBranchId={activeBranchId}
+            onSelectResource={onSelectResource}
+            onSelectBranch={onSelectBranch}
+            onNavigateToSection={onNavigateSection}
+            onApplyGlobalSearch={onApplyGlobalSearch}
+          />
+        </div>
 
         {/* Floating Table of Contents Bar */}
         <div className="pedagogy-toc-bar">
@@ -164,19 +153,29 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
       <style jsx>{`
         .pedagogy-hero-wrapper {
           position: relative;
-          background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+          background: linear-gradient(160deg, #f8fafc 0%, #eef2ff 55%, #f8fafc 100%);
           border-bottom: 1px solid rgba(226, 232, 240, 0.9);
-          padding: 32px 0 0 0;
+          padding: 22px 0 0 0;
           overflow: hidden;
         }
 
-        .hero-ambient-blob {
+        .hero-blob-1 {
           position: absolute;
-          top: -40px;
-          right: 5%;
-          width: 480px;
-          height: 380px;
-          background: radial-gradient(circle, rgba(79, 70, 229, 0.08) 0%, rgba(5, 150, 105, 0.04) 50%, transparent 70%);
+          top: -80px;
+          right: -40px;
+          width: 500px;
+          height: 400px;
+          background: radial-gradient(circle, rgba(79, 70, 229, 0.08) 0%, transparent 70%);
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .hero-blob-2 {
+          position: absolute;
+          bottom: 20px;
+          left: -60px;
+          width: 320px;
+          height: 260px;
           pointer-events: none;
           z-index: 0;
         }
@@ -194,24 +193,25 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
           align-items: center;
           justify-content: space-between;
           flex-wrap: wrap;
-          gap: 16px;
-          margin-bottom: 28px;
+          gap: 10px;
+          margin-bottom: 18px;
         }
 
         .pedagogy-back-btn {
           display: inline-flex;
           align-items: center;
-          gap: 7px;
-          background: #ffffff;
+          gap: 6px;
+          background: rgba(255,255,255,0.9);
           border: 1px solid #e2e8f0;
           border-radius: 9999px;
-          padding: 7px 16px;
-          font-size: 13px;
+          padding: 6px 14px;
+          font-size: 12.5px;
           font-weight: 600;
           color: #475569;
           text-decoration: none;
-          box-shadow: 0 2px 4px rgba(15, 23, 42, 0.03);
+          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
           transition: all 0.2s ease;
+          white-space: nowrap;
         }
 
         .pedagogy-back-btn:hover {
@@ -247,21 +247,24 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
           font-weight: 700;
         }
 
+        /* ─── HERO CONTENT — centré ─────────────────────────────── */
         .pedagogy-hero-content {
-          max-width: 860px;
-          margin-bottom: 36px;
+          text-align: center;
+          max-width: 680px;
+          margin: 0 auto 20px auto;
         }
 
         .hero-badge-pill {
           display: inline-flex;
           align-items: center;
-          gap: 8px;
-          border: 1px solid;
+          gap: 7px;
+          border: 1.5px solid;
           border-radius: 9999px;
           padding: 5px 14px;
-          font-size: 12.5px;
+          font-size: 12px;
           font-weight: 700;
-          margin-bottom: 18px;
+          margin-bottom: 14px;
+          letter-spacing: 0.02em;
         }
 
         .badge-dot {
@@ -271,68 +274,38 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
         }
 
         .pedagogy-title {
-          font-size: 40px;
+          font-size: clamp(26px, 5.5vw, 48px);
           font-weight: 900;
           color: #0f172a;
-          letter-spacing: -0.025em;
-          line-height: 1.15;
+          letter-spacing: -0.03em;
+          line-height: 1.08;
           margin-bottom: 12px;
         }
 
         .pedagogy-subtitle {
-          font-size: 18px;
-          font-weight: 600;
-          color: #4338ca;
-          margin-bottom: 14px;
-          line-height: 1.4;
-        }
-
-        .pedagogy-tagline {
-          font-size: 15.5px;
-          line-height: 1.65;
-          color: #475569;
-          margin-bottom: 24px;
-        }
-
-        .pedagogy-facts-row {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 16px;
-        }
-
-        .fact-card {
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          border-radius: 14px;
-          padding: 14px 18px;
-          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        .fact-label {
-          font-size: 11.5px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
+          font-size: clamp(14.5px, 2vw, 17px);
+          font-weight: 500;
           color: #64748b;
+          line-height: 1.5;
+          margin-bottom: 0;
+          max-width: 520px;
+          margin-left: auto;
+          margin-right: auto;
         }
 
-        .fact-value {
-          font-size: 14px;
-          font-weight: 700;
-          color: #0f172a;
+        /* Search wrapper */
+        .hero-search-wrapper {
+          margin-bottom: 18px;
         }
 
         /* Table of Contents Bar */
         .pedagogy-toc-bar {
-          background: #ffffff;
+          background: rgba(255,255,255,0.96);
           border: 1px solid rgba(226, 232, 240, 0.95);
           border-bottom: none;
-          border-radius: 18px 18px 0 0;
-          padding: 14px 20px;
-          box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.03);
+          border-radius: 16px 16px 0 0;
+          padding: 11px 18px;
+          box-shadow: 0 -2px 10px rgba(15, 23, 42, 0.03);
         }
 
         .toc-inner {
@@ -437,28 +410,32 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
         }
 
         @media (max-width: 768px) {
-          .pedagogy-hero-wrapper {
-            padding-top: 20px;
-          }
-
-          .pedagogy-title {
-            font-size: 28px;
-          }
-
-          .pedagogy-subtitle {
-            font-size: 16px;
-          }
-
-          .pedagogy-facts-row {
-            grid-template-columns: 1fr;
-            gap: 10px;
-          }
+          .pedagogy-hero-wrapper { padding-top: 14px; }
+          .container { padding: 0 14px; }
 
           .pedagogy-top-nav {
             flex-direction: column;
             align-items: flex-start;
-            gap: 10px;
+            gap: 6px;
+            margin-bottom: 14px;
           }
+
+          .pedagogy-back-btn { font-size: 12px; padding: 5px 12px; }
+
+          .pedagogy-hero-content { margin-bottom: 14px; }
+
+          .hero-badge-pill { font-size: 11px; padding: 4px 12px; margin-bottom: 10px; }
+
+          .hero-search-wrapper { margin-bottom: 12px; }
+
+          .pedagogy-toc-bar { padding: 9px 14px; border-radius: 12px 12px 0 0; }
+          .toc-title { display: none; }
+          .toc-global-actions { display: none; }
+          .toc-chip { font-size: 11px; padding: 4px 10px; }
+        }
+
+        @media (max-width: 390px) {
+          .pedagogy-title { font-size: 22px; }
         }
       `}</style>
     </div>
