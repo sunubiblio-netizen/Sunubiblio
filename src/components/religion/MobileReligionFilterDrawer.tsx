@@ -54,29 +54,21 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
   onResetFilters,
   totalResults,
 }) => {
-  // Gestion de l'ouverture individuelle par catégorie (accordéon)
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    tradition: true, // Ouvert par défaut pour accès immédiat
-    branch: false,
-    content: false,
-    author: false,
-    epoch: false,
-    access: false,
-    sort: false,
-  });
-
+  // Une seule catégorie ouverte à la fois pour un confort mobile optimal
+  const [expandedSection, setExpandedSection] = useState<string | null>('tradition');
   const [authorSearch, setAuthorSearch] = useState('');
 
   // Verrouillage du scroll arrière-plan quand le tiroir est ouvert
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
-      // Ouvrir la section qui contient un filtre actif s'il y en a un
+      // Ouvrir intelligemment la section active si l'utilisateur filtre
       if (filters.branchId !== 'all') {
-        setOpenSections((prev) => ({ ...prev, branch: true }));
-      }
-      if (filters.author !== 'all') {
-        setOpenSections((prev) => ({ ...prev, author: true }));
+        setExpandedSection('branch');
+      } else if (filters.author !== 'all') {
+        setExpandedSection('author');
+      } else if (filters.traditionId !== 'all') {
+        setExpandedSection('tradition');
       }
     } else {
       document.body.style.overflow = '';
@@ -85,13 +77,10 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isOpen, filters.branchId, filters.author]);
+  }, [isOpen, filters.traditionId, filters.branchId, filters.author]);
 
   const toggleSection = (sectionKey: string) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [sectionKey]: !prev[sectionKey],
-    }));
+    setExpandedSection((prev) => (prev === sectionKey ? null : sectionKey));
   };
 
   const availableBranches = useMemo(() => {
@@ -199,7 +188,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
           <div className={`drawer-accordion-card ${isTraditionActive ? 'is-filtered' : ''}`}>
             <button
               type="button"
-              className={`accordion-trigger ${openSections.tradition ? 'is-open' : ''}`}
+              className={`accordion-trigger ${expandedSection === 'tradition' ? 'is-open' : ''}`}
               onClick={() => toggleSection('tradition')}
             >
               <div className="accordion-title-box">
@@ -213,7 +202,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               <div className="accordion-action-box">
                 {isTraditionActive && <span className="active-dot" />}
                 <svg
-                  className={`chevron-icon ${openSections.tradition ? 'rotated' : ''}`}
+                  className={`chevron-icon ${expandedSection === 'tradition' ? 'rotated' : ''}`}
                   width="18"
                   height="18"
                   viewBox="0 0 24 24"
@@ -228,7 +217,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               </div>
             </button>
 
-            {openSections.tradition && (
+            {expandedSection === 'tradition' && (
               <div className="accordion-expanded-content">
                 <div className="drawer-pills-wrap">
                   <button
@@ -267,7 +256,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
           <div className={`drawer-accordion-card ${isBranchActive ? 'is-filtered' : ''}`}>
             <button
               type="button"
-              className={`accordion-trigger ${openSections.branch ? 'is-open' : ''}`}
+              className={`accordion-trigger ${expandedSection === 'branch' ? 'is-open' : ''}`}
               onClick={() => toggleSection('branch')}
             >
               <div className="accordion-title-box">
@@ -281,7 +270,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               <div className="accordion-action-box">
                 {isBranchActive && <span className="active-dot" />}
                 <svg
-                  className={`chevron-icon ${openSections.branch ? 'rotated' : ''}`}
+                  className={`chevron-icon ${expandedSection === 'branch' ? 'rotated' : ''}`}
                   width="18"
                   height="18"
                   viewBox="0 0 24 24"
@@ -296,7 +285,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               </div>
             </button>
 
-            {openSections.branch && (
+            {expandedSection === 'branch' && (
               <div className="accordion-expanded-content">
                 <div className="drawer-pills-wrap">
                   <button
@@ -327,7 +316,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
           <div className={`drawer-accordion-card ${isContentActive ? 'is-filtered' : ''}`}>
             <button
               type="button"
-              className={`accordion-trigger ${openSections.content ? 'is-open' : ''}`}
+              className={`accordion-trigger ${expandedSection === 'content' ? 'is-open' : ''}`}
               onClick={() => toggleSection('content')}
             >
               <div className="accordion-title-box">
@@ -341,7 +330,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               <div className="accordion-action-box">
                 {isContentActive && <span className="active-dot" />}
                 <svg
-                  className={`chevron-icon ${openSections.content ? 'rotated' : ''}`}
+                  className={`chevron-icon ${expandedSection === 'content' ? 'rotated' : ''}`}
                   width="18"
                   height="18"
                   viewBox="0 0 24 24"
@@ -356,7 +345,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               </div>
             </button>
 
-            {openSections.content && (
+            {expandedSection === 'content' && (
               <div className="accordion-expanded-content">
                 <div className="drawer-pills-wrap">
                   <button
@@ -382,12 +371,12 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
           </div>
 
           {/* =========================================================================
-              4. AUTEURS ET FIGURES SPIRITUELLES (Avec barre de recherche rapide)
+              4. AUTEURS ET FIGURES SPIRITUELLES
              ========================================================================= */}
           <div className={`drawer-accordion-card ${isAuthorActive ? 'is-filtered' : ''}`}>
             <button
               type="button"
-              className={`accordion-trigger ${openSections.author ? 'is-open' : ''}`}
+              className={`accordion-trigger ${expandedSection === 'author' ? 'is-open' : ''}`}
               onClick={() => toggleSection('author')}
             >
               <div className="accordion-title-box">
@@ -401,7 +390,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               <div className="accordion-action-box">
                 {isAuthorActive && <span className="active-dot" />}
                 <svg
-                  className={`chevron-icon ${openSections.author ? 'rotated' : ''}`}
+                  className={`chevron-icon ${expandedSection === 'author' ? 'rotated' : ''}`}
                   width="18"
                   height="18"
                   viewBox="0 0 24 24"
@@ -416,7 +405,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               </div>
             </button>
 
-            {openSections.author && (
+            {expandedSection === 'author' && (
               <div className="accordion-expanded-content">
                 {/* Recherche rapide dans la liste des auteurs */}
                 <div className="drawer-search-box">
@@ -474,7 +463,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
           <div className={`drawer-accordion-card ${isEpochActive ? 'is-filtered' : ''}`}>
             <button
               type="button"
-              className={`accordion-trigger ${openSections.epoch ? 'is-open' : ''}`}
+              className={`accordion-trigger ${expandedSection === 'epoch' ? 'is-open' : ''}`}
               onClick={() => toggleSection('epoch')}
             >
               <div className="accordion-title-box">
@@ -488,7 +477,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               <div className="accordion-action-box">
                 {isEpochActive && <span className="active-dot" />}
                 <svg
-                  className={`chevron-icon ${openSections.epoch ? 'rotated' : ''}`}
+                  className={`chevron-icon ${expandedSection === 'epoch' ? 'rotated' : ''}`}
                   width="18"
                   height="18"
                   viewBox="0 0 24 24"
@@ -503,7 +492,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               </div>
             </button>
 
-            {openSections.epoch && (
+            {expandedSection === 'epoch' && (
               <div className="accordion-expanded-content">
                 <div className="drawer-pills-wrap">
                   {EPOCH_OPTIONS.map((epoch) => (
@@ -527,7 +516,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
           <div className={`drawer-accordion-card ${isPlanActive ? 'is-filtered' : ''}`}>
             <button
               type="button"
-              className={`accordion-trigger ${openSections.access ? 'is-open' : ''}`}
+              className={`accordion-trigger ${expandedSection === 'access' ? 'is-open' : ''}`}
               onClick={() => toggleSection('access')}
             >
               <div className="accordion-title-box">
@@ -541,7 +530,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               <div className="accordion-action-box">
                 {isPlanActive && <span className="active-dot" />}
                 <svg
-                  className={`chevron-icon ${openSections.access ? 'rotated' : ''}`}
+                  className={`chevron-icon ${expandedSection === 'access' ? 'rotated' : ''}`}
                   width="18"
                   height="18"
                   viewBox="0 0 24 24"
@@ -556,7 +545,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               </div>
             </button>
 
-            {openSections.access && (
+            {expandedSection === 'access' && (
               <div className="accordion-expanded-content">
                 <div className="drawer-pills-wrap">
                   <button
@@ -594,7 +583,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
           <div className={`drawer-accordion-card ${isSortActive ? 'is-filtered' : ''}`}>
             <button
               type="button"
-              className={`accordion-trigger ${openSections.sort ? 'is-open' : ''}`}
+              className={`accordion-trigger ${expandedSection === 'sort' ? 'is-open' : ''}`}
               onClick={() => toggleSection('sort')}
             >
               <div className="accordion-title-box">
@@ -608,7 +597,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               <div className="accordion-action-box">
                 {isSortActive && <span className="active-dot" />}
                 <svg
-                  className={`chevron-icon ${openSections.sort ? 'rotated' : ''}`}
+                  className={`chevron-icon ${expandedSection === 'sort' ? 'rotated' : ''}`}
                   width="18"
                   height="18"
                   viewBox="0 0 24 24"
@@ -623,7 +612,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
               </div>
             </button>
 
-            {openSections.sort && (
+            {expandedSection === 'sort' && (
               <div className="accordion-expanded-content">
                 <div className="drawer-pills-wrap">
                   {SORT_OPTIONS.map((sort) => (
@@ -753,8 +742,9 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
           flex: 1;
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 10px;
           background: #f8fafc;
+          -webkit-overflow-scrolling: touch;
         }
 
         /* Cartes d'accordéon */
@@ -763,26 +753,30 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
           border: 1.5px solid rgba(226, 232, 240, 0.9);
           border-radius: 16px;
           overflow: hidden;
+          flex-shrink: 0;
+          min-height: 58px;
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .drawer-accordion-card.is-filtered {
-          border-color: rgba(99, 102, 241, 0.4);
+          border-color: rgba(99, 102, 241, 0.45);
           background: #ffffff;
-          box-shadow: 0 2px 8px rgba(99, 102, 241, 0.06);
+          box-shadow: 0 2px 10px rgba(99, 102, 241, 0.08);
         }
 
         .accordion-trigger {
           width: 100%;
+          min-height: 58px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 13px 16px;
+          padding: 12px 16px;
           background: transparent;
           border: none;
           cursor: pointer;
           text-align: left;
           transition: background 0.15s ease;
+          box-sizing: border-box;
         }
 
         .accordion-trigger:hover {
@@ -798,28 +792,31 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
         }
 
         .accordion-icon {
-          font-size: 18px;
+          font-size: 20px;
           flex-shrink: 0;
+          line-height: 1;
         }
 
         .accordion-texts {
           display: flex;
           flex-direction: column;
-          gap: 2px;
+          gap: 3px;
           min-width: 0;
+          overflow: hidden;
         }
 
         .category-title {
-          font-size: 13px;
+          font-size: 13.5px;
           font-weight: 700;
           color: #1e293b;
-          line-height: 1.2;
+          line-height: 1.25;
         }
 
         .category-subtitle {
           font-size: 12px;
           font-weight: 600;
           color: #64748b;
+          line-height: 1.35;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -857,7 +854,7 @@ export const MobileReligionFilterDrawer: React.FC<MobileReligionFilterDrawerProp
 
         /* Contenu déplié */
         .accordion-expanded-content {
-          padding: 12px 16px 16px;
+          padding: 14px 16px 18px;
           border-top: 1px solid rgba(241, 245, 249, 0.95);
           background: #ffffff;
           animation: accordion-down 0.2s cubic-bezier(0.16, 1, 0.3, 1);
