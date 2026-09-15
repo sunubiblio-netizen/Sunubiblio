@@ -7636,6 +7636,8 @@ input {
 }
 
 .religion-cta-section {
+  position: relative;
+  z-index: 1;
   padding: 44px 0 60px;
   background: #f8fafc;
 }

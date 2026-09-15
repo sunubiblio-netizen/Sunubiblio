@@ -614,6 +614,8 @@ export default function ReligionPage() {
         }
 
         .religion-filters-section {
+          position: relative;
+          z-index: 50;
           padding: 40px 0;
           background: #f8fafc;
           border-bottom: 1px solid rgba(226, 232, 240, 0.75);

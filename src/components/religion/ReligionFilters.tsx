@@ -323,6 +323,8 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
 
       <style jsx>{`
         .modern-religion-filters {
+          position: relative;
+          z-index: 40;
           background: #ffffff;
           border: 1px solid rgba(226, 232, 240, 0.85);
           border-radius: 20px;
@@ -552,6 +554,8 @@ export const ReligionFilters: React.FC<ReligionFiltersProps> = ({
 
         /* Capsules Grid */
         .advanced-capsules-grid {
+          position: relative;
+          z-index: 45;
           display: grid;
           grid-template-columns: repeat(4, 1fr);
           gap: 12px;

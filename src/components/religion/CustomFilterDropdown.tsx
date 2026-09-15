@@ -35,6 +35,7 @@ export const CustomFilterDropdown: React.FC<CustomFilterDropdownProps> = ({
   className = '',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [openUpward, setOpenUpward] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -46,6 +47,20 @@ export const CustomFilterDropdown: React.FC<CustomFilterDropdownProps> = ({
   }, [options, value]);
 
   const displayLabel = selectedOption ? selectedOption.label : placeholder;
+
+  // Détection de l'espace disponible pour ouvrir vers le haut ou vers le bas
+  useEffect(() => {
+    if (isOpen && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      // Si moins de 270px en bas et suffisamment d'espace au-dessus, basculer vers le haut
+      if (spaceBelow < 270 && rect.top > 250) {
+        setOpenUpward(true);
+      } else {
+        setOpenUpward(false);
+      }
+    }
+  }, [isOpen]);
 
   // Filtrage en direct de la liste selon la recherche interne
   const filteredOptions = useMemo(() => {
@@ -161,7 +176,9 @@ export const CustomFilterDropdown: React.FC<CustomFilterDropdownProps> = ({
         </button>
 
         {isOpen && (
-          <div className={`dropdown-popover-menu ${align === 'right' ? 'align-right' : 'align-left'}`}>
+          <div
+            className={`dropdown-popover-menu ${align === 'right' ? 'align-right' : 'align-left'} ${openUpward ? 'open-upward' : ''}`}
+          >
             {enableSearch && options.length > 5 && (
               <div className="popover-search-wrap">
                 <svg
@@ -256,7 +273,8 @@ export const CustomFilterDropdown: React.FC<CustomFilterDropdownProps> = ({
         }
 
         .custom-filter-field.is-open {
-          z-index: 80;
+          z-index: 120;
+          position: relative;
         }
 
         .dropdown-field-label {
@@ -384,13 +402,20 @@ export const CustomFilterDropdown: React.FC<CustomFilterDropdownProps> = ({
           background: #ffffff;
           border: 1px solid rgba(226, 232, 240, 0.95);
           border-radius: 14px;
-          box-shadow: 0 16px 38px -4px rgba(15, 23, 42, 0.15), 0 4px 12px rgba(0, 0, 0, 0.04);
-          z-index: 100;
+          box-shadow: 0 20px 48px -4px rgba(15, 23, 42, 0.25), 0 8px 24px rgba(0, 0, 0, 0.08);
+          z-index: 9999;
           padding: 6px;
           min-width: 100%;
           width: max-content;
           max-width: 360px;
           animation: popover-drop 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .dropdown-popover-menu.open-upward {
+          top: auto;
+          bottom: calc(100% + 6px);
+          box-shadow: 0 -20px 48px -4px rgba(15, 23, 42, 0.25), 0 -8px 24px rgba(0, 0, 0, 0.08);
+          animation: popover-drop-up 0.18s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .dropdown-popover-menu.align-left {
@@ -405,6 +430,17 @@ export const CustomFilterDropdown: React.FC<CustomFilterDropdownProps> = ({
           from {
             opacity: 0;
             transform: translateY(-6px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes popover-drop-up {
+          from {
+            opacity: 0;
+            transform: translateY(6px);
           }
           to {
             opacity: 1;
