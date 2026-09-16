@@ -9685,6 +9685,33 @@ input {
   transition: all 0.15s ease;
 }
 
+.hero-ai-open-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  color: #4f46e5;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+}
+
+.hero-ai-open-pill-btn .ai-spark-glyph {
+  font-size: 1rem;
+}
+
+.hero-ai-open-pill-btn:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.18) 0%, rgba(236, 72, 153, 0.18) 100%);
+  border-color: #6366f1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.18);
+}
+
 /* 2. SECTION ACCORDÉONS DE CORRECTION */
 .correction-accordion-section {
   display: flex;
@@ -9720,25 +9747,10 @@ input {
   color: #64748b;
 }
 
-.toggle-all-questions-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+.accordion-bar-hint {
   font-size: 0.75rem;
-  font-weight: 700;
-  color: #4f46e5;
-  background: #eef2ff;
-  border: 1px solid rgba(99, 102, 241, 0.25);
-  border-radius: 8px;
-  padding: 5px 12px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  font-family: inherit;
-}
-
-.toggle-all-questions-btn:hover {
-  background: #e0e7ff;
-  color: #4338ca;
+  color: #64748b;
+  font-weight: 500;
 }
 
 .correction-accordion-list {
@@ -10013,21 +10025,31 @@ input {
   padding-left: 20px;
 }
 
-/* Approfondir avec l'IA */
+/* Approfondir avec l'IA pour chaque question */
 .expanded-ai-tutor-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding-top: 10px;
+  gap: 10px;
+  padding-top: 12px;
   border-top: 1px dashed #e2e8f0;
   flex-wrap: wrap;
+}
+
+.tutor-bar-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tutor-ai-spark {
+  font-size: 1rem;
 }
 
 .tutor-bar-label {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #6366f1;
+  color: #4f46e5;
 }
 
 .tutor-buttons-wrap {
@@ -10040,10 +10062,10 @@ input {
 .tutor-ai-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.6875rem;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
   font-weight: 600;
   background: #ffffff;
   border: 1px solid #cbd5e1;
@@ -10057,17 +10079,72 @@ input {
   border-color: #6366f1;
   color: #4f46e5;
   background: #eef2ff;
+  transform: translateY(-1px);
 }
 
 .tutor-ai-btn.btn-why {
   background: #fef2f2;
-  border-color: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.35);
   color: #dc2626;
 }
 
 .tutor-ai-btn.btn-why:hover {
   background: #fee2e2;
   border-color: #ef4444;
+  color: #b91c1c;
+}
+
+/* Badges du tiroir IA en mode correction */
+.drawer-verdict-badge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 5px;
+}
+
+.drawer-verdict-badge.verdict-ok {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.drawer-verdict-badge.verdict-err {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.drawer-verdict-badge.verdict-none {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.drawer-answers-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.drawer-ans-chip {
+  font-size: 0.6875rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.drawer-ans-chip.chip-user {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.drawer-ans-chip.chip-correct {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
 /* 3. MODALE D'ASSISTANCE IA */

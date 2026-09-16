@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Exercise, ExerciseSession, ExerciseQuestion } from '@/types/exercise';
-import { AIService } from '@/services/aiService';
+import { ExerciseAIButton } from './ExerciseAIButton';
+import { ExerciseAIContextDrawer } from './ExerciseAIContextDrawer';
 
 interface ExerciseResultViewProps {
   exercise: Exercise;
@@ -19,17 +20,20 @@ export const ExerciseResultView: React.FC<ExerciseResultViewProps> = ({
   const questions = exercise.questions || [];
   const totalQuestions = questions.length;
 
-  // Par défaut : toutes les questions sont repliées pour une page courte et compacte
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  // Règle ergonomique stricte : une seule question ouverte à la fois pour garder la page compacte et aérée
+  const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(null);
 
-  // État de la modale IA pédagogique
-  const [aiModalOpen, setAiModalOpen] = useState(false);
-  const [activeAIQuestion, setActiveAIQuestion] = useState<ExerciseQuestion | null>(null);
-  const [aiPromptMode, setAiPromptMode] = useState<
-    'why_wrong' | 'explain_simple' | 'method' | 'similar_exercise'
-  >('why_wrong');
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiResponse, setAiResponse] = useState<string | null>(null);
+  // Assistant Chatbot IA Sunubiblio (réutilisation de l'IA native)
+  const [isAIDrawerOpen, setIsAIDrawerOpen] = useState(false);
+
+  // Question active pour le contexte de l'IA : première erreur par défaut ou première question
+  const [activeAIQuestion, setActiveAIQuestion] = useState<ExerciseQuestion | null>(() => {
+    const firstWrong = questions.find((q) => {
+      const a = session.answers[q.id];
+      return a && !a.isCorrect;
+    });
+    return firstWrong || questions[0] || null;
+  });
 
   // Calcul des scores et indicateurs
   let correctCount = 0;
@@ -61,112 +65,67 @@ export const ExerciseResultView: React.FC<ExerciseResultViewProps> = ({
     return `${mins} min ${secs} s`;
   };
 
-  // Diagnostic pédagogique
+  // Diagnostic pédagogique personnalisé
   const getFeedback = (pct: number) => {
     if (pct >= 80) {
       return {
         title: 'Excellente maîtrise !',
-        desc: 'Vous validez ce test avec succès. Vos fondamentaux sont solides.',
+        desc: 'Vous validez ce test avec un score remarquable. Vos compétences sont solides pour ce concours.',
         colorClass: 'feedback-success',
+        icon: '🌟',
       };
     }
     if (pct >= 50) {
       return {
-        title: 'Bon résultat, consolidation conseillée',
-        desc: 'L’essentiel est compris. Ouvrez les questions erronées pour revoir la méthode.',
+        title: 'Bon travail, des points à consolider',
+        desc: 'L’essentiel est assimilé. Ouvrez les questions erronées pour analyser les pièges avec l’IA.',
         colorClass: 'feedback-warning',
+        icon: '📈',
       };
     }
     return {
       title: 'Entraînement constructif à approfondir',
-      desc: 'Prenez le temps d’ouvrir les corrections pas à pas pour progresser.',
+      desc: 'Prenez le temps d’examiner la correction question par question avec le tuteur IA pour progresser.',
       colorClass: 'feedback-danger',
+      icon: '💡',
     };
   };
 
   const feedback = getFeedback(percentage);
 
-  // Gestion accordéon : Toggle d'une question
-  const toggleQuestion = (id: string) => {
-    setExpandedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  };
-
-  // Tout ouvrir / Tout fermer
-  const areAllExpanded = questions.length > 0 && expandedIds.size === questions.length;
-  const toggleAllQuestions = () => {
-    if (areAllExpanded) {
-      setExpandedIds(new Set());
-    } else {
-      setExpandedIds(new Set(questions.map((q) => q.id)));
-    }
-  };
-
-  // Déclencher une demande IA contextuelle sur une question
-  const handleOpenAIHelp = async (
-    q: ExerciseQuestion,
-    mode: 'why_wrong' | 'explain_simple' | 'method' | 'similar_exercise'
-  ) => {
+  // Toggle accordéon : une seule question ouverte à la fois
+  const handleToggleQuestion = (q: ExerciseQuestion) => {
+    setExpandedQuestionId((prev) => (prev === q.id ? null : q.id));
     setActiveAIQuestion(q);
-    setAiPromptMode(mode);
-    setAiModalOpen(true);
-    setAiLoading(true);
-    setAiResponse(null);
-
-    const userAns = session.answers[q.id];
-    const chosenChoice = q.choices?.find((c) => c.id === userAns?.selectedChoiceId);
-    const correctChoice = q.choices?.find((c) => c.isCorrect);
-
-    let promptContent = '';
-    if (mode === 'why_wrong') {
-      promptContent = `Dans le cadre d'un entraînement d'examen en ${exercise.subject} (${exercise.chapter}, niveau ${exercise.levelLabel}), pour la question :
-« ${q.question} »
-L'élève a répondu : « ${chosenChoice ? chosenChoice.label : 'Aucune réponse'} ».
-Or la réponse correcte est : « ${correctChoice ? correctChoice.label : 'Inconnue'} ».
-Explique avec pédagogie pourquoi la réponse choisie est fausse et quel piège a pu induire l'élève en erreur.`;
-    } else if (mode === 'explain_simple') {
-      promptContent = `En ${exercise.subject} (${exercise.chapter}), réexplique la question suivante de manière très simple et concrète :
-« ${q.question} »
-Solution attendue : « ${correctChoice?.label} ».`;
-    } else if (mode === 'method') {
-      promptContent = `Détaille la méthode universelle étape par étape pour résoudre ce type d'exercice :
-« ${q.question} ».`;
-    } else {
-      promptContent = `Propose un nouvel exercice d'entraînement similaire (avec 4 choix et la solution détaillée) pour :
-« ${q.question} ».`;
-    }
-
-    try {
-      const res = await AIService.processRequest({
-        content: promptContent,
-        mode: 'expliquer',
-      });
-      setAiResponse(res.content);
-    } catch {
-      setAiResponse(
-        "L'assistant pédagogique Sunubiblio n'a pas pu traiter la demande. Veuillez réessayer."
-      );
-    } finally {
-      setAiLoading(false);
-    }
   };
+
+  // Ouvrir le panneau IA centré sur une question spécifique
+  const handleOpenAICoachForQuestion = (q: ExerciseQuestion) => {
+    setActiveAIQuestion(q);
+    setIsAIDrawerOpen(true);
+  };
+
+  // Données contextuelles de la question active pour le tuteur IA
+  const activeAIQuestionIndex = activeAIQuestion
+    ? questions.findIndex((q) => q.id === activeAIQuestion.id)
+    : 0;
+  const activeUserAns = activeAIQuestion ? session.answers[activeAIQuestion.id] : null;
+  const activeUserChoice = activeAIQuestion?.choices?.find(
+    (c) => c.id === activeUserAns?.selectedChoiceId
+  );
+  const activeCorrectChoice = activeAIQuestion?.choices?.find((c) => c.isCorrect);
 
   return (
     <div className="exercise-result-compact-wrap">
-      {/* 1. BILAN COMPACT EN HAUT (Hauteur optimisée, sans espaces superflus) */}
+      {/* =========================================================
+          1. BILAN GLOBAL COMPACT, AÉRÉ ET MODERNE (HERO SCORE)
+          ========================================================= */}
       <div className="result-compact-hero">
         <div className="compact-hero-header">
           <div className="hero-title-col">
             <div className="hero-badge-row">
               <span className="hero-validated-pill">
-                <span className="dot-pulse" />
+                <span className="dot-pulse" aria-hidden="true" />
                 Épreuve terminée
               </span>
               <span className={`exam-difficulty-badge diff-${exercise.difficulty.toLowerCase()}`}>
@@ -176,14 +135,15 @@ Solution attendue : « ${correctChoice?.label} ».`;
                 <span className="hero-contest-pill">{exercise.competitionName}</span>
               )}
             </div>
+
             <h2 className="hero-title-text">{exercise.title}</h2>
             <p className="hero-meta-text">
               {exercise.subject} • {exercise.levelLabel} • Chapitre : {exercise.chapter}
             </p>
           </div>
 
-          {/* Pastille de score compacte */}
-          <div className="hero-score-badge">
+          {/* Pastille de score compacte et soignée */}
+          <div className="hero-score-badge" title="Score final obtenu">
             <div className="score-main-value">
               {score} <span className="score-denom">/ {maxScore}</span>
             </div>
@@ -191,10 +151,10 @@ Solution attendue : « ${correctChoice?.label} ».`;
           </div>
         </div>
 
-        {/* Message d'évaluation concis */}
+        {/* Bannière de feedback pédagogique */}
         <div className={`hero-feedback-banner ${feedback.colorClass}`}>
           <span className="feedback-icon-indicator" aria-hidden="true">
-            {percentage >= 80 ? '🌟' : percentage >= 50 ? '📈' : '💡'}
+            {feedback.icon}
           </span>
           <div className="feedback-texts">
             <strong>{feedback.title}</strong> — <span>{feedback.desc}</span>
@@ -203,25 +163,25 @@ Solution attendue : « ${correctChoice?.label} ».`;
 
         {/* Mini-indicateurs statistiques horizontaux */}
         <div className="hero-stats-row">
-          <div className="hero-stat-pill pill-correct">
+          <div className="hero-stat-pill pill-correct" title="Nombre de questions correctement répondues">
             <span className="stat-symbol">✓</span>
             <span className="stat-qty">{correctCount}</span>
             <span className="stat-name">Correctes</span>
           </div>
 
-          <div className="hero-stat-pill pill-wrong">
+          <div className="hero-stat-pill pill-wrong" title="Nombre d'erreurs commises">
             <span className="stat-symbol">✕</span>
             <span className="stat-qty">{wrongCount}</span>
             <span className="stat-name">Incorrectes</span>
           </div>
 
-          <div className="hero-stat-pill pill-unanswered">
+          <div className="hero-stat-pill pill-unanswered" title="Questions laissées sans réponse">
             <span className="stat-symbol">—</span>
             <span className="stat-qty">{unattemptedCount}</span>
             <span className="stat-name">Non répondues</span>
           </div>
 
-          <div className="hero-stat-pill pill-duration">
+          <div className="hero-stat-pill pill-duration" title="Durée totale passée sur le test">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" />
@@ -244,11 +204,23 @@ Solution attendue : « ${correctChoice?.label} ».`;
           <Link href="/exercices" className="btn-secondary hero-btn">
             Catalogue d'entraînement
           </Link>
+
+          <button
+            type="button"
+            className="hero-ai-open-pill-btn"
+            onClick={() => setIsAIDrawerOpen(true)}
+            title="Consulter le tuteur IA Sunubiblio pour un bilan de l'épreuve"
+          >
+            <span className="ai-spark-glyph">🤖</span>
+            <span>Bilan avec l'IA</span>
+          </button>
         </div>
       </div>
 
-      {/* 2. SECTION CORRECTION DÉTAILLÉE PAR ACCORDÉON */}
-      <section className="correction-accordion-section" aria-label="Correction détaillée">
+      {/* =========================================================
+          2. LISTE DES CORRECTIONS (ACCORDÉON UNIQUE, COMPACT ET FLUIDE)
+          ========================================================= */}
+      <section className="correction-accordion-section" aria-label="Liste compacte des corrections">
         <div className="accordion-section-bar">
           <div className="accordion-bar-left">
             <h3 className="accordion-section-title">Corrections détaillées</h3>
@@ -257,37 +229,18 @@ Solution attendue : « ${correctChoice?.label} ».`;
             </span>
           </div>
 
-          {/* Bouton global Tout ouvrir / Tout fermer */}
-          <button
-            type="button"
-            className="toggle-all-questions-btn"
-            onClick={toggleAllQuestions}
-            aria-label={areAllExpanded ? 'Tout replier' : 'Tout déplier'}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              {areAllExpanded ? (
-                <>
-                  <polyline points="18 15 12 9 6 15" />
-                  <polyline points="18 9 12 3 6 9" />
-                </>
-              ) : (
-                <>
-                  <polyline points="6 9 12 15 18 9" />
-                  <polyline points="6 15 12 21 18 15" />
-                </>
-              )}
-            </svg>
-            <span>{areAllExpanded ? 'Tout replier' : 'Tout ouvrir'}</span>
-          </button>
+          <div className="accordion-bar-hint">
+            <span className="hint-text">Cliquez sur une question pour ouvrir sa correction</span>
+          </div>
         </div>
 
-        {/* Liste des questions sous forme de cartes accordéons compactes */}
+        {/* Liste des questions sous forme d'accordéons individuels */}
         <div className="correction-accordion-list">
           {questions.map((q, idx) => {
             const ans = session.answers[q.id];
             const isCorrect = Boolean(ans?.isCorrect);
             const hasAnswered = Boolean(ans && ans.selectedChoiceId);
-            const isExpanded = expandedIds.has(q.id);
+            const isExpanded = expandedQuestionId === q.id;
 
             let statusClass = 'status-unanswered';
             let statusLabel = 'Non répondu';
@@ -310,11 +263,11 @@ Solution attendue : « ${correctChoice?.label} ».`;
                 key={q.id}
                 className={`compact-accordion-card ${statusClass} ${isExpanded ? 'is-expanded' : ''}`}
               >
-                {/* Ligne d'en-tête cliquable (1 SEULE LIGNE COMPACTE) */}
+                {/* Ligne d'en-tête cliquable (1 SEULE LIGNE ÉPURÉE) */}
                 <button
                   type="button"
                   className="accordion-item-trigger"
-                  onClick={() => toggleQuestion(q.id)}
+                  onClick={() => handleToggleQuestion(q)}
                   aria-expanded={isExpanded}
                   aria-controls={`correction-panel-${q.id}`}
                 >
@@ -342,7 +295,7 @@ Solution attendue : « ${correctChoice?.label} ».`;
                   </div>
                 </button>
 
-                {/* Contenu détaillé affiché UNIQUEMENT lorsque la question est ouverte */}
+                {/* Contenu détaillé affiché UNIQUEMENT lorsque cette question précise est ouverte */}
                 {isExpanded && (
                   <div id={`correction-panel-${q.id}`} className="accordion-expanded-body">
                     {/* Énoncé complet de la question */}
@@ -350,7 +303,7 @@ Solution attendue : « ${correctChoice?.label} ».`;
                       <p className="expanded-prompt-text">{q.question}</p>
                     </div>
 
-                    {/* Comparatif des choix (Votre réponse vs Bonne réponse) */}
+                    {/* Comparatif des choix (A, B, C, D) */}
                     {q.choices && q.choices.length > 0 && (
                       <div className="expanded-choices-stack">
                         {q.choices.map((choice, cIdx) => {
@@ -389,7 +342,7 @@ Solution attendue : « ${correctChoice?.label} ».`;
                       </div>
                     )}
 
-                    {/* Fiche Pédagogique (Explication, Méthode, Conseil) */}
+                    {/* Fiche Pédagogique (Explication, Méthode, Conseils d'examen, Pièges) */}
                     <div className="expanded-explanation-box">
                       {q.explanation && (
                         <div className="explanation-bullet">
@@ -432,39 +385,47 @@ Solution attendue : « ${correctChoice?.label} ».`;
                       )}
                     </div>
 
-                    {/* Accès direct à l'IA Sunubiblio pour cette question */}
+                    {/* Approfondissement direct avec l'IA pour cette question précise */}
                     <div className="expanded-ai-tutor-bar">
-                      <span className="tutor-bar-label">Approfondir avec l'IA Sunubiblio :</span>
+                      <div className="tutor-bar-left">
+                        <span className="tutor-ai-spark" aria-hidden="true">🤖</span>
+                        <span className="tutor-bar-label">Demander à l'IA sur cette question :</span>
+                      </div>
+
                       <div className="tutor-buttons-wrap">
                         {!isCorrect && hasAnswered && (
                           <button
                             type="button"
                             className="tutor-ai-btn btn-why"
-                            onClick={() => handleOpenAIHelp(q, 'why_wrong')}
+                            onClick={() => handleOpenAICoachForQuestion(q)}
+                            title="Comprendre l'origine précise de l'erreur avec l'IA"
                           >
-                            <span>🔍 Pourquoi mon erreur ?</span>
+                            <span>🔍 Explique mon erreur</span>
                           </button>
                         )}
                         <button
                           type="button"
                           className="tutor-ai-btn"
-                          onClick={() => handleOpenAIHelp(q, 'explain_simple')}
+                          onClick={() => handleOpenAICoachForQuestion(q)}
+                          title="Obtenir une explication pas à pas par le tuteur IA"
                         >
-                          <span>💡 Expliquer simplement</span>
+                          <span>💡 Explique la correction</span>
                         </button>
                         <button
                           type="button"
                           className="tutor-ai-btn"
-                          onClick={() => handleOpenAIHelp(q, 'method')}
+                          onClick={() => handleOpenAICoachForQuestion(q)}
+                          title="Découvrir une autre méthode de résolution plus rapide"
                         >
-                          <span>📐 Méthode pas à pas</span>
+                          <span>📐 Autre méthode</span>
                         </button>
                         <button
                           type="button"
                           className="tutor-ai-btn"
-                          onClick={() => handleOpenAIHelp(q, 'similar_exercise')}
+                          onClick={() => handleOpenAICoachForQuestion(q)}
+                          title="S'entraîner sur un problème similaire"
                         >
-                          <span>📝 Exercice similaire</span>
+                          <span>📝 Question similaire</span>
                         </button>
                       </div>
                     </div>
@@ -476,86 +437,43 @@ Solution attendue : « ${correctChoice?.label} ».`;
         </div>
       </section>
 
-      {/* 3. MODALE D'ASSISTANCE IA (Légère et fluide) */}
-      {aiModalOpen && activeAIQuestion && (
-        <div className="ai-help-modal-backdrop" onClick={() => setAiModalOpen(false)} role="presentation">
-          <div
-            className="ai-help-modal-panel"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Assistant IA Sunubiblio"
-          >
-            <div className="ai-modal-header">
-              <div className="ai-brand-badge">
-                <div className="ai-spark-icon" aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                    <rect x="3" y="11" width="18" height="10" rx="2" />
-                    <circle cx="12" cy="5" r="2" />
-                    <path d="M12 7v4" />
-                    <line x1="8" y1="16" x2="8.01" y2="16" strokeWidth="3" />
-                    <line x1="16" y1="16" x2="16.01" y2="16" strokeWidth="3" />
-                  </svg>
-                </div>
-                <span>IA Pédagogique Sunubiblio</span>
-              </div>
+      {/* =========================================================
+          3. PETIT BOUTON FLOTTANT DISCRET « 🤖 IA » TOUJOURS ACCESSIBLE
+          ========================================================= */}
+      <ExerciseAIButton
+        onClick={() => setIsAIDrawerOpen(true)}
+        isAIAvailable={true}
+      />
 
-              <button
-                type="button"
-                className="ai-modal-close"
-                onClick={() => setAiModalOpen(false)}
-                aria-label="Fermer la fenêtre d'aide"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="ai-modal-body">
-              <h3 className="ai-modal-title">
-                {aiPromptMode === 'why_wrong' && '🔍 Analyse de votre erreur'}
-                {aiPromptMode === 'explain_simple' && '💡 Explication simplifiée'}
-                {aiPromptMode === 'method' && '📐 Méthode étape par étape'}
-                {aiPromptMode === 'similar_exercise' && '🎯 Exercice similaire d’application'}
-              </h3>
-
-              <div className="ai-question-preview">
-                <span className="preview-label">Question :</span>
-                <p className="preview-text">« {activeAIQuestion.question} »</p>
-              </div>
-
-              {aiLoading ? (
-                <div className="ai-loading-box">
-                  <div className="ai-spinner" aria-hidden="true" />
-                  <p className="ai-loading-text">
-                    L'IA Sunubiblio analyse la question et prépare une réponse pédagogique claire...
-                  </p>
-                </div>
-              ) : (
-                <div className="ai-response-container">
-                  <div className="ai-response-formatted">
-                    {aiResponse ? (
-                      aiResponse.split('\n\n').map((para, pIdx) => (
-                        <p key={pIdx} style={{ whiteSpace: 'pre-line' }}>{para}</p>
-                      ))
-                    ) : (
-                      <p>Aucune réponse générée.</p>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="ai-modal-footer">
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => setAiModalOpen(false)}
-              >
-                Fermer
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* =========================================================
+          4. PANNEAU CHATBOT IA SUNUBIBLIO (BOTTOMSHEET MOBILE / TIROIR PC)
+          ========================================================= */}
+      {activeAIQuestion && (
+        <ExerciseAIContextDrawer
+          isOpen={isAIDrawerOpen}
+          onClose={() => setIsAIDrawerOpen(false)}
+          exerciseId={exercise.id}
+          questionId={activeAIQuestion.id}
+          questionText={activeAIQuestion.question}
+          questionNumber={activeAIQuestionIndex + 1}
+          totalQuestions={totalQuestions}
+          subject={exercise.subject}
+          chapter={exercise.chapter}
+          testTitle={exercise.title}
+          resourceTitle={exercise.resourceTitle}
+          competitionName={exercise.competitionName}
+          levelLabel={exercise.levelLabel}
+          isAIAvailable={true}
+          isCorrectionMode={true}
+          userAnswerLabel={activeUserChoice?.label || (activeUserAns?.selectedChoiceId ? 'Option sélectionnée' : 'Non répondu')}
+          correctAnswerLabel={activeCorrectChoice?.label}
+          isCorrect={Boolean(activeUserAns?.isCorrect)}
+          hasUserAnswered={Boolean(activeUserAns && activeUserAns.selectedChoiceId)}
+          explanationText={activeAIQuestion.explanation}
+          methodText={activeAIQuestion.method}
+          tipText={activeAIQuestion.tip}
+          commonMistakeText={activeAIQuestion.commonMistake}
+        />
       )}
     </div>
   );

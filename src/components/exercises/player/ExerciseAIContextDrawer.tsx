@@ -19,6 +19,16 @@ interface ExerciseAIContextDrawerProps {
   competitionName?: string;
   levelLabel?: string;
   isAIAvailable?: boolean;
+  // Mode Correction
+  isCorrectionMode?: boolean;
+  userAnswerLabel?: string;
+  correctAnswerLabel?: string;
+  isCorrect?: boolean;
+  hasUserAnswered?: boolean;
+  explanationText?: string;
+  methodText?: string;
+  tipText?: string;
+  commonMistakeText?: string;
 }
 
 interface QuickPromptAction {
@@ -50,6 +60,15 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
   competitionName,
   levelLabel,
   isAIAvailable = true,
+  isCorrectionMode = false,
+  userAnswerLabel,
+  correctAnswerLabel,
+  isCorrect,
+  hasUserAnswered,
+  explanationText,
+  methodText,
+  tipText,
+  commonMistakeText,
 }) => {
   // Liste des messages
   const [messages, setMessages] = useState<AIMessage[]>([]);
@@ -69,18 +88,49 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
 
   // 1. Initialiser ou actualiser automatiquement le contexte quand la question change
   useEffect(() => {
-    const welcomeContent = `Bonjour 👋 Je suis votre **tuteur IA Sunubiblio**.\n\nJe suis connecté à votre session d'entraînement :\n• **Matière :** ${subject}\n• **Chapitre :** ${chapter || 'Général'}${competitionName ? `\n• **Concours :** ${competitionName}` : ''}${testTitle ? `\n• **Épreuve :** ${testTitle}` : ''}\n\nJe suis prêt pour la **Question ${questionNumber} sur ${totalQuestions}**. Que souhaitez-vous approfondir ?`;
+    let welcomeContent = '';
+
+    if (isCorrectionMode) {
+      const verdict = isCorrect
+        ? '✅ Réponse validée'
+        : hasUserAnswered
+        ? '✕ Réponse incorrecte'
+        : '— Non répondu';
+
+      welcomeContent = `Bonjour 👋 Je suis votre **tuteur IA Sunubiblio** en phase de correction.\n\nJe suis connecté à l'analyse de votre épreuve :\n• **Épreuve :** ${testTitle || 'Test'}${competitionName ? ` • ${competitionName}` : ''}\n• **Matière :** ${subject} (${chapter || 'Général'})\n• **Question ciblée :** Question ${questionNumber} sur ${totalQuestions} (${verdict})\n\n${
+        isCorrect
+          ? '🎉 **Félicitations pour cette bonne réponse !** Souhaitez-vous explorer une autre méthode ou vous tester sur un exercice plus poussé ?'
+          : hasUserAnswered
+          ? `🔍 **Votre réponse :** « ${userAnswerLabel || 'Non spécifiée'} »\n🎯 **Bonne réponse :** « ${correctAnswerLabel || 'Non spécifiée'} »\n\nJe peux analyser précisément le piège qui a causé cette erreur ou vous réexpliquer la méthode pas à pas.`
+          : `🎯 **Bonne réponse attendue :** « ${correctAnswerLabel || 'Non spécifiée'} »\n\nCette question n'a pas été tentée. Je peux vous l'expliquer simplement pas à pas pour vous l'approprier.`
+      }`;
+    } else {
+      welcomeContent = `Bonjour 👋 Je suis votre **tuteur IA Sunubiblio**.\n\nJe suis connecté à votre session d'entraînement :\n• **Matière :** ${subject}\n• **Chapitre :** ${chapter || 'Général'}${competitionName ? `\n• **Concours :** ${competitionName}` : ''}${testTitle ? `\n• **Épreuve :** ${testTitle}` : ''}\n\nJe suis prêt pour la **Question ${questionNumber} sur ${totalQuestions}**. Que souhaitez-vous approfondir ?`;
+    }
 
     setMessages([
       {
-        id: `msg-welcome-q${questionNumber}`,
+        id: `msg-welcome-q${questionNumber}-${isCorrectionMode ? 'corr' : 'test'}`,
         role: 'assistant',
         content: welcomeContent,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
     setHasError(null);
-  }, [questionNumber, questionText, subject, chapter, competitionName, testTitle, totalQuestions]);
+  }, [
+    questionNumber,
+    questionText,
+    subject,
+    chapter,
+    competitionName,
+    testTitle,
+    totalQuestions,
+    isCorrectionMode,
+    isCorrect,
+    hasUserAnswered,
+    userAnswerLabel,
+    correctAnswerLabel,
+  ]);
 
   // 2. Empêcher le scroll d'arrière-plan du body lors de l'ouverture du drawer
   useEffect(() => {
@@ -126,7 +176,7 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
   }, [inputText, adjustTextareaHeight]);
 
   // Actions pédagogiques rapides contextuelles
-  const quickActions: QuickPromptAction[] = [
+  const testQuickActions: QuickPromptAction[] = [
     {
       id: 'explain-question',
       icon: '💡',
@@ -158,6 +208,35 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
       prompt: `Quels points clés du programme dois-je réviser pour maîtriser ce type d'exercice en ${subject} ?`,
     },
   ];
+
+  const correctionQuickActions: QuickPromptAction[] = [
+    {
+      id: 'explain-error',
+      icon: '🔍',
+      label: 'Explique mon erreur',
+      prompt: `Explique mon erreur : j'ai répondu « ${userAnswerLabel || 'Aucune sélection'} » alors que la solution attendue est « ${correctAnswerLabel || 'Correcte'} ». Quel piège m'a induit en erreur sur la question « ${questionText} » ?`,
+    },
+    {
+      id: 'explain-correction',
+      icon: '💡',
+      label: 'Explique la correction',
+      prompt: `Peux-tu m'expliquer simplement et pas à pas la correction de cette question : « ${questionText} » (Bonne réponse : « ${correctAnswerLabel || ''} ») ?`,
+    },
+    {
+      id: 'other-method',
+      icon: '📐',
+      label: 'Donne-moi une autre méthode',
+      prompt: `Existe-t-il une autre méthode ou astuce plus rapide pour résoudre : « ${questionText} » ?`,
+    },
+    {
+      id: 'similar-question',
+      icon: '📝',
+      label: 'Pose-moi une question similaire',
+      prompt: `Pose-moi une question similaire d'entraînement avec 4 choix (A, B, C, D) pour vérifier si j'ai bien compris la notion.`,
+    },
+  ];
+
+  const quickActions = isCorrectionMode ? correctionQuickActions : testQuickActions;
 
   // Gestion des pièces jointes
   const handleAttachImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -250,6 +329,10 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
           questionId,
           questionNumber,
           prompt: `${text}${attachmentsSummary}`,
+          isCorrectionMode,
+          userAnswerLabel,
+          correctAnswerLabel,
+          explanationText,
         }),
       });
 
@@ -271,7 +354,10 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
     } catch (err: any) {
       // Fallback local via AIService si connexion locale perturbée
       try {
-        const enriched = `[Contexte : ${subject} | ${chapter || 'Général'} | Q.${questionNumber} : "${questionText}"]\n${text}${attachmentsSummary}`;
+        const enriched = isCorrectionMode
+          ? `[Correction ${competitionName ? `${competitionName} | ` : ''}${subject} (${chapter || 'Général'}) | Question ${questionNumber}: "${questionText}" | Votre réponse: "${userAnswerLabel || 'Non sélectionnée'}" | Bonne réponse: "${correctAnswerLabel || 'Non spécifiée'}" | Explication: "${explanationText || ''}"]\n${text}${attachmentsSummary}`
+          : `[Contexte : ${subject} | ${chapter || 'Général'} | Q.${questionNumber} : "${questionText}"]\n${text}${attachmentsSummary}`;
+
         const fallbackMsg = await AIService.processRequest({
           content: enriched,
           mode: 'assistant',
@@ -334,7 +420,9 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
               <div className="ai-drawer-titles">
                 <div className="ai-drawer-title-row">
                   <h3 className="ai-drawer-name">IA Sunubiblio</h3>
-                  <span className="ai-coach-pill">Tuteur Pédagogique</span>
+                  <span className="ai-coach-pill">
+                    {isCorrectionMode ? 'Analyse de correction' : 'Tuteur Pédagogique'}
+                  </span>
                 </div>
                 <span className="ai-drawer-context-pill">
                   Q.{questionNumber}/{totalQuestions} • {subject}
@@ -357,11 +445,30 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
           <div className="ai-drawer-question-box">
             <div className="drawer-question-label">
               <span>Question {questionNumber} sur {totalQuestions}</span>
+              {isCorrectionMode && (
+                <span className={`drawer-verdict-badge ${isCorrect ? 'verdict-ok' : hasUserAnswered ? 'verdict-err' : 'verdict-none'}`}>
+                  {isCorrect ? '✓ Validé' : hasUserAnswered ? '✕ Incorrect' : '— Non répondu'}
+                </span>
+              )}
               {competitionName && <span className="drawer-contest-tag">{competitionName}</span>}
             </div>
             <p className="drawer-question-snippet" title={questionText}>
               « {questionText} »
             </p>
+            {isCorrectionMode && (userAnswerLabel || correctAnswerLabel) && (
+              <div className="drawer-answers-summary">
+                {hasUserAnswered && (
+                  <span className="drawer-ans-chip chip-user">
+                    Votre réponse : {userAnswerLabel}
+                  </span>
+                )}
+                {correctAnswerLabel && (
+                  <span className="drawer-ans-chip chip-correct">
+                    Bonne réponse : {correctAnswerLabel}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
