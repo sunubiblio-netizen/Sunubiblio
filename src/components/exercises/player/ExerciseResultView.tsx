@@ -118,6 +118,38 @@ export const ExerciseResultView: React.FC<ExerciseResultViewProps> = ({
   return (
     <div className="exercise-result-compact-wrap">
       {/* =========================================================
+          0. BARRE SUPÉRIEURE DE NAVIGATION AVEC FLÈCHE RETOUR
+          ========================================================= */}
+      <nav className="result-top-nav-bar" aria-label="Navigation de retour">
+        <Link
+          href="/exercices"
+          className="result-back-btn"
+          title="Retourner au catalogue des exercices"
+          aria-label="Retourner au catalogue des exercices"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+          <span className="back-btn-text">Retour aux exercices</span>
+        </Link>
+
+        <div className="result-nav-badge-wrap">
+          <span className="result-nav-tag">Correction & Résultats</span>
+        </div>
+      </nav>
+
+      {/* =========================================================
           1. BILAN GLOBAL COMPACT, AÉRÉ ET MODERNE (HERO SCORE)
           ========================================================= */}
       <div className="result-compact-hero">

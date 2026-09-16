@@ -9461,6 +9461,72 @@ input {
   padding-bottom: 32px;
 }
 
+/* 0. BARRE SUPÉRIEURE DE NAVIGATION AVEC FLÈCHE RETOUR */
+.result-top-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 2px;
+  width: 100%;
+}
+
+.result-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #334155;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.result-back-btn svg {
+  color: #6366f1;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.result-back-btn:hover {
+  background: #f8faff;
+  border-color: rgba(99, 102, 241, 0.4);
+  color: #1e1b4b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.12);
+}
+
+.result-back-btn:hover svg {
+  transform: translateX(-3px);
+  color: #4f46e5;
+}
+
+.result-back-btn:active {
+  transform: scale(0.97);
+}
+
+.result-nav-badge-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.result-nav-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #4f46e5;
+  background: #eef2ff;
+  border: 1px solid rgba(99, 102, 241, 0.22);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
 /* 1. HERO BILAN ULTRA-COMPACT */
 .result-compact-hero {
   background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
@@ -10275,6 +10341,21 @@ input {
 
 /* RESPONSIVE MOBILE POUR LA CORRECTION COMPACTE */
 @media (max-width: 768px) {
+  .result-top-nav-bar {
+    padding: 2px 0 8px 0;
+  }
+
+  .result-back-btn {
+    padding: 7px 12px;
+    font-size: 0.78125rem;
+    min-height: 38px;
+  }
+
+  .result-nav-tag {
+    font-size: 0.6875rem;
+    padding: 3px 8px;
+  }
+
   .result-compact-hero {
     padding: 14px 14px;
     border-radius: 14px;
