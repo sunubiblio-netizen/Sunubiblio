@@ -13782,8 +13782,14 @@ input {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .app-launcher-dropdown {
+    animation: none !important;
+  }
+}
+
 .launcher-header {
-  padding: 14px 16px 12px;
+  padding: 14px 18px;
   border-bottom: 1px solid #f1f5f9;
   background: linear-gradient(180deg, #f8faff 0%, #ffffff 100%);
 }
@@ -13792,17 +13798,20 @@ input {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
 }
 
 .launcher-title-tag {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  font-size: 0.8125rem;
+  gap: 8px;
+}
+
+.launcher-main-heading {
+  font-size: 0.9375rem;
   font-weight: 800;
-  color: #1e1b4b;
-  letter-spacing: -0.01em;
+  color: #0f172a;
+  letter-spacing: -0.015em;
+  margin: 0;
 }
 
 .sparkle-dot {
@@ -13811,15 +13820,6 @@ input {
   border-radius: 50%;
   background: linear-gradient(135deg, #6366f1, #ec4899);
   flex-shrink: 0;
-}
-
-.launcher-apps-count {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  color: #6366f1;
-  background: #eef2ff;
-  padding: 1px 7px;
-  border-radius: 9999px;
 }
 
 .launcher-close-btn {
@@ -13838,64 +13838,14 @@ input {
   color: #1e293b;
 }
 
-.launcher-search-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 6px 12px;
-  color: #64748b;
-  transition: all 0.15s ease;
-}
-
-.launcher-search-box:focus-within {
-  background: #ffffff;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
-}
-
-.search-icon {
-  color: #94a3b8;
-  flex-shrink: 0;
-}
-
-.launcher-search-input {
-  width: 100%;
-  border: none;
-  background: transparent;
-  font-size: 0.8125rem;
-  color: #0f172a;
-  outline: none;
-  font-family: inherit;
-}
-
-.launcher-search-input::placeholder {
-  color: #94a3b8;
-}
-
-.search-clear-btn {
-  background: transparent;
-  border: none;
-  font-size: 11px;
-  color: #94a3b8;
-  cursor: pointer;
-  padding: 2px 4px;
-}
-
-.search-clear-btn:hover {
-  color: #475569;
-}
-
 /* Corps Défilable du Lanceur */
 .launcher-body-scroll {
-  padding: 14px 14px 16px;
+  padding: 16px 14px 18px;
   overflow-y: auto;
-  max-height: 460px;
+  max-height: 490px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
   scroll-behavior: smooth;
   outline: none;
 }
@@ -13926,11 +13876,11 @@ input {
 
 .category-header-wrap {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 4px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 0 4px 6px;
   border-bottom: 1px solid #f1f5f9;
-  padding-bottom: 6px;
   margin-bottom: 2px;
 }
 
@@ -13938,14 +13888,16 @@ input {
   font-size: 0.6875rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: #64748b;
+  letter-spacing: 0.08em;
+  color: #475569;
   margin: 0;
 }
 
 .category-desc {
   font-size: 0.6875rem;
   color: #94a3b8;
+  margin: 0;
+  line-height: 1.35;
 }
 
 /* Grille d'applications : 3 colonnes desktop */

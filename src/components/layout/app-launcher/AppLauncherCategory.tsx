@@ -25,8 +25,8 @@ export const AppLauncherCategory: React.FC<AppLauncherCategoryProps> = ({
         <h3 id={`cat-title-${category.key}`} className="category-title">
           {category.title}
         </h3>
-        {category.shortDescription && (
-          <span className="category-desc desktop-only">{category.shortDescription}</span>
+        {category.description && (
+          <p className="category-desc">{category.description}</p>
         )}
       </div>
 

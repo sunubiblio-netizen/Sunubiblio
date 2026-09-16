@@ -1,18 +1,24 @@
 /**
- * Sunubiblio — Configuration Centralisée du App Launcher (Menu 9 points)
+ * Sunubiblio — Configuration Centralisée du App Launcher (Menu Applications)
  * 
- * Architecture modulaire inspirée du modèle Google Apps avec identité 100% Sunubiblio.
- * Regroupe les 7 catégories de l'écosystème et leurs applications associées.
+ * Organisé rigoureusement selon les 7 grandes catégories de l'écosystème :
+ * 1. APPRENDRE
+ * 2. SAVOIRS & FORMATIONS
+ * 3. COMMUNAUTÉ
+ * 4. VISIO & RENDEZ-VOUS
+ * 5. OUTILS & PRODUCTIVITÉ
+ * 6. ASSISTANTS & UTILITAIRES
+ * 7. COMMERCE
  */
 
 export type AppCategoryKey = 
   | 'apprendre'
   | 'savoirs'
+  | 'communaute'
+  | 'visio_rdv'
   | 'outils'
   | 'assistants'
-  | 'communaute'
-  | 'boutique'
-  | 'mon_espace';
+  | 'commerce';
 
 export interface AppLauncherItemData {
   id: string;
@@ -27,50 +33,50 @@ export interface AppLauncherItemData {
     variant: 'ai' | 'new' | 'popular' | 'pro';
   };
   enabled: boolean;
-  requiredPlan?: 'free' | 'student' | 'premium' | 'gold';
+  available?: boolean;
 }
 
 export interface AppCategoryData {
   key: AppCategoryKey;
   title: string;
-  shortDescription?: string;
+  description: string;
 }
 
 export const APP_LAUNCHER_CATEGORIES: AppCategoryData[] = [
   {
     key: 'apprendre',
-    title: 'Apprendre',
-    shortDescription: 'Bibliothèque, parcours scolaires, concours et évaluations',
+    title: 'APPRENDRE',
+    description: 'Bibliothèque, parcours scolaires, concours et entraînement',
   },
   {
     key: 'savoirs',
-    title: 'Savoirs & Formations',
-    shortDescription: 'Cours approfondis, ressources académiques et traditions',
-  },
-  {
-    key: 'outils',
-    title: 'Outils & Productivité',
-    shortDescription: 'Organisation du temps, gestion documentaire et fichiers',
-  },
-  {
-    key: 'assistants',
-    title: 'Assistants & Utilitaires',
-    shortDescription: 'Intelligence artificielle SunuIA, recherche et traitement',
+    title: 'SAVOIRS & FORMATIONS',
+    description: 'Cours approfondis, ressources académiques et traditions',
   },
   {
     key: 'communaute',
-    title: 'Communauté & Échange',
-    shortDescription: 'Réseau collaboratif, visio-conférences et partages',
+    title: 'COMMUNAUTÉ',
+    description: 'Réseau collaboratif, échanges, groupes et profils',
   },
   {
-    key: 'boutique',
-    title: 'Boutique & Création',
-    shortDescription: 'Marketplace de fiches, publication et monétisation',
+    key: 'visio_rdv',
+    title: 'VISIO & RENDEZ-VOUS',
+    description: 'Salons d’étude en direct, tutorat et planning',
   },
   {
-    key: 'mon_espace',
-    title: 'Mon Espace',
-    shortDescription: 'Gestion du compte, favoris, historique et abonnements',
+    key: 'outils',
+    title: 'OUTILS & PRODUCTIVITÉ',
+    description: 'Espace personnel, documents, téléchargements et notes',
+  },
+  {
+    key: 'assistants',
+    title: 'ASSISTANTS & UTILITAIRES',
+    description: 'Intelligence artificielle Sunubiblio, recherche et outils documentaires',
+  },
+  {
+    key: 'commerce',
+    title: 'COMMERCE',
+    description: 'Marketplace d’ouvrages, achat et vente de résumés certifiés',
   },
 ];
 
@@ -81,43 +87,47 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
   {
     id: 'bibliotheque',
     name: 'Bibliothèque',
-    shortDescription: 'Livres, manuels, thèses et mémoires',
+    shortDescription: 'Livres et thèses',
     href: '/bibliotheque',
     iconId: 'book',
     category: 'apprendre',
     order: 1,
     enabled: true,
+    available: true,
   },
   {
     id: 'education',
     name: 'Éducation',
-    shortDescription: 'Du primaire jusqu’au doctorat',
+    shortDescription: 'Du primaire au doctorat',
     href: '/education',
     iconId: 'education',
     category: 'apprendre',
     order: 2,
     enabled: true,
+    available: true,
   },
   {
     id: 'concours',
     name: 'Concours',
-    shortDescription: 'Annales officielles et programmes',
+    shortDescription: 'Annales officielles',
     href: '/concours',
     iconId: 'concours',
     category: 'apprendre',
     order: 3,
     badge: { text: 'Populaire', variant: 'popular' },
     enabled: true,
+    available: true,
   },
   {
     id: 'exercices',
     name: 'Exercices',
-    shortDescription: 'Moteur de QCM et évaluations corrigées',
+    shortDescription: 'QCM et évaluations',
     href: '/exercices',
     iconId: 'exercices',
     category: 'apprendre',
     order: 4,
     enabled: true,
+    available: true,
   },
 
   // ==========================================
@@ -126,274 +136,309 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
   {
     id: 'cours',
     name: 'Cours',
-    shortDescription: 'Modules structurés et fiches de révision',
+    shortDescription: 'Modules structurés',
     href: '/education',
     iconId: 'cours',
     category: 'savoirs',
     order: 1,
     enabled: true,
+    available: true,
   },
   {
     id: 'ressources',
     name: 'Ressources',
-    shortDescription: 'Banque d’archives et supports pédagogiques',
+    shortDescription: 'Supports d’archives',
     href: '/bibliotheque',
     iconId: 'ressources',
     category: 'savoirs',
     order: 2,
     enabled: true,
+    available: true,
   },
   {
     id: 'documents',
     name: 'Documents',
-    shortDescription: 'Documents officiels, synthèses et travaux',
+    shortDescription: 'Documents certifiés',
     href: '/documents',
     iconId: 'documents',
     category: 'savoirs',
     order: 3,
     enabled: true,
+    available: true,
   },
   {
     id: 'religion',
     name: 'Religion',
-    shortDescription: 'Traditions, confréries, textes et figures',
+    shortDescription: 'Textes et traditions',
     href: '/religion',
     iconId: 'religion',
     category: 'savoirs',
     order: 4,
     enabled: true,
+    available: true,
   },
 
   // ==========================================
-  // 3. OUTILS & PRODUCTIVITÉ
-  // ==========================================
-  {
-    id: 'calendrier',
-    name: 'Calendrier',
-    shortDescription: 'Dates clés d’examens et concours',
-    href: '/agenda',
-    iconId: 'calendrier',
-    category: 'outils',
-    order: 1,
-    enabled: true,
-  },
-  {
-    id: 'emploi-du-temps',
-    name: 'Emploi du temps',
-    shortDescription: 'Planning hebdomadaire personnalisé',
-    href: '/agenda',
-    iconId: 'emploi_du_temps',
-    category: 'outils',
-    order: 2,
-    enabled: true,
-  },
-  {
-    id: 'mes-documents',
-    name: 'Mes documents',
-    shortDescription: 'Espace personnel de stockage et révision',
-    href: '/documents',
-    iconId: 'mes_documents',
-    category: 'outils',
-    order: 3,
-    enabled: true,
-  },
-  {
-    id: 'telechargements',
-    name: 'Téléchargements',
-    shortDescription: 'Accès sécurisé hors-connexion',
-    href: '/documents',
-    iconId: 'telechargements',
-    category: 'outils',
-    order: 4,
-    enabled: true,
-  },
-
-  // ==========================================
-  // 4. ASSISTANTS & UTILITAIRES
-  // ==========================================
-  {
-    id: 'sunuai',
-    name: 'SunuAI',
-    shortDescription: 'Assistant intelligent Sunubiblio',
-    href: '/ia',
-    iconId: 'sunuai',
-    category: 'assistants',
-    order: 1,
-    badge: { text: 'IA', variant: 'ai' },
-    enabled: true,
-  },
-  {
-    id: 'recherche',
-    name: 'Recherche',
-    shortDescription: 'Moteur de recherche unifié',
-    href: '/bibliotheque',
-    iconId: 'recherche',
-    category: 'assistants',
-    order: 2,
-    enabled: true,
-  },
-  {
-    id: 'assistant-pedagogique',
-    name: 'Assistant pédago',
-    shortDescription: 'Tuteur pas-à-pas pour les révisions',
-    href: '/ia',
-    iconId: 'assistant_pedago',
-    category: 'assistants',
-    order: 3,
-    enabled: true,
-  },
-  {
-    id: 'outils-pdf',
-    name: 'Outils PDF',
-    shortDescription: 'Conversion, fusion et annotation de fichiers',
-    href: '/documents',
-    iconId: 'outils_pdf',
-    category: 'assistants',
-    order: 4,
-    enabled: true,
-  },
-
-  // ==========================================
-  // 5. COMMUNAUTÉ & ÉCHANGE
+  // 3. COMMUNAUTÉ
   // ==========================================
   {
     id: 'communaute',
     name: 'Communauté',
-    shortDescription: 'Forum d’entraide et réseau apprenant',
+    shortDescription: 'Espace d’entraide',
     href: '/communaute',
     iconId: 'communaute',
     category: 'communaute',
     order: 1,
     enabled: true,
+    available: true,
   },
   {
-    id: 'visio',
-    name: 'Visio',
-    shortDescription: 'Salons d’étude et tutorat en direct',
-    href: '/visio',
-    iconId: 'visio',
+    id: 'profil',
+    name: 'Profil',
+    shortDescription: 'Espace personnel',
+    href: '/profil',
+    iconId: 'profil',
     category: 'communaute',
     order: 2,
-    badge: { text: 'Nouveau', variant: 'new' },
     enabled: true,
-  },
-  {
-    id: 'groupes',
-    name: 'Groupes',
-    shortDescription: 'Salons de travail thématiques',
-    href: '/communaute',
-    iconId: 'groupes',
-    category: 'communaute',
-    order: 3,
-    enabled: true,
+    available: true,
   },
   {
     id: 'publications',
     name: 'Publications',
-    shortDescription: 'Articles, synthèses et actualités partagées',
+    shortDescription: 'Articles et partages',
     href: '/communaute',
     iconId: 'publications',
     category: 'communaute',
-    order: 4,
-    enabled: true,
-  },
-
-  // ==========================================
-  // 6. BOUTIQUE & CRÉATION
-  // ==========================================
-  {
-    id: 'vendre',
-    name: 'Vendre',
-    shortDescription: 'Monétiser ses cours et résumés certifiés',
-    href: '/marketplace',
-    iconId: 'vendre',
-    category: 'boutique',
-    order: 1,
-    enabled: true,
-  },
-  {
-    id: 'publier',
-    name: 'Publier',
-    shortDescription: 'Partager une ressource ou un recueil',
-    href: '/documents',
-    iconId: 'publier',
-    category: 'boutique',
-    order: 2,
-    enabled: true,
-  },
-  {
-    id: 'mes-ventes',
-    name: 'Mes ventes',
-    shortDescription: 'Suivi des gains et commandes générées',
-    href: '/marketplace',
-    iconId: 'mes_ventes',
-    category: 'boutique',
     order: 3,
     enabled: true,
+    available: true,
   },
   {
-    id: 'marketplace',
-    name: 'Marketplace',
-    shortDescription: 'Espace d’achat et vente sécurisé',
-    href: '/marketplace',
-    iconId: 'marketplace',
-    category: 'boutique',
+    id: 'groupes',
+    name: 'Groupes',
+    shortDescription: 'Salons thématiques',
+    href: '/communaute',
+    iconId: 'groupes',
+    category: 'communaute',
     order: 4,
-    badge: { text: 'Pro', variant: 'pro' },
     enabled: true,
+    available: true,
+  },
+  {
+    id: 'discussions',
+    name: 'Discussions',
+    shortDescription: 'Échanges en direct',
+    href: '/communaute',
+    iconId: 'discussions',
+    category: 'communaute',
+    order: 5,
+    enabled: true,
+    available: true,
   },
 
   // ==========================================
-  // 7. MON ESPACE
+  // 4. VISIO & RENDEZ-VOUS
   // ==========================================
   {
-    id: 'profil',
-    name: 'Profil',
-    shortDescription: 'Informations personnelles et niveau d’étude',
-    href: '/profil',
-    iconId: 'profil',
-    category: 'mon_espace',
+    id: 'visio',
+    name: 'Visio',
+    shortDescription: 'Salons d’étude live',
+    href: '/visio',
+    iconId: 'visio',
+    category: 'visio_rdv',
+    order: 1,
+    badge: { text: 'Nouveau', variant: 'new' },
+    enabled: true,
+    available: true,
+  },
+  {
+    id: 'mes-rendez-vous',
+    name: 'Mes rendez-vous',
+    shortDescription: 'Séances de révision',
+    href: '/agenda',
+    iconId: 'rendez_vous',
+    category: 'visio_rdv',
+    order: 2,
+    enabled: true,
+    available: true,
+  },
+  {
+    id: 'calendrier',
+    name: 'Calendrier',
+    shortDescription: 'Dates des concours',
+    href: '/agenda',
+    iconId: 'calendrier',
+    category: 'visio_rdv',
+    order: 3,
+    enabled: true,
+    available: true,
+  },
+  {
+    id: 'emploi-du-temps',
+    name: 'Emploi du temps',
+    shortDescription: 'Planning hebdomadaire',
+    href: '/agenda',
+    iconId: 'emploi_du_temps',
+    category: 'visio_rdv',
+    order: 4,
+    enabled: true,
+    available: true,
+  },
+
+  // ==========================================
+  // 5. OUTILS & PRODUCTIVITÉ
+  // ==========================================
+  {
+    id: 'mes-documents',
+    name: 'Mes documents',
+    shortDescription: 'Fichiers enregistrés',
+    href: '/documents',
+    iconId: 'mes_documents',
+    category: 'outils',
     order: 1,
     enabled: true,
+    available: true,
+  },
+  {
+    id: 'telechargements',
+    name: 'Téléchargements',
+    shortDescription: 'Fichiers hors-ligne',
+    href: '/documents',
+    iconId: 'telechargements',
+    category: 'outils',
+    order: 2,
+    enabled: true,
+    available: true,
   },
   {
     id: 'favoris',
     name: 'Favoris',
-    shortDescription: 'Livres, cours et fiches sauvegardés',
+    shortDescription: 'Ressources sauvegardées',
     href: '/favoris',
     iconId: 'favoris',
-    category: 'mon_espace',
-    order: 2,
+    category: 'outils',
+    order: 3,
     enabled: true,
+    available: true,
   },
   {
     id: 'historique',
     name: 'Historique',
-    shortDescription: 'Derniers documents et tests consultés',
+    shortDescription: 'Dernières lectures',
     href: '/profil',
     iconId: 'historique',
-    category: 'mon_espace',
-    order: 3,
-    enabled: true,
-  },
-  {
-    id: 'abonnement',
-    name: 'Abonnement',
-    shortDescription: 'Gestion des formules et facturation',
-    href: '/tarifs',
-    iconId: 'abonnement',
-    category: 'mon_espace',
+    category: 'outils',
     order: 4,
     enabled: true,
+    available: true,
   },
   {
-    id: 'parametres',
-    name: 'Paramètres',
-    shortDescription: 'Préférences de lecture et sécurité',
-    href: '/profil',
-    iconId: 'parametres',
-    category: 'mon_espace',
+    id: 'notes',
+    name: 'Notes',
+    shortDescription: 'Bloc-notes personnel',
+    href: '/documents',
+    iconId: 'notes',
+    category: 'outils',
     order: 5,
     enabled: true,
+    available: true,
+  },
+
+  // ==========================================
+  // 6. ASSISTANTS & UTILITAIRES
+  // ==========================================
+  {
+    id: 'sunubiblio-ai',
+    name: 'Sunubiblio AI',
+    shortDescription: 'Assistant intelligent',
+    href: '/ia',
+    iconId: 'sunubiblio_ai',
+    category: 'assistants',
+    order: 1,
+    badge: { text: 'Populaire', variant: 'popular' },
+    enabled: true,
+    available: true,
+  },
+  {
+    id: 'recherche',
+    name: 'Recherche',
+    shortDescription: 'Catalogue unifié',
+    href: '/bibliotheque',
+    iconId: 'recherche',
+    category: 'assistants',
+    order: 2,
+    enabled: true,
+    available: true,
+  },
+  {
+    id: 'assistant',
+    name: 'Assistant',
+    shortDescription: 'Tuteur pas-à-pas',
+    href: '/ia',
+    iconId: 'assistant',
+    category: 'assistants',
+    order: 3,
+    enabled: true,
+    available: true,
+  },
+  {
+    id: 'outils-documentaires',
+    name: 'Outils doc.',
+    shortDescription: 'PDF & conversions',
+    href: '/documents',
+    iconId: 'outils_doc',
+    category: 'assistants',
+    order: 4,
+    enabled: true,
+    available: true,
+  },
+
+  // ==========================================
+  // 7. COMMERCE
+  // ==========================================
+  {
+    id: 'marketplace',
+    name: 'Marketplace',
+    shortDescription: 'Achat & vente',
+    href: '/marketplace',
+    iconId: 'marketplace',
+    category: 'commerce',
+    order: 1,
+    enabled: true,
+    available: true,
+  },
+  {
+    id: 'vendre-un-livre',
+    name: 'Vendre un livre',
+    shortDescription: 'Déposer une annonce',
+    href: '/marketplace',
+    iconId: 'vendre_livre',
+    category: 'commerce',
+    order: 2,
+    enabled: true,
+    available: true,
+  },
+  {
+    id: 'mes-ventes',
+    name: 'Mes ventes',
+    shortDescription: 'Commandes reçues',
+    href: '/marketplace',
+    iconId: 'mes_ventes',
+    category: 'commerce',
+    order: 3,
+    enabled: true,
+    available: true,
+  },
+  {
+    id: 'mes-achats',
+    name: 'Mes achats',
+    shortDescription: 'Ouvrages acquis',
+    href: '/marketplace',
+    iconId: 'mes_achats',
+    category: 'commerce',
+    order: 4,
+    enabled: true,
+    available: true,
   },
 ];
