@@ -585,6 +585,8 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
         totalQuestions={totalQuestions}
         subject={exercise.subject}
         chapter={exercise.chapter}
+        testTitle={exercise.title}
+        resourceTitle={exercise.resourceTitle}
         competitionName={exercise.competitionName}
         levelLabel={exercise.levelLabel}
         isAIAvailable={isAIAvailable}

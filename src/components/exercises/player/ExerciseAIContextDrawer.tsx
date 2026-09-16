@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { AIService } from '@/services/aiService';
 import { AIMessage } from '@/types/ai';
 
@@ -14,6 +14,8 @@ interface ExerciseAIContextDrawerProps {
   totalQuestions: number;
   subject: string;
   chapter: string;
+  testTitle?: string;
+  resourceTitle?: string;
   competitionName?: string;
   levelLabel?: string;
   isAIAvailable?: boolean;
@@ -26,6 +28,13 @@ interface QuickPromptAction {
   prompt: string;
 }
 
+interface AttachedItem {
+  id: string;
+  type: 'image' | 'document' | 'resource';
+  name: string;
+  size?: string;
+}
+
 export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = ({
   isOpen,
   onClose,
@@ -36,34 +45,44 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
   totalQuestions,
   subject,
   chapter,
+  testTitle,
+  resourceTitle,
   competitionName,
   levelLabel,
   isAIAvailable = true,
 }) => {
-  // Liste des messages du dialogue
+  // Liste des messages
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState<string | null>(null);
-  const [showHelperMenu, setShowHelperMenu] = useState(false);
+  
+  // Menu pièces jointes "+"
+  const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
+  const [attachedItems, setAttachedItems] = useState<AttachedItem[]>([]);
 
+  // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const docInputRef = useRef<HTMLInputElement>(null);
 
-  // Mettre à jour automatiquement le message d'accueil contextuel lorsque la question change
+  // 1. Initialiser ou actualiser automatiquement le contexte quand la question change
   useEffect(() => {
+    const welcomeContent = `Bonjour 👋 Je suis votre **tuteur IA Sunubiblio**.\n\nJe suis connecté à votre session d'entraînement :\n• **Matière :** ${subject}\n• **Chapitre :** ${chapter || 'Général'}${competitionName ? `\n• **Concours :** ${competitionName}` : ''}${testTitle ? `\n• **Épreuve :** ${testTitle}` : ''}\n\nJe suis prêt pour la **Question ${questionNumber} sur ${totalQuestions}**. Que souhaitez-vous approfondir ?`;
+
     setMessages([
       {
         id: `msg-welcome-q${questionNumber}`,
         role: 'assistant',
-        content: `Bonjour 👋 Je suis l'assistant pédagogique Sunubiblio.\n\nJe suis connecté à votre session d'entraînement en **${subject}** (${chapter || 'Général'}${competitionName ? ` • ${competitionName}` : ''}).\n\nQue souhaitez-vous approfondir sur la **Question ${questionNumber}** ?`,
+        content: welcomeContent,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
     setHasError(null);
-  }, [questionNumber, questionText, subject, chapter, competitionName]);
+  }, [questionNumber, questionText, subject, chapter, competitionName, testTitle, totalQuestions]);
 
-  // Empêcher le scroll d'arrière-plan sur mobile
+  // 2. Empêcher le scroll d'arrière-plan du body lors de l'ouverture du drawer
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -75,7 +94,7 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
     };
   }, [isOpen]);
 
-  // Gestion de la touche Échap
+  // 3. Fermeture par la touche Échap
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -86,12 +105,25 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Défilement automatique vers le dernier message
+  // 4. Scroll automatique vers le dernier message UNIQUEMENT dans la boîte de conversation
   useEffect(() => {
     if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }, [messages, isOpen, isLoading]);
+
+  // 5. Redimensionnement automatique de la zone de texte (textarea)
+  const adjustTextareaHeight = useCallback(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      const newHeight = Math.min(textareaRef.current.scrollHeight, 120);
+      textareaRef.current.style.height = `${newHeight}px`;
+    }
+  }, []);
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [inputText, adjustTextareaHeight]);
 
   // Actions pédagogiques rapides contextuelles
   const quickActions: QuickPromptAction[] = [
@@ -127,27 +159,89 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
     },
   ];
 
-  // Envoi de message avec contrôle serveur
+  // Gestion des pièces jointes
+  const handleAttachImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const sizeKb = Math.round(file.size / 1024);
+    setAttachedItems((prev) => [
+      ...prev,
+      {
+        id: `img-${Date.now()}`,
+        type: 'image',
+        name: file.name,
+        size: `${sizeKb} Ko`,
+      },
+    ]);
+    setShowAttachmentMenu(false);
+  };
+
+  const handleAttachDocument = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const sizeKb = Math.round(file.size / 1024);
+    setAttachedItems((prev) => [
+      ...prev,
+      {
+        id: `doc-${Date.now()}`,
+        type: 'document',
+        name: file.name,
+        size: `${sizeKb} Ko`,
+      },
+    ]);
+    setShowAttachmentMenu(false);
+  };
+
+  const handleAttachResource = () => {
+    if (!resourceTitle) return;
+    setAttachedItems((prev) => {
+      if (prev.some((item) => item.type === 'resource')) return prev;
+      return [
+        ...prev,
+        {
+          id: `res-${Date.now()}`,
+          type: 'resource',
+          name: resourceTitle,
+        },
+      ];
+    });
+    setShowAttachmentMenu(false);
+  };
+
+  const handleRemoveAttachment = (id: string) => {
+    setAttachedItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  // Envoi de message avec contexte sécurisé
   const handleSendMessage = async (textToSend?: string) => {
     const text = (textToSend || inputText).trim();
     if (!text || isLoading) return;
 
     setHasError(null);
-    setShowHelperMenu(false);
+    setShowAttachmentMenu(false);
+
+    // Contexte enrichi avec les pièces jointes
+    const attachmentsSummary = attachedItems.length > 0
+      ? `\n[Pièces jointes analysées : ${attachedItems.map((a) => `${a.name} (${a.type})`).join(', ')}]`
+      : '';
 
     const userMessage: AIMessage = {
       id: `user-${Date.now()}`,
       role: 'user',
-      content: text,
+      content: `${text}${attachmentsSummary}`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setInputText('');
+    setAttachedItems([]);
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
     setIsLoading(true);
 
     try {
-      // 1. Appel vers la route sécurisée côté serveur
+      // 1. Appel API sécurisé côté serveur
       const res = await fetch('/api/ai/exercise-coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -155,16 +249,13 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
           exerciseId,
           questionId,
           questionNumber,
-          prompt: text,
+          prompt: `${text}${attachmentsSummary}`,
         }),
       });
 
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        if (res.status === 403) {
-          throw new Error(errorData.error || "L'assistant IA est désactivé pour cette épreuve.");
-        }
-        throw new Error(errorData.error || 'Erreur lors du traitement.');
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Erreur lors du traitement de votre demande.');
       }
 
       const data = await res.json();
@@ -178,23 +269,25 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
         },
       ]);
     } catch (err: any) {
-      // Fallback local vers AIService si le serveur Next.js n'a pas encore recompilé ou hors-ligne
+      // Fallback local via AIService si connexion locale perturbée
       try {
-        const enrichedContent = `[Contexte : ${subject} | ${chapter || 'Général'} | Q.${questionNumber} : "${questionText}"]\n${text}`;
+        const enriched = `[Contexte : ${subject} | ${chapter || 'Général'} | Q.${questionNumber} : "${questionText}"]\n${text}${attachmentsSummary}`;
         const fallbackMsg = await AIService.processRequest({
-          content: enrichedContent,
+          content: enriched,
           mode: 'assistant',
         });
         setMessages((prev) => [...prev, fallbackMsg]);
       } catch {
-        setHasError(err.message || 'Impossible de joindre le tuteur IA Sunubiblio.');
-        const errorMessage: AIMessage = {
-          id: `err-${Date.now()}`,
-          role: 'assistant',
-          content: `⚠️ ${err.message || 'Le service IA pédagogique est momentanément indisponible. Veuillez réessayer.'}`,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        };
-        setMessages((prev) => [...prev, errorMessage]);
+        setHasError(err.message || 'Impossible de joindre le tuteur IA.');
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `err-${Date.now()}`,
+            role: 'assistant',
+            content: `⚠️ ${err.message || 'Le service IA pédagogique est temporairement indisponible. Veuillez réessayer.'}`,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          },
+        ]);
       }
     } finally {
       setIsLoading(false);
@@ -208,12 +301,6 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
     }
   };
 
-  const handleInsertTemplate = (template: string) => {
-    setInputText((prev) => (prev ? `${prev} ${template}` : template));
-    setShowHelperMenu(false);
-    textareaRef.current?.focus();
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -225,56 +312,63 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
         aria-modal="true"
         aria-label="Assistant IA Sunubiblio"
       >
-        {/* Poignée de manipulation mobile */}
-        <div className="sheet-handle-bar" onClick={onClose} aria-hidden="true" />
+        {/* =========================================================
+            ZONE 1 : HEADER FIXE EN HAUT
+            ========================================================= */}
+        <div className="ai-drawer-top-section">
+          {/* Poignée tactile mobile */}
+          <div className="sheet-handle-bar" onClick={onClose} aria-hidden="true" />
 
-        {/* En-tête de l'assistant IA */}
-        <div className="ai-drawer-header">
-          <div className="ai-drawer-identity">
-            <div className="ai-drawer-avatar" aria-hidden="true">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <rect x="3" y="11" width="18" height="10" rx="2" />
-                <circle cx="12" cy="5" r="2" />
-                <path d="M12 7v4" />
-                <line x1="8" y1="16" x2="8.01" y2="16" strokeWidth="3" />
-                <line x1="16" y1="16" x2="16.01" y2="16" strokeWidth="3" />
-              </svg>
-            </div>
-            <div className="ai-drawer-titles">
-              <div className="ai-drawer-title-row">
-                <h3 className="ai-drawer-name">IA Sunubiblio</h3>
-                <span className="ai-coach-pill">Tuteur Pédagogique</span>
+          {/* En-tête de marque */}
+          <div className="ai-drawer-header">
+            <div className="ai-drawer-identity">
+              <div className="ai-drawer-avatar" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <rect x="3" y="11" width="18" height="10" rx="2" />
+                  <circle cx="12" cy="5" r="2" />
+                  <path d="M12 7v4" />
+                  <line x1="8" y1="16" x2="8.01" y2="16" strokeWidth="3" />
+                  <line x1="16" y1="16" x2="16.01" y2="16" strokeWidth="3" />
+                </svg>
               </div>
-              <span className="ai-drawer-context-pill">
-                Q.{questionNumber}/{totalQuestions} • {subject}
-              </span>
+              <div className="ai-drawer-titles">
+                <div className="ai-drawer-title-row">
+                  <h3 className="ai-drawer-name">IA Sunubiblio</h3>
+                  <span className="ai-coach-pill">Tuteur Pédagogique</span>
+                </div>
+                <span className="ai-drawer-context-pill">
+                  Q.{questionNumber}/{totalQuestions} • {subject}
+                </span>
+              </div>
             </div>
+
+            <button
+              type="button"
+              className="ai-drawer-close-btn"
+              onClick={onClose}
+              aria-label="Fermer l'assistant IA"
+              title="Fermer (Échap)"
+            >
+              ✕
+            </button>
           </div>
 
-          <button
-            type="button"
-            className="ai-drawer-close-btn"
-            onClick={onClose}
-            aria-label="Fermer l'assistant IA"
-            title="Fermer (Échap)"
-          >
-            ✕
-          </button>
-        </div>
-
-        {/* Aperçu compact de la question active */}
-        <div className="ai-drawer-question-box">
-          <div className="drawer-question-label">
-            <span>Question {questionNumber} sur {totalQuestions}</span>
-            {competitionName && <span className="drawer-contest-tag">{competitionName}</span>}
+          {/* Récépissé contextuel de la question active */}
+          <div className="ai-drawer-question-box">
+            <div className="drawer-question-label">
+              <span>Question {questionNumber} sur {totalQuestions}</span>
+              {competitionName && <span className="drawer-contest-tag">{competitionName}</span>}
+            </div>
+            <p className="drawer-question-snippet" title={questionText}>
+              « {questionText} »
+            </p>
           </div>
-          <p className="drawer-question-snippet" title={questionText}>
-            « {questionText} »
-          </p>
         </div>
 
-        {/* Zone de discussion */}
-        <div className="ai-drawer-messages-area">
+        {/* =========================================================
+            ZONE 2 : CONVERSATION SCROLLABLE (AU CENTRE)
+            ========================================================= */}
+        <div className="ai-drawer-messages-area" role="log" aria-live="polite">
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -288,7 +382,7 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
           ))}
 
           {isLoading && (
-            <div className="ai-drawer-bubble bubble-ai is-typing">
+            <div className="ai-drawer-bubble bubble-ai is-typing" aria-label="Chargement de la réponse">
               <div className="ai-typing-indicator" aria-hidden="true">
                 <span />
                 <span />
@@ -299,7 +393,7 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
           )}
 
           {hasError && (
-            <div className="ai-error-banner">
+            <div className="ai-error-banner" role="alert">
               <span>{hasError}</span>
               <button
                 type="button"
@@ -314,88 +408,155 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Suggestions d'actions rapides (Scroll fluide horizontal au pouce) */}
-        <div className="ai-drawer-quick-actions" aria-label="Suggestions d'actions rapides">
-          {quickActions.map((action) => (
-            <button
-              key={action.id}
-              type="button"
-              className="quick-action-chip"
-              onClick={() => handleSendMessage(action.prompt)}
-              disabled={isLoading}
-            >
-              <span className="chip-icon" aria-hidden="true">{action.icon}</span>
-              <span className="chip-text">{action.label}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Menu d'aide rapide du bouton "+" */}
-        {showHelperMenu && (
-          <div className="composer-helper-dropdown">
-            <div className="helper-dropdown-title">Insérer un élément de réflexion :</div>
-            <button
-              type="button"
-              className="helper-option-btn"
-              onClick={() => handleInsertTemplate("Quelle règle de cours doit-on appliquer ici ?")}
-            >
-              📚 Règle de cours fondamentale
-            </button>
-            <button
-              type="button"
-              className="helper-option-btn"
-              onClick={() => handleInsertTemplate("Quels sont les pièges fréquents dans ce type d'exercice ?")}
-            >
-              ⚠️ Piège fréquent des candidats
-            </button>
-            <button
-              type="button"
-              className="helper-option-btn"
-              onClick={() => handleInsertTemplate("Comment éliminer les options manifestement fausses ?")}
-            >
-              🧭 Méthode d'élimination logique
-            </button>
+        {/* =========================================================
+            ZONE 3 : SUGGESTIONS + BARRE DE SAISIE FIXE EN BAS
+            ========================================================= */}
+        <div className="ai-drawer-bottom-section">
+          {/* Actions rapides contextuelles (Scroll horizontal au pouce) */}
+          <div className="ai-drawer-quick-actions" aria-label="Suggestions d'actions rapides">
+            {quickActions.map((action) => (
+              <button
+                key={action.id}
+                type="button"
+                className="quick-action-chip"
+                onClick={() => handleSendMessage(action.prompt)}
+                disabled={isLoading}
+              >
+                <span className="chip-icon" aria-hidden="true">{action.icon}</span>
+                <span className="chip-text">{action.label}</span>
+              </button>
+            ))}
           </div>
-        )}
 
-        {/* Barre de saisie moderne */}
-        <div className="ai-drawer-composer">
-          <div className="composer-input-pill">
-            <button
-              type="button"
-              className={`composer-plus-btn ${showHelperMenu ? 'is-active' : ''}`}
-              title="Ajouter une piste d'analyse"
-              aria-label="Options d'assistance"
-              onClick={() => setShowHelperMenu((prev) => !prev)}
-            >
-              +
-            </button>
+          {/* Badges des pièces jointes sélectionnées */}
+          {attachedItems.length > 0 && (
+            <div className="ai-attachments-pill-list">
+              {attachedItems.map((item) => (
+                <div key={item.id} className="attachment-chip-item">
+                  <span className="attachment-chip-icon">
+                    {item.type === 'image' && '📷'}
+                    {item.type === 'document' && '📄'}
+                    {item.type === 'resource' && '📚'}
+                  </span>
+                  <span className="attachment-chip-name">{item.name}</span>
+                  {item.size && <span className="attachment-chip-size">({item.size})</span>}
+                  <button
+                    type="button"
+                    className="attachment-chip-remove"
+                    onClick={() => handleRemoveAttachment(item.id)}
+                    aria-label="Supprimer la pièce jointe"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
 
-            <textarea
-              ref={textareaRef}
-              rows={1}
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Écrire à l'IA Sunubiblio..."
-              className="composer-textarea"
-              disabled={isLoading}
-              aria-label="Poser une question à l'assistant IA"
-            />
+          {/* Menu popover des pièces jointes (+) */}
+          {showAttachmentMenu && (
+            <div className="composer-attachments-popover" role="menu">
+              <div className="popover-title">Joindre un document pédagogique :</div>
+              
+              <button
+                type="button"
+                role="menuitem"
+                className="attachment-menu-btn"
+                onClick={() => imageInputRef.current?.click()}
+              >
+                <span className="menu-btn-icon">📷</span>
+                <div className="menu-btn-texts">
+                  <strong>Photo / Schéma de la question</strong>
+                  <small>Formats : PNG, JPG, WebP</small>
+                </div>
+              </button>
 
-            <button
-              type="button"
-              className={`composer-send-btn ${inputText.trim() ? 'has-content' : ''}`}
-              onClick={() => handleSendMessage()}
-              disabled={!inputText.trim() || isLoading}
-              aria-label="Envoyer le message"
-              title="Envoyer"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="12" y1="19" x2="12" y2="5" />
-                <polyline points="5 12 12 5 19 12" />
-              </svg>
-            </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="attachment-menu-btn"
+                onClick={() => docInputRef.current?.click()}
+              >
+                <span className="menu-btn-icon">📄</span>
+                <div className="menu-btn-texts">
+                  <strong>Document de travail / Annale</strong>
+                  <small>Formats : PDF, DOCX, TXT</small>
+                </div>
+              </button>
+
+              {resourceTitle && (
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="attachment-menu-btn"
+                  onClick={handleAttachResource}
+                >
+                  <span className="menu-btn-icon">📚</span>
+                  <div className="menu-btn-texts">
+                    <strong>Ressource du cours Sunubiblio</strong>
+                    <small>« {resourceTitle} »</small>
+                  </div>
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Inputs cachés de téléchargement */}
+          <input
+            ref={imageInputRef}
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            onChange={handleAttachImage}
+          />
+          <input
+            ref={docInputRef}
+            type="file"
+            accept=".pdf,.doc,.docx,.txt"
+            style={{ display: 'none' }}
+            onChange={handleAttachDocument}
+          />
+
+          {/* VRAIE BARRE DE SAISIE MODERNE (Toujours visible en bas) */}
+          <div className="ai-drawer-composer">
+            <div className="composer-input-pill">
+              <button
+                type="button"
+                className={`composer-plus-btn ${showAttachmentMenu ? 'is-active' : ''}`}
+                title="Joindre une pièce ou ressource Sunubiblio"
+                aria-label="Options et pièces jointes"
+                aria-expanded={showAttachmentMenu}
+                onClick={() => setShowAttachmentMenu((prev) => !prev)}
+              >
+                +
+              </button>
+
+              <textarea
+                ref={textareaRef}
+                rows={1}
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Écrivez à l’IA Sunubiblio..."
+                className="composer-textarea"
+                disabled={isLoading}
+                aria-label="Écrivez à l’IA"
+              />
+
+              <button
+                type="button"
+                className={`composer-send-btn ${inputText.trim() ? 'has-content' : ''}`}
+                onClick={() => handleSendMessage()}
+                disabled={!inputText.trim() || isLoading}
+                aria-label="Envoyer le message"
+                title="Envoyer (Entrée)"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
+                  <line x1="12" y1="19" x2="12" y2="5" />
+                  <polyline points="5 12 12 5 19 12" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>

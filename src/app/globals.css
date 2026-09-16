@@ -1410,6 +1410,11 @@ input {
 @media (max-width: 860px) {
   .mobile-bottom-nav-root {
     display: block !important;
+  }
+  .mobile-bottom-nav-root.is-hidden-on-player {
+    display: none !important;
+  }
+  .mobile-bottom-nav-root {
     position: fixed !important;
     bottom: 0 !important;
     left: 0 !important;
@@ -11325,7 +11330,7 @@ input {
   inset: 0;
   background: rgba(15, 23, 42, 0.55);
   backdrop-filter: blur(5px);
-  z-index: 1400;
+  z-index: 1500;
   animation: backdropFadeIn 0.2s ease-out;
 }
 
@@ -11342,10 +11347,11 @@ input {
     max-width: 600px;
     background: #ffffff;
     border-radius: 26px 26px 0 0;
-    box-shadow: 0 -12px 45px rgba(15, 23, 42, 0.3);
+    box-shadow: 0 -12px 45px rgba(15, 23, 42, 0.35);
     display: flex;
     flex-direction: column;
-    height: 85vh;
+    height: 85dvh;
+    max-height: 85dvh;
     animation: sheetSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     overflow: hidden;
   }
@@ -11387,12 +11393,22 @@ input {
   }
 }
 
+/* ZONE 1 : TOP SECTION FIXE */
+.ai-drawer-top-section {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  z-index: 5;
+}
+
 /* En-tête de l'IA */
 .ai-drawer-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 20px;
+  padding: 12px 18px;
   border-bottom: 1px solid #f1f5f9;
   background: linear-gradient(180deg, #faf8ff 0%, #ffffff 100%);
 }
@@ -11404,9 +11420,9 @@ input {
 }
 
 .ai-drawer-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
   background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
   color: #ffffff;
   display: flex;
@@ -11419,7 +11435,7 @@ input {
 .ai-drawer-titles {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .ai-drawer-title-row {
@@ -11471,11 +11487,10 @@ input {
   color: #0f172a;
 }
 
-/* Aperçu de la question active */
+/* Récépissé contextuel de la question active */
 .ai-drawer-question-box {
   background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
-  padding: 10px 18px;
+  padding: 8px 18px;
 }
 
 .drawer-question-label {
@@ -11487,7 +11502,7 @@ input {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #64748b;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .drawer-contest-tag {
@@ -11507,14 +11522,16 @@ input {
   white-space: nowrap;
 }
 
-/* Corps des messages */
+/* ZONE 2 : CONVERSATION SCROLLABLE (AU CENTRE) */
 .ai-drawer-messages-area {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0; /* Fondamental pour forcer le scroll intérieur sans pousser le bas */
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   background: #ffffff;
 }
 
@@ -11627,14 +11644,27 @@ input {
   cursor: pointer;
 }
 
+/* ZONE 3 : SUGGESTIONS + BARRE DE SAISIE FIXE EN BAS */
+.ai-drawer-bottom-section {
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.04);
+}
+
 /* Actions rapides IA (défilement horizontal au pouce) */
 .ai-drawer-quick-actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 8px 14px;
   background: #f8fafc;
-  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
   overflow-x: auto;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
@@ -11644,7 +11674,7 @@ input {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 12px;
+  padding: 6px 12px;
   border-radius: 9999px;
   background: #ffffff;
   border: 1px solid #cbd5e1;
@@ -11667,18 +11697,65 @@ input {
   cursor: not-allowed;
 }
 
-/* Menu d'aide rapide du bouton "+" */
-.composer-helper-dropdown {
+/* Badges des pièces jointes */
+.ai-attachments-pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 14px 2px;
   background: #ffffff;
-  border-top: 1px solid #e2e8f0;
-  padding: 10px 16px;
+}
+
+.attachment-chip-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  font-size: 0.75rem;
+  color: #0f172a;
+  max-width: 260px;
+}
+
+.attachment-chip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachment-chip-size {
+  font-size: 0.6875rem;
+  color: #64748b;
+}
+
+.attachment-chip-remove {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.attachment-chip-remove:hover {
+  color: #ef4444;
+}
+
+/* Menu popover des pièces jointes (+) */
+.composer-attachments-popover {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 8px 14px;
   display: flex;
   flex-direction: column;
   gap: 6px;
   animation: sheetSlideUp 0.15s ease-out;
 }
 
-.helper-dropdown-title {
+.popover-title {
   font-size: 0.6875rem;
   font-weight: 700;
   color: #64748b;
@@ -11687,29 +11764,47 @@ input {
   margin-bottom: 2px;
 }
 
-.helper-option-btn {
-  text-align: left;
+.attachment-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  font-size: 0.8125rem;
-  color: #1e293b;
+  text-align: left;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
-.helper-option-btn:hover {
+.attachment-menu-btn:hover {
   background: #eef2ff;
   border-color: #a5b4fc;
-  color: #4338ca;
 }
 
-/* Barre de saisie IA moderne */
+.menu-btn-icon {
+  font-size: 1.125rem;
+}
+
+.menu-btn-texts {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-btn-texts strong {
+  font-size: 0.8125rem;
+  color: #0f172a;
+}
+
+.menu-btn-texts small {
+  font-size: 0.6875rem;
+  color: #64748b;
+}
+
+/* Vraie Barre de saisie IA moderne */
 .ai-drawer-composer {
-  padding: 10px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+  padding: 8px 14px calc(10px + env(safe-area-inset-bottom, 0px));
   background: #ffffff;
-  border-top: 1px solid #e2e8f0;
 }
 
 .composer-input-pill {
@@ -11719,7 +11814,7 @@ input {
   background: #f8fafc;
   border: 1.5px solid #e2e8f0;
   border-radius: 28px;
-  padding: 4px 6px 4px 12px;
+  padding: 4px 6px 4px 10px;
   transition: all 0.2s ease;
 }
 
@@ -11760,14 +11855,16 @@ input {
   font-size: 0.875rem;
   color: #0f172a;
   resize: none;
-  max-height: 80px;
+  max-height: 110px;
+  min-height: 24px;
   line-height: 1.4;
   padding: 4px 0;
+  font-family: inherit;
 }
 
 .composer-send-btn {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: #cbd5e1;
   border: none;
@@ -11788,7 +11885,7 @@ input {
 
 .composer-send-btn:disabled {
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.55;
 }
 
 /* ==========================================================================
