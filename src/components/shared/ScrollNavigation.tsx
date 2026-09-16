@@ -8,12 +8,6 @@ export const ScrollNavigation: React.FC = () => {
   const [canScrollUp, setCanScrollUp] = useState(false);
   const [canScrollDown, setCanScrollDown] = useState(true);
 
-  // Masquer le bouton de défilement pendant un test de révision
-  const isExercisePlayer = pathname.startsWith('/exercices/') && pathname !== '/exercices';
-  if (isExercisePlayer) {
-    return null;
-  }
-
   // Écouteur de scroll hautement optimisé avec requestAnimationFrame
   useEffect(() => {
     let ticking = false;
@@ -60,7 +54,9 @@ export const ScrollNavigation: React.FC = () => {
     });
   }, []);
 
-  if (!canScrollUp && !canScrollDown) {
+  // Masquer le bouton de défilement pendant un test de révision ou si aucun défilement possible
+  const isExercisePlayer = pathname.startsWith('/exercices/') && pathname !== '/exercices';
+  if (isExercisePlayer || (!canScrollUp && !canScrollDown)) {
     return null;
   }
 
