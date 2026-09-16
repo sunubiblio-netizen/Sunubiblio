@@ -7,6 +7,8 @@ import { exerciseService } from '@/services/exerciseService';
 import { ExerciseTimer } from './ExerciseTimer';
 import { QuestionRenderer } from './QuestionRenderer';
 import { ExerciseResultView } from './ExerciseResultView';
+import { ExerciseQuestionsBottomSheet } from './ExerciseQuestionsBottomSheet';
+import { ExerciseAIContextDrawer } from './ExerciseAIContextDrawer';
 
 interface ExercisePlayerProps {
   exercise: Exercise;
@@ -18,6 +20,10 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
 
   // Favoris
   const [isFavorite, setIsFavorite] = useState(false);
+
+  // Bottom Sheets Mobile
+  const [isQuestionsSheetOpen, setIsQuestionsSheetOpen] = useState(false);
+  const [isAIDrawerOpen, setIsAIDrawerOpen] = useState(false);
 
   // État de session
   const [session, setSession] = useState<ExerciseSession>(() => {
@@ -242,10 +248,82 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
     );
   }
 
+  const progressPercentage = totalQuestions > 0 ? Math.round(((currentIndex + 1) / totalQuestions) * 100) : 0;
+
   return (
     <div className="exercise-player-container">
-      {/* Barre supérieure de contrôle */}
-      <header className="player-top-header">
+      {/* 1. EN-TÊTE MOBILE COMPACT & MODERNE (< 1024px) */}
+      <div className="player-mobile-header">
+        <div className="mobile-header-top-row">
+          <Link href="/exercices" className="mobile-back-btn" title="Quitter le test">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+            <span>Quitter</span>
+          </Link>
+
+          <div className="mobile-timer-wrap">
+            <ExerciseTimer
+              durationMinutes={exercise.durationMinutes}
+              timeSpentSeconds={session.timeSpentSeconds}
+              onTimeUp={handleTimeUp}
+            />
+          </div>
+
+          <button
+            type="button"
+            className="mobile-questions-trigger-btn"
+            onClick={() => setIsQuestionsSheetOpen(true)}
+            aria-label="Ouvrir la liste des questions"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg>
+            <span>Questions</span>
+            <span className="trigger-count-badge">{currentIndex + 1}/{totalQuestions}</span>
+          </button>
+        </div>
+
+        {/* Ligne informative du test */}
+        <div className="mobile-test-info-row">
+          <div className="mobile-test-title-col">
+            <span className="mobile-exercise-title">{exercise.title}</span>
+            <div className="mobile-badges-row">
+              <span className={`exam-difficulty-badge diff-${exercise.difficulty.toLowerCase()}`}>
+                {exercise.difficultyLabel}
+              </span>
+              {exercise.competitionName && (
+                <span className="exam-competition-badge">
+                  🏆 {exercise.competitionName}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Barre de progression continue */}
+        <div className="mobile-progress-wrapper">
+          <div className="mobile-progress-label-row">
+            <span className="progress-counter-text">
+              Question <strong>{currentIndex + 1}</strong> sur <strong>{totalQuestions}</strong>
+            </span>
+            <span className="progress-pct-text">{progressPercentage}%</span>
+          </div>
+          <div className="mobile-progress-track">
+            <div
+              className="mobile-progress-fill"
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 2. EN-TÊTE DESKTOP (conservé intact pour >= 1024px) */}
+      <header className="player-top-header desktop-only-header">
         <div className="player-back-nav">
           <Link href="/exercices" className="back-link-btn" title="Quitter la session">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -273,11 +351,10 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
 
         {/* Boutons d'action supérieurs */}
         <div className="player-actions-top">
-          {/* Bouton grille sur mobile */}
           <button
             type="button"
             className="mobile-grid-toggle-btn"
-            onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+            onClick={() => setIsQuestionsSheetOpen(true)}
             title="Afficher la grille des questions"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -318,12 +395,12 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
         </div>
       </header>
 
-      {/* Disposition principale : Contenu Question + Grille de navigation latérale */}
+      {/* 3. DISPOSITION PRINCIPALE : Question + Sidebar Desktop */}
       <div className="player-main-layout">
-        {/* Colonne centrale : Épreuve */}
+        {/* Colonne de l'Épreuve */}
         <div className="player-question-area">
-          {/* Bannière de métadonnées du test */}
-          <div className="player-exam-banner">
+          {/* Bannière de métadonnées du test (desktop) */}
+          <div className="player-exam-banner desktop-only-banner">
             <div className="exam-banner-left">
               <span className="exam-mode-badge">
                 <span className="exam-mode-dot" />
@@ -347,7 +424,7 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
             </div>
           </div>
 
-          {/* Composant Question sans révélation de réponses */}
+          {/* Carte Question sans révélation des réponses */}
           <div className="question-card-wrapper">
             <QuestionRenderer
               question={currentQuestion}
@@ -357,7 +434,7 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
             />
           </div>
 
-          {/* Barre de navigation inférieure */}
+          {/* Barre de navigation inférieure ergonomique */}
           <footer className="player-bottom-footer">
             <button
               type="button"
@@ -408,8 +485,8 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
           </footer>
         </div>
 
-        {/* Colonne latérale : Grille de navigation des questions */}
-        <aside className={`player-sidebar-grid ${isDrawerOpen ? 'is-drawer-open' : ''}`}>
+        {/* Sidebar Desktop pour grands écrans */}
+        <aside className="player-sidebar-grid desktop-only-sidebar">
           <div className="sidebar-grid-header">
             <div className="sidebar-grid-title-wrap">
               <h4 className="sidebar-grid-title">Grille des questions</h4>
@@ -417,14 +494,6 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
                 {answeredCount}/{totalQuestions} complétées
               </span>
             </div>
-            <button
-              type="button"
-              className="sidebar-close-btn"
-              onClick={() => setIsDrawerOpen(false)}
-              aria-label="Fermer la grille"
-            >
-              ✕
-            </button>
           </div>
 
           <div className="sidebar-legend">
@@ -448,13 +517,10 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
               const isCurrent = idx === currentIndex;
 
               let statusClass = 'is-pending';
-              let symbol = `${idx + 1}`;
-
               if (isCurrent) {
                 statusClass = 'is-current';
               } else if (isAnswered) {
                 statusClass = 'is-answered';
-                symbol = '✓';
               }
 
               return (
@@ -489,7 +555,52 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
         </aside>
       </div>
 
-      {/* MODALE DE CONFIRMATION AVANT SOUMISSION FINALE */}
+      {/* 4. BOUTON FLOTTANT IA SUNUBIBLIO (Accessible in-situ sans redirection) */}
+      <button
+        type="button"
+        className="floating-ai-coach-btn"
+        onClick={() => setIsAIDrawerOpen(true)}
+        aria-label="Ouvrir l'assistant pédagogique IA"
+        title="Ouvrir l'IA Sunubiblio"
+      >
+        <span className="ai-btn-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <rect x="3" y="11" width="18" height="10" rx="2" />
+            <circle cx="12" cy="5" r="2" />
+            <path d="M12 7v4" />
+            <line x1="8" y1="16" x2="8.01" y2="16" strokeWidth="3" />
+            <line x1="16" y1="16" x2="16.01" y2="16" strokeWidth="3" />
+          </svg>
+        </span>
+        <span className="ai-btn-text">Coach IA</span>
+        <span className="ai-pulse-dot" />
+      </button>
+
+      {/* 5. BOTTOM SHEET MOBILE : GRILLE DES QUESTIONS */}
+      <ExerciseQuestionsBottomSheet
+        isOpen={isQuestionsSheetOpen}
+        onClose={() => setIsQuestionsSheetOpen(false)}
+        questions={questions}
+        currentIndex={currentIndex}
+        answers={session.answers}
+        onSelectQuestion={handleJumpToQuestion}
+        title={`Questions du test (${exercise.title})`}
+      />
+
+      {/* 6. BOTTOM SHEET MOBILE : ASSISTANT IA CONTEXTUEL */}
+      <ExerciseAIContextDrawer
+        isOpen={isAIDrawerOpen}
+        onClose={() => setIsAIDrawerOpen(false)}
+        questionText={currentQuestion.question}
+        questionNumber={currentIndex + 1}
+        totalQuestions={totalQuestions}
+        subject={exercise.subject}
+        chapter={exercise.chapter}
+        competitionName={exercise.competitionName}
+        levelLabel={exercise.levelLabel}
+      />
+
+      {/* 7. MODALE DE CONFIRMATION AVANT SOUMISSION FINALE */}
       {showConfirmModal && (
         <div className="confirm-modal-backdrop" onClick={() => setShowConfirmModal(false)}>
           <div
