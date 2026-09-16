@@ -49,9 +49,6 @@ export const SunuIaIcon: React.FC<SunuIaIconProps> = ({
         </radialGradient>
       </defs>
 
-      {/* Halo d'ambiance ultra-léger */}
-      <circle cx="24" cy="24" r="21" fill="url(#sunuIaG2)" fillOpacity="0.08" />
-
       {/* Groupe de 3 pétales arrondis en vortex dynamique */}
       <g>
         {/* Pétale 1 (Haut - Cyan / Bleu) */}

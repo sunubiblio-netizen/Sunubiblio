@@ -179,15 +179,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* 1. Notifications */}
             <NotificationsPopover />
 
-            {/* 2. Bouton SunuIA (icône seule + indicateur vert sur mobile) */}
+            {/* 2. Logo SunuIA pur (sans texte, sans cadre, sans fond, 26px) */}
             <Link
               href="/ia"
-              className={`mobile-ia-icon-btn ${isIA ? 'is-active' : ''}`}
+              className="mobile-ia-icon-link"
               title="Accéder à SunuIA — Assistant intelligent Sunubiblio"
               aria-label="SunuIA — Assistant intelligent"
             >
-              <SunuIaIcon size={18} />
-              <span className="ia-pulse-dot" aria-hidden="true" />
+              <SunuIaIcon size={26} />
             </Link>
 
             {/* 3. Applications (Lanceur grille 3x3) */}

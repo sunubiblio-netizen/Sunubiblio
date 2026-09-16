@@ -15229,7 +15229,7 @@ input {
   .mobile-actions-right-group {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     flex-shrink: 0;
   }
 
@@ -15240,40 +15240,29 @@ input {
     height: 36px !important;
   }
 
-  /* Bouton SunuIA compact : icône originale seule + indicateur vert */
-  .mobile-ia-icon-btn {
+  /* Logo SunuIA seul et pur sur mobile (sans cadre, sans fond, sans bordure, taille élégante 26px) */
+  .mobile-ia-icon-link {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 36px !important;
-    height: 36px !important;
+    width: 28px !important;
+    height: 28px !important;
     padding: 0 !important;
-    border-radius: 10px !important;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(236, 72, 153, 0.12) 100%) !important;
-    border: 1px solid rgba(99, 102, 241, 0.35) !important;
-    color: #4338ca !important;
-    position: relative !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    outline: none !important;
     flex-shrink: 0 !important;
     text-decoration: none !important;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.15s ease;
   }
 
-  .mobile-ia-icon-btn:hover,
-  .mobile-ia-icon-btn.is-active {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.22) 0%, rgba(236, 72, 153, 0.22) 100%) !important;
-    border-color: #6366f1 !important;
-    transform: translateY(-1px);
-  }
-
-  .mobile-ia-icon-btn .ia-pulse-dot {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #10b981;
-    box-shadow: 0 0 0 1.5px #ffffff;
+  .mobile-ia-icon-link:active {
+    transform: scale(0.92);
+    opacity: 0.8;
   }
 
   .essential-nav-links {
