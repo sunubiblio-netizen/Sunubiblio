@@ -9,6 +9,7 @@ import { QuestionRenderer } from './QuestionRenderer';
 import { ExerciseResultView } from './ExerciseResultView';
 import { ExerciseQuestionsBottomSheet } from './ExerciseQuestionsBottomSheet';
 import { ExerciseAIContextDrawer } from './ExerciseAIContextDrawer';
+import { ExerciseAIButton } from './ExerciseAIButton';
 
 interface ExercisePlayerProps {
   exercise: Exercise;
@@ -21,9 +22,10 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
   // Favoris
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Bottom Sheets Mobile
+  // Bottom Sheets Mobile & Tiroir IA
   const [isQuestionsSheetOpen, setIsQuestionsSheetOpen] = useState(false);
   const [isAIDrawerOpen, setIsAIDrawerOpen] = useState(false);
+  const isAIAvailable = exercise.allowAI !== false;
 
   // État de session
   const [session, setSession] = useState<ExerciseSession>(() => {
@@ -555,26 +557,11 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
         </aside>
       </div>
 
-      {/* 4. BOUTON FLOTTANT IA SUNUBIBLIO (Accessible in-situ sans redirection) */}
-      <button
-        type="button"
-        className="floating-ai-coach-btn"
+      {/* 4. PETIT BOUTON IA SUNUBIBLIO (Discret, compact, responsive, accessible) */}
+      <ExerciseAIButton
         onClick={() => setIsAIDrawerOpen(true)}
-        aria-label="Ouvrir l'assistant pédagogique IA"
-        title="Ouvrir l'IA Sunubiblio"
-      >
-        <span className="ai-btn-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-            <rect x="3" y="11" width="18" height="10" rx="2" />
-            <circle cx="12" cy="5" r="2" />
-            <path d="M12 7v4" />
-            <line x1="8" y1="16" x2="8.01" y2="16" strokeWidth="3" />
-            <line x1="16" y1="16" x2="16.01" y2="16" strokeWidth="3" />
-          </svg>
-        </span>
-        <span className="ai-btn-text">Coach IA</span>
-        <span className="ai-pulse-dot" />
-      </button>
+        isAIAvailable={isAIAvailable}
+      />
 
       {/* 5. BOTTOM SHEET MOBILE : GRILLE DES QUESTIONS */}
       <ExerciseQuestionsBottomSheet
@@ -587,10 +574,12 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
         title={`Questions du test (${exercise.title})`}
       />
 
-      {/* 6. BOTTOM SHEET MOBILE : ASSISTANT IA CONTEXTUEL */}
+      {/* 6. DRAWER / PANNEAU LATÉRAL : ASSISTANT IA CONTEXTUEL */}
       <ExerciseAIContextDrawer
         isOpen={isAIDrawerOpen}
         onClose={() => setIsAIDrawerOpen(false)}
+        exerciseId={exercise.id}
+        questionId={currentQuestion.id}
         questionText={currentQuestion.question}
         questionNumber={currentIndex + 1}
         totalQuestions={totalQuestions}
@@ -598,6 +587,7 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
         chapter={exercise.chapter}
         competitionName={exercise.competitionName}
         levelLabel={exercise.levelLabel}
+        isAIAvailable={isAIAvailable}
       />
 
       {/* 7. MODALE DE CONFIRMATION AVANT SOUMISSION FINALE */}

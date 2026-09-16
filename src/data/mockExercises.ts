@@ -1202,6 +1202,7 @@ export const MOCK_EXERCISES: ExerciseTest[] = [
     competitionName: 'FASTEF Dakar',
     durationMinutes: 35,
     isPremium: true,
+    allowAI: false, // Strict simulation épreuve : IA interdite
     questionsCount: 3,
     orderIndex: 13,
     coverGradient: 'linear-gradient(135deg, #064e3b 0%, #047857 50%, #b91c1c 100%)',

@@ -7,6 +7,8 @@ import { AIMessage } from '@/types/ai';
 interface ExerciseAIContextDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  exerciseId?: string;
+  questionId?: string;
   questionText: string;
   questionNumber: number;
   totalQuestions: number;
@@ -14,7 +16,7 @@ interface ExerciseAIContextDrawerProps {
   chapter: string;
   competitionName?: string;
   levelLabel?: string;
-  isExamStrict?: boolean;
+  isAIAvailable?: boolean;
 }
 
 interface QuickPromptAction {
@@ -27,6 +29,8 @@ interface QuickPromptAction {
 export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = ({
   isOpen,
   onClose,
+  exerciseId,
+  questionId,
   questionText,
   questionNumber,
   totalQuestions,
@@ -34,22 +38,32 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
   chapter,
   competitionName,
   levelLabel,
-  isExamStrict = false,
+  isAIAvailable = true,
 }) => {
-  const [messages, setMessages] = useState<AIMessage[]>([
-    {
-      id: 'msg-welcome',
-      role: 'assistant',
-      content: `Bonjour 👋 Je suis l'assistant pédagogique Sunubiblio.\n\nJe suis connecté à votre session de test en **${subject}** (${chapter || 'Général'}${competitionName ? ` • ${competitionName}` : ''}).\n\nQue souhaitez-vous approfondir sur la **Question ${questionNumber}** ?`,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    },
-  ]);
+  // Liste des messages du dialogue
+  const [messages, setMessages] = useState<AIMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState<string | null>(null);
+  const [showHelperMenu, setShowHelperMenu] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Empêcher le scroll arrière sur mobile
+  // Mettre à jour automatiquement le message d'accueil contextuel lorsque la question change
+  useEffect(() => {
+    setMessages([
+      {
+        id: `msg-welcome-q${questionNumber}`,
+        role: 'assistant',
+        content: `Bonjour 👋 Je suis l'assistant pédagogique Sunubiblio.\n\nJe suis connecté à votre session d'entraînement en **${subject}** (${chapter || 'Général'}${competitionName ? ` • ${competitionName}` : ''}).\n\nQue souhaitez-vous approfondir sur la **Question ${questionNumber}** ?`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      },
+    ]);
+    setHasError(null);
+  }, [questionNumber, questionText, subject, chapter, competitionName]);
+
+  // Empêcher le scroll d'arrière-plan sur mobile
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -61,14 +75,25 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
     };
   }, [isOpen]);
 
-  // Scroll au dernier message
+  // Gestion de la touche Échap
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  // Défilement automatique vers le dernier message
   useEffect(() => {
     if (isOpen) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages, isOpen]);
+  }, [messages, isOpen, isLoading]);
 
-  // Actions d'aide rapide pédagogiques contextualisées
+  // Actions pédagogiques rapides contextuelles
   const quickActions: QuickPromptAction[] = [
     {
       id: 'explain-question',
@@ -77,28 +102,16 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
       prompt: `Peux-tu m'expliquer clairement ce qui est demandé dans cette question : "${questionText}" ?`,
     },
     {
-      id: 'explain-concept',
-      icon: '📚',
-      label: 'Expliquer la notion',
-      prompt: `Quelle est la notion ou règle de cours fondamentale testée ici dans le chapitre ${chapter || subject} ?`,
-    },
-    {
       id: 'give-hint',
       icon: '🧠',
       label: 'Donne-moi un indice',
       prompt: `Donne-moi un indice méthodologique sans me donner directement la réponse pour : "${questionText}".`,
     },
     {
-      id: 'simplify',
-      icon: '✍️',
-      label: 'Explique-moi simplement',
-      prompt: `Explique-moi la question avec des mots simples et une analogie facile à retenir : "${questionText}".`,
-    },
-    {
-      id: 'review-advice',
-      icon: '📖',
-      label: 'Que dois-je revoir ?',
-      prompt: `Quels points clés du programme dois-je réviser pour maîtriser ce type d'exercice en ${subject} ?`,
+      id: 'explain-concept',
+      icon: '📚',
+      label: 'Expliquer la notion',
+      prompt: `Quelle est la notion ou règle de cours fondamentale testée ici dans le chapitre ${chapter || subject} ?`,
     },
     {
       id: 'similar-problem',
@@ -106,14 +119,21 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
       label: 'Exercice similaire',
       prompt: `Propose-moi un petit exemple ou exercice similaire d'entraînement basé sur la même règle.`,
     },
+    {
+      id: 'review-advice',
+      icon: '📖',
+      label: 'Que dois-je revoir ?',
+      prompt: `Quels points clés du programme dois-je réviser pour maîtriser ce type d'exercice en ${subject} ?`,
+    },
   ];
 
+  // Envoi de message avec contrôle serveur
   const handleSendMessage = async (textToSend?: string) => {
     const text = (textToSend || inputText).trim();
     if (!text || isLoading) return;
 
-    // Contexte enrichi et sécurisé
-    const enrichedContent = `[Contexte de l'exercice : ${subject} | Chapitre : ${chapter || 'Général'} | Concours/Niveau : ${competitionName || levelLabel || 'Général'} | Question ${questionNumber}/${totalQuestions} : "${questionText}"]\n\nDemande de l'apprenant : ${text}`;
+    setHasError(null);
+    setShowHelperMenu(false);
 
     const userMessage: AIMessage = {
       id: `user-${Date.now()}`,
@@ -127,20 +147,55 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
     setIsLoading(true);
 
     try {
-      const response = await AIService.processRequest({
-        content: enrichedContent,
-        mode: 'assistant',
+      // 1. Appel vers la route sécurisée côté serveur
+      const res = await fetch('/api/ai/exercise-coach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          exerciseId,
+          questionId,
+          questionNumber,
+          prompt: text,
+        }),
       });
 
-      setMessages((prev) => [...prev, response]);
-    } catch {
-      const errorMessage: AIMessage = {
-        id: `err-${Date.now()}`,
-        role: 'assistant',
-        content: "Désolé, le service IA pédagogique n'a pas pu traiter la demande à cet instant. Veuillez réessayer.",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        if (res.status === 403) {
+          throw new Error(errorData.error || "L'assistant IA est désactivé pour cette épreuve.");
+        }
+        throw new Error(errorData.error || 'Erreur lors du traitement.');
+      }
+
+      const data = await res.json();
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: data.id || `ai-${Date.now()}`,
+          role: 'assistant',
+          content: data.content,
+          timestamp: data.timestamp || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
+    } catch (err: any) {
+      // Fallback local vers AIService si le serveur Next.js n'a pas encore recompilé ou hors-ligne
+      try {
+        const enrichedContent = `[Contexte : ${subject} | ${chapter || 'Général'} | Q.${questionNumber} : "${questionText}"]\n${text}`;
+        const fallbackMsg = await AIService.processRequest({
+          content: enrichedContent,
+          mode: 'assistant',
+        });
+        setMessages((prev) => [...prev, fallbackMsg]);
+      } catch {
+        setHasError(err.message || 'Impossible de joindre le tuteur IA Sunubiblio.');
+        const errorMessage: AIMessage = {
+          id: `err-${Date.now()}`,
+          role: 'assistant',
+          content: `⚠️ ${err.message || 'Le service IA pédagogique est momentanément indisponible. Veuillez réessayer.'}`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -153,10 +208,16 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
     }
   };
 
+  const handleInsertTemplate = (template: string) => {
+    setInputText((prev) => (prev ? `${prev} ${template}` : template));
+    setShowHelperMenu(false);
+    textareaRef.current?.focus();
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="mobile-ai-drawer-backdrop" onClick={onClose}>
+    <div className="mobile-ai-drawer-backdrop" onClick={onClose} role="presentation">
       <div
         className="mobile-ai-drawer-panel"
         onClick={(e) => e.stopPropagation()}
@@ -164,13 +225,13 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
         aria-modal="true"
         aria-label="Assistant IA Sunubiblio"
       >
-        {/* Poignée de drag */}
-        <div className="sheet-handle-bar" onClick={onClose} />
+        {/* Poignée de manipulation mobile */}
+        <div className="sheet-handle-bar" onClick={onClose} aria-hidden="true" />
 
-        {/* En-tête de l'IA */}
+        {/* En-tête de l'assistant IA */}
         <div className="ai-drawer-header">
           <div className="ai-drawer-identity">
-            <div className="ai-drawer-avatar">
+            <div className="ai-drawer-avatar" aria-hidden="true">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                 <rect x="3" y="11" width="18" height="10" rx="2" />
                 <circle cx="12" cy="5" r="2" />
@@ -180,7 +241,10 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
               </svg>
             </div>
             <div className="ai-drawer-titles">
-              <h3 className="ai-drawer-name">IA Sunubiblio Pédagogique</h3>
+              <div className="ai-drawer-title-row">
+                <h3 className="ai-drawer-name">IA Sunubiblio</h3>
+                <span className="ai-coach-pill">Tuteur Pédagogique</span>
+              </div>
               <span className="ai-drawer-context-pill">
                 Q.{questionNumber}/{totalQuestions} • {subject}
               </span>
@@ -192,6 +256,7 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
             className="ai-drawer-close-btn"
             onClick={onClose}
             aria-label="Fermer l'assistant IA"
+            title="Fermer (Échap)"
           >
             ✕
           </button>
@@ -203,10 +268,12 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
             <span>Question {questionNumber} sur {totalQuestions}</span>
             {competitionName && <span className="drawer-contest-tag">{competitionName}</span>}
           </div>
-          <p className="drawer-question-snippet">« {questionText} »</p>
+          <p className="drawer-question-snippet" title={questionText}>
+            « {questionText} »
+          </p>
         </div>
 
-        {/* Corps des messages */}
+        {/* Zone de discussion */}
         <div className="ai-drawer-messages-area">
           {messages.map((msg) => (
             <div
@@ -222,20 +289,33 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
 
           {isLoading && (
             <div className="ai-drawer-bubble bubble-ai is-typing">
-              <div className="ai-typing-indicator">
+              <div className="ai-typing-indicator" aria-hidden="true">
                 <span />
                 <span />
                 <span />
               </div>
-              <span className="typing-text">L'IA analyse votre question...</span>
+              <span className="typing-text">L'IA Sunubiblio analyse la question...</span>
+            </div>
+          )}
+
+          {hasError && (
+            <div className="ai-error-banner">
+              <span>{hasError}</span>
+              <button
+                type="button"
+                className="ai-retry-btn"
+                onClick={() => handleSendMessage("Explique-moi cette question")}
+              >
+                Réessayer
+              </button>
             </div>
           )}
 
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Barre d'actions rapides (scroll horizontal au pouce) */}
-        <div className="ai-drawer-quick-actions">
+        {/* Suggestions d'actions rapides (Scroll fluide horizontal au pouce) */}
+        <div className="ai-drawer-quick-actions" aria-label="Suggestions d'actions rapides">
           {quickActions.map((action) => (
             <button
               key={action.id}
@@ -244,22 +324,49 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
               onClick={() => handleSendMessage(action.prompt)}
               disabled={isLoading}
             >
-              <span className="chip-icon">{action.icon}</span>
+              <span className="chip-icon" aria-hidden="true">{action.icon}</span>
               <span className="chip-text">{action.label}</span>
             </button>
           ))}
         </div>
+
+        {/* Menu d'aide rapide du bouton "+" */}
+        {showHelperMenu && (
+          <div className="composer-helper-dropdown">
+            <div className="helper-dropdown-title">Insérer un élément de réflexion :</div>
+            <button
+              type="button"
+              className="helper-option-btn"
+              onClick={() => handleInsertTemplate("Quelle règle de cours doit-on appliquer ici ?")}
+            >
+              📚 Règle de cours fondamentale
+            </button>
+            <button
+              type="button"
+              className="helper-option-btn"
+              onClick={() => handleInsertTemplate("Quels sont les pièges fréquents dans ce type d'exercice ?")}
+            >
+              ⚠️ Piège fréquent des candidats
+            </button>
+            <button
+              type="button"
+              className="helper-option-btn"
+              onClick={() => handleInsertTemplate("Comment éliminer les options manifestement fausses ?")}
+            >
+              🧭 Méthode d'élimination logique
+            </button>
+          </div>
+        )}
 
         {/* Barre de saisie moderne */}
         <div className="ai-drawer-composer">
           <div className="composer-input-pill">
             <button
               type="button"
-              className="composer-plus-btn"
-              title="Ajouter une ressource ou formule"
-              onClick={() => {
-                setInputText((prev) => (prev ? `${prev} [Formule/Règle] ` : 'Pouvez-vous analyser la règle : '));
-              }}
+              className={`composer-plus-btn ${showHelperMenu ? 'is-active' : ''}`}
+              title="Ajouter une piste d'analyse"
+              aria-label="Options d'assistance"
+              onClick={() => setShowHelperMenu((prev) => !prev)}
             >
               +
             </button>
@@ -273,6 +380,7 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
               placeholder="Écrire à l'IA Sunubiblio..."
               className="composer-textarea"
               disabled={isLoading}
+              aria-label="Poser une question à l'assistant IA"
             />
 
             <button
@@ -280,7 +388,8 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
               className={`composer-send-btn ${inputText.trim() ? 'has-content' : ''}`}
               onClick={() => handleSendMessage()}
               disabled={!inputText.trim() || isLoading}
-              aria-label="Envoyer"
+              aria-label="Envoyer le message"
+              title="Envoyer"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="12" y1="19" x2="12" y2="5" />

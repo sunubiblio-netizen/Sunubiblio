@@ -11220,38 +11220,179 @@ input {
 }
 
 /* ==========================================================================
-   STYLES DU BOTTOM SHEET IA CONTEXTUEL SUNUBIBLIO
+   STYLES DU PETIT BOUTON IA SUNUBIBLIO & PANNEAU CONTEXTUEL D'ENTRAÎNEMENT
    ========================================================================== */
+
+/* 1. PETIT BOUTON FLOTTANT IA SUNUBIBLIO */
+.sunubiblio-exercise-ai-btn {
+  position: fixed;
+  z-index: 920;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 50%, #6366f1 100%);
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(79, 70, 229, 0.32), 0 2px 6px rgba(15, 23, 42, 0.1);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, opacity 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Desktop & Écrans larges */
+@media (min-width: 1024px) {
+  .sunubiblio-exercise-ai-btn {
+    bottom: 28px;
+    right: 28px;
+    height: 42px;
+    padding: 0 16px 0 12px;
+    border-radius: 9999px;
+    gap: 7px;
+  }
+
+  .sunubiblio-exercise-ai-btn .ai-btn-label {
+    display: inline-block;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+}
+
+/* Mobile (< 1024px) : Ultra-compact (44x44px tactile), placé au-dessus de la barre de navigation */
+@media (max-width: 1023px) {
+  .sunubiblio-exercise-ai-btn {
+    bottom: calc(84px + env(safe-area-inset-bottom, 14px));
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    padding: 0;
+    gap: 0;
+  }
+
+  .sunubiblio-exercise-ai-btn .ai-btn-label {
+    display: none;
+  }
+}
+
+.sunubiblio-exercise-ai-btn:hover:not(.is-disabled-exam) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 26px rgba(79, 70, 229, 0.44), 0 3px 8px rgba(15, 23, 42, 0.12);
+}
+
+.sunubiblio-exercise-ai-btn:active {
+  transform: scale(0.95);
+}
+
+.sunubiblio-exercise-ai-btn.is-disabled-exam {
+  background: linear-gradient(135deg, #334155 0%, #475569 100%);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
+  opacity: 0.88;
+  cursor: not-allowed;
+}
+
+.ai-btn-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ai-btn-indicator-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.35);
+  animation: timerPulse 1.2s infinite alternate;
+}
+
+@media (max-width: 1023px) {
+  .sunubiblio-exercise-ai-btn .ai-btn-indicator-dot {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 8px;
+    height: 8px;
+    border: 1.5px solid #ffffff;
+  }
+}
+
+/* 2. OVERLAY & TIROIR / BOTTOM SHEET IA */
 .mobile-ai-drawer-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.55);
   backdrop-filter: blur(5px);
   z-index: 1400;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
   animation: backdropFadeIn 0.2s ease-out;
 }
 
-.mobile-ai-drawer-panel {
-  width: 100%;
-  max-width: 600px;
-  background: #ffffff;
-  border-radius: 26px 26px 0 0;
-  box-shadow: 0 -12px 45px rgba(15, 23, 42, 0.3);
-  display: flex;
-  flex-direction: column;
-  height: 85vh;
-  animation: sheetSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  overflow: hidden;
+/* Mobile (< 1024px) : Bottom Sheet */
+@media (max-width: 1023px) {
+  .mobile-ai-drawer-backdrop {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .mobile-ai-drawer-panel {
+    width: 100%;
+    max-width: 600px;
+    background: #ffffff;
+    border-radius: 26px 26px 0 0;
+    box-shadow: 0 -12px 45px rgba(15, 23, 42, 0.3);
+    display: flex;
+    flex-direction: column;
+    height: 85vh;
+    animation: sheetSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+  }
 }
 
+/* Desktop (>= 1024px) : Panneau latéral coulissant depuis la droite */
+@media (min-width: 1024px) {
+  .mobile-ai-drawer-backdrop {
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-end;
+    background: rgba(15, 23, 42, 0.35);
+  }
+
+  .mobile-ai-drawer-panel {
+    width: 440px;
+    max-width: 90vw;
+    background: #ffffff;
+    height: 100vh;
+    box-shadow: -10px 0 40px rgba(15, 23, 42, 0.18);
+    display: flex;
+    flex-direction: column;
+    animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+    border-left: 1px solid #e2e8f0;
+  }
+
+  .mobile-ai-drawer-panel .sheet-handle-bar {
+    display: none;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* En-tête de l'IA */
 .ai-drawer-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
+  padding: 14px 20px;
   border-bottom: 1px solid #f1f5f9;
   background: linear-gradient(180deg, #faf8ff 0%, #ffffff 100%);
 }
@@ -11263,21 +11404,28 @@ input {
 }
 
 .ai-drawer-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
   background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  flex-shrink: 0;
 }
 
 .ai-drawer-titles {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
+}
+
+.ai-drawer-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .ai-drawer-name {
@@ -11285,6 +11433,16 @@ input {
   font-weight: 800;
   color: #0f172a;
   margin: 0;
+}
+
+.ai-coach-pill {
+  font-size: 0.625rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: #eef2ff;
+  color: #4338ca;
+  border: 1px solid rgba(99, 102, 241, 0.2);
 }
 
 .ai-drawer-context-pill {
@@ -11305,8 +11463,15 @@ input {
   font-size: 14px;
   color: #64748b;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
+.ai-drawer-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Aperçu de la question active */
 .ai-drawer-question-box {
   background: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
@@ -11342,6 +11507,7 @@ input {
   white-space: nowrap;
 }
 
+/* Corps des messages */
 .ai-drawer-messages-area {
   flex: 1;
   overflow-y: auto;
@@ -11353,7 +11519,7 @@ input {
 }
 
 .ai-drawer-bubble {
-  max-width: 86%;
+  max-width: 88%;
   padding: 12px 16px;
   border-radius: 16px;
   font-size: 0.875rem;
@@ -11369,6 +11535,22 @@ input {
   border: 1px solid #e2e8f0;
   color: #1e293b;
   border-bottom-left-radius: 4px;
+}
+
+.bubble-ai h3 {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: #4338ca;
+  margin: 0 0 6px 0;
+}
+
+.bubble-ai ul, .bubble-ai ol {
+  margin: 6px 0;
+  padding-left: 18px;
+}
+
+.bubble-ai li {
+  margin-bottom: 4px;
 }
 
 .bubble-user {
@@ -11421,6 +11603,30 @@ input {
   font-style: italic;
 }
 
+.ai-error-banner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.8125rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ai-retry-btn {
+  background: #ffffff;
+  border: 1px solid #f87171;
+  color: #b91c1c;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 /* Actions rapides IA (défilement horizontal au pouce) */
 .ai-drawer-quick-actions {
   display: flex;
@@ -11461,9 +11667,47 @@ input {
   cursor: not-allowed;
 }
 
+/* Menu d'aide rapide du bouton "+" */
+.composer-helper-dropdown {
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: sheetSlideUp 0.15s ease-out;
+}
+
+.helper-dropdown-title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.helper-option-btn {
+  text-align: left;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 0.8125rem;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.helper-option-btn:hover {
+  background: #eef2ff;
+  border-color: #a5b4fc;
+  color: #4338ca;
+}
+
 /* Barre de saisie IA moderne */
 .ai-drawer-composer {
-  padding: 10px 16px calc(14px + env(safe-area-inset-bottom));
+  padding: 10px 16px calc(14px + env(safe-area-inset-bottom, 0px));
   background: #ffffff;
   border-top: 1px solid #e2e8f0;
 }
@@ -11502,9 +11746,10 @@ input {
   transition: all 0.15s ease;
 }
 
-.composer-plus-btn:hover {
-  background: #cbd5e1;
-  color: #0f172a;
+.composer-plus-btn:hover,
+.composer-plus-btn.is-active {
+  background: #4f46e5;
+  color: #ffffff;
 }
 
 .composer-textarea {
@@ -11536,12 +11781,14 @@ input {
 }
 
 .composer-send-btn.has-content {
-  background: #4f46e5;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
   color: #ffffff;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
 }
 
 .composer-send-btn:disabled {
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* ==========================================================================
@@ -11763,45 +12010,6 @@ input {
     order: -1;
     justify-content: center;
     margin-bottom: 4px;
-  }
-
-  /* Bouton Flottant Coach IA Mobile */
-  .floating-ai-coach-btn {
-    position: fixed;
-    bottom: calc(20px + env(safe-area-inset-bottom, 16px));
-    right: 16px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border-radius: 9999px;
-    background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 100%);
-    color: #ffffff;
-    border: 1.5px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
-    font-size: 0.8125rem;
-    font-weight: 700;
-    cursor: pointer;
-    z-index: 950;
-    transition: transform 0.2s ease;
-  }
-
-  .floating-ai-coach-btn:active {
-    transform: scale(0.96);
-  }
-
-  .ai-btn-icon {
-    display: flex;
-    align-items: center;
-  }
-
-  .ai-pulse-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #10b981;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
-    animation: timerPulse 1.2s infinite alternate;
   }
 }
 

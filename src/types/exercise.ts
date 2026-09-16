@@ -71,6 +71,7 @@ export interface ExerciseTest {
   
   durationMinutes: number; // 0 si illimité, > 0 pour chronométré
   isPremium: boolean;
+  allowAI?: boolean; // Contrôle serveur : autorise ou interdit l'assistance IA
   questionsCount: number;
   questions?: ExerciseQuestion[];
   instructions?: string[];
