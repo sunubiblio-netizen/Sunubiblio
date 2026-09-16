@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   ExerciseType,
   ExerciseLevelId,
@@ -14,6 +14,7 @@ import {
   EXERCISE_DIFFICULTIES,
   EXERCISE_ACCESS_TIERS,
 } from '@/data/mockExercises';
+import { CustomFilterDropdown, DropdownOption } from '@/components/ui/CustomFilterDropdown';
 
 interface ExerciseSearchFiltersProps {
   filters: ExerciseFilterQuery;
@@ -32,11 +33,26 @@ export const ExerciseSearchFilters: React.FC<ExerciseSearchFiltersProps> = ({
 }) => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState(filters.searchQuery || '');
+  const [expandedMobileSection, setExpandedMobileSection] = useState<string | null>('type');
+  const [subjectMobileSearch, setSubjectMobileSearch] = useState('');
 
   // Synchroniser la recherche locale avec les filtres
   useEffect(() => {
     setLocalSearch(filters.searchQuery || '');
   }, [filters.searchQuery]);
+
+  // Verrouiller le défilement de la page quand le drawer mobile est ouvert
+  useEffect(() => {
+    if (mobileDrawerOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+      setSubjectMobileSearch('');
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileDrawerOpen]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,9 +82,93 @@ export const ExerciseSearchFilters: React.FC<ExerciseSearchFiltersProps> = ({
     });
   };
 
+  const toggleMobileSection = (key: string) => {
+    setExpandedMobileSection((prev) => (prev === key ? null : key));
+  };
+
+  // ==========================================
+  // OPTIONS DE SÉLECTION POUR LES DROPDOWNS PROS
+  // ==========================================
+
+  const typeOptions: DropdownOption[] = useMemo(
+    () =>
+      EXERCISE_TYPES.map((t) => ({
+        value: t.id,
+        label: t.label,
+        badge: t.id === 'qcm' ? 'QCM' : t.id === 'exercice' ? 'Guidé' : t.id === 'correction' ? 'Corrigé' : undefined,
+      })),
+    []
+  );
+
+  const levelOptions: DropdownOption[] = useMemo(
+    () =>
+      EXERCISE_LEVELS.map((l) => ({
+        value: l.id,
+        label: l.label,
+        badge: l.id !== 'all' ? l.label.split(' ')[0] : undefined,
+      })),
+    []
+  );
+
+  const subjectOptions: DropdownOption[] = useMemo(() => {
+    return [
+      { value: 'all', label: 'Toutes les matières' },
+      ...subjects.map((s) => ({
+        value: s.slug,
+        label: s.name,
+      })),
+    ];
+  }, [subjects]);
+
+  const competitionOptions: DropdownOption[] = useMemo(() => {
+    return [
+      { value: 'all', label: 'Tous les concours' },
+      ...competitions.map((c) => ({
+        value: c.id,
+        label: c.name,
+        badge: 'Concours',
+      })),
+    ];
+  }, [competitions]);
+
+  const difficultyOptions: DropdownOption[] = useMemo(
+    () =>
+      EXERCISE_DIFFICULTIES.map((d) => ({
+        value: d.id,
+        label: d.label,
+        badge: d.id === 'facile' ? '★' : d.id === 'moyen' ? '★★' : d.id === 'difficile' ? '★★★' : undefined,
+      })),
+    []
+  );
+
+  const accessOptions: DropdownOption[] = useMemo(
+    () =>
+      EXERCISE_ACCESS_TIERS.map((a) => ({
+        value: a.id,
+        label: a.label,
+        badge: a.id === 'premium' ? 'Gold' : a.id === 'gratuit' ? 'Libre' : undefined,
+      })),
+    []
+  );
+
+  // Libellés actifs pour le résumé mobile
+  const activeTypeLabel = typeOptions.find((o) => o.value === (filters.type || 'all'))?.label || 'Tous';
+  const activeLevelLabel = levelOptions.find((o) => o.value === (filters.level || 'all'))?.label || 'Tous';
+  const activeSubjectLabel = subjectOptions.find((o) => o.value === (filters.subject || 'all'))?.label || 'Toutes';
+  const activeCompLabel = competitionOptions.find((o) => o.value === (filters.competition || 'all'))?.label || 'Tous';
+  const activeDiffLabel = difficultyOptions.find((o) => o.value === (filters.difficulty || 'all'))?.label || 'Toutes';
+  const activeAccessLabel = accessOptions.find((o) => o.value === (filters.access || 'all'))?.label || 'Tous';
+
+  // Filtrage des matières pour le drawer mobile
+  const filteredMobileSubjects = useMemo(() => {
+    if (!subjectMobileSearch.trim()) return subjects;
+    const q = subjectMobileSearch.toLowerCase().trim();
+    return subjects.filter((s) => s.name.toLowerCase().includes(q));
+  }, [subjects, subjectMobileSearch]);
+
   return (
     <div className="exercise-filters-container">
-      {/* Barre de recherche principale */}
+      {/* 1. BARRE DE RECHERCHE PRINCIPALE */}
       <form onSubmit={handleSearchSubmit} className="exercise-search-bar">
         <div className="search-input-wrapper">
           <svg
@@ -108,15 +208,18 @@ export const ExerciseSearchFilters: React.FC<ExerciseSearchFiltersProps> = ({
           )}
         </div>
 
-        {/* Bouton pour ouvrir le drawer sur mobile */}
+        {/* Bouton Filtres sur Mobile */}
         <button
           type="button"
           className="mobile-filter-trigger mobile-only"
           onClick={() => setMobileDrawerOpen(true)}
+          aria-label="Ouvrir les filtres avancés"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-          </svg>
+          <div className="mobile-trigger-icon-wrap">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+          </div>
           <span>Filtres</span>
           {activeFiltersCount > 0 && (
             <span className="active-filters-badge">{activeFiltersCount}</span>
@@ -124,117 +227,76 @@ export const ExerciseSearchFilters: React.FC<ExerciseSearchFiltersProps> = ({
         </button>
       </form>
 
-      {/* Rangée de filtres Desktop */}
-      <div className="exercise-desktop-filters desktop-only">
+      {/* 2. RANGÉE DE FILTRES AVANCÉS DESKTOP (AVEC MENUS DÉROULANTS PERSONNALISÉS FLOTTANTS) */}
+      <div className="exercise-desktop-custom-filters desktop-only">
         {/* Type */}
-        <div className="filter-select-group">
-          <label htmlFor="filter-type">Type</label>
-          <select
-            id="filter-type"
-            value={filters.type || 'all'}
-            onChange={(e) =>
-              onFilterChange({ ...filters, type: e.target.value as ExerciseType | 'all' })
-            }
-          >
-            {EXERCISE_TYPES.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CustomFilterDropdown
+          id="exo-filter-type"
+          label="Type"
+          value={filters.type || 'all'}
+          options={typeOptions}
+          onChange={(val) => onFilterChange({ ...filters, type: val as ExerciseType | 'all' })}
+          placeholder="Tous les types"
+        />
 
         {/* Niveau */}
-        <div className="filter-select-group">
-          <label htmlFor="filter-level">Niveau</label>
-          <select
-            id="filter-level"
-            value={filters.level || 'all'}
-            onChange={(e) =>
-              onFilterChange({ ...filters, level: e.target.value as ExerciseLevelId | 'all' })
-            }
-          >
-            {EXERCISE_LEVELS.map((l) => (
-              <option key={l.id} value={l.id}>
-                {l.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CustomFilterDropdown
+          id="exo-filter-level"
+          label="Niveau"
+          value={filters.level || 'all'}
+          options={levelOptions}
+          onChange={(val) => onFilterChange({ ...filters, level: val as ExerciseLevelId | 'all' })}
+          placeholder="Tous les niveaux"
+        />
 
         {/* Matière */}
-        <div className="filter-select-group">
-          <label htmlFor="filter-subject">Matière</label>
-          <select
-            id="filter-subject"
-            value={filters.subject || 'all'}
-            onChange={(e) => onFilterChange({ ...filters, subject: e.target.value })}
-          >
-            <option value="all">Toutes les matières</option>
-            {subjects.map((s) => (
-              <option key={s.slug} value={s.slug}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CustomFilterDropdown
+          id="exo-filter-subject"
+          label="Matière"
+          value={filters.subject || 'all'}
+          options={subjectOptions}
+          onChange={(val) => onFilterChange({ ...filters, subject: val })}
+          placeholder="Toutes les matières"
+          enableSearch={subjects.length > 5}
+          searchPlaceholder="Filtrer les matières..."
+        />
 
         {/* Concours */}
         {competitions.length > 0 && (
-          <div className="filter-select-group">
-            <label htmlFor="filter-competition">Concours</label>
-            <select
-              id="filter-competition"
-              value={filters.competition || 'all'}
-              onChange={(e) => onFilterChange({ ...filters, competition: e.target.value })}
-            >
-              <option value="all">Tous les concours</option>
-              {competitions.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <CustomFilterDropdown
+            id="exo-filter-competition"
+            label="Concours"
+            value={filters.competition || 'all'}
+            options={competitionOptions}
+            onChange={(val) => onFilterChange({ ...filters, competition: val })}
+            placeholder="Tous les concours"
+            enableSearch={competitions.length > 5}
+            searchPlaceholder="Filtrer les concours..."
+          />
         )}
 
         {/* Difficulté */}
-        <div className="filter-select-group">
-          <label htmlFor="filter-difficulty">Difficulté</label>
-          <select
-            id="filter-difficulty"
-            value={filters.difficulty || 'all'}
-            onChange={(e) =>
-              onFilterChange({ ...filters, difficulty: e.target.value as ExerciseDifficulty | 'all' })
-            }
-          >
-            {EXERCISE_DIFFICULTIES.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CustomFilterDropdown
+          id="exo-filter-difficulty"
+          label="Difficulté"
+          value={filters.difficulty || 'all'}
+          options={difficultyOptions}
+          onChange={(val) => onFilterChange({ ...filters, difficulty: val as ExerciseDifficulty | 'all' })}
+          placeholder="Toutes difficultés"
+        />
 
-        {/* Accès */}
-        <div className="filter-select-group">
-          <label htmlFor="filter-access">Accès</label>
-          <select
-            id="filter-access"
-            value={filters.access || 'all'}
-            onChange={(e) =>
-              onFilterChange({ ...filters, access: e.target.value as ExerciseAccessStatus | 'all' })
-            }
-          >
-            {EXERCISE_ACCESS_TIERS.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Formule d'accès */}
+        <CustomFilterDropdown
+          id="exo-filter-access"
+          label="Accès"
+          value={filters.access || 'all'}
+          options={accessOptions}
+          onChange={(val) => onFilterChange({ ...filters, access: val as ExerciseAccessStatus | 'all' })}
+          placeholder="Tous les accès"
+          align="right"
+        />
 
-        {/* Bouton reset si filtres actifs */}
+        {/* Bouton reset général si filtres actifs */}
         {activeFiltersCount > 0 && (
           <button
             type="button"
@@ -247,7 +309,7 @@ export const ExerciseSearchFilters: React.FC<ExerciseSearchFiltersProps> = ({
         )}
       </div>
 
-      {/* En-tête des résultats */}
+      {/* 3. EN-TÊTE DES RÉSULTATS & CHIPS ACTIFS */}
       <div className="filters-results-meta">
         <span className="results-count-text">
           <strong>{totalResults}</strong> {totalResults <= 1 ? 'exercice disponible' : 'exercices disponibles'}
@@ -256,10 +318,11 @@ export const ExerciseSearchFilters: React.FC<ExerciseSearchFiltersProps> = ({
           <div className="active-filter-chips">
             {filters.type && filters.type !== 'all' && (
               <span className="filter-chip">
-                Type: {filters.type.toUpperCase()}
+                Type: {activeTypeLabel}
                 <button
                   type="button"
                   onClick={() => onFilterChange({ ...filters, type: 'all' })}
+                  title="Retirer ce filtre"
                 >
                   ✕
                 </button>
@@ -267,10 +330,35 @@ export const ExerciseSearchFilters: React.FC<ExerciseSearchFiltersProps> = ({
             )}
             {filters.level && filters.level !== 'all' && (
               <span className="filter-chip">
-                Niveau: {filters.level}
+                Niveau: {activeLevelLabel}
                 <button
                   type="button"
                   onClick={() => onFilterChange({ ...filters, level: 'all' })}
+                  title="Retirer ce filtre"
+                >
+                  ✕
+                </button>
+              </span>
+            )}
+            {filters.subject && filters.subject !== 'all' && (
+              <span className="filter-chip">
+                Matière: {activeSubjectLabel}
+                <button
+                  type="button"
+                  onClick={() => onFilterChange({ ...filters, subject: 'all' })}
+                  title="Retirer ce filtre"
+                >
+                  ✕
+                </button>
+              </span>
+            )}
+            {filters.competition && filters.competition !== 'all' && (
+              <span className="filter-chip">
+                Concours: {activeCompLabel}
+                <button
+                  type="button"
+                  onClick={() => onFilterChange({ ...filters, competition: 'all' })}
+                  title="Retirer ce filtre"
                 >
                   ✕
                 </button>
@@ -278,10 +366,23 @@ export const ExerciseSearchFilters: React.FC<ExerciseSearchFiltersProps> = ({
             )}
             {filters.difficulty && filters.difficulty !== 'all' && (
               <span className="filter-chip">
-                {filters.difficulty}
+                {activeDiffLabel}
                 <button
                   type="button"
                   onClick={() => onFilterChange({ ...filters, difficulty: 'all' })}
+                  title="Retirer ce filtre"
+                >
+                  ✕
+                </button>
+              </span>
+            )}
+            {filters.access && filters.access !== 'all' && (
+              <span className="filter-chip">
+                {activeAccessLabel}
+                <button
+                  type="button"
+                  onClick={() => onFilterChange({ ...filters, access: 'all' })}
+                  title="Retirer ce filtre"
                 >
                   ✕
                 </button>
@@ -291,7 +392,7 @@ export const ExerciseSearchFilters: React.FC<ExerciseSearchFiltersProps> = ({
         )}
       </div>
 
-      {/* DRAWER MOBILE */}
+      {/* 4. TIROIR MOBILE MODERNE & ERGONOMIQUE (ACCORDÉONS & TOUCH PILLS) */}
       {mobileDrawerOpen && (
         <div className="mobile-drawer-backdrop" onClick={() => setMobileDrawerOpen(false)}>
           <div
@@ -300,121 +401,367 @@ export const ExerciseSearchFilters: React.FC<ExerciseSearchFiltersProps> = ({
             role="dialog"
             aria-modal="true"
           >
+            {/* Header du drawer mobile */}
             <div className="mobile-drawer-header">
-              <h3 className="drawer-title">Filtres d’entraînement</h3>
+              <div>
+                <span className="drawer-eyebrow">Affiner l’entraînement</span>
+                <h3 className="drawer-title">Filtres pédagogiques</h3>
+              </div>
               <button
                 type="button"
                 className="drawer-close-btn"
                 onClick={() => setMobileDrawerOpen(false)}
+                aria-label="Fermer les filtres"
               >
                 ✕
               </button>
             </div>
 
+            {/* Corps du drawer avec accordéons */}
             <div className="mobile-drawer-body">
-              {/* Type */}
-              <div className="drawer-field">
-                <label>Type d’entraînement</label>
-                <select
-                  value={filters.type || 'all'}
-                  onChange={(e) =>
-                    onFilterChange({ ...filters, type: e.target.value as ExerciseType | 'all' })
-                  }
+              {/* Accordéon 1 : Type d'entraînement */}
+              <div className={`drawer-accordion-card ${filters.type && filters.type !== 'all' ? 'is-filtered' : ''}`}>
+                <button
+                  type="button"
+                  className={`accordion-trigger ${expandedMobileSection === 'type' ? 'is-open' : ''}`}
+                  onClick={() => toggleMobileSection('type')}
                 >
-                  {EXERCISE_TYPES.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
+                  <div className="accordion-title-box">
+                    <span className="accordion-icon">📝</span>
+                    <div className="accordion-texts">
+                      <span className="category-title">Type d’exercice</span>
+                      <span className="category-subtitle">{activeTypeLabel}</span>
+                    </div>
+                  </div>
+                  <div className="accordion-action-box">
+                    {filters.type && filters.type !== 'all' && <span className="mobile-active-dot" />}
+                    <svg
+                      className={`chevron-icon ${expandedMobileSection === 'type' ? 'rotated' : ''}`}
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </div>
+                </button>
+
+                {expandedMobileSection === 'type' && (
+                  <div className="accordion-expanded-content">
+                    <div className="drawer-pills-wrap">
+                      {EXERCISE_TYPES.map((t) => {
+                        const isSelected = (filters.type || 'all') === t.id;
+                        return (
+                          <button
+                            key={t.id}
+                            type="button"
+                            className={`drawer-pill ${isSelected ? 'active' : ''}`}
+                            onClick={() => onFilterChange({ ...filters, type: t.id as ExerciseType | 'all' })}
+                          >
+                            <span>{t.label}</span>
+                            {isSelected && <span className="pill-check">✓</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Niveau */}
-              <div className="drawer-field">
-                <label>Niveau scolaire / académique</label>
-                <select
-                  value={filters.level || 'all'}
-                  onChange={(e) =>
-                    onFilterChange({ ...filters, level: e.target.value as ExerciseLevelId | 'all' })
-                  }
+              {/* Accordéon 2 : Niveau académique */}
+              <div className={`drawer-accordion-card ${filters.level && filters.level !== 'all' ? 'is-filtered' : ''}`}>
+                <button
+                  type="button"
+                  className={`accordion-trigger ${expandedMobileSection === 'level' ? 'is-open' : ''}`}
+                  onClick={() => toggleMobileSection('level')}
                 >
-                  {EXERCISE_LEVELS.map((l) => (
-                    <option key={l.id} value={l.id}>
-                      {l.label}
-                    </option>
-                  ))}
-                </select>
+                  <div className="accordion-title-box">
+                    <span className="accordion-icon">🎓</span>
+                    <div className="accordion-texts">
+                      <span className="category-title">Niveau d’études</span>
+                      <span className="category-subtitle">{activeLevelLabel}</span>
+                    </div>
+                  </div>
+                  <div className="accordion-action-box">
+                    {filters.level && filters.level !== 'all' && <span className="mobile-active-dot" />}
+                    <svg
+                      className={`chevron-icon ${expandedMobileSection === 'level' ? 'rotated' : ''}`}
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </div>
+                </button>
+
+                {expandedMobileSection === 'level' && (
+                  <div className="accordion-expanded-content">
+                    <div className="drawer-pills-wrap">
+                      {EXERCISE_LEVELS.map((l) => {
+                        const isSelected = (filters.level || 'all') === l.id;
+                        return (
+                          <button
+                            key={l.id}
+                            type="button"
+                            className={`drawer-pill ${isSelected ? 'active' : ''}`}
+                            onClick={() => onFilterChange({ ...filters, level: l.id as ExerciseLevelId | 'all' })}
+                          >
+                            <span>{l.label}</span>
+                            {isSelected && <span className="pill-check">✓</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Matière */}
-              <div className="drawer-field">
-                <label>Matière</label>
-                <select
-                  value={filters.subject || 'all'}
-                  onChange={(e) => onFilterChange({ ...filters, subject: e.target.value })}
+              {/* Accordéon 3 : Matière */}
+              <div className={`drawer-accordion-card ${filters.subject && filters.subject !== 'all' ? 'is-filtered' : ''}`}>
+                <button
+                  type="button"
+                  className={`accordion-trigger ${expandedMobileSection === 'subject' ? 'is-open' : ''}`}
+                  onClick={() => toggleMobileSection('subject')}
                 >
-                  <option value="all">Toutes les matières</option>
-                  {subjects.map((s) => (
-                    <option key={s.slug} value={s.slug}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
+                  <div className="accordion-title-box">
+                    <span className="accordion-icon">📚</span>
+                    <div className="accordion-texts">
+                      <span className="category-title">Matière</span>
+                      <span className="category-subtitle">{activeSubjectLabel}</span>
+                    </div>
+                  </div>
+                  <div className="accordion-action-box">
+                    {filters.subject && filters.subject !== 'all' && <span className="mobile-active-dot" />}
+                    <svg
+                      className={`chevron-icon ${expandedMobileSection === 'subject' ? 'rotated' : ''}`}
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </div>
+                </button>
+
+                {expandedMobileSection === 'subject' && (
+                  <div className="accordion-expanded-content">
+                    {subjects.length > 5 && (
+                      <div className="mobile-subject-search">
+                        <input
+                          type="text"
+                          placeholder="Chercher une matière..."
+                          value={subjectMobileSearch}
+                          onChange={(e) => setSubjectMobileSearch(e.target.value)}
+                          className="mobile-sub-input"
+                        />
+                      </div>
+                    )}
+                    <div className="drawer-pills-wrap">
+                      <button
+                        type="button"
+                        className={`drawer-pill ${(!filters.subject || filters.subject === 'all') ? 'active' : ''}`}
+                        onClick={() => onFilterChange({ ...filters, subject: 'all' })}
+                      >
+                        <span>Toutes les matières</span>
+                        {(!filters.subject || filters.subject === 'all') && <span className="pill-check">✓</span>}
+                      </button>
+                      {filteredMobileSubjects.map((s) => {
+                        const isSelected = filters.subject === s.slug;
+                        return (
+                          <button
+                            key={s.slug}
+                            type="button"
+                            className={`drawer-pill ${isSelected ? 'active' : ''}`}
+                            onClick={() => onFilterChange({ ...filters, subject: s.slug })}
+                          >
+                            <span>{s.name}</span>
+                            {isSelected && <span className="pill-check">✓</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Concours */}
+              {/* Accordéon 4 : Concours (si disponible) */}
               {competitions.length > 0 && (
-                <div className="drawer-field">
-                  <label>Concours de préparation</label>
-                  <select
-                    value={filters.competition || 'all'}
-                    onChange={(e) => onFilterChange({ ...filters, competition: e.target.value })}
+                <div className={`drawer-accordion-card ${filters.competition && filters.competition !== 'all' ? 'is-filtered' : ''}`}>
+                  <button
+                    type="button"
+                    className={`accordion-trigger ${expandedMobileSection === 'competition' ? 'is-open' : ''}`}
+                    onClick={() => toggleMobileSection('competition')}
                   >
-                    <option value="all">Tous les concours</option>
-                    {competitions.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
+                    <div className="accordion-title-box">
+                      <span className="accordion-icon">🏆</span>
+                      <div className="accordion-texts">
+                        <span className="category-title">Concours</span>
+                        <span className="category-subtitle">{activeCompLabel}</span>
+                      </div>
+                    </div>
+                    <div className="accordion-action-box">
+                      {filters.competition && filters.competition !== 'all' && <span className="mobile-active-dot" />}
+                      <svg
+                        className={`chevron-icon ${expandedMobileSection === 'competition' ? 'rotated' : ''}`}
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                      >
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </div>
+                  </button>
+
+                  {expandedMobileSection === 'competition' && (
+                    <div className="accordion-expanded-content">
+                      <div className="drawer-pills-wrap">
+                        <button
+                          type="button"
+                          className={`drawer-pill ${(!filters.competition || filters.competition === 'all') ? 'active' : ''}`}
+                          onClick={() => onFilterChange({ ...filters, competition: 'all' })}
+                        >
+                          <span>Tous les concours</span>
+                          {(!filters.competition || filters.competition === 'all') && <span className="pill-check">✓</span>}
+                        </button>
+                        {competitions.map((c) => {
+                          const isSelected = filters.competition === c.id;
+                          return (
+                            <button
+                              key={c.id}
+                              type="button"
+                              className={`drawer-pill ${isSelected ? 'active' : ''}`}
+                              onClick={() => onFilterChange({ ...filters, competition: c.id })}
+                            >
+                              <span>{c.name}</span>
+                              {isSelected && <span className="pill-check">✓</span>}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
-              {/* Difficulté */}
-              <div className="drawer-field">
-                <label>Difficulté</label>
-                <select
-                  value={filters.difficulty || 'all'}
-                  onChange={(e) =>
-                    onFilterChange({ ...filters, difficulty: e.target.value as ExerciseDifficulty | 'all' })
-                  }
+              {/* Accordéon 5 : Difficulté */}
+              <div className={`drawer-accordion-card ${filters.difficulty && filters.difficulty !== 'all' ? 'is-filtered' : ''}`}>
+                <button
+                  type="button"
+                  className={`accordion-trigger ${expandedMobileSection === 'difficulty' ? 'is-open' : ''}`}
+                  onClick={() => toggleMobileSection('difficulty')}
                 >
-                  {EXERCISE_DIFFICULTIES.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.label}
-                    </option>
-                  ))}
-                </select>
+                  <div className="accordion-title-box">
+                    <span className="accordion-icon">⚡</span>
+                    <div className="accordion-texts">
+                      <span className="category-title">Difficulté</span>
+                      <span className="category-subtitle">{activeDiffLabel}</span>
+                    </div>
+                  </div>
+                  <div className="accordion-action-box">
+                    {filters.difficulty && filters.difficulty !== 'all' && <span className="mobile-active-dot" />}
+                    <svg
+                      className={`chevron-icon ${expandedMobileSection === 'difficulty' ? 'rotated' : ''}`}
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </div>
+                </button>
+
+                {expandedMobileSection === 'difficulty' && (
+                  <div className="accordion-expanded-content">
+                    <div className="drawer-pills-wrap">
+                      {EXERCISE_DIFFICULTIES.map((d) => {
+                        const isSelected = (filters.difficulty || 'all') === d.id;
+                        return (
+                          <button
+                            key={d.id}
+                            type="button"
+                            className={`drawer-pill ${isSelected ? 'active' : ''}`}
+                            onClick={() => onFilterChange({ ...filters, difficulty: d.id as ExerciseDifficulty | 'all' })}
+                          >
+                            <span>{d.label}</span>
+                            {isSelected && <span className="pill-check">✓</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Accès */}
-              <div className="drawer-field">
-                <label>Formule d’accès</label>
-                <select
-                  value={filters.access || 'all'}
-                  onChange={(e) =>
-                    onFilterChange({ ...filters, access: e.target.value as ExerciseAccessStatus | 'all' })
-                  }
+              {/* Accordéon 6 : Formule d'accès */}
+              <div className={`drawer-accordion-card ${filters.access && filters.access !== 'all' ? 'is-filtered' : ''}`}>
+                <button
+                  type="button"
+                  className={`accordion-trigger ${expandedMobileSection === 'access' ? 'is-open' : ''}`}
+                  onClick={() => toggleMobileSection('access')}
                 >
-                  {EXERCISE_ACCESS_TIERS.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {a.label}
-                    </option>
-                  ))}
-                </select>
+                  <div className="accordion-title-box">
+                    <span className="accordion-icon">🔒</span>
+                    <div className="accordion-texts">
+                      <span className="category-title">Formule d’accès</span>
+                      <span className="category-subtitle">{activeAccessLabel}</span>
+                    </div>
+                  </div>
+                  <div className="accordion-action-box">
+                    {filters.access && filters.access !== 'all' && <span className="mobile-active-dot" />}
+                    <svg
+                      className={`chevron-icon ${expandedMobileSection === 'access' ? 'rotated' : ''}`}
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </div>
+                </button>
+
+                {expandedMobileSection === 'access' && (
+                  <div className="accordion-expanded-content">
+                    <div className="drawer-pills-wrap">
+                      {EXERCISE_ACCESS_TIERS.map((a) => {
+                        const isSelected = (filters.access || 'all') === a.id;
+                        return (
+                          <button
+                            key={a.id}
+                            type="button"
+                            className={`drawer-pill ${isSelected ? 'active' : ''}`}
+                            onClick={() => onFilterChange({ ...filters, access: a.id as ExerciseAccessStatus | 'all' })}
+                          >
+                            <span>{a.label}</span>
+                            {isSelected && <span className="pill-check">✓</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
+            {/* Pied du tiroir mobile */}
             <div className="mobile-drawer-footer">
               <button
                 type="button"
