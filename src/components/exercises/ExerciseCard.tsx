@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Exercise } from '@/types/exercise';
+import { exerciseNavigation } from '@/services/exerciseNavigation';
 
 interface ExerciseCardProps {
   exercise: Exercise;
@@ -113,7 +114,14 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
       {/* Titre principal de l'exercice */}
       <h2 className="exercise-card-title">
-        <Link href={`/exercices/${exercise.id}`}>
+        <Link
+          href={`/exercices/${exercise.id}`}
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              exerciseNavigation.saveOrigin(window.location.pathname + window.location.search);
+            }
+          }}
+        >
           {exercise.title}
         </Link>
       </h2>
@@ -179,6 +187,11 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
         <Link
           href={`/exercices/${exercise.id}`}
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              exerciseNavigation.saveOrigin(window.location.pathname + window.location.search);
+            }
+          }}
           className={`exercise-card-cta ${isCurrentSession ? 'is-resume' : ''}`}
         >
           <span>{isCurrentSession ? 'Reprendre' : 'Commencer'}</span>

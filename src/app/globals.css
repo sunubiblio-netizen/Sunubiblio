@@ -8855,12 +8855,15 @@ input {
   gap: 6px;
   font-size: 0.875rem;
   font-weight: 600;
+  font-family: inherit;
   color: #64748b;
   text-decoration: none;
   padding: 6px 12px;
   border-radius: 8px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
+  cursor: pointer;
+  outline: none;
   transition: all 0.15s ease;
 }
 
@@ -9749,9 +9752,38 @@ input {
   border-radius: 10px;
   font-size: 0.8125rem;
   font-weight: 600;
+  font-family: inherit;
   text-decoration: none;
   cursor: pointer;
+  outline: none;
   transition: all 0.15s ease;
+}
+
+.next-test-btn {
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.28);
+  font-weight: 700 !important;
+}
+
+.next-test-btn:hover {
+  background: linear-gradient(135deg, #4338ca 0%, #2563eb 100%) !important;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+  transform: translateY(-1px);
+}
+
+.result-catalog-btn {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.result-catalog-btn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #94a3b8;
+  transform: translateY(-1px);
 }
 
 .hero-ai-open-pill-btn {
@@ -12720,12 +12752,15 @@ input {
     gap: 4px;
     font-size: 0.8125rem;
     font-weight: 700;
+    font-family: inherit;
     color: #64748b;
     text-decoration: none;
     padding: 6px 10px;
     border-radius: 8px;
     background: #f1f5f9;
     border: 1px solid #e2e8f0;
+    cursor: pointer;
+    outline: none;
   }
 
   .mobile-timer-wrap .exercise-timer-pill {

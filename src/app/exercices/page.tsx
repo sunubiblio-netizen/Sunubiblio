@@ -26,6 +26,7 @@ import {
 import { Contest } from '@/types/contest';
 import { Resource } from '@/types/library';
 import { exerciseService } from '@/services/exerciseService';
+import { exerciseNavigation } from '@/services/exerciseNavigation';
 
 // Import synchrone pour rendu SSR immédiat sans flash
 import { MOCK_EXERCISES } from '@/data/mockExercises';
@@ -161,7 +162,38 @@ export default function ExercicesPage() {
     };
 
     init();
+
+    // Initialiser les filtres depuis les paramètres d'URL si présents
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const comp = searchParams.get('competition');
+      const subj = searchParams.get('subject');
+      const lvl = searchParams.get('level') as ExerciseFilterQuery['level'];
+      const res = searchParams.get('resourceId');
+      const diff = searchParams.get('difficulty') as ExerciseFilterQuery['difficulty'];
+
+      if (comp || subj || lvl || res || diff) {
+        setFilters((prev) => ({
+          ...prev,
+          ...(comp ? { competition: comp } : {}),
+          ...(subj ? { subject: subj } : {}),
+          ...(lvl ? { level: lvl } : {}),
+          ...(res ? { resourceId: res } : {}),
+          ...(diff ? { difficulty: diff } : {}),
+        }));
+      }
+
+      // Enregistrer l'URL d'origine de navigation
+      exerciseNavigation.saveOrigin(window.location.pathname + window.location.search);
+    }
   }, []);
+
+  // Mettre à jour l'URL d'origine mémorisée dès que les filtres évoluent
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      exerciseNavigation.saveOrigin(window.location.pathname + window.location.search);
+    }
+  }, [filters]);
 
   // Filtrage réactif
   const filteredExercises = useMemo(() => {

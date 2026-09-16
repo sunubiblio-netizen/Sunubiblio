@@ -437,4 +437,70 @@ export const exerciseService = {
       return false;
     }
   },
+
+  /**
+   * Trouve le prochain test logique d'entraînement :
+   * 1. Même ressource/série (orderIndex supérieur)
+   * 2. Ou même concours officiel (orderIndex supérieur ou difficulté supérieure)
+   * 3. Ou même matière et niveau (progression logique)
+   */
+  getNextExercise(currentExercise: Exercise): Exercise | null {
+    if (!currentExercise) return null;
+
+    // 1. Même série / ressource documentaire
+    if (currentExercise.resourceId) {
+      const sameResourceTests = MOCK_EXERCISES.filter(
+        (e) => e.resourceId === currentExercise.resourceId && e.id !== currentExercise.id
+      ).sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
+
+      const nextInSeries = sameResourceTests.find(
+        (e) => (e.orderIndex || 0) > (currentExercise.orderIndex || 0)
+      );
+      if (nextInSeries) return nextInSeries;
+    }
+
+    // 2. Même concours officiel
+    if (currentExercise.competitionId) {
+      const sameCompTests = MOCK_EXERCISES.filter(
+        (e) => (e.competitionId === currentExercise.competitionId || e.competitionName === currentExercise.competitionName) && e.id !== currentExercise.id
+      ).sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
+
+      const nextInComp = sameCompTests.find(
+        (e) => (e.orderIndex || 0) > (currentExercise.orderIndex || 0)
+      );
+      if (nextInComp) return nextInComp;
+
+      // Si aucun avec orderIndex supérieur, chercher par difficulté croissante
+      if (sameCompTests.length > 0) {
+        const nextDifficulty = sameCompTests.find((e) => {
+          if (currentExercise.difficulty === 'BEGINNER') return e.difficulty === 'INTERMEDIATE' || e.difficulty === 'PRO';
+          if (currentExercise.difficulty === 'INTERMEDIATE') return e.difficulty === 'PRO';
+          return false;
+        });
+        if (nextDifficulty) return nextDifficulty;
+      }
+    }
+
+    // 3. Même matière et niveau
+    const sameSubjectTests = MOCK_EXERCISES.filter(
+      (e) =>
+        (e.subjectSlug === currentExercise.subjectSlug || e.subject === currentExercise.subject) &&
+        e.level === currentExercise.level &&
+        e.id !== currentExercise.id
+    );
+
+    if (sameSubjectTests.length > 0) {
+      // Priorité à un test de niveau de difficulté croissant
+      const nextByDifficulty = sameSubjectTests.find((e) => {
+        if (currentExercise.difficulty === 'BEGINNER') return e.difficulty === 'INTERMEDIATE';
+        if (currentExercise.difficulty === 'INTERMEDIATE') return e.difficulty === 'PRO';
+        return false;
+      });
+      if (nextByDifficulty) return nextByDifficulty;
+
+      return sameSubjectTests[0];
+    }
+
+    return null;
+  },
 };

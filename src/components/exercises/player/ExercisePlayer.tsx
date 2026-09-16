@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Exercise, ExerciseSession, ExerciseAnswer } from '@/types/exercise';
 import { exerciseService } from '@/services/exerciseService';
+import { exerciseNavigation } from '@/services/exerciseNavigation';
 import { ExerciseTimer } from './ExerciseTimer';
 import { QuestionRenderer } from './QuestionRenderer';
 import { ExerciseResultView } from './ExerciseResultView';
@@ -16,8 +18,23 @@ interface ExercisePlayerProps {
 }
 
 export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
+  const router = useRouter();
   const questions = exercise.questions || [];
   const totalQuestions = questions.length;
+
+  // Navigation Retour intelligente pendant le test :
+  // Sauvegarde préventive des réponses et du temps passé pour ne rien perdre,
+  // puis retour contextuel à la page précédente réelle ou au catalogue avec filtres.
+  const handleGoBack = () => {
+    if (session) {
+      exerciseService.saveActiveSession(session);
+    }
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push(exerciseNavigation.getOriginUrl(exercise));
+    }
+  };
 
   // Favoris
   const [isFavorite, setIsFavorite] = useState(false);
@@ -257,13 +274,19 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
       {/* 1. EN-TÊTE MOBILE COMPACT & MODERNE (< 1024px) */}
       <div className="player-mobile-header">
         <div className="mobile-header-top-row">
-          <Link href="/exercices" className="mobile-back-btn" title="Quitter le test">
+          <button
+            type="button"
+            onClick={handleGoBack}
+            className="mobile-back-btn"
+            title="Retourner à la page précédente"
+            aria-label="Retourner à la page précédente"
+          >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
               <line x1="19" y1="12" x2="5" y2="12" />
               <polyline points="12 19 5 12 12 5" />
             </svg>
-            <span>Quitter</span>
-          </Link>
+            <span>Retour</span>
+          </button>
 
           <div className="mobile-timer-wrap">
             <ExerciseTimer
@@ -327,13 +350,19 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
       {/* 2. EN-TÊTE DESKTOP (conservé intact pour >= 1024px) */}
       <header className="player-top-header desktop-only-header">
         <div className="player-back-nav">
-          <Link href="/exercices" className="back-link-btn" title="Quitter la session">
+          <button
+            type="button"
+            onClick={handleGoBack}
+            className="back-link-btn"
+            title="Retourner à la page précédente"
+            aria-label="Retourner à la page précédente"
+          >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <line x1="19" y1="12" x2="5" y2="12" />
               <polyline points="12 19 5 12 12 5" />
             </svg>
-            <span>Quitter</span>
-          </Link>
+            <span>Retour</span>
+          </button>
 
           <div className="player-breadcrumbs">
             <span className="crumb-subject">{exercise.subject}</span>

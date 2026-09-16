@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Navbar } from '@/components/layout/Navbar';
 import { AuthModal } from '@/components/ui/AuthModal';
 import { ExercisePlayer } from '@/components/exercises/player/ExercisePlayer';
 import { Exercise } from '@/types/exercise';
+import { exerciseNavigation } from '@/services/exerciseNavigation';
 
 interface ExerciseDetailClientProps {
   exercise: Exercise | null;
@@ -14,6 +15,13 @@ interface ExerciseDetailClientProps {
 export const ExerciseDetailClient: React.FC<ExerciseDetailClientProps> = ({ exercise }) => {
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+
+  // Enregistrer le referrer initial (ex: page d'où l'exercice a été ouvert)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && document.referrer) {
+      exerciseNavigation.saveOrigin(document.referrer);
+    }
+  }, []);
 
   const handleOpenAuth = (mode: 'login' | 'register') => {
     setAuthMode(mode);

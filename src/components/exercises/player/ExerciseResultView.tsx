@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Exercise, ExerciseSession, ExerciseQuestion } from '@/types/exercise';
+import { exerciseService } from '@/services/exerciseService';
+import { exerciseNavigation } from '@/services/exerciseNavigation';
 import { ExerciseAIButton } from './ExerciseAIButton';
 import { ExerciseAIContextDrawer } from './ExerciseAIContextDrawer';
 
@@ -22,12 +24,13 @@ export const ExerciseResultView: React.FC<ExerciseResultViewProps> = ({
   const questions = exercise.questions || [];
   const totalQuestions = questions.length;
 
+  // Calcul du test suivant logique (même ressource/série, concours, ou matière)
+  const nextExercise = exerciseService.getNextExercise(exercise);
+
+  // Navigation Retour contextuelle : renvoie à la liste ou au catalogue d'où provient l'utilisateur
   const handleGoBack = () => {
-    if (typeof window !== 'undefined' && window.history.length > 1) {
-      router.back();
-    } else {
-      router.push('/exercices');
-    }
+    const originUrl = exerciseNavigation.getOriginUrl(exercise);
+    router.push(originUrl);
   };
 
   // Règle ergonomique stricte : une seule question ouverte à la fois pour garder la page compacte et aérée
@@ -169,7 +172,7 @@ export const ExerciseResultView: React.FC<ExerciseResultViewProps> = ({
             <div className="hero-badge-row">
               <span className="hero-validated-pill">
                 <span className="dot-pulse" aria-hidden="true" />
-                Épreuve terminée
+                Test terminé
               </span>
               <span className={`exam-difficulty-badge diff-${exercise.difficulty.toLowerCase()}`}>
                 {exercise.difficultyLabel}
@@ -234,20 +237,48 @@ export const ExerciseResultView: React.FC<ExerciseResultViewProps> = ({
           </div>
         </div>
 
-        {/* Boutons d'action compacts */}
+        {/* Boutons d'action contextuels conformes aux règles */}
         <div className="hero-actions-row">
-          <button type="button" className="btn-primary hero-btn" onClick={onRestart}>
+          {/* 1. Refaire le test */}
+          <button type="button" className="btn-secondary hero-btn" onClick={onRestart}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <path d="M23 4v6h-6" />
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
             </svg>
-            <span>Recommencer ce test</span>
+            <span>Refaire le test</span>
           </button>
 
-          <Link href="/exercices" className="btn-secondary hero-btn">
-            Catalogue d'entraînement
-          </Link>
+          {/* 2. Test suivant (si un prochain test logique est disponible) */}
+          {nextExercise && (
+            <Link
+              href={`/exercices/${nextExercise.id}`}
+              className="btn-primary hero-btn next-test-btn"
+              title={`Enchaîner avec le test suivant : ${nextExercise.title}`}
+            >
+              <span>Test suivant</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </Link>
+          )}
 
+          {/* 3. Retour aux exercices (avec conservation stricte du contexte de liste ou catalogue) */}
+          <button
+            type="button"
+            className="btn-secondary hero-btn result-catalog-btn"
+            onClick={handleGoBack}
+            title="Revenir au catalogue ou à la liste d'exercices d'origine"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg>
+            <span>Retour aux exercices</span>
+          </button>
+
+          {/* 4. Assistant IA Sunubiblio pour le bilan */}
           <button
             type="button"
             className="hero-ai-open-pill-btn"
