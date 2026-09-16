@@ -13,6 +13,10 @@ import {
   ExerciseUserProgress,
 } from '@/types/exercise';
 import { MOCK_EXERCISES } from '@/data/mockExercises';
+import { MOCK_CONTESTS } from '@/data/mockContests';
+import { MOCK_RESOURCES } from '@/data/mockLibrary';
+import { Contest } from '@/types/contest';
+import { Resource } from '@/types/library';
 
 const ACTIVE_SESSION_STORAGE_KEY = 'sunubiblio_active_exercise_session';
 const SESSIONS_HISTORY_STORAGE_KEY = 'sunubiblio_exercise_sessions_history';
@@ -112,6 +116,66 @@ export const exerciseService = {
    */
   async getTestsByCompetitionId(competitionId: string): Promise<Exercise[]> {
     return MOCK_EXERCISES.filter((e) => e.competitionId === competitionId);
+  },
+
+  /**
+   * Récupère les concours officiels avec le nombre réel de tests et ressources associés
+   */
+  async getFeaturedContests(): Promise<(Contest & { testsCount: number })[]> {
+    return MOCK_CONTESTS.map((c) => {
+      const testsCount = MOCK_EXERCISES.filter((e) => e.competitionId === c.id || e.competitionId === c.slug).length;
+      return {
+        ...c,
+        testsCount,
+      };
+    });
+  },
+
+  /**
+   * Récupère les manuels, annales et livres de référence pour la préparation aux concours
+   */
+  async getContestBooks(): Promise<(Resource & { associatedTestsCount: number })[]> {
+    // Filtrer les ressources de type annale, cours ou livre associées à un concours
+    const books = MOCK_RESOURCES.filter(
+      (r) => r.category === 'annales' || r.category === 'cours' || r.category === 'livres' || r.id === 'res-1' || r.id === 'res-2' || r.id === 'res-3'
+    );
+
+    return books.map((b) => {
+      const associatedTestsCount = MOCK_EXERCISES.filter((e) => e.resourceId === b.id).length;
+      return {
+        ...b,
+        associatedTestsCount,
+      };
+    });
+  },
+
+  /**
+   * Récupère les simulations complètes d'examens et de concours
+   */
+  async getSimulations(): Promise<Exercise[]> {
+    return MOCK_EXERCISES.filter((e) => e.type === 'simulation' || e.difficulty === 'PRO');
+  },
+
+  /**
+   * Récupère les séries de tests attachées aux ressources de la bibliothèque
+   */
+  async getResourceSeries(): Promise<{ resourceId: string; resourceTitle: string; tests: Exercise[] }[]> {
+    const seriesMap = new Map<string, { resourceId: string; resourceTitle: string; tests: Exercise[] }>();
+
+    MOCK_EXERCISES.forEach((e) => {
+      if (e.resourceId && e.resourceTitle) {
+        if (!seriesMap.has(e.resourceId)) {
+          seriesMap.set(e.resourceId, {
+            resourceId: e.resourceId,
+            resourceTitle: e.resourceTitle,
+            tests: [],
+          });
+        }
+        seriesMap.get(e.resourceId)!.tests.push(e);
+      }
+    });
+
+    return Array.from(seriesMap.values());
   },
 
   /**
