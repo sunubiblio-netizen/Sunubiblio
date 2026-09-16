@@ -91,21 +91,15 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
     let welcomeContent = '';
 
     if (isCorrectionMode) {
-      const verdict = isCorrect
-        ? '✅ Réponse validée'
-        : hasUserAnswered
-        ? '✕ Réponse incorrecte'
-        : '— Non répondu';
-
-      welcomeContent = `Bonjour 👋 Je suis votre **tuteur IA Sunubiblio** en phase de correction.\n\nJe suis connecté à l'analyse de votre épreuve :\n• **Épreuve :** ${testTitle || 'Test'}${competitionName ? ` • ${competitionName}` : ''}\n• **Matière :** ${subject} (${chapter || 'Général'})\n• **Question ciblée :** Question ${questionNumber} sur ${totalQuestions} (${verdict})\n\n${
-        isCorrect
-          ? '🎉 **Félicitations pour cette bonne réponse !** Souhaitez-vous explorer une autre méthode ou vous tester sur un exercice plus poussé ?'
-          : hasUserAnswered
-          ? `🔍 **Votre réponse :** « ${userAnswerLabel || 'Non spécifiée'} »\n🎯 **Bonne réponse :** « ${correctAnswerLabel || 'Non spécifiée'} »\n\nJe peux analyser précisément le piège qui a causé cette erreur ou vous réexpliquer la méthode pas à pas.`
-          : `🎯 **Bonne réponse attendue :** « ${correctAnswerLabel || 'Non spécifiée'} »\n\nCette question n'a pas été tentée. Je peux vous l'expliquer simplement pas à pas pour vous l'approprier.`
-      }`;
+      if (isCorrect) {
+        welcomeContent = `Bonjour 👋 **Bravo pour la Question ${questionNumber} !** Votre réponse est validée.\n\nSouhaitez-vous approfondir la règle, découvrir une méthode alternative ou tester un exercice similaire ?`;
+      } else if (hasUserAnswered) {
+        welcomeContent = `Bonjour 👋 Analysons ensemble la **Question ${questionNumber}** :\n\n• **Votre choix :** « ${userAnswerLabel || 'Option choisie'} »\n• **Bonne réponse :** « ${correctAnswerLabel || 'Solution officielle'} »\n\nJe suis là pour vous expliquer pourquoi ce choix était faux et quel piège déjouer au concours !`;
+      } else {
+        welcomeContent = `Bonjour 👋 Pour la **Question ${questionNumber}** (non répondue) :\n\n• **Bonne réponse attendue :** « ${correctAnswerLabel || 'Solution officielle'} »\n\nJe peux vous expliquer la démarche pas à pas pour que vous la maîtrisiez le jour de l'épreuve.`;
+      }
     } else {
-      welcomeContent = `Bonjour 👋 Je suis votre **tuteur IA Sunubiblio**.\n\nJe suis connecté à votre session d'entraînement :\n• **Matière :** ${subject}\n• **Chapitre :** ${chapter || 'Général'}${competitionName ? `\n• **Concours :** ${competitionName}` : ''}${testTitle ? `\n• **Épreuve :** ${testTitle}` : ''}\n\nJe suis prêt pour la **Question ${questionNumber} sur ${totalQuestions}**. Que souhaitez-vous approfondir ?`;
+      welcomeContent = `Bonjour 👋 Je suis votre **tuteur IA Sunubiblio**.\n\nJe suis prêt pour la **Question ${questionNumber} sur ${totalQuestions}** (${subject} • ${chapter || 'Général'}). Que souhaitez-vous approfondir ?`;
     }
 
     setMessages([
@@ -387,6 +381,53 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
     }
   };
 
+  const formatInlineText = (text: string) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={i} className="bubble-bold">{part.slice(2, -2)}</strong>;
+      }
+      return part;
+    });
+  };
+
+  const renderBubbleContent = (content: string) => {
+    const lines = content.split('\n');
+    return lines.map((line, idx) => {
+      const trimmed = line.trim();
+      if (!trimmed) {
+        return <span key={idx} className="bubble-spacer" />;
+      }
+      if (trimmed.startsWith('### ')) {
+        return (
+          <h4 key={idx} className="bubble-section-title">
+            {formatInlineText(trimmed.replace(/^###\s+/, ''))}
+          </h4>
+        );
+      }
+      if (trimmed.startsWith('> ')) {
+        return (
+          <blockquote key={idx} className="bubble-quote">
+            {formatInlineText(trimmed.replace(/^>\s+/, ''))}
+          </blockquote>
+        );
+      }
+      if (/^[•\*\-]\s+/.test(trimmed)) {
+        return (
+          <div key={idx} className="bubble-bullet-row">
+            <span className="bullet-dot" aria-hidden="true">•</span>
+            <span className="bullet-body">{formatInlineText(trimmed.replace(/^[•\*\-]\s+/, ''))}</span>
+          </div>
+        );
+      }
+      return (
+        <p key={idx} className="bubble-text-line">
+          {formatInlineText(line)}
+        </p>
+      );
+    });
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -444,7 +485,7 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
           {/* Récépissé contextuel de la question active */}
           <div className="ai-drawer-question-box">
             <div className="drawer-question-label">
-              <span>Question {questionNumber} sur {totalQuestions}</span>
+              <span className="q-tag-label">Question {questionNumber}/{totalQuestions}</span>
               {isCorrectionMode && (
                 <span className={`drawer-verdict-badge ${isCorrect ? 'verdict-ok' : hasUserAnswered ? 'verdict-err' : 'verdict-none'}`}>
                   {isCorrect ? '✓ Validé' : hasUserAnswered ? '✕ Incorrect' : '— Non répondu'}
@@ -457,14 +498,14 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
             </p>
             {isCorrectionMode && (userAnswerLabel || correctAnswerLabel) && (
               <div className="drawer-answers-summary">
-                {hasUserAnswered && (
+                {hasUserAnswered && !isCorrect && (
                   <span className="drawer-ans-chip chip-user">
-                    Votre réponse : {userAnswerLabel}
+                    <strong>Votre choix :</strong> {userAnswerLabel}
                   </span>
                 )}
                 {correctAnswerLabel && (
                   <span className="drawer-ans-chip chip-correct">
-                    Bonne réponse : {correctAnswerLabel}
+                    <strong>Bonne réponse :</strong> {correctAnswerLabel}
                   </span>
                 )}
               </div>
@@ -482,7 +523,7 @@ export const ExerciseAIContextDrawer: React.FC<ExerciseAIContextDrawerProps> = (
               className={`ai-drawer-bubble ${msg.role === 'user' ? 'bubble-user' : 'bubble-ai'}`}
             >
               <div className="bubble-content">
-                <p style={{ whiteSpace: 'pre-line' }}>{msg.content}</p>
+                {renderBubbleContent(msg.content)}
               </div>
               <span className="bubble-time">{msg.timestamp}</span>
             </div>
