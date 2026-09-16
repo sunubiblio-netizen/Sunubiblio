@@ -16,41 +16,22 @@ interface NavbarProps {
   hideOnMobile?: boolean;
 }
 
-// Logo SVG officiel Sunubiblio réutilisable
-const SunubiblioLogo: React.FC<{ size?: number }> = ({ size = 32 }) => (
-  <svg
+// Logo officiel Sunubiblio réutilisable (chargé depuis /logo.svg pour garantir le rendu parfait sans conflit de gradients)
+const SunubiblioLogo: React.FC<{ size?: number; className?: string }> = ({ size = 32, className = '' }) => (
+  <img
+    src="/logo.svg"
+    alt="Sunubiblio"
     width={size}
     height={size}
-    viewBox="6 6 88 88"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    style={{ display: 'block' }}
-  >
-    <defs>
-      <linearGradient id="navPet1" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#3B82F6" />
-        <stop offset="100%" stopColor="#6366F1" />
-      </linearGradient>
-      <linearGradient id="navPet2" x1="100%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#06B6D4" />
-        <stop offset="100%" stopColor="#3B82F6" />
-      </linearGradient>
-      <linearGradient id="navPet3" x1="0%" y1="100%" x2="100%" y2="0%">
-        <stop offset="0%" stopColor="#4F46E5" />
-        <stop offset="100%" stopColor="#EC4899" />
-      </linearGradient>
-      <linearGradient id="navPet4" x1="100%" y1="100%" x2="0%" y2="0%">
-        <stop offset="0%" stopColor="#D946EF" />
-        <stop offset="100%" stopColor="#8B5CF6" />
-      </linearGradient>
-    </defs>
-    <g transform="translate(50,50)">
-      <path d="M 0,-6 C 12,-28 28,-36 36,-28 C 44,-20 36,-4 14,0 Z" fill="url(#navPet1)" />
-      <path d="M 6,0 C 28,12 36,28 28,36 C 20,44 4,36 0,14 Z" fill="url(#navPet2)" />
-      <path d="M 0,6 C -12,28 -28,36 -36,28 C -44,20 -36,4 -14,0 Z" fill="url(#navPet3)" />
-      <path d="M -6,0 C -28,-12 -36,-28 -28,-36 C -20,-44 -4,-36 0,-14 Z" fill="url(#navPet4)" />
-    </g>
-  </svg>
+    className={className}
+    style={{
+      display: 'block',
+      width: `${size}px`,
+      height: `${size}px`,
+      flexShrink: 0,
+      objectFit: 'contain',
+    }}
+  />
 );
 
 export const Navbar: React.FC<NavbarProps> = ({
