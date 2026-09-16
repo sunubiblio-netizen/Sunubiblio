@@ -22,7 +22,7 @@ export const ExerciseDetailClient: React.FC<ExerciseDetailClientProps> = ({ exer
 
   return (
     <div className="exercise-player-page-wrapper">
-      <Navbar onOpenAuth={handleOpenAuth} activePage="exercices" />
+      <Navbar onOpenAuth={handleOpenAuth} activePage="exercices" hideOnMobile={true} />
 
       <main className="exercise-player-main">
         {!exercise ? (

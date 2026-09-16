@@ -13,6 +13,12 @@ export const MobileBottomNav: React.FC = () => {
       ? pathname.slice(0, -1)
       : pathname;
 
+  // Masquer la navigation mobile inférieure pendant le passage d'un test spécifique (/exercices/[id])
+  const isExercisePlayer = cleanPath.startsWith('/exercices/') && cleanPath !== '/exercices';
+  if (isExercisePlayer) {
+    return null;
+  }
+
   // Determine active route
   const isHome = cleanPath === '/' || cleanPath === '';
   const isBibliotheque = cleanPath === '/bibliotheque' || cleanPath.startsWith('/bibliotheque/');

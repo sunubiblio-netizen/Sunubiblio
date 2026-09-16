@@ -6,14 +6,15 @@ import Link from 'next/link';
 interface NavbarProps {
   onOpenAuth?: (mode: 'login' | 'register') => void;
   activePage?: 'accueil' | 'bibliotheque' | 'concours' | 'tarifs' | 'apropos' | 'contact' | string;
+  hideOnMobile?: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, activePage = 'accueil' }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, activePage = 'accueil', hideOnMobile = false }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [navSearch, setNavSearch] = useState('');
 
   return (
-    <header className="navbar-wrapper">
+    <header className={`navbar-wrapper ${hideOnMobile ? 'desktop-only-navbar' : ''}`}>
       <div className="container navbar-container">
         {/* Brand Logo & Name strictly side-by-side with tight spacing */}
         <Link

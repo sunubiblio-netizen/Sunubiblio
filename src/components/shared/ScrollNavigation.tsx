@@ -1,10 +1,18 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 
 export const ScrollNavigation: React.FC = () => {
+  const pathname = usePathname() || '';
   const [canScrollUp, setCanScrollUp] = useState(false);
   const [canScrollDown, setCanScrollDown] = useState(true);
+
+  // Masquer le bouton de défilement pendant un test de révision
+  const isExercisePlayer = pathname.startsWith('/exercices/') && pathname !== '/exercices';
+  if (isExercisePlayer) {
+    return null;
+  }
 
   // Écouteur de scroll hautement optimisé avec requestAnimationFrame
   useEffect(() => {
