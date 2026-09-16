@@ -149,9 +149,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           </Link>
         </div>
 
-        {/* SECTION 2 — NAVIGATION & ACTIONS : Rangée harmonieuse et équilibrée */}
+        {/* SECTION 2 — NAVIGATION & ACTIONS : [☰] ... [🔔] [SunuIA] [⋮] [SB] */}
         <div className="mobile-header-actions-row">
-          {/* 1. Menu rapide (tiroir latéral) */}
+          {/* Menu latéral (reste exactement à sa position gauche) */}
           <button
             type="button"
             className="mobile-action-btn"
@@ -174,28 +174,28 @@ export const Navbar: React.FC<NavbarProps> = ({
             </svg>
           </button>
 
-          {/* 2. Notifications */}
-          <NotificationsPopover />
+          {/* Groupe compact des actions de droite : [🔔] [SunuIA] [⋮] [SB] */}
+          <div className="mobile-actions-right-group">
+            {/* 1. Notifications */}
+            <NotificationsPopover />
 
-          {/* 3. Bouton SunuIA (Pilule mobile élégante) */}
-          <Link
-            href="/ia"
-            className={`nav-ia-pill-btn mobile-ia-pill ${isIA ? 'is-active' : ''}`}
-            title="Accéder à SunuIA — Assistant intelligent Sunubiblio"
-            aria-label="SunuIA — Assistant intelligent"
-          >
-            <span className="ia-icon-sparkle">
-              <SunuIaIcon size={16} />
-            </span>
-            <span className="ia-text">SunuIA</span>
-            <span className="ia-pulse-dot" aria-hidden="true" />
-          </Link>
+            {/* 2. Bouton SunuIA (icône seule + indicateur vert sur mobile) */}
+            <Link
+              href="/ia"
+              className={`mobile-ia-icon-btn ${isIA ? 'is-active' : ''}`}
+              title="Accéder à SunuIA — Assistant intelligent Sunubiblio"
+              aria-label="SunuIA — Assistant intelligent"
+            >
+              <SunuIaIcon size={18} />
+              <span className="ia-pulse-dot" aria-hidden="true" />
+            </Link>
 
-          {/* 4. Applications (Lanceur grille 3x3) */}
-          <AppLauncher />
+            {/* 3. Applications (Lanceur grille 3x3) */}
+            <AppLauncher />
 
-          {/* 5. Avatar / Mon Espace */}
-          <UserMenu onOpenAuth={onOpenAuth} />
+            {/* 4. Avatar / Mon Espace */}
+            <UserMenu onOpenAuth={onOpenAuth} />
+          </div>
         </div>
       </div>
 

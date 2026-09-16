@@ -15192,30 +15192,24 @@ input {
     display: inline-block !important;
   }
 
-  /* SECTION 2 — NAVIGATION & ACTIONS : Rangée équilibrée et fluide */
+  /* SECTION 2 — NAVIGATION & ACTIONS : [☰] ... [🔔] [SunuIA] [⋮] [SB] */
   .mobile-header-actions-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 5px 12px 7px 12px;
+    padding: 0 14px;
     height: 48px;
-    gap: 6px;
     width: 100%;
     box-sizing: border-box;
   }
 
-  .mobile-action-btn,
-  .mobile-header-actions-row .header-icon-btn,
-  .mobile-header-actions-row .app-launcher-btn,
-  .mobile-header-actions-row .user-avatar-trigger-btn {
-    width: 36px !important;
-    height: 36px !important;
-  }
-
+  /* Bouton Menu ☰ gauche */
   .mobile-action-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 36px;
+    height: 36px;
     border-radius: 10px;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -15231,31 +15225,55 @@ input {
     background: #e2e8f0;
   }
 
-  /* Bouton SunuIA ultra-compact sur mobile : [ SunuIA • ] */
-  .mobile-ia-pill {
+  /* Groupe compact des actions de droite : [🔔] [SunuIA] [⋮] [SB] */
+  .mobile-actions-right-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .mobile-actions-right-group .header-icon-btn,
+  .mobile-actions-right-group .app-launcher-btn,
+  .mobile-actions-right-group .user-avatar-trigger-btn {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  /* Bouton SunuIA compact : icône originale seule + indicateur vert */
+  .mobile-ia-icon-btn {
     display: inline-flex !important;
     align-items: center !important;
-    gap: 5px !important;
-    padding: 5px 9px !important;
-    font-size: 12.5px !important;
-    height: 34px !important;
-    flex-shrink: 0;
-    letter-spacing: -0.01em;
+    justify-content: center !important;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    border-radius: 10px !important;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(236, 72, 153, 0.12) 100%) !important;
+    border: 1px solid rgba(99, 102, 241, 0.35) !important;
+    color: #4338ca !important;
+    position: relative !important;
+    flex-shrink: 0 !important;
+    text-decoration: none !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
 
-  .mobile-ia-pill .ia-icon-sparkle {
-    display: none !important; /* Format mobile compact [ SunuIA • ] */
+  .mobile-ia-icon-btn:hover,
+  .mobile-ia-icon-btn.is-active {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.22) 0%, rgba(236, 72, 153, 0.22) 100%) !important;
+    border-color: #6366f1 !important;
+    transform: translateY(-1px);
   }
 
-  .mobile-ia-pill .ia-text {
-    display: inline !important;
-    font-size: 12.5px !important;
-    font-weight: 700 !important;
-  }
-
-  .mobile-ia-pill .ia-pulse-dot {
-    width: 5px;
-    height: 5px;
+  .mobile-ia-icon-btn .ia-pulse-dot {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 0 1.5px #ffffff;
   }
 
   .essential-nav-links {
