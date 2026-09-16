@@ -8,6 +8,7 @@ import { UserMenu } from './UserMenu';
 import { NotificationsPopover } from './NotificationsPopover';
 import { HelpPopover } from './HelpPopover';
 import { ContextualNavigation } from './ContextualNavigation';
+import { SunuIaIcon } from './SunuIaIcon';
 
 interface NavbarProps {
   onOpenAuth?: (mode: 'login' | 'register') => void;
@@ -23,10 +24,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const pathname = usePathname() || '/';
 
-  // Détection active de la route courante pour la navigation essentielle
+  // Détection active de la route courante pour la navigation essentielle et tiroirs
   const isBibliotheque = pathname === '/bibliotheque' || pathname.startsWith('/bibliotheque/');
-  const isExercices = pathname === '/exercices' || pathname.startsWith('/exercices/');
+  const isEducation = pathname === '/education' || pathname.startsWith('/education/');
   const isConcours = pathname === '/concours' || pathname.startsWith('/concours/');
+  const isExercices = pathname === '/exercices' || pathname.startsWith('/exercices/');
   const isIA = pathname === '/ia' || pathname.startsWith('/ia/');
 
   return (
@@ -104,7 +106,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="brand-name">Sunubiblio</span>
           </Link>
 
-          {/* Navigation essentielle visible sur Desktop : Bibliothèque, Exercices, Concours */}
+          {/* Navigation essentielle visible sur Desktop : Bibliothèque, Éducation, Concours */}
           <nav className="essential-nav-links desktop-only" aria-label="Navigation principale essentielle">
             <Link
               href="/bibliotheque"
@@ -115,11 +117,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             </Link>
 
             <Link
-              href="/exercices"
-              className={`essential-nav-link ${isExercices ? 'active' : ''}`}
+              href="/education"
+              className={`essential-nav-link ${isEducation ? 'active' : ''}`}
             >
-              <span>Exercices</span>
-              {isExercices && <span className="active-indicator" />}
+              <span>Éducation</span>
+              {isEducation && <span className="active-indicator" />}
             </Link>
 
             <Link
@@ -133,7 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* =========================================================
-            DROITE : [Aide] + [Notifications] + [IA] + [Applications] + [Avatar]
+            DROITE : [Aide] + [Notifications] + [SunuIA] + [Applications] + [Avatar]
             ========================================================= */}
         <div className="nav-right-actions">
           {/* 1. Aide & FAQ */}
@@ -144,15 +146,17 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* 2. Notifications */}
           <NotificationsPopover />
 
-          {/* 3. Bouton Accès Direct IA Sunubiblio */}
+          {/* 3. Bouton Accès Direct SunuIA */}
           <Link
             href="/ia"
             className={`nav-ia-pill-btn ${isIA ? 'is-active' : ''}`}
-            title="Accéder au tuteur et aux assistants IA Sunubiblio"
-            aria-label="IA Sunubiblio"
+            title="Accéder à SunuIA — Assistant intelligent Sunubiblio"
+            aria-label="SunuIA — Assistant intelligent"
           >
-            <span className="ia-icon-sparkle">🤖</span>
-            <span className="ia-text desktop-only">IA</span>
+            <span className="ia-icon-sparkle">
+              <SunuIaIcon size={18} />
+            </span>
+            <span className="ia-text desktop-only">SunuIA</span>
             <span className="ia-pulse-dot" aria-hidden="true" />
           </Link>
 
@@ -221,7 +225,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => setMobileDrawerOpen(false)}
               className={`mobile-nav-item ${isIA ? 'active' : ''}`}
             >
-              🤖 IA Sunubiblio
+              <SunuIaIcon size={18} style={{ marginRight: '8px' }} /> SunuIA
             </Link>
             <Link
               href="/documents"

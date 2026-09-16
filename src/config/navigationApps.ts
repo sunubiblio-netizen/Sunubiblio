@@ -108,8 +108,8 @@ export const ECOSYSTEM_APPS: EcosystemApp[] = [
   // ==========================================
   {
     id: 'ia',
-    label: 'IA Sunubiblio',
-    shortDescription: 'Assistant tuteur, résumés, QCM et tuteur contextuel',
+    label: 'SunuIA',
+    shortDescription: 'Assistant tuteur, résumés, QCM et explications intelligentes',
     href: '/ia',
     iconName: 'bot',
     group: 'tools',

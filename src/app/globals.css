@@ -458,7 +458,9 @@ input {
 }
 
 .nav-ia-pill-btn .ia-icon-sparkle {
-  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
 }
 
