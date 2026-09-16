@@ -13757,24 +13757,24 @@ input {
   position: absolute;
   top: calc(100% + 12px);
   right: 0;
-  width: 390px;
-  max-height: 580px;
+  width: 410px;
+  max-height: 600px;
   background: #ffffff;
-  border-radius: 18px;
+  border-radius: 20px;
   border: 1px solid rgba(226, 232, 240, 0.95);
-  box-shadow: 0 20px 45px -12px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(99, 102, 241, 0.05);
+  box-shadow: 0 20px 45px -12px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(99, 102, 241, 0.06);
   z-index: 1000;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: launcherPop 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: launcherPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   transform-origin: top right;
 }
 
 @keyframes launcherPop {
   0% {
     opacity: 0;
-    transform: scale(0.94) translateY(-6px);
+    transform: scale(0.95) translateY(-6px);
   }
   100% {
     opacity: 1;
@@ -13783,9 +13783,9 @@ input {
 }
 
 .launcher-header {
-  padding: 16px 18px 12px;
+  padding: 14px 16px 12px;
   border-bottom: 1px solid #f1f5f9;
-  background: linear-gradient(180deg, #fafbfe 0%, #ffffff 100%);
+  background: linear-gradient(180deg, #f8faff 0%, #ffffff 100%);
 }
 
 .launcher-title-row {
@@ -13810,6 +13810,16 @@ input {
   height: 7px;
   border-radius: 50%;
   background: linear-gradient(135deg, #6366f1, #ec4899);
+  flex-shrink: 0;
+}
+
+.launcher-apps-count {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #6366f1;
+  background: #eef2ff;
+  padding: 1px 7px;
+  border-radius: 9999px;
 }
 
 .launcher-close-btn {
@@ -13819,6 +13829,13 @@ input {
   color: #94a3b8;
   cursor: pointer;
   padding: 4px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.launcher-close-btn:hover {
+  background: #f1f5f9;
+  color: #1e293b;
 }
 
 .launcher-search-box {
@@ -13828,7 +13845,7 @@ input {
   background: #f1f5f9;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  padding: 7px 12px;
+  padding: 6px 12px;
   color: #64748b;
   transition: all 0.15s ease;
 }
@@ -13837,6 +13854,11 @@ input {
   background: #ffffff;
   border-color: #6366f1;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.search-icon {
+  color: #94a3b8;
+  flex-shrink: 0;
 }
 
 .launcher-search-input {
@@ -13859,151 +13881,164 @@ input {
   font-size: 11px;
   color: #94a3b8;
   cursor: pointer;
+  padding: 2px 4px;
 }
 
+.search-clear-btn:hover {
+  color: #475569;
+}
+
+/* Corps Défilable du Lanceur */
 .launcher-body-scroll {
-  padding: 14px 16px;
+  padding: 14px 14px 16px;
   overflow-y: auto;
-  max-height: 440px;
+  max-height: 460px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  scroll-behavior: smooth;
+  outline: none;
 }
 
-.launcher-group-section {
+.launcher-body-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.launcher-body-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.launcher-body-scroll::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 9999px;
+}
+
+.launcher-body-scroll::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+}
+
+/* Sections de catégories */
+.app-launcher-category-section {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.group-header-row {
+.category-header-wrap {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 4px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 6px;
+  margin-bottom: 2px;
 }
 
-.group-title {
-  font-size: 0.75rem;
+.category-title {
+  font-size: 0.6875rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.07em;
   color: #64748b;
+  margin: 0;
 }
 
-.group-badge-label {
+.category-desc {
   font-size: 0.6875rem;
-  font-weight: 600;
   color: #94a3b8;
 }
 
-.launcher-apps-grid {
+/* Grille d'applications : 3 colonnes desktop */
+.category-apps-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 6px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px 4px;
 }
 
-.app-item-card {
+/* Tuile d'application inspirée de Google Apps avec identité Sunubiblio */
+.app-launcher-tile {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 8px 10px;
+  justify-content: center;
+  text-align: center;
+  padding: 10px 4px 8px;
   border-radius: 12px;
   text-decoration: none;
-  background: #ffffff;
+  background: transparent;
   border: 1px solid transparent;
   transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 74px;
+  cursor: pointer;
+  outline: none;
 }
 
-.app-item-card:hover {
+.app-launcher-tile:hover {
   background: #f8faff;
-  border-color: rgba(99, 102, 241, 0.2);
-  transform: translateX(2px);
+  border-color: rgba(99, 102, 241, 0.18);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px -2px rgba(99, 102, 241, 0.08);
 }
 
-.app-item-card.is-active-app {
-  background: rgba(99, 102, 241, 0.06);
-  border-color: rgba(99, 102, 241, 0.3);
+.app-launcher-tile:focus-visible {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
-.app-icon-badge {
-  display: inline-flex;
+.app-launcher-tile.is-active-tile {
+  background: rgba(99, 102, 241, 0.07);
+  border-color: rgba(99, 102, 241, 0.25);
+}
+
+.tile-icon-container {
+  position: relative;
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 38px;
   height: 38px;
-  border-radius: 10px;
+  margin-bottom: 5px;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.app-launcher-tile:hover .tile-icon-container {
+  transform: scale(1.08);
+}
+
+.tile-vector-icon {
+  display: block;
   flex-shrink: 0;
-  transition: transform 0.18s ease;
+  transition: filter 0.18s ease;
 }
 
-.app-item-card:hover .app-icon-badge {
-  transform: scale(1.06);
+.app-launcher-tile:hover .tile-vector-icon {
+  filter: drop-shadow(0 2px 6px rgba(99, 102, 241, 0.25));
 }
 
-.icon-group-learn {
-  background: #eef2ff;
-  color: #4f46e5;
-}
-
-.icon-group-tools {
-  background: #fdf2f8;
-  color: #ec4899;
-}
-
-.icon-group-community {
-  background: #ecfdf5;
-  color: #059669;
-}
-
-.app-meta {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-}
-
-.app-name-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.app-label {
-  font-size: 0.84375rem;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.app-desc {
-  font-size: 0.71875rem;
-  color: #64748b;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 1px;
-}
-
-.app-status-badge {
-  font-size: 0.625rem;
+.tile-micro-badge {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  font-size: 0.5625rem;
   font-weight: 800;
-  padding: 1px 6px;
+  padding: 1px 4px;
   border-radius: 9999px;
-  line-height: 1.3;
+  line-height: 1.2;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
 .badge-ai {
-  background: #4f46e5;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
   color: #ffffff;
 }
 
 .badge-new {
-  background: #ec4899;
+  background: linear-gradient(135deg, #ec4899, #f43f5e);
   color: #ffffff;
 }
 
 .badge-popular {
-  background: #f59e0b;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
   color: #ffffff;
 }
 
@@ -14012,6 +14047,69 @@ input {
   color: #f8fafc;
 }
 
+.tile-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.app-launcher-tile:hover .tile-label {
+  color: #4f46e5;
+}
+
+/* État vide si aucune application trouvée */
+.launcher-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.empty-icon-pill {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+
+.empty-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px;
+}
+
+.empty-subtitle {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0 0 14px;
+  line-height: 1.4;
+}
+
+.empty-reset-btn {
+  background: #eef2ff;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  color: #4f46e5;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.empty-reset-btn:hover {
+  background: #e0e7ff;
+}
+
+/* Footer du Lanceur */
 .launcher-footer {
   padding: 10px 16px;
   background: #fafbfe;
@@ -14032,6 +14130,10 @@ input {
 
 .footer-quick-link:hover {
   color: #4f46e5;
+}
+
+.footer-link-highlight {
+  color: #f59e0b;
 }
 
 .footer-dot {
@@ -15299,10 +15401,10 @@ input {
     position: fixed !important;
     top: 98px !important;
     bottom: auto !important;
-    left: 12px !important;
-    right: 12px !important;
+    left: 10px !important;
+    right: 10px !important;
     width: auto !important;
-    max-width: 390px !important;
+    max-width: 410px !important;
     margin: 0 auto !important;
     max-height: calc(100vh - 116px) !important;
     border-radius: 18px !important;
@@ -15341,9 +15443,25 @@ input {
 
   .launcher-body-scroll {
     max-height: calc(100vh - 250px) !important;
+    padding: 12px 10px 16px !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
     overscroll-behavior: contain !important;
+  }
+
+  /* Grille 2 colonnes sur mobile selon les exigences */
+  .category-apps-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px 6px !important;
+  }
+
+  .app-launcher-tile {
+    min-height: 70px !important;
+    padding: 8px 4px 6px !important;
+  }
+
+  .category-header-wrap {
+    padding: 0 2px 4px !important;
   }
 
   /* User Menu sur mobile sous le header 2 sections */
