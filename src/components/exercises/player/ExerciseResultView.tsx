@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Exercise, ExerciseSession, ExerciseQuestion } from '@/types/exercise';
 import { ExerciseAIButton } from './ExerciseAIButton';
 import { ExerciseAIContextDrawer } from './ExerciseAIContextDrawer';
@@ -17,8 +18,17 @@ export const ExerciseResultView: React.FC<ExerciseResultViewProps> = ({
   session,
   onRestart,
 }) => {
+  const router = useRouter();
   const questions = exercise.questions || [];
   const totalQuestions = questions.length;
+
+  const handleGoBack = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push('/exercices');
+    }
+  };
 
   // Règle ergonomique stricte : une seule question ouverte à la fois pour garder la page compacte et aérée
   const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(null);
@@ -121,11 +131,12 @@ export const ExerciseResultView: React.FC<ExerciseResultViewProps> = ({
           0. BARRE SUPÉRIEURE DE NAVIGATION AVEC FLÈCHE RETOUR
           ========================================================= */}
       <nav className="result-top-nav-bar" aria-label="Navigation de retour">
-        <Link
-          href="/exercices"
+        <button
+          type="button"
+          onClick={handleGoBack}
           className="result-back-btn"
-          title="Retourner au catalogue des exercices"
-          aria-label="Retourner au catalogue des exercices"
+          title="Retourner à la page précédente"
+          aria-label="Retourner à la page précédente"
         >
           <svg
             width="18"
@@ -141,8 +152,8 @@ export const ExerciseResultView: React.FC<ExerciseResultViewProps> = ({
             <line x1="19" y1="12" x2="5" y2="12" />
             <polyline points="12 19 5 12 12 5" />
           </svg>
-          <span className="back-btn-text">Retour aux exercices</span>
-        </Link>
+          <span className="back-btn-text">Retour</span>
+        </button>
 
         <div className="result-nav-badge-wrap">
           <span className="result-nav-tag">Correction & Résultats</span>
