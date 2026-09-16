@@ -19,9 +19,9 @@ export const MobileBottomNav: React.FC = () => {
   // Determine active route
   const isHome = cleanPath === '/' || cleanPath === '';
   const isBibliotheque = cleanPath === '/bibliotheque' || cleanPath.startsWith('/bibliotheque/');
-  const isEducation = cleanPath === '/education' || cleanPath.startsWith('/education/');
   const isConcours = cleanPath === '/concours' || cleanPath.startsWith('/concours/');
-  const isProfil = cleanPath === '/profil' || cleanPath.startsWith('/profil/') || cleanPath === '/favoris';
+  const isFavoris = cleanPath === '/favoris' || cleanPath.startsWith('/favoris/');
+  const isProfil = cleanPath === '/profil' || cleanPath.startsWith('/profil/');
 
   return (
     <nav
@@ -83,33 +83,7 @@ export const MobileBottomNav: React.FC = () => {
           {isBibliotheque && <span className="active-dot-indicator" />}
         </Link>
 
-        {/* 3. Éducation */}
-        <Link
-          href="/education"
-          className={`nav-tab-item ${isEducation ? 'active' : ''}`}
-          aria-label="Aller à l'espace éducation"
-          aria-current={isEducation ? 'page' : undefined}
-        >
-          <div className="tab-icon-wrap">
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill={isEducation ? 'rgba(79, 70, 229, 0.12)' : 'none'}
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-              <path d="M6 12v5c3 3 9 3 12 0v-5" />
-            </svg>
-          </div>
-          <span className="tab-label">Éducation</span>
-          {isEducation && <span className="active-dot-indicator" />}
-        </Link>
-
-        {/* 4. Concours */}
+        {/* 3. Concours */}
         <Link
           href="/concours"
           className={`nav-tab-item ${isConcours ? 'active' : ''}`}
@@ -133,6 +107,31 @@ export const MobileBottomNav: React.FC = () => {
           </div>
           <span className="tab-label">Concours</span>
           {isConcours && <span className="active-dot-indicator" />}
+        </Link>
+
+        {/* 4. Favoris */}
+        <Link
+          href="/favoris"
+          className={`nav-tab-item ${isFavoris ? 'active' : ''}`}
+          aria-label="Aller aux favoris"
+          aria-current={isFavoris ? 'page' : undefined}
+        >
+          <div className="tab-icon-wrap">
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill={isFavoris ? 'rgba(236, 72, 153, 0.15)' : 'none'}
+              stroke={isFavoris ? '#ec4899' : 'currentColor'}
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </div>
+          <span className="tab-label">Favoris</span>
+          {isFavoris && <span className="active-dot-indicator" />}
         </Link>
 
         {/* 5. Profil */}
