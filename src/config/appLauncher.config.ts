@@ -18,7 +18,8 @@ export type AppCategoryKey =
   | 'visio_rdv'
   | 'outils'
   | 'assistants'
-  | 'commerce';
+  | 'commerce'
+  | 'services';
 
 export interface AppLauncherItemData {
   id: string;
@@ -77,6 +78,11 @@ export const APP_LAUNCHER_CATEGORIES: AppCategoryData[] = [
     key: 'commerce',
     title: 'COMMERCE',
     description: 'Marketplace d’ouvrages, achat et vente de résumés certifiés',
+  },
+  {
+    key: 'services',
+    title: 'MON COMPTE & SERVICES',
+    description: 'Abonnements, formules d’accès et offres',
   },
 ];
 
@@ -438,6 +444,22 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     iconId: 'mes_achats',
     category: 'commerce',
     order: 4,
+    enabled: true,
+    available: true,
+  },
+
+  // ==========================================
+  // 8. MON COMPTE & SERVICES
+  // ==========================================
+  {
+    id: 'tarifs',
+    name: 'Formules & Tarifs',
+    shortDescription: 'Choisissez la formule adaptée à vos besoins',
+    href: '/tarifs',
+    iconId: 'tarifs',
+    category: 'services',
+    order: 1,
+    badge: { text: 'Offres', variant: 'popular' },
     enabled: true,
     available: true,
   },

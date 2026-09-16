@@ -14016,6 +14016,122 @@ input {
   color: #4f46e5;
 }
 
+/* Entrée spécifique Mon Compte & Services (Formules & Tarifs) */
+.category-services-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.app-launcher-service-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  text-decoration: none;
+  background: linear-gradient(135deg, rgba(248, 250, 255, 0.95) 0%, rgba(253, 244, 255, 0.6) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.16);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  outline: none;
+}
+
+.app-launcher-service-card:hover {
+  background: linear-gradient(135deg, rgba(238, 242, 255, 0.95) 0%, rgba(253, 242, 248, 0.85) 100%);
+  border-color: rgba(99, 102, 241, 0.35);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px -3px rgba(99, 102, 241, 0.14);
+}
+
+.app-launcher-service-card:focus-visible {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.app-launcher-service-card.is-active-service {
+  background: rgba(99, 102, 241, 0.08);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 1px #6366f1;
+}
+
+.service-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.app-launcher-service-card:hover .service-icon-wrap {
+  transform: scale(1.08);
+}
+
+.service-vector-icon {
+  display: block;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(79, 70, 229, 0.2));
+}
+
+.service-meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.service-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.service-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.app-launcher-service-card:hover .service-label {
+  color: #4f46e5;
+}
+
+.service-micro-badge {
+  font-size: 0.59375rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  line-height: 1.2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.service-desc {
+  font-size: 0.6875rem;
+  color: #64748b;
+  margin-top: 2px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.service-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.app-launcher-service-card:hover .service-chevron {
+  color: #4f46e5;
+  transform: translateX(2px);
+}
+
 /* État vide si aucune application trouvée */
 .launcher-empty-state {
   display: flex;

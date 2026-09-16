@@ -73,12 +73,8 @@ export const AppLauncherPanel: React.FC<AppLauncherPanelProps> = ({
         ))}
       </div>
 
-      {/* 3. Pied de page épuré avec accès rapides */}
+      {/* 3. Pied de page épuré avec accès secondaires */}
       <div className="launcher-footer">
-        <Link href="/tarifs" className="footer-quick-link" onClick={onClose}>
-          <span className="footer-link-highlight">⭐</span> Formules & Tarifs
-        </Link>
-        <span className="footer-dot" aria-hidden="true">•</span>
         <Link href="/contact" className="footer-quick-link" onClick={onClose}>
           Assistance
         </Link>

@@ -19,8 +19,10 @@ export const AppLauncherCategory: React.FC<AppLauncherCategoryProps> = ({
 }) => {
   if (apps.length === 0) return null;
 
+  const isServicesCategory = category.key === 'services';
+
   return (
-    <section className="app-launcher-category-section" aria-labelledby={`cat-title-${category.key}`}>
+    <section className={`app-launcher-category-section ${isServicesCategory ? 'section-services' : ''}`} aria-labelledby={`cat-title-${category.key}`}>
       <div className="category-header-wrap">
         <h3 id={`cat-title-${category.key}`} className="category-title">
           {category.title}
@@ -30,20 +32,38 @@ export const AppLauncherCategory: React.FC<AppLauncherCategoryProps> = ({
         )}
       </div>
 
-      <div className="category-apps-grid" role="list">
-        {apps.map((app) => {
-          const isActive = currentPathname === app.href || (app.href !== '/' && currentPathname.startsWith(`${app.href}/`));
-          return (
-            <div key={app.id} role="listitem">
-              <AppLauncherItem
-                app={app}
-                isActive={isActive}
-                onSelectApp={onSelectApp}
-              />
-            </div>
-          );
-        })}
-      </div>
+      {isServicesCategory ? (
+        <div className="category-services-list" role="list">
+          {apps.map((app) => {
+            const isActive = currentPathname === app.href || (app.href !== '/' && currentPathname.startsWith(`${app.href}/`));
+            return (
+              <div key={app.id} role="listitem">
+                <AppLauncherItem
+                  app={app}
+                  isActive={isActive}
+                  onSelectApp={onSelectApp}
+                  variant="service-row"
+                />
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="category-apps-grid" role="list">
+          {apps.map((app) => {
+            const isActive = currentPathname === app.href || (app.href !== '/' && currentPathname.startsWith(`${app.href}/`));
+            return (
+              <div key={app.id} role="listitem">
+                <AppLauncherItem
+                  app={app}
+                  isActive={isActive}
+                  onSelectApp={onSelectApp}
+                />
+              </div>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 };

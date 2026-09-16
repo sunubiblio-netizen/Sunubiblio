@@ -565,6 +565,37 @@ export const IconMesAchats: React.FC<IconProps> = ({ size = 32, className = '' }
 );
 
 // ============================================================================
+// 8. MON COMPTE & SERVICES
+// ============================================================================
+
+/** Formules & Tarifs : Pass d'abonnement SaaS premium aux courbes galbées Sunubiblio */
+export const IconFormulesTarifs: React.FC<IconProps> = ({ size = 32, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 36 36" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="sb-trf-card" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#4F46E5" />
+        <stop offset="50%" stopColor="#7C3AED" />
+        <stop offset="100%" stopColor="#EC4899" />
+      </linearGradient>
+      <linearGradient id="sb-trf-star" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#FBBF24" />
+        <stop offset="100%" stopColor="#F59E0B" />
+      </linearGradient>
+    </defs>
+    {/* Carte d'accès premium arrondie */}
+    <rect x="4" y="6" width="28" height="24" rx="5" fill="url(#sb-trf-card)" />
+    {/* Micro-bande supérieure brillante */}
+    <path d="M4 12C4 8.7 6.7 6 10 6H26C29.3 6 32 8.7 32 12V13H4V12Z" fill="#FFFFFF" fillOpacity="0.15" />
+    {/* Étoile / Badge central doré aux reflets doux */}
+    <circle cx="18" cy="18" r="5.5" fill="url(#sb-trf-star)" />
+    <path d="M18 14.5L19.2 16.8L21.5 17L19.8 18.6L20.3 21L18 19.8L15.7 21L16.2 18.6L14.5 17L16.8 16.8L18 14.5Z" fill="#FFFFFF" />
+    {/* Micro-lignes de niveau SaaS */}
+    <rect x="8" y="24" width="6" height="2" rx="1" fill="#FFFFFF" fillOpacity="0.75" />
+    <rect x="22" y="24" width="6" height="2" rx="1" fill="#FFFFFF" fillOpacity="0.75" />
+  </svg>
+);
+
+// ============================================================================
 // REGISTRE DES ICÔNES SUNUBIBLIO
 // ============================================================================
 
@@ -606,6 +637,8 @@ export const AppLauncherIconRegistry: Record<string, React.FC<IconProps>> = {
   vendre_livre: IconVendreLivre,
   mes_ventes: IconMesVentes,
   mes_achats: IconMesAchats,
+  // 8. Mon Compte & Services
+  tarifs: IconFormulesTarifs,
 };
 
 export const getAppLauncherIcon = (iconId: string): React.FC<IconProps> => {
