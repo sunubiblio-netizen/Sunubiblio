@@ -196,6 +196,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, activePage = 'accuei
             <Link href="/bibliotheque" onClick={() => setMobileMenuOpen(false)} className={`mobile-nav-item ${activePage === 'bibliotheque' ? 'active' : ''}`}>Bibliothèque</Link>
             <Link href="/education" onClick={() => setMobileMenuOpen(false)} className={`mobile-nav-item ${activePage === 'education' ? 'active' : ''}`}>Éducation</Link>
             <Link href="/concours" onClick={() => setMobileMenuOpen(false)} className={`mobile-nav-item ${activePage === 'concours' ? 'active' : ''}`}>Concours</Link>
+            <Link href="/exercices" onClick={() => setMobileMenuOpen(false)} className={`mobile-nav-item ${activePage === 'exercices' ? 'active' : ''}`}>Exercices</Link>
             <Link href="/religion" onClick={() => setMobileMenuOpen(false)} className={`mobile-nav-item ${activePage === 'religion' ? 'active' : ''}`}>Religion</Link>
             <Link href="/tarifs" onClick={() => setMobileMenuOpen(false)} className={`mobile-nav-item ${activePage === 'tarifs' ? 'active' : ''}`}>Tarifs</Link>
             <Link href="/a-propos" onClick={() => setMobileMenuOpen(false)} className={`mobile-nav-item ${activePage === 'apropos' ? 'active' : ''}`}>À propos</Link>
