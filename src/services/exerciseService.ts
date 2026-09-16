@@ -51,7 +51,21 @@ export const exerciseService = {
         }
       }
 
-      // 6. Accès (Gratuit / Premium)
+      // 6. Concours
+      if (query.competition && query.competition !== 'all') {
+        if (!exo.competitionId || exo.competitionId !== query.competition) {
+          return false;
+        }
+      }
+
+      // 7. Ressource source de la bibliothèque
+      if (query.resourceId && query.resourceId !== 'all') {
+        if (!exo.resourceId || exo.resourceId !== query.resourceId) {
+          return false;
+        }
+      }
+
+      // 8. Accès (Gratuit / Premium)
       if (query.access && query.access !== 'all') {
         const isPrem = query.access === 'premium';
         if (exo.isPremium !== isPrem) {
@@ -59,14 +73,14 @@ export const exerciseService = {
         }
       }
 
-      // 7. Année
+      // 9. Année
       if (query.year && query.year !== 'all') {
         if (exo.year !== query.year) {
           return false;
         }
       }
 
-      // 8. Recherche textuelle
+      // 10. Recherche textuelle
       if (query.searchQuery && query.searchQuery.trim()) {
         const q = query.searchQuery.toLowerCase().trim();
         const mTitle = exo.title.toLowerCase().includes(q);
@@ -74,15 +88,30 @@ export const exerciseService = {
         const mSub = exo.subject.toLowerCase().includes(q);
         const mChap = exo.chapter.toLowerCase().includes(q);
         const mComp = exo.competitionName ? exo.competitionName.toLowerCase().includes(q) : false;
+        const mRes = exo.resourceTitle ? exo.resourceTitle.toLowerCase().includes(q) : false;
         const mGrade = exo.grade ? exo.grade.toLowerCase().includes(q) : false;
 
-        if (!mTitle && !mDesc && !mSub && !mChap && !mComp && !mGrade) {
+        if (!mTitle && !mDesc && !mSub && !mChap && !mComp && !mRes && !mGrade) {
           return false;
         }
       }
 
       return true;
     });
+  },
+
+  /**
+   * Récupère tous les tests d'entraînement rattachés à une ressource pédagogique
+   */
+  async getTestsByResourceId(resourceId: string): Promise<Exercise[]> {
+    return MOCK_EXERCISES.filter((e) => e.resourceId === resourceId);
+  },
+
+  /**
+   * Récupère tous les tests d'entraînement rattachés à un concours officiel
+   */
+  async getTestsByCompetitionId(competitionId: string): Promise<Exercise[]> {
+    return MOCK_EXERCISES.filter((e) => e.competitionId === competitionId);
   },
 
   /**
@@ -196,17 +225,27 @@ export const exerciseService = {
 
   /**
    * Calcul précis de la progression de l'utilisateur à partir des sessions terminées
+   * Conforme aux 3 niveaux stricts (Débutant, Intermédiaire, Pro)
    */
   getUserProgress(): ExerciseUserProgress {
+    const defaultProgress: ExerciseUserProgress = {
+      totalCompletedSessions: 0,
+      averageScorePercentage: 0,
+      totalTimeSpentSeconds: 0,
+      subjectsPracticedCount: 0,
+      byDifficulty: {
+        beginner: { completedCount: 0, averageScorePercentage: 0 },
+        intermediate: { completedCount: 0, averageScorePercentage: 0 },
+        pro: { completedCount: 0, averageScorePercentage: 0 },
+      },
+      bySubject: {},
+      byCompetition: {},
+      recentSessions: [],
+      activeSession: null,
+    };
+
     if (typeof window === 'undefined') {
-      return {
-        totalCompletedSessions: 0,
-        averageScorePercentage: 0,
-        totalTimeSpentSeconds: 0,
-        subjectsPracticedCount: 0,
-        recentSessions: [],
-        activeSession: null,
-      };
+      return defaultProgress;
     }
 
     try {
@@ -216,11 +255,7 @@ export const exerciseService = {
 
       if (history.length === 0) {
         return {
-          totalCompletedSessions: 0,
-          averageScorePercentage: 0,
-          totalTimeSpentSeconds: 0,
-          subjectsPracticedCount: 0,
-          recentSessions: [],
+          ...defaultProgress,
           activeSession: active,
         };
       }
@@ -231,25 +266,69 @@ export const exerciseService = {
       const totalTime = history.reduce((acc, s) => acc + (s.timeSpentSeconds || 0), 0);
 
       const subjectsSet = new Set<string>();
-      history.forEach((s) => subjectsSet.add(s.subject));
+      
+      // Statistiques par difficulté
+      const diffScores: Record<'BEGINNER' | 'INTERMEDIATE' | 'PRO', number[]> = {
+        BEGINNER: [],
+        INTERMEDIATE: [],
+        PRO: [],
+      };
+
+      // Statistiques par matière
+      const subjectMap: Record<string, number[]> = {};
+
+      history.forEach((s) => {
+        if (s.subject) subjectsSet.add(s.subject);
+
+        // Difficulté
+        const diff = s.difficulty || 'INTERMEDIATE';
+        if (diff in diffScores) {
+          diffScores[diff as 'BEGINNER' | 'INTERMEDIATE' | 'PRO'].push(s.percentage || 0);
+        }
+
+        // Matière
+        if (s.subject) {
+          if (!subjectMap[s.subject]) subjectMap[s.subject] = [];
+          subjectMap[s.subject].push(s.percentage || 0);
+        }
+      });
+
+      const calcAvg = (arr: number[]) => (arr.length > 0 ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length) : 0);
+
+      const bySubject: Record<string, { completed: number; avgScore: number }> = {};
+      Object.entries(subjectMap).forEach(([subj, arr]) => {
+        bySubject[subj] = {
+          completed: arr.length,
+          avgScore: calcAvg(arr),
+        };
+      });
 
       return {
         totalCompletedSessions: totalCompleted,
         averageScorePercentage: avgScore,
         totalTimeSpentSeconds: totalTime,
         subjectsPracticedCount: subjectsSet.size,
+        byDifficulty: {
+          beginner: {
+            completedCount: diffScores.BEGINNER.length,
+            averageScorePercentage: calcAvg(diffScores.BEGINNER),
+          },
+          intermediate: {
+            completedCount: diffScores.INTERMEDIATE.length,
+            averageScorePercentage: calcAvg(diffScores.INTERMEDIATE),
+          },
+          pro: {
+            completedCount: diffScores.PRO.length,
+            averageScorePercentage: calcAvg(diffScores.PRO),
+          },
+        },
+        bySubject,
+        byCompetition: {},
         recentSessions: history.slice(0, 5),
         activeSession: active,
       };
     } catch {
-      return {
-        totalCompletedSessions: 0,
-        averageScorePercentage: 0,
-        totalTimeSpentSeconds: 0,
-        subjectsPracticedCount: 0,
-        recentSessions: [],
-        activeSession: null,
-      };
+      return defaultProgress;
     }
   },
 

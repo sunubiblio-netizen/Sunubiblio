@@ -9,6 +9,7 @@ import { AuthModal } from '@/components/ui/AuthModal';
 import { ExerciseHero } from '@/components/exercises/ExerciseHero';
 import { ExerciseResumeBanner } from '@/components/exercises/ExerciseResumeBanner';
 import { ExerciseTypeShortcuts } from '@/components/exercises/ExerciseTypeShortcuts';
+import { ExerciseDifficultyTabs } from '@/components/exercises/ExerciseDifficultyTabs';
 import { ExerciseSearchFilters } from '@/components/exercises/ExerciseSearchFilters';
 import { ExerciseCard } from '@/components/exercises/ExerciseCard';
 import { ExerciseProgressSection } from '@/components/exercises/ExerciseProgressSection';
@@ -54,6 +55,13 @@ export default function ExercicesPage() {
     averageScorePercentage: 0,
     totalTimeSpentSeconds: 0,
     subjectsPracticedCount: 0,
+    byDifficulty: {
+      beginner: { completedCount: 0, averageScorePercentage: 0 },
+      intermediate: { completedCount: 0, averageScorePercentage: 0 },
+      pro: { completedCount: 0, averageScorePercentage: 0 },
+    },
+    bySubject: {},
+    byCompetition: {},
     recentSessions: [],
     activeSession: null,
   });
@@ -126,6 +134,16 @@ export default function ExercicesPage() {
     };
   }, [allExercises]);
 
+  // Compteurs par palier de difficulté
+  const difficultyCounts = useMemo(() => {
+    return {
+      all: allExercises.length,
+      beginner: allExercises.filter((e) => e.difficulty === 'BEGINNER').length,
+      intermediate: allExercises.filter((e) => e.difficulty === 'INTERMEDIATE').length,
+      pro: allExercises.filter((e) => e.difficulty === 'PRO').length,
+    };
+  }, [allExercises]);
+
   const handleToggleFav = (id: string) => {
     const isNowFav = exerciseService.toggleFavorite(id);
     if (isNowFav) {
@@ -190,8 +208,14 @@ export default function ExercicesPage() {
             />
           </section>
 
-          {/* 4. BARRE DE RECHERCHE & FILTRES SERVEUR-COMPATIBLES */}
+          {/* 4. ONGLETS DE PALIER DE DIFFICULTÉ & RECHERCHE & FILTRES */}
           <div ref={catalogRef} className="exercise-catalog-anchor">
+            <ExerciseDifficultyTabs
+              selectedDifficulty={filters.difficulty || 'all'}
+              onSelectDifficulty={(newDiff) => setFilters((prev) => ({ ...prev, difficulty: newDiff }))}
+              counts={difficultyCounts}
+            />
+
             <ExerciseSearchFilters
               filters={filters}
               onFilterChange={(newFilters) => setFilters(newFilters)}

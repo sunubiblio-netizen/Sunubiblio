@@ -133,10 +133,10 @@ export const ExerciseSearchFilters: React.FC<ExerciseSearchFiltersProps> = ({
 
   const difficultyOptions: DropdownOption[] = useMemo(
     () =>
-      EXERCISE_DIFFICULTIES.map((d) => ({
+      EXERCISE_DIFFICULTIES.map((d: { id: string; label: string; badge?: string }) => ({
         value: d.id,
         label: d.label,
-        badge: d.id === 'facile' ? '★' : d.id === 'moyen' ? '★★' : d.id === 'difficile' ? '★★★' : undefined,
+        badge: d.badge,
       })),
     []
   );
@@ -689,7 +689,7 @@ export const ExerciseSearchFilters: React.FC<ExerciseSearchFiltersProps> = ({
                 {expandedMobileSection === 'difficulty' && (
                   <div className="accordion-expanded-content">
                     <div className="drawer-pills-wrap">
-                      {EXERCISE_DIFFICULTIES.map((d) => {
+                      {EXERCISE_DIFFICULTIES.map((d: { id: string; label: string }) => {
                         const isSelected = (filters.difficulty || 'all') === d.id;
                         return (
                           <button

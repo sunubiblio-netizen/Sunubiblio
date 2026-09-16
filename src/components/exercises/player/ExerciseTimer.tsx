@@ -3,24 +3,34 @@
 import React, { useState, useEffect } from 'react';
 
 interface ExerciseTimerProps {
-  initialMinutes: number;
+  durationMinutes?: number;
+  initialMinutes?: number;
+  timeSpentSeconds?: number;
   onTimeUp: () => void;
   isPaused?: boolean;
 }
 
 export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
+  durationMinutes,
   initialMinutes,
+  timeSpentSeconds = 0,
   onTimeUp,
   isPaused = false,
 }) => {
-  const [secondsRemaining, setSecondsRemaining] = useState(initialMinutes * 60);
+  const totalMins = typeof durationMinutes === 'number' ? durationMinutes : (initialMinutes || 0);
+  const isCountdown = totalMins > 0;
+
+  // Calcul du temps restant en mode compte à rebours
+  const [secondsRemaining, setSecondsRemaining] = useState(totalMins * 60);
 
   useEffect(() => {
-    setSecondsRemaining(initialMinutes * 60);
-  }, [initialMinutes]);
+    if (isCountdown) {
+      setSecondsRemaining(Math.max(totalMins * 60 - timeSpentSeconds, 0));
+    }
+  }, [totalMins, timeSpentSeconds, isCountdown]);
 
   useEffect(() => {
-    if (isPaused) return;
+    if (!isCountdown || isPaused) return;
 
     if (secondsRemaining <= 0) {
       onTimeUp();
@@ -39,8 +49,26 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [secondsRemaining, isPaused, onTimeUp]);
+  }, [secondsRemaining, isPaused, isCountdown, onTimeUp]);
 
+  // Si temps illimité : afficher temps écoulé croissant
+  if (!isCountdown) {
+    const elapsedMins = Math.floor(timeSpentSeconds / 60);
+    const elapsedSecs = timeSpentSeconds % 60;
+    const formatted = `${String(elapsedMins).padStart(2, '0')}:${String(elapsedSecs).padStart(2, '0')}`;
+
+    return (
+      <div className="exercise-timer-pill" role="timer" aria-live="polite" title="Temps d'épreuve non limité">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+        <span className="timer-text">{formatted}</span>
+      </div>
+    );
+  }
+
+  // Si chronométré : décompte officiel
   const minutes = Math.floor(secondsRemaining / 60);
   const seconds = secondsRemaining % 60;
   const isUrgent = secondsRemaining < 120; // Moins de 2 minutes restantes
@@ -48,7 +76,12 @@ export const ExerciseTimer: React.FC<ExerciseTimerProps> = ({
   const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
   return (
-    <div className={`exercise-timer-pill ${isUrgent ? 'is-urgent' : ''}`} role="timer" aria-live="polite">
+    <div
+      className={`exercise-timer-pill ${isUrgent ? 'is-urgent' : ''}`}
+      role="timer"
+      aria-live="polite"
+      title="Temps officiel restant pour cette épreuve"
+    >
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
         <circle cx="12" cy="12" r="10" />
         <polyline points="12 6 12 12 16 14" />

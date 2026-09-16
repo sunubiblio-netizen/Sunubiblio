@@ -19,13 +19,31 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 }) => {
   const getDifficultyBadge = (diff: string) => {
     switch (diff) {
+      case 'BEGINNER':
       case 'facile':
-        return <span className="diff-badge diff-easy">Facile</span>;
+        return (
+          <span className="diff-badge diff-beginner" title="Phase 1 : Notions fondamentales & Définitions">
+            <span className="diff-dot beginner-dot" />
+            <span>Débutant</span>
+          </span>
+        );
+      case 'PRO':
       case 'difficile':
-        return <span className="diff-badge diff-hard">Difficile</span>;
+        return (
+          <span className="diff-badge diff-pro" title="Phase 3 : Raisonnement complexe & Format Examen">
+            <span className="diff-dot pro-dot" />
+            <span>Pro / Examen</span>
+          </span>
+        );
+      case 'INTERMEDIATE':
       case 'moyen':
       default:
-        return <span className="diff-badge diff-medium">Moyen</span>;
+        return (
+          <span className="diff-badge diff-intermediate" title="Phase 2 : Maîtrise & Combinaisons de notions">
+            <span className="diff-dot intermediate-dot" />
+            <span>Intermédiaire</span>
+          </span>
+        );
     }
   };
 
@@ -108,12 +126,20 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       {/* Métadonnées contextuelles (Concours, Chapitre) */}
       <div className="exercise-card-meta-row">
         {exercise.competitionName ? (
-          <span className="meta-pill comp-pill">
+          <span className="meta-pill comp-pill" title="Concours officiel">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <circle cx="12" cy="8" r="7" />
               <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
             </svg>
             <span>{exercise.competitionName}</span>
+          </span>
+        ) : exercise.resourceTitle ? (
+          <span className="meta-pill resource-source-pill" title={`Issu du document : ${exercise.resourceTitle}`}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+            <span className="resource-pill-text">{exercise.resourceTitle.slice(0, 28)}...</span>
           </span>
         ) : (
           <span className="meta-pill chapter-pill">

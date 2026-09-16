@@ -6,7 +6,6 @@ import { Exercise, ExerciseSession, ExerciseAnswer } from '@/types/exercise';
 import { exerciseService } from '@/services/exerciseService';
 import { ExerciseTimer } from './ExerciseTimer';
 import { QuestionRenderer } from './QuestionRenderer';
-import { AIExerciseHelpModal } from './AIExerciseHelpModal';
 import { ExerciseResultView } from './ExerciseResultView';
 
 interface ExercisePlayerProps {
@@ -24,31 +23,33 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
   const [session, setSession] = useState<ExerciseSession>(() => {
     // Vérifier si une session active existait déjà pour cet exercice
     const active = exerciseService.getActiveSession();
-    if (active && active.exerciseId === exercise.id) {
+    if (active && (active.exerciseId === exercise.id || active.testId === exercise.id)) {
       return active;
     }
 
     return {
       id: `session_${exercise.id}_${Date.now()}`,
+      testId: exercise.id,
       exerciseId: exercise.id,
       exerciseTitle: exercise.title,
       subject: exercise.subject,
       levelLabel: exercise.levelLabel,
+      difficulty: exercise.difficulty,
+      difficultyLabel: exercise.difficultyLabel,
+      mode: 'exam',
       status: 'in_progress',
       currentQuestionIndex: 0,
       totalQuestions,
       answers: {},
+      durationSeconds: exercise.durationMinutes * 60,
       timeSpentSeconds: 0,
       startedAt: new Date().toISOString(),
     };
   });
 
-  const [selectedChoiceId, setSelectedChoiceId] = useState<string | undefined>(undefined);
   const [isCompleted, setIsCompleted] = useState(session.status === 'completed');
-
-  // Modale IA
-  const [aiModalOpen, setAiModalOpen] = useState(false);
-  const [aiModalMode, setAiModalMode] = useState<'hint' | 'explain'>('hint');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Timer de session (temps passé)
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -79,29 +80,26 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
   }, [isCompleted]);
 
   // Question active
-  const currentIndex = Math.min(Math.max(session.currentQuestionIndex, 0), Math.max(totalQuestions - 1, 0));
+  const currentIndex = Math.min(
+    Math.max(session.currentQuestionIndex, 0),
+    Math.max(totalQuestions - 1, 0)
+  );
   const currentQuestion = questions[currentIndex];
-  const currentAnswer: ExerciseAnswer | undefined = currentQuestion ? session.answers[currentQuestion.id] : undefined;
+  const currentAnswer: ExerciseAnswer | undefined = currentQuestion
+    ? session.answers[currentQuestion.id]
+    : undefined;
 
-  // Réinitialiser la sélection locale quand on change de question
-  useEffect(() => {
-    if (currentAnswer) {
-      setSelectedChoiceId(currentAnswer.selectedChoiceId);
-    } else {
-      setSelectedChoiceId(undefined);
-    }
-  }, [currentIndex, currentAnswer]);
+  // Sélection d'un choix en direct (sauvegardé côté serveur/session sans spoiler)
+  const handleSelectChoice = (choiceId: string) => {
+    if (!currentQuestion) return;
 
-  // Validation de la réponse à la question courante
-  const handleValidateAnswer = () => {
-    if (!currentQuestion || !selectedChoiceId || currentAnswer) return;
-
-    const chosenChoice = currentQuestion.choices?.find((c) => c.id === selectedChoiceId);
+    // Récupérer si le choix est correct (stocké pour le calcul final après soumission)
+    const chosenChoice = currentQuestion.choices?.find((c) => c.id === choiceId);
     const isCorrect = chosenChoice ? chosenChoice.isCorrect : false;
 
     const newAnswer: ExerciseAnswer = {
       questionId: currentQuestion.id,
-      selectedChoiceId,
+      selectedChoiceId: choiceId,
       isCorrect,
       answeredAt: new Date().toISOString(),
     };
@@ -120,7 +118,7 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
     exerciseService.saveActiveSession(updatedSession);
   };
 
-  // Finalisation de la session d'entraînement
+  // Finalisation et calcul officiel du score après soumission
   const handleFinishSession = useCallback(() => {
     let totalScore = 0;
     let maxScore = 0;
@@ -146,6 +144,7 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
 
     setSession(finishedSession);
     setIsCompleted(true);
+    setShowConfirmModal(false);
     exerciseService.saveCompletedSession(finishedSession);
   }, [questions, session]);
 
@@ -157,8 +156,7 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
       setSession(updated);
       exerciseService.saveActiveSession(updated);
     } else {
-      // Dernière question : proposer de terminer
-      handleFinishSession();
+      setShowConfirmModal(true);
     }
   };
 
@@ -172,25 +170,39 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
     }
   };
 
-  // Recommencer l'exercice
+  // Saut direct vers une question via la grille
+  const handleJumpToQuestion = (index: number) => {
+    if (index >= 0 && index < totalQuestions) {
+      const updated = { ...session, currentQuestionIndex: index };
+      setSession(updated);
+      exerciseService.saveActiveSession(updated);
+      setIsDrawerOpen(false);
+    }
+  };
+
+  // Recommencer le test
   const handleRestart = () => {
     const newSession: ExerciseSession = {
       id: `session_${exercise.id}_${Date.now()}`,
+      testId: exercise.id,
       exerciseId: exercise.id,
       exerciseTitle: exercise.title,
       subject: exercise.subject,
       levelLabel: exercise.levelLabel,
+      difficulty: exercise.difficulty,
+      difficultyLabel: exercise.difficultyLabel,
+      mode: 'exam',
       status: 'in_progress',
       currentQuestionIndex: 0,
       totalQuestions,
       answers: {},
+      durationSeconds: exercise.durationMinutes * 60,
       timeSpentSeconds: 0,
       startedAt: new Date().toISOString(),
     };
 
     setSession(newSession);
     setIsCompleted(false);
-    setSelectedChoiceId(undefined);
     exerciseService.saveActiveSession(newSession);
   };
 
@@ -205,6 +217,10 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
     handleFinishSession();
   }, [handleFinishSession]);
 
+  // Nombre de questions répondues
+  const answeredCount = Object.keys(session.answers).length;
+  const unansweredCount = totalQuestions - answeredCount;
+
   if (isCompleted) {
     return (
       <ExerciseResultView
@@ -218,15 +234,13 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
   if (!currentQuestion) {
     return (
       <div className="player-empty-wrap">
-        <p>Aucune question disponible pour cet exercice.</p>
+        <p>Aucune question disponible pour ce test.</p>
         <Link href="/exercices" className="btn-primary">
-          Retour aux exercices
+          Retour au catalogue d'entraînement
         </Link>
       </div>
     );
   }
-
-  const progressPercent = Math.round(((currentIndex + 1) / totalQuestions) * 100);
 
   return (
     <div className="exercise-player-container">
@@ -248,22 +262,38 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
           </div>
         </div>
 
-        <div className="player-top-actions">
-          {/* Chronomètre conditionnel */}
-          {exercise.durationMinutes && exercise.durationMinutes > 0 ? (
-            <ExerciseTimer
-              initialMinutes={exercise.durationMinutes}
-              onTimeUp={handleTimeUp}
-              isPaused={isCompleted}
-            />
-          ) : null}
+        {/* Chronomètre central */}
+        <div className="player-center-timer">
+          <ExerciseTimer
+            durationMinutes={exercise.durationMinutes}
+            timeSpentSeconds={session.timeSpentSeconds}
+            onTimeUp={handleTimeUp}
+          />
+        </div>
 
-          {/* Favori */}
+        {/* Boutons d'action supérieurs */}
+        <div className="player-actions-top">
+          {/* Bouton grille sur mobile */}
+          <button
+            type="button"
+            className="mobile-grid-toggle-btn"
+            onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+            title="Afficher la grille des questions"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg>
+            <span>{answeredCount}/{totalQuestions}</span>
+          </button>
+
           <button
             type="button"
             className={`player-fav-btn ${isFavorite ? 'is-active' : ''}`}
             onClick={handleToggleFav}
-            aria-label={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+            aria-label="Favori"
             title={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
           >
             <svg
@@ -277,105 +307,245 @@ export const ExercisePlayer: React.FC<ExercisePlayerProps> = ({ exercise }) => {
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </button>
+
+          <button
+            type="button"
+            className="player-submit-top-btn"
+            onClick={() => setShowConfirmModal(true)}
+          >
+            <span>Terminer</span>
+          </button>
         </div>
       </header>
 
-      {/* Barre de progression linéaire */}
-      <div className="player-progress-bar-wrap">
-        <div className="progress-info-row">
-          <span className="progress-step-text">
-            Question <strong>{currentIndex + 1}</strong> sur {totalQuestions}
-          </span>
-          <span className="progress-pct-text">{progressPercent}%</span>
+      {/* Disposition principale : Contenu Question + Grille de navigation latérale */}
+      <div className="player-main-layout">
+        {/* Colonne centrale : Épreuve */}
+        <div className="player-question-area">
+          {/* Bannière de métadonnées du test */}
+          <div className="player-exam-banner">
+            <div className="exam-banner-left">
+              <span className="exam-mode-badge">
+                <span className="exam-mode-dot" />
+                <span>Mode Examen & Entraînement</span>
+              </span>
+              <span className={`exam-difficulty-badge diff-${exercise.difficulty.toLowerCase()}`}>
+                {exercise.difficultyLabel}
+              </span>
+              {exercise.competitionName && (
+                <span className="exam-competition-badge">
+                  🏆 {exercise.competitionName}
+                </span>
+              )}
+            </div>
+
+            <div className="exam-banner-right">
+              <span className="question-counter-text">
+                Question <strong className="counter-current">{currentIndex + 1}</strong> sur{' '}
+                <strong className="counter-total">{totalQuestions}</strong>
+              </span>
+            </div>
+          </div>
+
+          {/* Composant Question sans révélation de réponses */}
+          <div className="question-card-wrapper">
+            <QuestionRenderer
+              question={currentQuestion}
+              currentAnswer={currentAnswer}
+              onSelectChoice={handleSelectChoice}
+              isExamMode={true}
+            />
+          </div>
+
+          {/* Barre de navigation inférieure */}
+          <footer className="player-bottom-footer">
+            <button
+              type="button"
+              className="btn-secondary nav-btn prev-btn"
+              disabled={currentIndex === 0}
+              onClick={handlePrevQuestion}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+              <span>Précédente</span>
+            </button>
+
+            <div className="footer-summary-indicators">
+              <span className="indicator-pill">
+                <strong>{answeredCount}</strong> répondu{answeredCount > 1 ? 's' : ''}
+              </span>
+              {unansweredCount > 0 && (
+                <span className="indicator-pill indicator-pending">
+                  <strong>{unansweredCount}</strong> en attente
+                </span>
+              )}
+            </div>
+
+            {currentIndex < totalQuestions - 1 ? (
+              <button
+                type="button"
+                className="btn-primary nav-btn next-btn"
+                onClick={handleNextQuestion}
+              >
+                <span>Suivante</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="btn-primary nav-btn finish-btn"
+                onClick={() => setShowConfirmModal(true)}
+              >
+                <span>Terminer le test</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </button>
+            )}
+          </footer>
         </div>
-        <div className="progress-track">
-          <div
-            className="progress-fill"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
+
+        {/* Colonne latérale : Grille de navigation des questions */}
+        <aside className={`player-sidebar-grid ${isDrawerOpen ? 'is-drawer-open' : ''}`}>
+          <div className="sidebar-grid-header">
+            <div className="sidebar-grid-title-wrap">
+              <h4 className="sidebar-grid-title">Grille des questions</h4>
+              <span className="sidebar-grid-subtitle">
+                {answeredCount}/{totalQuestions} complétées
+              </span>
+            </div>
+            <button
+              type="button"
+              className="sidebar-close-btn"
+              onClick={() => setIsDrawerOpen(false)}
+              aria-label="Fermer la grille"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="sidebar-legend">
+            <div className="legend-item">
+              <span className="legend-dot dot-answered">✓</span>
+              <span>Répondu</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-dot dot-current">●</span>
+              <span>Actuelle</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-dot dot-pending">—</span>
+              <span>En attente</span>
+            </div>
+          </div>
+
+          <div className="sidebar-questions-cells">
+            {questions.map((q, idx) => {
+              const isAnswered = Boolean(session.answers[q.id]);
+              const isCurrent = idx === currentIndex;
+
+              let statusClass = 'is-pending';
+              let symbol = `${idx + 1}`;
+
+              if (isCurrent) {
+                statusClass = 'is-current';
+              } else if (isAnswered) {
+                statusClass = 'is-answered';
+                symbol = '✓';
+              }
+
+              return (
+                <button
+                  key={q.id}
+                  type="button"
+                  className={`grid-cell-btn ${statusClass}`}
+                  onClick={() => handleJumpToQuestion(idx)}
+                  title={`Question ${idx + 1} : ${isAnswered ? 'Répondue' : 'En attente'}`}
+                >
+                  <span className="cell-number">{idx + 1}</span>
+                  {isAnswered && !isCurrent && (
+                    <span className="cell-check-badge">✓</span>
+                  )}
+                  {isCurrent && (
+                    <span className="cell-current-badge">●</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="sidebar-grid-footer">
+            <button
+              type="button"
+              className="sidebar-submit-btn"
+              onClick={() => setShowConfirmModal(true)}
+            >
+              Soumettre l'épreuve
+            </button>
+          </div>
+        </aside>
       </div>
 
-      {/* Zone centrale de rendu de la question */}
-      <main className="player-question-stage">
-        <QuestionRenderer
-          question={currentQuestion}
-          currentAnswer={currentAnswer}
-          selectedChoiceId={selectedChoiceId}
-          onSelectChoice={(id) => setSelectedChoiceId(id)}
-          onValidateAnswer={handleValidateAnswer}
-          onRequestAIHelp={(mode) => {
-            setAiModalMode(mode);
-            setAiModalOpen(true);
-          }}
-        />
-      </main>
+      {/* MODALE DE CONFIRMATION AVANT SOUMISSION FINALE */}
+      {showConfirmModal && (
+        <div className="confirm-modal-backdrop" onClick={() => setShowConfirmModal(false)}>
+          <div
+            className="confirm-modal-card"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="confirm-modal-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
+              </svg>
+            </div>
 
-      {/* Barre inférieure de navigation entre questions */}
-      <footer className="player-bottom-nav">
-        <button
-          type="button"
-          className="btn-secondary nav-prev-btn"
-          disabled={currentIndex === 0}
-          onClick={handlePrevQuestion}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-          <span>Précédente</span>
-        </button>
+            <h3 className="confirm-modal-title">Terminer et soumettre le test ?</h3>
+            <p className="confirm-modal-desc">
+              Vous avez répondu à <strong>{answeredCount}</strong> question{answeredCount > 1 ? 's' : ''} sur <strong>{totalQuestions}</strong>.
+            </p>
 
-        <div className="player-dots-indicator desktop-only">
-          {questions.map((q, idx) => {
-            const isAnswered = Boolean(session.answers[q.id]);
-            const isCurrent = idx === currentIndex;
-            return (
-              <span
-                key={q.id}
-                className={`player-dot ${isCurrent ? 'current' : ''} ${isAnswered ? 'answered' : ''}`}
-                title={`Question ${idx + 1}`}
-              />
-            );
-          })}
+            {unansweredCount > 0 && (
+              <div className="confirm-warning-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <span>
+                  Attention : <strong>{unansweredCount}</strong> question{unansweredCount > 1 ? 's' : ''} reste{unansweredCount > 1 ? 'nt' : ''} sans réponse et compteron{unansweredCount > 1 ? 't' : ''} pour 0 point.
+                </span>
+              </div>
+            )}
+
+            <div className="confirm-modal-actions">
+              <button
+                type="button"
+                className="btn-secondary modal-cancel-btn"
+                onClick={() => setShowConfirmModal(false)}
+              >
+                Continuer l'épreuve
+              </button>
+
+              <button
+                type="button"
+                className="btn-primary modal-confirm-btn"
+                onClick={handleFinishSession}
+              >
+                Confirmer et voir les résultats
+              </button>
+            </div>
+          </div>
         </div>
-
-        {currentIndex < totalQuestions - 1 ? (
-          <button
-            type="button"
-            className="btn-primary nav-next-btn"
-            onClick={handleNextQuestion}
-          >
-            <span>Suivante</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </button>
-        ) : (
-          <button
-            type="button"
-            className="btn-primary nav-finish-btn"
-            onClick={handleFinishSession}
-          >
-            <span>Terminer la session</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </button>
-        )}
-      </footer>
-
-      {/* Modale d'aide IA */}
-      <AIExerciseHelpModal
-        isOpen={aiModalOpen}
-        onClose={() => setAiModalOpen(false)}
-        questionText={currentQuestion.question}
-        subject={exercise.subject}
-        chapter={exercise.chapter}
-        hasAnswered={Boolean(currentAnswer)}
-        mode={aiModalMode}
-      />
+      )}
     </div>
   );
 };
