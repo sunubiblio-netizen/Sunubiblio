@@ -16,6 +16,43 @@ interface NavbarProps {
   hideOnMobile?: boolean;
 }
 
+// Logo SVG officiel Sunubiblio réutilisable
+const SunubiblioLogo: React.FC<{ size?: number }> = ({ size = 32 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="6 6 88 88"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ display: 'block' }}
+  >
+    <defs>
+      <linearGradient id="navPet1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#3B82F6" />
+        <stop offset="100%" stopColor="#6366F1" />
+      </linearGradient>
+      <linearGradient id="navPet2" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#06B6D4" />
+        <stop offset="100%" stopColor="#3B82F6" />
+      </linearGradient>
+      <linearGradient id="navPet3" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#4F46E5" />
+        <stop offset="100%" stopColor="#EC4899" />
+      </linearGradient>
+      <linearGradient id="navPet4" x1="100%" y1="100%" x2="0%" y2="0%">
+        <stop offset="0%" stopColor="#D946EF" />
+        <stop offset="100%" stopColor="#8B5CF6" />
+      </linearGradient>
+    </defs>
+    <g transform="translate(50,50)">
+      <path d="M 0,-6 C 12,-28 28,-36 36,-28 C 44,-20 36,-4 14,0 Z" fill="url(#navPet1)" />
+      <path d="M 6,0 C 28,12 36,28 28,36 C 20,44 4,36 0,14 Z" fill="url(#navPet2)" />
+      <path d="M 0,6 C -12,28 -28,36 -36,28 C -44,20 -36,4 -14,0 Z" fill="url(#navPet3)" />
+      <path d="M -6,0 C -28,-12 -36,-28 -28,-36 C -20,-44 -4,-36 0,-14 Z" fill="url(#navPet4)" />
+    </g>
+  </svg>
+);
+
 export const Navbar: React.FC<NavbarProps> = ({
   onOpenAuth,
   activePage = 'accueil',
@@ -33,34 +70,12 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className={`navbar-wrapper ${hideOnMobile ? 'desktop-only-navbar' : ''}`}>
-      <div className="container navbar-container">
-        {/* =========================================================
-            GAUCHE : [Menu Mobile] + [Logo Sunubiblio] + [Nav Essentielle]
-            ========================================================= */}
+      {/* =========================================================
+          1. HEADER DESKTOP / TABLETTE (Inchangé - Disposition fluide)
+          ========================================================= */}
+      <div className="container navbar-container navbar-desktop-container desktop-only">
+        {/* GAUCHE : [Logo Sunubiblio] + [Nav Essentielle] */}
         <div className="nav-left-group">
-          {/* Bouton Menu latéral pour mobile / tablette */}
-          <button
-            type="button"
-            className="mobile-side-toggle mobile-only"
-            onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
-            aria-label="Ouvrir le menu de navigation"
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              {mobileDrawerOpen ? (
-                <>
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </>
-              ) : (
-                <>
-                  <line x1="3" y1="12" x2="21" y2="12" />
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <line x1="3" y1="18" x2="21" y2="18" />
-                </>
-              )}
-            </svg>
-          </button>
-
           {/* Logo & Marque Sunubiblio */}
           <Link
             href="/"
@@ -69,39 +84,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             aria-label="Sunubiblio — Retour à l'accueil"
           >
             <div className="brand-logo-wrap">
-              <svg
-                width="32"
-                height="32"
-                viewBox="6 6 88 88"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                style={{ display: 'block' }}
-              >
-                <defs>
-                  <linearGradient id="navPet1" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#3B82F6" />
-                    <stop offset="100%" stopColor="#6366F1" />
-                  </linearGradient>
-                  <linearGradient id="navPet2" x1="100%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#06B6D4" />
-                    <stop offset="100%" stopColor="#3B82F6" />
-                  </linearGradient>
-                  <linearGradient id="navPet3" x1="0%" y1="100%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#4F46E5" />
-                    <stop offset="100%" stopColor="#EC4899" />
-                  </linearGradient>
-                  <linearGradient id="navPet4" x1="100%" y1="100%" x2="0%" y2="0%">
-                    <stop offset="0%" stopColor="#D946EF" />
-                    <stop offset="100%" stopColor="#8B5CF6" />
-                  </linearGradient>
-                </defs>
-                <g transform="translate(50,50)">
-                  <path d="M 0,-6 C 12,-28 28,-36 36,-28 C 44,-20 36,-4 14,0 Z" fill="url(#navPet1)" />
-                  <path d="M 6,0 C 28,12 36,28 28,36 C 20,44 4,36 0,14 Z" fill="url(#navPet2)" />
-                  <path d="M 0,6 C -12,28 -28,36 -36,28 C -44,20 -36,4 -14,0 Z" fill="url(#navPet3)" />
-                  <path d="M -6,0 C -28,-12 -36,-28 -28,-36 C -20,-44 -4,-36 0,-14 Z" fill="url(#navPet4)" />
-                </g>
-              </svg>
+              <SunubiblioLogo size={32} />
             </div>
             <span className="brand-name">Sunubiblio</span>
           </Link>
@@ -134,9 +117,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
         </div>
 
-        {/* =========================================================
-            DROITE : [Aide] + [Notifications] + [SunuIA] + [Applications] + [Avatar]
-            ========================================================= */}
+        {/* DROITE : [Aide] + [Notifications] + [SunuIA] + [Applications] + [Avatar] */}
         <div className="nav-right-actions">
           {/* 1. Aide & FAQ */}
           <div className="desktop-only">
@@ -161,6 +142,75 @@ export const Navbar: React.FC<NavbarProps> = ({
           </Link>
 
           {/* 4. Lanceur d'Applications (Grille 3x3 moderne) */}
+          <AppLauncher />
+
+          {/* 5. Avatar / Mon Espace */}
+          <UserMenu onOpenAuth={onOpenAuth} />
+        </div>
+      </div>
+
+      {/* =========================================================
+          2. HEADER MOBILE EXCLUSIF : STRUCTURÉ EN 2 SECTIONS
+          ========================================================= */}
+      <div className="navbar-mobile-header mobile-only">
+        {/* SECTION 1 — IDENTITÉ : Ligne dédiée aérée pour le Logo & Marque */}
+        <div className="mobile-header-identity">
+          <Link
+            href="/"
+            className="mobile-brand-link"
+            title="Sunubiblio — Accueil"
+            aria-label="Sunubiblio — Retour à l'accueil"
+          >
+            <div className="brand-logo-wrap">
+              <SunubiblioLogo size={28} />
+            </div>
+            <span className="brand-name">Sunubiblio</span>
+          </Link>
+        </div>
+
+        {/* SECTION 2 — NAVIGATION & ACTIONS : Rangée harmonieuse et équilibrée */}
+        <div className="mobile-header-actions-row">
+          {/* 1. Menu rapide (tiroir latéral) */}
+          <button
+            type="button"
+            className="mobile-action-btn"
+            onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
+            aria-label="Ouvrir le menu de navigation"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              {mobileDrawerOpen ? (
+                <>
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </>
+              ) : (
+                <>
+                  <line x1="3" y1="12" x2="21" y2="12" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <line x1="3" y1="18" x2="21" y2="18" />
+                </>
+              )}
+            </svg>
+          </button>
+
+          {/* 2. Notifications */}
+          <NotificationsPopover />
+
+          {/* 3. Bouton SunuIA (Pilule mobile élégante) */}
+          <Link
+            href="/ia"
+            className={`nav-ia-pill-btn mobile-ia-pill ${isIA ? 'is-active' : ''}`}
+            title="Accéder à SunuIA — Assistant intelligent Sunubiblio"
+            aria-label="SunuIA — Assistant intelligent"
+          >
+            <span className="ia-icon-sparkle">
+              <SunuIaIcon size={16} />
+            </span>
+            <span className="ia-text">SunuIA</span>
+            <span className="ia-pulse-dot" aria-hidden="true" />
+          </Link>
+
+          {/* 4. Applications (Lanceur grille 3x3) */}
           <AppLauncher />
 
           {/* 5. Avatar / Mon Espace */}
