@@ -11,7 +11,6 @@ import { ReligionBreadcrumb } from '@/components/religion/ReligionBreadcrumb';
 import { ReligionResourceCard } from '@/components/religion/ReligionResourceCard';
 import { ReligionEmptyState } from '@/components/religion/ReligionEmptyState';
 import { ReligionFilters } from '@/components/religion/ReligionFilters';
-import { MobileReligionFilterDrawer } from '@/components/religion/MobileReligionFilterDrawer';
 import { ReligionResourceModal } from '@/components/religion/ReligionResourceModal';
 import { ReligionCTA } from '@/components/religion/ReligionCTA';
 import { religionService } from '@/services/religionService';
@@ -68,7 +67,6 @@ export default function ReligionPage() {
   const [totalPages, setTotalPages] = useState(1);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [selectedResource, setSelectedResource] = useState<ReligionResource | null>(null);
 
   // Auth modal
@@ -400,8 +398,6 @@ export default function ReligionPage() {
               branches={branches}
               onFilterChange={handleFilterChange}
               onResetFilters={handleResetAllFilters}
-              onOpenMobileDrawer={() => setMobileDrawerOpen(true)}
-              activeFiltersCount={activeFiltersCount}
             />
           </div>
         </section>
@@ -414,18 +410,6 @@ export default function ReligionPage() {
 
       {/* Footer institutionnel global */}
       <Footer />
-
-      {/* Tiroir de filtres pour smartphone */}
-      <MobileReligionFilterDrawer
-        isOpen={mobileDrawerOpen}
-        onClose={() => setMobileDrawerOpen(false)}
-        filters={filters}
-        traditions={traditions}
-        branches={branches}
-        onFilterChange={handleFilterChange}
-        onResetFilters={handleResetAllFilters}
-        totalResults={totalResources}
-      />
 
       {/* Modal de consultation et vérification des droits côté serveur */}
       <ReligionResourceModal

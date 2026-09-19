@@ -213,29 +213,28 @@ export function SortDropdown<T extends string>({
           align-items: center;
           gap: 7px;
           background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.95);
-          border-radius: var(--radius-full);
-          padding: 7px 13px;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 8px 13px;
           font-size: 13px;
           font-weight: 600;
           color: #1e293b;
           cursor: pointer;
           box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
           white-space: nowrap;
         }
 
         .dropdown-trigger-btn:hover {
-          border-color: rgba(99, 102, 241, 0.45);
-          color: #4f46e5;
-          box-shadow: 0 3px 10px rgba(79, 70, 229, 0.08);
-          transform: translateY(-1px);
+          border-color: #cbd5e1;
+          background: #fafafa;
+          color: #1e293b;
         }
 
         .dropdown-trigger-btn.active {
           border-color: #6366f1;
           color: #4f46e5;
-          background: #faf8ff;
+          background: #ffffff;
           box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
         }
 
@@ -247,13 +246,13 @@ export function SortDropdown<T extends string>({
         }
 
         .trigger-selected-text {
-          font-weight: 700;
+          font-weight: 600;
           letter-spacing: -0.01em;
         }
 
         .trigger-chevron {
           color: #94a3b8;
-          transition: transform 0.2s ease, color 0.2s ease;
+          transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease;
           margin-left: 1px;
         }
 
@@ -262,18 +261,18 @@ export function SortDropdown<T extends string>({
           color: #4f46e5;
         }
 
-        /* Pure White Designer Card (Opaque, No Transparency, No Glass Veil) */
+        /* Pure White Designer Card */
         .dropdown-popover-card {
           position: absolute;
           top: calc(100% + 6px);
           z-index: 500;
-          width: 236px;
+          width: 240px;
           background: #ffffff;
           border: 1px solid rgba(226, 232, 240, 0.95);
           border-radius: 14px;
-          box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.12),
-            0 3px 10px rgba(15, 23, 42, 0.04);
-          padding: 5px;
+          box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.14),
+            0 2px 8px rgba(15, 23, 42, 0.04);
+          padding: 6px;
           animation: popoverFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
         }
 

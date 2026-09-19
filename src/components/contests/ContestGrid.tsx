@@ -56,7 +56,6 @@ interface ContestGridProps {
   filters: ContestFilterState;
   onFilterChange: (newFilters: Partial<ContestFilterState>) => void;
   onResetFilters: () => void;
-  onOpenMobileFilters: () => void;
   onSelectContest: (contest: Contest) => void;
 }
 
@@ -66,7 +65,6 @@ export const ContestGrid: React.FC<ContestGridProps> = ({
   filters,
   onFilterChange,
   onResetFilters,
-  onOpenMobileFilters,
   onSelectContest,
 }) => {
   const isFiltered =
@@ -90,18 +88,6 @@ export const ContestGrid: React.FC<ContestGridProps> = ({
         </div>
 
         <div className="controls-block">
-          {/* Mobile Filter Trigger */}
-          <button
-            type="button"
-            className="mobile-filter-btn"
-            onClick={onOpenMobileFilters}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-            </svg>
-            <span>Filtres</span>
-            {isFiltered && <span className="filter-badge">•</span>}
-          </button>
 
           {/* Designer Sort Dropdown */}
           <SortDropdown
@@ -186,27 +172,6 @@ export const ContestGrid: React.FC<ContestGridProps> = ({
           gap: 12px;
         }
 
-        .mobile-filter-btn {
-          display: none;
-          align-items: center;
-          gap: 8px;
-          padding: 8px 14px;
-          border-radius: var(--radius-full);
-          background: #ffffff;
-          border: 1px solid rgba(99, 102, 241, 0.3);
-          font-size: 13.5px;
-          font-weight: 700;
-          color: #4f46e5;
-          box-shadow: 0 2px 6px rgba(99, 102, 241, 0.08);
-        }
-
-        .filter-badge {
-          color: #ec4899;
-          font-size: 16px;
-          line-height: 0;
-        }
-
-
 
         .contests-cards-grid {
           display: grid;
@@ -222,7 +187,7 @@ export const ContestGrid: React.FC<ContestGridProps> = ({
 
         @media (max-width: 1024px) {
           .mobile-filter-btn {
-            display: inline-flex;
+            display: none !important;
           }
 
           .contests-cards-grid {

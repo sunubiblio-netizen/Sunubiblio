@@ -3,6 +3,11 @@
 import React from 'react';
 import { FilterState } from '@/types/library';
 import { SUBJECT_OPTIONS, RESOURCE_TYPES, ACCESS_LEVELS, RELIGION_SUB_OPTIONS } from '@/data/mockLibrary';
+import {
+  FilterGlassPanel,
+  FilterGlassSection,
+  ActiveFilterItem,
+} from '@/components/ui/filters';
 
 interface MobileFilterDrawerProps {
   isOpen: boolean;
@@ -39,296 +44,130 @@ export const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({
   onResetFilters,
   totalResultsCount,
 }) => {
-  if (!isOpen) return null;
+  const categoryOptions = CATEGORY_FILTER_LIST.map((c) => ({ value: c.id, label: c.label }));
+  const cycleOptions = CYCLE_FILTER_LIST.map((c) => ({ value: c.id, label: c.label }));
+  const subjectOptions = SUBJECT_OPTIONS.map((s) => ({ value: s.id, label: s.label }));
+  const typeOptions = RESOURCE_TYPES.map((t) => ({ value: t.id, label: t.label }));
+  const accessOptions = ACCESS_LEVELS.map((a) => ({ value: a.id, label: a.label }));
+  const religionOptions = RELIGION_SUB_OPTIONS.map((r) => ({ value: r.id, label: r.label }));
+
+  const activeChips: ActiveFilterItem[] = [];
+  if (filters.category !== 'all') {
+    const lbl = categoryOptions.find((c) => c.value === filters.category)?.label || filters.category;
+    activeChips.push({
+      id: 'category',
+      label: 'Catégorie',
+      value: lbl,
+      onRemove: () => onFilterChange({ category: 'all', religionSub: 'all_rel' }),
+    });
+  }
+  if (filters.category === 'religion' && filters.religionSub && filters.religionSub !== 'all_rel') {
+    const lbl = religionOptions.find((r) => r.value === filters.religionSub)?.label || filters.religionSub;
+    activeChips.push({
+      id: 'religionSub',
+      label: 'Courant',
+      value: lbl,
+      onRemove: () => onFilterChange({ religionSub: 'all_rel' }),
+    });
+  }
+  if (filters.cycle !== 'all') {
+    const lbl = cycleOptions.find((c) => c.value === filters.cycle)?.label || filters.cycle;
+    activeChips.push({
+      id: 'cycle',
+      label: 'Niveau',
+      value: lbl,
+      onRemove: () => onFilterChange({ cycle: 'all', grade: undefined }),
+    });
+  }
+  if (filters.subject !== 'all') {
+    const lbl = subjectOptions.find((s) => s.value === filters.subject)?.label || filters.subject;
+    activeChips.push({
+      id: 'subject',
+      label: 'Matière',
+      value: lbl,
+      onRemove: () => onFilterChange({ subject: 'all' }),
+    });
+  }
+  if (filters.resourceType !== 'all') {
+    const lbl = typeOptions.find((t) => t.value === filters.resourceType)?.label || filters.resourceType;
+    activeChips.push({
+      id: 'resourceType',
+      label: 'Type',
+      value: lbl,
+      onRemove: () => onFilterChange({ resourceType: 'all' }),
+    });
+  }
+  if (filters.accessLevel !== 'all') {
+    const lbl = accessOptions.find((a) => a.value === filters.accessLevel)?.label || filters.accessLevel;
+    activeChips.push({
+      id: 'accessLevel',
+      label: 'Accès',
+      value: lbl,
+      onRemove: () => onFilterChange({ accessLevel: 'all' }),
+    });
+  }
+
+  const sections: FilterGlassSection[] = [
+    {
+      id: 'category',
+      title: 'Catégorie',
+      options: categoryOptions,
+      selectedValue: filters.category,
+      onSelect: (val: string) => onFilterChange({ category: val, religionSub: 'all_rel' }),
+    },
+    ...(filters.category === 'religion'
+      ? [
+          {
+            id: 'religionSub',
+            title: 'Tradition & Spiritualité',
+            options: religionOptions,
+            selectedValue: filters.religionSub || 'all_rel',
+            onSelect: (val: string) => onFilterChange({ religionSub: val }),
+          },
+        ]
+      : []),
+    {
+      id: 'cycle',
+      title: 'Niveau scolaire',
+      options: cycleOptions,
+      selectedValue: filters.cycle,
+      onSelect: (val: string) => onFilterChange({ cycle: val as FilterState['cycle'], grade: undefined }),
+    },
+    {
+      id: 'subject',
+      title: 'Matière',
+      options: subjectOptions,
+      selectedValue: filters.subject,
+      onSelect: (val: string) => onFilterChange({ subject: val }),
+    },
+    {
+      id: 'resourceType',
+      title: 'Format de document',
+      options: typeOptions,
+      selectedValue: filters.resourceType,
+      onSelect: (val: string) => onFilterChange({ resourceType: val }),
+    },
+    {
+      id: 'accessLevel',
+      title: 'Accès & Formule',
+      options: accessOptions,
+      selectedValue: filters.accessLevel,
+      onSelect: (val: string) => onFilterChange({ accessLevel: val as FilterState['accessLevel'] }),
+    },
+  ];
 
   return (
-    <div className="drawer-overlay" onClick={onClose}>
-      <div className="drawer-sheet" onClick={(e) => e.stopPropagation()}>
-        {/* Drag handle */}
-        <div className="drawer-handle" />
-
-        {/* Drawer Header */}
-        <div className="drawer-header">
-          <div className="drawer-title-wrap">
-            <h2 className="drawer-title">Filtres de recherche</h2>
-            <button
-              type="button"
-              className="drawer-reset-link"
-              onClick={onResetFilters}
-            >
-              Réinitialiser
-            </button>
-          </div>
-          <button
-            type="button"
-            className="drawer-close-btn"
-            onClick={onClose}
-            aria-label="Fermer les filtres"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Scrollable Filter Content */}
-        <div className="drawer-body">
-          {/* 1. Catégorie */}
-          <div className="drawer-section">
-            <h3 className="drawer-section-title">Catégorie</h3>
-            <div className="drawer-pills">
-              {CATEGORY_FILTER_LIST.map((cat) => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  className={`drawer-pill ${filters.category === cat.id ? 'active' : ''}`}
-                  onClick={() => onFilterChange({ category: cat.id, religionSub: 'all_rel' })}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* If Religion selected */}
-          {filters.category === 'religion' && (
-            <div className="drawer-section">
-              <h3 className="drawer-section-title">Tradition & Spiritualité</h3>
-              <div className="drawer-pills">
-                {RELIGION_SUB_OPTIONS.map((sub) => (
-                  <button
-                    key={sub.id}
-                    type="button"
-                    className={`drawer-pill ${filters.religionSub === sub.id ? 'active' : ''}`}
-                    onClick={() => onFilterChange({ religionSub: sub.id })}
-                  >
-                    {sub.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* 2. Niveau */}
-          <div className="drawer-section">
-            <h3 className="drawer-section-title">Niveau</h3>
-            <div className="drawer-pills">
-              {CYCLE_FILTER_LIST.map((cyc) => (
-                <button
-                  key={cyc.id}
-                  type="button"
-                  className={`drawer-pill ${filters.cycle === cyc.id ? 'active' : ''}`}
-                  onClick={() => onFilterChange({ cycle: cyc.id, grade: undefined })}
-                >
-                  {cyc.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* 3. Matière */}
-          <div className="drawer-section">
-            <h3 className="drawer-section-title">Matière</h3>
-            <div className="drawer-pills">
-              {SUBJECT_OPTIONS.map((sub) => (
-                <button
-                  key={sub.id}
-                  type="button"
-                  className={`drawer-pill ${filters.subject === sub.id ? 'active' : ''}`}
-                  onClick={() => onFilterChange({ subject: sub.id })}
-                >
-                  {sub.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* 4. Type de ressource */}
-          <div className="drawer-section">
-            <h3 className="drawer-section-title">Format de document</h3>
-            <div className="drawer-pills">
-              {RESOURCE_TYPES.map((type) => (
-                <button
-                  key={type.id}
-                  type="button"
-                  className={`drawer-pill ${filters.resourceType === type.id ? 'active' : ''}`}
-                  onClick={() => onFilterChange({ resourceType: type.id })}
-                >
-                  {type.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* 5. Accès */}
-          <div className="drawer-section">
-            <h3 className="drawer-section-title">Accès & Formule</h3>
-            <div className="drawer-pills">
-              {ACCESS_LEVELS.map((acc) => (
-                <button
-                  key={acc.id}
-                  type="button"
-                  className={`drawer-pill ${filters.accessLevel === acc.id ? 'active' : ''}`}
-                  onClick={() => onFilterChange({ accessLevel: acc.id })}
-                >
-                  {acc.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Sticky Drawer Footer */}
-        <div className="drawer-footer">
-          <button
-            type="button"
-            className="btn-primary drawer-apply-btn"
-            onClick={onClose}
-          >
-            Afficher {totalResultsCount} ressource{totalResultsCount > 1 ? 's' : ''}
-          </button>
-        </div>
-      </div>
-
-      <style jsx>{`
-        .drawer-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(15, 23, 42, 0.45);
-          backdrop-filter: blur(4px);
-          z-index: 200;
-          display: flex;
-          align-items: flex-end;
-          justify-content: center;
-          animation: fade-in 0.2s ease-out;
-        }
-
-        .drawer-sheet {
-          background: #ffffff;
-          width: 100%;
-          max-width: 560px;
-          max-height: 85vh;
-          border-radius: 24px 24px 0 0;
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
-          box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
-          animation: slide-up 0.25s var(--ease-spring);
-        }
-
-        .drawer-handle {
-          width: 44px;
-          height: 4px;
-          background: #cbd5e1;
-          border-radius: 4px;
-          margin: 10px auto 4px auto;
-        }
-
-        .drawer-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 12px 20px 14px 20px;
-          border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-        }
-
-        .drawer-title-wrap {
-          display: flex;
-          align-items: baseline;
-          gap: 12px;
-        }
-
-        .drawer-title {
-          font-size: 17px;
-          font-weight: 800;
-          color: #0f172a;
-          margin: 0;
-        }
-
-        .drawer-reset-link {
-          font-size: 13px;
-          font-weight: 600;
-          color: #6366f1;
-        }
-
-        .drawer-close-btn {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          background: #f1f5f9;
-          color: #475569;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .drawer-body {
-          padding: 18px 20px;
-          overflow-y: auto;
-          flex: 1;
-        }
-
-        .drawer-section {
-          margin-bottom: 20px;
-        }
-
-        .drawer-section-title {
-          font-size: 13px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-          color: #475569;
-          margin-bottom: 10px;
-        }
-
-        .drawer-pills {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-        }
-
-        .drawer-pill {
-          padding: 7px 14px;
-          border-radius: var(--radius-full);
-          font-size: 13px;
-          font-weight: 600;
-          color: #475569;
-          background: #f8fafc;
-          border: 1px solid rgba(226, 232, 240, 0.85);
-          transition: all 0.15s ease;
-        }
-
-        .drawer-pill.active {
-          background: #4f46e5;
-          color: #ffffff;
-          border-color: #4f46e5;
-          box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
-        }
-
-        .drawer-footer {
-          padding: 14px 20px 20px 20px;
-          border-top: 1px solid rgba(226, 232, 240, 0.8);
-          background: #ffffff;
-        }
-
-        .drawer-apply-btn {
-          width: 100%;
-          padding: 13px;
-          font-size: 15px;
-          border-radius: var(--radius-md);
-        }
-
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        @keyframes slide-up {
-          from { transform: translateY(100%); }
-          to { transform: translateY(0); }
-        }
-      `}</style>
-    </div>
+    <FilterGlassPanel
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Filtres Bibliothèque"
+      totalResults={totalResultsCount}
+      resultsUnit="ressource"
+      resultsUnitPlural="ressources"
+      activeCount={activeChips.length}
+      activeChips={activeChips}
+      sections={sections}
+      onResetAll={onResetFilters}
+    />
   );
 };

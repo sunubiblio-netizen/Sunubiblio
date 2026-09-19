@@ -268,7 +268,8 @@ export const CustomEducationSelect: React.FC<CustomEducationSelectProps> = ({
         /* Trigger Button */
         .custom-select-trigger {
           width: 100%;
-          height: 44px;
+          min-height: 40px;
+          height: 40px;
           padding: 0 12px;
           background: #ffffff;
           border: 1.5px solid #e2e8f0;
@@ -277,30 +278,31 @@ export const CustomEducationSelect: React.FC<CustomEducationSelectProps> = ({
           align-items: center;
           justify-content: space-between;
           cursor: pointer;
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
           outline: none;
           text-align: left;
         }
 
         .custom-select-trigger:hover {
           border-color: #cbd5e1;
-          background: #f8fafc;
+          background: #fafafa;
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
         }
 
         .custom-select-trigger.is-open {
           border-color: #6366f1;
-          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
           background: #ffffff;
         }
 
         .custom-select-trigger.has-active-value {
-          border-color: #818cf8;
-          background: #faf5ff;
+          border-color: #6366f1;
+          background: #eef2ff;
         }
 
         .custom-select-trigger.is-accent {
           border-color: #4f46e5;
-          background: #f5f3ff;
+          background: #eef2ff;
         }
 
         .trigger-content {

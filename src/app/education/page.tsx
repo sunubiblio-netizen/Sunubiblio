@@ -241,8 +241,8 @@ export default function EducationPage() {
         }
 
         .catalog-section {
-          padding: 56px 0 32px;
-          background: #fafafa;
+          padding: 64px 0 44px;
+          background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
           border-top: 1px solid var(--border-subtle, #e2e8f0);
         }
 
@@ -254,20 +254,20 @@ export default function EducationPage() {
 
         .catalog-badge {
           display: inline-flex;
-          margin-bottom: 12px;
+          margin-bottom: 14px;
         }
 
         .catalog-title {
-          font-size: 32px;
-          font-weight: 800;
+          font-size: 34px;
+          font-weight: 850;
           color: var(--text-heading, #0f172a);
-          line-height: 1.25;
+          line-height: 1.22;
           letter-spacing: -0.025em;
-          margin-bottom: 10px;
+          margin-bottom: 12px;
         }
 
         .catalog-subtitle {
-          font-size: 15px;
+          font-size: 15.5px;
           line-height: 1.6;
           color: var(--text-body, #64748b);
           margin: 0;
@@ -275,11 +275,15 @@ export default function EducationPage() {
 
         @media (max-width: 640px) {
           .catalog-section {
-            padding: 40px 0 24px;
+            padding: 44px 0 28px;
           }
 
           .catalog-title {
             font-size: 26px;
+          }
+
+          .catalog-subtitle {
+            font-size: 14px;
           }
         }
       `}</style>

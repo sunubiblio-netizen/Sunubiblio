@@ -3,6 +3,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  IconProfil,
+  IconCommunaute,
+  IconPublications,
+  IconGroupes,
+  IconDiscussions,
+} from './app-launcher/AppLauncherIcons';
 
 interface UserMenuProps {
   onOpenAuth?: (mode: 'login' | 'register') => void;
@@ -99,92 +106,73 @@ export const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuth }) => {
             </Link>
           </div>
 
-          {/* 2. Section : Mon Espace Social & Apprentissage */}
+          {/* 2. Section : MON PROFIL */}
           <div className="user-menu-section">
-            <span className="user-section-title">Mon Activité & Savoirs</span>
+            <span className="user-section-title">Mon Profil</span>
 
             <Link
               href="/profil"
               className="user-menu-link-item"
               onClick={() => setIsOpen(false)}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-              <span>Mon Profil & Publications</span>
-            </Link>
-
-            <Link
-              href="/favoris"
-              className="user-menu-link-item"
-              onClick={() => setIsOpen(false)}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-              </svg>
-              <span>Mes Favoris & Enregistrés</span>
-            </Link>
-
-            <Link
-              href="/profil#progression"
-              className="user-menu-link-item"
-              onClick={() => setIsOpen(false)}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="20" x2="18" y2="10" />
-                <line x1="12" y1="20" x2="12" y2="4" />
-                <line x1="6" y1="20" x2="6" y2="14" />
-              </svg>
-              <span>Ma Progression & Scores</span>
+              <div className="user-menu-icon-wrap">
+                <IconProfil size={20} className="user-menu-vector-icon" />
+              </div>
+              <span>Profil</span>
             </Link>
           </div>
 
-          {/* 3. Section : Création & Commerce */}
+          {/* 3. Section : COMMUNAUTÉ */}
           <div className="user-menu-section">
-            <span className="user-section-title">Création & Ventes</span>
+            <span className="user-section-title">Communauté</span>
 
             <Link
-              href="/documents"
+              href="/communaute"
               className="user-menu-link-item"
               onClick={() => setIsOpen(false)}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-              </svg>
-              <span>Mes Documents & Fichiers</span>
+              <div className="user-menu-icon-wrap">
+                <IconCommunaute size={20} className="user-menu-vector-icon" />
+              </div>
+              <span>Communauté</span>
             </Link>
 
             <Link
-              href="/marketplace#ventes"
+              href="/communaute#publications"
               className="user-menu-link-item"
               onClick={() => setIsOpen(false)}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="9" cy="21" r="1" />
-                <circle cx="20" cy="21" r="1" />
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-              </svg>
-              <span>Mes Ventes & Ressources</span>
-              <span className="section-pill-gold">Vendeur</span>
+              <div className="user-menu-icon-wrap">
+                <IconPublications size={20} className="user-menu-vector-icon" />
+              </div>
+              <span>Publications</span>
+            </Link>
+
+            <Link
+              href="/communaute#groupes"
+              className="user-menu-link-item"
+              onClick={() => setIsOpen(false)}
+            >
+              <div className="user-menu-icon-wrap">
+                <IconGroupes size={20} className="user-menu-vector-icon" />
+              </div>
+              <span>Groupes</span>
+            </Link>
+
+            <Link
+              href="/communaute#discussions"
+              className="user-menu-link-item"
+              onClick={() => setIsOpen(false)}
+            >
+              <div className="user-menu-icon-wrap">
+                <IconDiscussions size={20} className="user-menu-vector-icon" />
+              </div>
+              <span>Discussions</span>
             </Link>
           </div>
 
-          {/* 4. Section : Gestion du Compte */}
+          {/* 4. Section : Déconnexion & Compte */}
           <div className="user-menu-section no-border">
-            <Link
-              href="/tarifs"
-              className="user-menu-link-item"
-              onClick={() => setIsOpen(false)}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
-                <line x1="1" y1="10" x2="23" y2="10" />
-              </svg>
-              <span>Mon Abonnement</span>
-            </Link>
-
             <button
               type="button"
               className="user-menu-action-btn"
@@ -193,12 +181,14 @@ export const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuth }) => {
                 if (onOpenAuth) onOpenAuth('login');
               }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                <polyline points="10 17 15 12 10 7" />
-                <line x1="15" y1="12" x2="3" y2="12" />
-              </svg>
-              <span>Se connecter / Changer de compte</span>
+              <div className="user-menu-icon-wrap logout-icon-wrap">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+              </div>
+              <span>Déconnexion</span>
             </button>
           </div>
         </div>
@@ -206,3 +196,4 @@ export const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuth }) => {
     </div>
   );
 };
+

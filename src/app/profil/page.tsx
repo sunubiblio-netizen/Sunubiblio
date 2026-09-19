@@ -1,302 +1,378 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { AuthModal } from '@/components/ui/AuthModal';
 
+import { ProfileTab, StoryTargetPayload, ProfileStoryItem } from '@/types/profile';
+import {
+  MOCK_PROFILE_USER,
+  MOCK_FEATURED_VIDEO,
+  MOCK_PROFILE_VIDEOS,
+  MOCK_PROFILE_SUGGESTIONS,
+  MOCK_PROFILE_PUBLICATIONS,
+  MOCK_PROFILE_RESOURCES,
+  MOCK_PROFILE_GALLERY_IMAGES,
+  MOCK_PROFILE_STORIES,
+} from '@/data/mockProfileData';
+
+import { ProfileLeftNav } from '@/components/profile/ProfileLeftNav';
+import { ProfileHeaderCard } from '@/components/profile/ProfileHeaderCard';
+import { ProfileVideoSection } from '@/components/profile/ProfileVideoSection';
+import { ProfilePublicationsSection } from '@/components/profile/ProfilePublicationsSection';
+import { ProfileImagesSection } from '@/components/profile/ProfileImagesSection';
+import { ProfileResourcesSection } from '@/components/profile/ProfileResourcesSection';
+import { ProfileAboutSection } from '@/components/profile/ProfileAboutSection';
+import { ProfileRightSidebar } from '@/components/profile/ProfileRightSidebar';
+import { AddToStoryModal } from '@/components/profile/AddToStoryModal';
+import { StoryViewerModal } from '@/components/profile/StoryViewerModal';
+import './profil.css';
+
 export default function ProfilPage() {
+  const [activeTab, setActiveTab] = useState<ProfileTab>('publications');
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+
+  // Gestion des Stories (avec persistance locale et expiration automatique 24h)
+  const [stories, setStories] = useState<ProfileStoryItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('sunubiblio_profile_stories');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch {
+        // ignore
+      }
+    }
+    return MOCK_PROFILE_STORIES;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('sunubiblio_profile_stories', JSON.stringify(stories));
+    } catch {
+      // ignore
+    }
+  }, [stories]);
+
+  // Stories encore actives (moins de 24h)
+  const activeStories = stories.filter((s) => new Date(s.expiresAt).getTime() > Date.now());
+
+  const [storyTarget, setStoryTarget] = useState<StoryTargetPayload | null>(null);
+  const [isAddToStoryModalOpen, setIsAddToStoryModalOpen] = useState(false);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [viewerInitialIndex, setViewerInitialIndex] = useState(0);
+
+  const handleOpenAddToStory = (target: StoryTargetPayload) => {
+    setStoryTarget(target);
+    setIsAddToStoryModalOpen(true);
+  };
+
+  const handlePublishStory = (newStory: ProfileStoryItem) => {
+    setStories((prev) => [newStory, ...prev]);
+  };
+
+  const handleDeleteStory = (storyId: string) => {
+    setStories((prev) => prev.filter((s) => s.id !== storyId));
+  };
+
+  const handleOpenViewer = (index = 0) => {
+    if (activeStories.length === 0) return;
+    setViewerInitialIndex(index);
+    setIsViewerOpen(true);
+  };
+
+  const handleOpenContentFromStory = (story: ProfileStoryItem) => {
+    setIsViewerOpen(false);
+    if (story.contentType === 'publication') {
+      setActiveTab('publications');
+    } else if (story.contentType === 'image') {
+      setActiveTab('images');
+    } else if (story.contentType === 'video') {
+      setActiveTab('videos');
+    } else if (story.contentType === 'ressource') {
+      setActiveTab('ressources');
+    }
+  };
+
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  // Vérification de la position de défilement horizontal des onglets
+  const checkTabsScroll = useCallback(() => {
+    const el = tabsContainerRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 6);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 6);
+  }, []);
+
+  useEffect(() => {
+    checkTabsScroll();
+    const handleResize = () => checkTabsScroll();
+    window.addEventListener('resize', handleResize);
+    const t1 = setTimeout(checkTabsScroll, 50);
+    const t2 = setTimeout(checkTabsScroll, 200);
+    const t3 = setTimeout(checkTabsScroll, 500);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [checkTabsScroll]);
+
+  // Défilement fluide vers la gauche ou la droite
+  const scrollTabs = (direction: 'left' | 'right') => {
+    const el = tabsContainerRef.current;
+    if (!el) return;
+    if (direction === 'right') {
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      el.scrollTo({
+        left: maxScroll,
+        behavior: 'smooth',
+      });
+    } else {
+      el.scrollTo({
+        left: 0,
+        behavior: 'smooth',
+      });
+    }
+    setTimeout(checkTabsScroll, 80);
+    setTimeout(checkTabsScroll, 200);
+    setTimeout(checkTabsScroll, 350);
+    setTimeout(checkTabsScroll, 500);
+  };
+
+  const handleSelectTab = (tabId: ProfileTab) => {
+    setActiveTab(tabId);
+    setTimeout(checkTabsScroll, 100);
+  };
 
   const handleOpenAuth = (mode: 'login' | 'register') => {
     setAuthMode(mode);
     setAuthOpen(true);
   };
 
+  const tabs: { id: ProfileTab; label: string; icon: React.ReactNode }[] = [
+    {
+      id: 'publications',
+      label: 'Publications',
+      icon: (
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+          <path d="M8 7h6" />
+          <path d="M8 11h8" />
+        </svg>
+      ),
+    },
+    {
+      id: 'images',
+      label: 'Images',
+      icon: (
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+          <circle cx="9" cy="9" r="2" />
+          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+        </svg>
+      ),
+    },
+    {
+      id: 'videos',
+      label: 'Vidéos',
+      icon: (
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="6 3 20 12 6 21 6 3" />
+        </svg>
+      ),
+    },
+    {
+      id: 'ressources',
+      label: 'Ressources',
+      icon: (
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m16 6 4 14" />
+          <path d="M12 6v14" />
+          <path d="M8 8v12" />
+          <path d="M4 4v16" />
+        </svg>
+      ),
+    },
+    {
+      id: 'apropos',
+      label: 'À propos',
+      icon: (
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+      ),
+    },
+  ];
+
   return (
-    <div className="profil-page-wrapper">
+    <>
+      {/* Navbar globale Sunubiblio inchangée */}
       <Navbar onOpenAuth={handleOpenAuth} activePage="profil" />
 
-      <main className="profil-main">
-        <div className="container profil-container">
-          {/* Profile Card Header */}
-          <div className="profile-header-card">
-            <div className="profile-avatar-box">
-              <span className="profile-avatar-txt">SB</span>
-            </div>
+      <div className="profil-page-wrapper">
+        <main className="profil-main-section">
+        <div className="container profil-three-cols-layout">
+          {/* Colonne Gauche : Navigation Sociale (Desktop) */}
+          <ProfileLeftNav />
 
-            <div className="profile-details">
-              <div className="profile-name-row">
-                <h1 className="profile-user-name">Mon Compte Sunubiblio</h1>
-                <span className="account-status-tag">Compte Démo Gratuit</span>
+          {/* Colonne Centrale : Contenu Principal du Profil */}
+          <div className="profile-center-content">
+            {/* Carte Header : Couverture, Avatar, Identité, Stats, Actions */}
+            <ProfileHeaderCard
+              user={MOCK_PROFILE_USER}
+              onOpenAuth={handleOpenAuth}
+              onEditCover={() => alert('Fonctionnalité de mise à jour de la photo de couverture.')}
+              onEditProfile={() => setActiveTab('apropos')}
+              hasActiveStory={activeStories.length > 0}
+              activeStoriesCount={activeStories.length}
+              onViewStories={() => handleOpenViewer(0)}
+            />
+
+            {/* Barre de navigation par onglets avec flèches mobiles */}
+            <div className="profile-tabs-nav-container">
+              {/* Flèche gauche mobile (visible après défilement à droite) */}
+              <button
+                type="button"
+                className={`mobile-tab-scroll-arrow left ${canScrollLeft ? 'is-visible' : ''}`}
+                onClick={() => scrollTabs('left')}
+                aria-label="Voir les onglets précédents"
+                title="Onglets précédents"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </button>
+
+              <div
+                ref={tabsContainerRef}
+                className="profile-nav-tabs-bar"
+                role="tablist"
+                onScroll={checkTabsScroll}
+              >
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === tab.id}
+                    onClick={() => handleSelectTab(tab.id)}
+                    className={`profile-tab-button ${activeTab === tab.id ? 'active' : ''}`}
+                  >
+                    <span className="profile-tab-icon">{tab.icon}</span>
+                    <span className="profile-tab-label">{tab.label}</span>
+                  </button>
+                ))}
               </div>
-              <p className="profile-email">Connectez-vous pour accéder à vos documents enregistrés et synchroniser vos cours.</p>
+
+              {/* Flèche droite mobile (visible pour indiquer qu'il existe d'autres onglets) */}
+              <button
+                type="button"
+                className={`mobile-tab-scroll-arrow right ${canScrollRight ? 'is-visible' : ''}`}
+                onClick={() => scrollTabs('right')}
+                aria-label="Voir les onglets suivants"
+                title="Onglets suivants"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
             </div>
 
-            <div className="profile-auth-btns">
-              <button
-                type="button"
-                className="btn-primary auth-action-btn"
-                onClick={() => handleOpenAuth('login')}
-              >
-                Se connecter
-              </button>
-              <button
-                type="button"
-                className="btn-secondary auth-action-btn"
-                onClick={() => handleOpenAuth('register')}
-              >
-                Créer un compte
-              </button>
+            {/* Contenu selon l'onglet actif */}
+            <div className="profile-tab-content-container">
+              {activeTab === 'publications' && (
+                <ProfilePublicationsSection
+                  initialPosts={MOCK_PROFILE_PUBLICATIONS}
+                  authorName={MOCK_PROFILE_USER.displayName}
+                  authorAvatar={MOCK_PROFILE_USER.avatarUrl}
+                  onAddToStory={handleOpenAddToStory}
+                />
+              )}
+
+              {activeTab === 'images' && (
+                <ProfileImagesSection
+                  initialImages={MOCK_PROFILE_GALLERY_IMAGES}
+                  authorName={MOCK_PROFILE_USER.displayName}
+                  authorAvatar={MOCK_PROFILE_USER.avatarUrl}
+                  onAddToStory={handleOpenAddToStory}
+                />
+              )}
+
+              {activeTab === 'videos' && (
+                <ProfileVideoSection
+                  featuredVideo={MOCK_FEATURED_VIDEO}
+                  videos={MOCK_PROFILE_VIDEOS}
+                  onAddToStory={handleOpenAddToStory}
+                />
+              )}
+
+              {activeTab === 'ressources' && (
+                <ProfileResourcesSection
+                  resources={MOCK_PROFILE_RESOURCES}
+                  authorName={MOCK_PROFILE_USER.displayName}
+                  authorAvatar={MOCK_PROFILE_USER.avatarUrl}
+                  onAddToStory={handleOpenAddToStory}
+                />
+              )}
+
+              {activeTab === 'apropos' && (
+                <ProfileAboutSection
+                  user={MOCK_PROFILE_USER}
+                />
+              )}
             </div>
           </div>
 
-          {/* Settings Grid */}
-          <div className="profile-settings-grid">
-            {/* Box 1: Formule & Abonnement */}
-            <div className="settings-box">
-              <div className="box-icon-wrap icon-sub">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2.2">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-              </div>
-              <h3 className="box-title">Formules d’abonnement</h3>
-              <p className="box-desc">
-                Accédez en illimité aux 1 200+ ressources, annales corrigées et corrections détaillées.
-              </p>
-              <Link href="/#tarifs" className="btn-secondary box-action-btn">
-                Voir les tarifs (dès 3 000 FCFA/mois)
-              </Link>
-            </div>
-
-            {/* Box 2: Téléchargements & Hors connexion */}
-            <div className="settings-box">
-              <div className="box-icon-wrap icon-download">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" strokeWidth="2.2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-              </div>
-              <h3 className="box-title">Mes Téléchargements</h3>
-              <p className="box-desc">
-                Vos manuels, fascicules et sujets enregistrés pour réviser sans connexion Internet.
-              </p>
-              <Link href="/bibliotheque" className="btn-secondary box-action-btn">
-                Explorer les manuels hors connexion
-              </Link>
-            </div>
-
-            {/* Box 3: Sécurité & Paramètres */}
-            <div className="settings-box">
-              <div className="box-icon-wrap icon-shield">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.2">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-              </div>
-              <h3 className="box-title">Sécurité & Confidentialité</h3>
-              <p className="box-desc">
-                Données d'apprentissage chiffrées, gestion des appareils autorisés et mot de passe.
-              </p>
-              <button
-                type="button"
-                className="btn-secondary box-action-btn"
-                onClick={() => handleOpenAuth('login')}
-              >
-                Gérer la sécurité
-              </button>
-            </div>
-          </div>
+          {/* Colonne Droite : Widgets, Membre Gold, Suggestions */}
+          <ProfileRightSidebar
+            user={MOCK_PROFILE_USER}
+            suggestions={MOCK_PROFILE_SUGGESTIONS}
+            onCreatePostClick={() => setActiveTab('publications')}
+          />
         </div>
       </main>
 
+      {/* Footer global */}
       <Footer />
 
+      {/* Modale d'authentification */}
       <AuthModal
         isOpen={authOpen}
         initialMode={authMode}
         onClose={() => setAuthOpen(false)}
       />
 
-      <style jsx>{`
-        .profil-page-wrapper {
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          background-color: var(--bg-canvas);
-        }
+      {/* Modale d'ajout à la story (Composant unique 4-en-1) */}
+      <AddToStoryModal
+        isOpen={isAddToStoryModalOpen}
+        onClose={() => setIsAddToStoryModalOpen(false)}
+        target={storyTarget}
+        authorName={MOCK_PROFILE_USER.displayName}
+        authorAvatar={MOCK_PROFILE_USER.avatarUrl}
+        onPublishStory={handlePublishStory}
+      />
 
-        .profil-main {
-          flex: 1;
-        }
-
-        .profil-container {
-          padding-top: 36px;
-          padding-bottom: 60px;
-          max-width: 960px;
-        }
-
-        .profile-header-card {
-          background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.85);
-          border-radius: var(--radius-xl);
-          padding: 28px;
-          display: flex;
-          align-items: center;
-          gap: 24px;
-          margin-bottom: 28px;
-          box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.04);
-          flex-wrap: wrap;
-        }
-
-        .profile-avatar-box {
-          width: 68px;
-          height: 68px;
-          border-radius: 20px;
-          background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
-          color: #ffffff;
-          font-size: 22px;
-          font-weight: 800;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
-        }
-
-        .profile-details {
-          flex: 1;
-          min-width: 260px;
-        }
-
-        .profile-name-row {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          margin-bottom: 4px;
-          flex-wrap: wrap;
-        }
-
-        .profile-user-name {
-          font-size: 20px;
-          font-weight: 800;
-          color: #0f172a;
-        }
-
-        .account-status-tag {
-          font-size: 11px;
-          font-weight: 700;
-          color: #64748b;
-          background: #f1f5f9;
-          padding: 2px 8px;
-          border-radius: var(--radius-full);
-        }
-
-        .profile-email {
-          font-size: 13.5px;
-          color: #64748b;
-          line-height: 1.45;
-        }
-
-        .profile-auth-btns {
-          display: flex;
-          gap: 10px;
-          flex-wrap: wrap;
-        }
-
-        .auth-action-btn {
-          font-size: 13.5px;
-          padding: 9px 18px;
-        }
-
-        /* Grid */
-        .profile-settings-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 20px;
-        }
-
-        .settings-box {
-          background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.85);
-          border-radius: var(--radius-lg);
-          padding: 24px;
-          display: flex;
-          flex-direction: column;
-          box-shadow: 0 2px 10px rgba(15, 23, 42, 0.02);
-        }
-
-        .box-icon-wrap {
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 16px;
-        }
-
-        .icon-sub {
-          background: rgba(79, 70, 229, 0.1);
-        }
-
-        .icon-download {
-          background: rgba(14, 165, 233, 0.1);
-        }
-
-        .icon-shield {
-          background: rgba(16, 185, 129, 0.1);
-        }
-
-        .box-title {
-          font-size: 16px;
-          font-weight: 800;
-          color: #0f172a;
-          margin-bottom: 8px;
-        }
-
-        .box-desc {
-          font-size: 13px;
-          color: #64748b;
-          line-height: 1.5;
-          margin-bottom: 20px;
-          flex: 1;
-        }
-
-        .box-action-btn {
-          width: 100%;
-          font-size: 12.5px;
-          padding: 9px;
-          text-align: center;
-        }
-
-        @media (max-width: 860px) {
-          .profil-container {
-            padding-top: 20px;
-            padding-bottom: 96px !important;
-          }
-
-          .profile-settings-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .profile-header-card {
-            flex-direction: column;
-            align-items: flex-start;
-          }
-
-          .profile-auth-btns {
-            width: 100%;
-          }
-
-          .auth-action-btn {
-            flex: 1;
-            text-align: center;
-          }
-        }
-      `}</style>
-    </div>
+      {/* Visionneuse de story interactive */}
+      <StoryViewerModal
+        isOpen={isViewerOpen}
+        onClose={() => setIsViewerOpen(false)}
+        stories={activeStories}
+        initialIndex={viewerInitialIndex}
+        onDeleteStory={handleDeleteStory}
+        onOpenContent={handleOpenContentFromStory}
+      />
+      </div>
+    </>
   );
 }

@@ -7,7 +7,6 @@ import { AuthModal } from '@/components/ui/AuthModal';
 import { ContestHero } from '@/components/contests/ContestHero';
 import { PopularContests } from '@/components/contests/PopularContests';
 import { ContestFilters } from '@/components/contests/ContestFilters';
-import { MobileContestDrawer } from '@/components/contests/MobileContestDrawer';
 import { ContestGrid } from '@/components/contests/ContestGrid';
 import { ContestDetailWorkspace } from '@/components/contests/ContestDetailWorkspace';
 import { ContestCTA } from '@/components/contests/ContestCTA';
@@ -28,7 +27,6 @@ const INITIAL_FILTERS: ContestFilterState = {
 export default function ConcoursPage() {
   const [filters, setFilters] = useState<ContestFilterState>(INITIAL_FILTERS);
   const [selectedContest, setSelectedContest] = useState<Contest | null>(null);
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
@@ -200,6 +198,7 @@ export default function ConcoursPage() {
                   onFilterChange={handleFilterChange}
                   onResetFilters={handleResetFilters}
                   activeCount={activeFiltersCount}
+                  totalCount={filteredContests.length}
                 />
 
                 <ContestGrid
@@ -208,7 +207,6 @@ export default function ConcoursPage() {
                   filters={filters}
                   onFilterChange={handleFilterChange}
                   onResetFilters={handleResetFilters}
-                  onOpenMobileFilters={() => setMobileDrawerOpen(true)}
                   onSelectContest={handleSelectContest}
                 />
               </div>
@@ -227,16 +225,6 @@ export default function ConcoursPage() {
 
       {/* Institutional Footer */}
       <Footer />
-
-      {/* Mobile Drawer (Bottom Sheet) for filters */}
-      <MobileContestDrawer
-        isOpen={mobileDrawerOpen}
-        onClose={() => setMobileDrawerOpen(false)}
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onResetFilters={handleResetFilters}
-        totalCount={filteredContests.length}
-      />
 
       {/* Authentication Modal */}
       <AuthModal
@@ -270,8 +258,8 @@ export default function ConcoursPage() {
 
         .catalog-layout {
           display: flex;
-          align-items: flex-start;
-          gap: 28px;
+          flex-direction: column;
+          gap: 4px;
         }
 
         @media (max-width: 1024px) {
@@ -282,6 +270,13 @@ export default function ConcoursPage() {
 
           .workspace-container {
             padding-top: 20px;
+            padding-bottom: 80px;
+          }
+        }
+
+        @media (max-width: 860px) {
+          .catalog-container {
+            padding-top: 12px;
             padding-bottom: 80px;
           }
         }

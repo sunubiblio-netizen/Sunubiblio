@@ -54,9 +54,33 @@ export const ScrollNavigation: React.FC = () => {
     });
   }, []);
 
-  // Masquer le bouton de défilement pendant un test de révision ou si aucun défilement possible
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Détecter si une modale ou un tiroir verrouille le défilement
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const checkModalState = () => {
+      const isLocked =
+        document.body.classList.contains('modal-scroll-locked') ||
+        document.documentElement.classList.contains('modal-scroll-locked') ||
+        document.body.style.position === 'fixed' ||
+        document.body.style.overflow === 'hidden';
+      setIsModalOpen(isLocked);
+    };
+
+    checkModalState();
+
+    const observer = new MutationObserver(checkModalState);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class', 'style'] });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style'] });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Masquer le bouton de défilement pendant un test de révision, si aucun défilement possible, ou si une modale est ouverte
   const isExercisePlayer = pathname.startsWith('/exercices/') && pathname !== '/exercices';
-  if (isExercisePlayer || (!canScrollUp && !canScrollDown)) {
+  if (isExercisePlayer || (!canScrollUp && !canScrollDown) || isModalOpen) {
     return null;
   }
 
@@ -97,6 +121,16 @@ export const ScrollNavigation: React.FC = () => {
       </div>
 
       <style jsx>{`
+        :global(body.modal-scroll-locked) .scroll-navigation-global,
+        :global(html.modal-scroll-locked) .scroll-navigation-global,
+        :global(body[style*="position: fixed"]) .scroll-navigation-global,
+        :global(body[style*="overflow: hidden"]) .scroll-navigation-global {
+          display: none !important;
+          opacity: 0 !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+        }
+
         .scroll-navigation-global {
           position: fixed;
           right: 28px;
@@ -185,25 +219,34 @@ export const ScrollNavigation: React.FC = () => {
           }
         }
 
-        /* Responsive Mobile : compact & positionné strictement AU-DESSUS de la nav mobile globale (72px) */
+        /* Responsive Mobile : compact & positionné discrètement AU-DESSUS de la nav mobile globale */
         @media (max-width: 768px) {
           .scroll-navigation-global {
-            right: 14px;
+            right: 12px;
             bottom: calc(76px + env(safe-area-inset-bottom, 0px));
           }
 
+          .scroll-nav-card {
+            padding: 3px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-color: rgba(226, 232, 240, 0.85);
+            box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
+          }
+
           .scroll-nav-btn {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
           }
 
           .scroll-nav-btn svg {
-            width: 16px;
-            height: 16px;
+            width: 15px;
+            height: 15px;
           }
 
           .nav-divider {
-            width: 18px;
+            width: 16px;
           }
         }
       `}</style>

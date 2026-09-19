@@ -332,6 +332,9 @@ export const IconCalendrier: React.FC<IconProps> = ({ size = 32, className = '' 
   </svg>
 );
 
+/** Agenda : Point d'entrée calendrier et organisation */
+export const IconAgenda: React.FC<IconProps> = IconCalendrier;
+
 /** Emploi du temps : Planning hebdomadaire */
 export const IconEmploiDuTemps: React.FC<IconProps> = ({ size = 32, className = '' }) => (
   <svg width={size} height={size} viewBox="0 0 36 36" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
@@ -595,6 +598,35 @@ export const IconFormulesTarifs: React.FC<IconProps> = ({ size = 32, className =
   </svg>
 );
 
+/** Professeurs : Enseignant bienveillant au tableau interactif Sunubiblio */
+export const IconProfesseurs: React.FC<IconProps> = ({ size = 32, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 36 36" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="sb-prof-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#0EA5E9" />
+        <stop offset="50%" stopColor="#4F46E5" />
+        <stop offset="100%" stopColor="#9333EA" />
+      </linearGradient>
+      <linearGradient id="sb-prof-star" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#F59E0B" />
+        <stop offset="100%" stopColor="#EC4899" />
+      </linearGradient>
+    </defs>
+    {/* Tableau / Fond pédagogique arrondi */}
+    <rect x="4" y="5" width="28" height="22" rx="4" fill="url(#sb-prof-grad)" />
+    {/* Support du tableau */}
+    <path d="M12 27L10 32M24 27L26 32" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" />
+    <path d="M7 30H29" stroke="#7C3AED" strokeWidth="1.5" strokeLinecap="round" />
+    {/* Silhouette de l'enseignant au tableau */}
+    <circle cx="14" cy="13" r="3" fill="#FFFFFF" />
+    <path d="M9 22C9 19 11 18 14 18C17 18 19 19 19 22" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" />
+    {/* Formules et tracés de savoir */}
+    <path d="M21 11H27M21 15H25" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.85" />
+    {/* Micro-étoile d'excellence pédagogique */}
+    <circle cx="26" cy="20" r="2.5" fill="url(#sb-prof-star)" />
+  </svg>
+);
+
 // ============================================================================
 // REGISTRE DES ICÔNES SUNUBIBLIO
 // ============================================================================
@@ -605,6 +637,7 @@ export const AppLauncherIconRegistry: Record<string, React.FC<IconProps>> = {
   education: IconEducation,
   concours: IconConcours,
   exercices: IconExercices,
+  professeurs: IconProfesseurs,
   // 2. Savoirs
   cours: IconCours,
   ressources: IconRessources,
@@ -618,6 +651,7 @@ export const AppLauncherIconRegistry: Record<string, React.FC<IconProps>> = {
   discussions: IconDiscussions,
   // 4. Visio & Rendez-vous
   visio: IconVisio,
+  agenda: IconCalendrier,
   rendez_vous: IconMesRendezVous,
   calendrier: IconCalendrier,
   emploi_du_temps: IconEmploiDuTemps,
