@@ -138,7 +138,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuth }) => {
             </Link>
 
             <Link
-              href="/communaute#publications"
+              href="/publications"
               className="user-menu-link-item"
               onClick={() => setIsOpen(false)}
             >

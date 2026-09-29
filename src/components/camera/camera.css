@@ -1,0 +1,527 @@
+/* ==========================================================================
+   SYSTÈME CAMÉRA PHOTO & VIDÉO SUNUBIBLIO (camera.css)
+   ========================================================================== */
+
+.sunu-camera-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background-color: #030712;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   1. ZONE VIDÉO PRINCIPALE & APERÇU
+   ========================================================================== */
+
+.sunu-camera-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #000000;
+}
+
+.sunu-camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 0.2s ease;
+}
+
+.sunu-camera-video.mirrored {
+  transform: scaleX(-1);
+}
+
+.sunu-camera-hidden-canvas {
+  display: none;
+}
+
+/* ==========================================================================
+   2. EN-TÊTE SUPÉRIEUR DES CONTRÔLES (FLOTTANT)
+   ========================================================================== */
+
+.sunu-camera-top-bar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: env(safe-area-inset-top, 1rem) 1rem 0.5rem;
+  background: linear-gradient(180deg, rgba(3, 7, 18, 0.85) 0%, rgba(3, 7, 18, 0) 100%);
+}
+
+.sunu-camera-btn-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sunu-camera-btn-icon:hover {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.sunu-camera-btn-icon.active {
+  background: #f59e0b;
+  color: #000000;
+  border-color: #fde047;
+}
+
+/* Indicateur d'enregistrement vidéo */
+.sunu-camera-recording-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(220, 38, 38, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(254, 202, 202, 0.4);
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(220, 38, 38, 0.6);
+}
+
+.sunu-camera-rec-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  animation: sunuPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes sunuPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.4;
+  }
+}
+
+/* ==========================================================================
+   3. PANNEAU INFÉRIEUR (FILTRES, CAPTURE, BASES)
+   ========================================================================== */
+
+.sunu-camera-bottom-bar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.5rem 1rem calc(env(safe-area-inset-bottom, 1rem) + 0.5rem);
+  background: linear-gradient(0deg, rgba(3, 7, 18, 0.92) 0%, rgba(3, 7, 18, 0.5) 75%, rgba(3, 7, 18, 0) 100%);
+}
+
+/* Bascule Mode Photo / Vidéo */
+.sunu-camera-mode-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 0.2rem;
+}
+
+.sunu-camera-mode-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.95rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sunu-camera-mode-btn.active {
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+}
+
+/* ==========================================================================
+   4. CARROUSEL DES FILTRES EN DIRECT
+   ========================================================================== */
+
+.sunu-camera-filters-track {
+  width: 100%;
+  max-width: 520px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.4rem 1rem;
+  box-sizing: border-box;
+}
+
+.sunu-camera-filters-track::-webkit-scrollbar {
+  display: none;
+}
+
+.sunu-filter-pill-btn {
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0.2rem;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+.sunu-filter-pill-btn:hover {
+  transform: translateY(-2px);
+}
+
+.sunu-filter-pill-btn:active {
+  transform: scale(0.92);
+}
+
+.sunu-filter-swatch-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-size: 1.2rem;
+}
+
+.sunu-filter-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  transition: transform 0.2s ease;
+  pointer-events: none;
+}
+
+.sunu-filter-pill-btn.active .sunu-filter-swatch-circle {
+  border-color: #ffffff;
+  transform: scale(1.12);
+  box-shadow: 0 0 0 3px #3b82f6, 0 0 16px rgba(59, 130, 246, 0.75), 0 4px 14px rgba(0, 0, 0, 0.6);
+}
+
+.sunu-filter-pill-btn.active .sunu-filter-icon {
+  transform: scale(1.15);
+}
+
+.sunu-filter-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #3b82f6;
+  color: #ffffff;
+  font-size: 0.55rem;
+  font-weight: 800;
+  padding: 0.1rem 0.35rem;
+  border-radius: 999px;
+  border: 1.5px solid #ffffff;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.sunu-filter-name {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #94a3b8;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  transition: color 0.2s ease;
+}
+
+.sunu-filter-pill-btn.active .sunu-filter-name {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   5. BOUTON DE CAPTURE PRINCIPAL
+   ========================================================================== */
+
+.sunu-camera-trigger-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0.25rem;
+}
+
+/* Déclencheur Photo */
+.sunu-camera-shutter-btn {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  border: 4px solid #ffffff;
+  background: transparent;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.sunu-camera-shutter-btn:hover {
+  transform: scale(1.05);
+}
+
+.sunu-camera-shutter-btn:active {
+  transform: scale(0.92);
+}
+
+.sunu-shutter-inner-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: all 0.2s ease;
+}
+
+/* Déclencheur Vidéo */
+.sunu-camera-shutter-btn.video-mode {
+  border-color: #ef4444;
+}
+
+.sunu-camera-shutter-btn.video-mode .sunu-shutter-inner-circle {
+  background: #ef4444;
+}
+
+/* Vidéo en cours d'enregistrement */
+.sunu-camera-shutter-btn.is-recording {
+  border-color: #ffffff;
+  animation: sunuBorderPulse 1.5s infinite;
+}
+
+.sunu-camera-shutter-btn.is-recording .sunu-shutter-inner-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #ef4444;
+}
+
+@keyframes sunuBorderPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+}
+
+/* ==========================================================================
+   6. ÉCRAN DE PRÉVISUALISATION (APRÈS CAPTURE)
+   ========================================================================== */
+
+.sunu-camera-preview-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000000;
+  z-index: 30;
+}
+
+.sunu-camera-preview-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sunu-camera-review-actions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem calc(env(safe-area-inset-bottom, 1rem) + 1rem);
+  background: linear-gradient(0deg, rgba(3, 7, 18, 0.95) 0%, rgba(3, 7, 18, 0.6) 70%, rgba(3, 7, 18, 0) 100%);
+}
+
+.sunu-camera-btn-retake {
+  flex: 1;
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 0.85rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.sunu-camera-btn-retake:hover {
+  background: rgba(51, 65, 85, 0.95);
+  transform: translateY(-1px);
+}
+
+.sunu-camera-btn-use {
+  flex: 1.3;
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  border: none;
+  color: #ffffff;
+  padding: 0.85rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
+  transition: all 0.2s ease;
+}
+
+.sunu-camera-btn-use:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #6d28d9 100%);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.55);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   7. GESTION DES ERREURS & PERMISSIONS REFUSÉES
+   ========================================================================== */
+
+.sunu-camera-fallback-box {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  background: #090d16;
+  gap: 1rem;
+}
+
+.sunu-camera-fallback-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+  font-size: 2rem;
+}
+
+.sunu-camera-fallback-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.sunu-camera-fallback-desc {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  max-width: 320px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.sunu-camera-fallback-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+  max-width: 280px;
+  margin-top: 0.5rem;
+}
+
+.sunu-camera-btn-retry {
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  border: none;
+  color: #ffffff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sunu-camera-btn-file-alt {
+  position: relative;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

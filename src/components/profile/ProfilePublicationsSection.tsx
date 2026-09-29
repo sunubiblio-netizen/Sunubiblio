@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ProfilePost, ProfilePostImage, StoryTargetPayload } from '@/types/profile';
 import { CreatePostModal } from './CreatePostModal';
 import { ImageLightboxModal } from './ImageLightboxModal';
+import { SocialActions } from '@/components/social/SocialActions';
 
 interface ProfilePublicationsSectionProps {
   initialPosts: ProfilePost[];
@@ -26,6 +27,15 @@ export const ProfilePublicationsSection: React.FC<ProfilePublicationsSectionProp
 
   const handlePostCreated = (newPost: ProfilePost) => {
     setPosts([newPost, ...posts]);
+  };
+
+  const [savedPostIds, setSavedPostIds] = useState<Record<string, boolean>>({});
+
+  const handleToggleSave = (postId: string) => {
+    setSavedPostIds((prev) => ({
+      ...prev,
+      [postId]: !prev[postId],
+    }));
   };
 
   const handleToggleLike = (postId: string) => {
@@ -261,71 +271,63 @@ export const ProfilePublicationsSection: React.FC<ProfilePublicationsSectionProp
               )}
             </div>
 
-            {/* Actions du post */}
-            <div className="post-card-footer">
-              <button
-                type="button"
-                onClick={() => handleToggleLike(post.id)}
-                className={`post-action-btn ${post.isLiked ? 'liked' : ''}`}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill={post.isLiked ? '#ef4444' : 'none'} stroke={post.isLiked ? '#ef4444' : 'currentColor'} strokeWidth="2">
-                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                </svg>
-                <span>{post.likesCount}</span>
-              </button>
-
-              <button type="button" className="post-action-btn">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                </svg>
-                <span>{post.commentsCount} commentaires</span>
-              </button>
-
-              <button
-                type="button"
-                className="post-action-btn"
-                onClick={() => {
-                  if (typeof navigator !== 'undefined' && navigator.clipboard) {
-                    navigator.clipboard.writeText(window.location.href);
-                    alert('Lien de la publication copié !');
-                  }
-                }}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="m22 2-7 20-4-9-9-4Z" />
-                  <path d="M22 2 11 13" />
-                </svg>
-                <span>Partager</span>
-              </button>
-
-              {onAddToStory && (
-                <button
-                  type="button"
-                  className="post-action-btn post-story-action-btn"
-                  onClick={() =>
-                    onAddToStory({
-                      contentType: 'publication',
-                      contentId: post.id,
-                      title: `Publication de ${post.authorName}`,
-                      description: post.content,
-                      mediaUrl: post.images && post.images.length > 0 ? post.images[0].url : undefined,
-                      badge: post.groupTag || 'Conseil',
-                      metaText: post.timeAgo,
-                      authorName: post.authorName,
-                      authorAvatar: post.authorAvatar,
-                      sharedHref: '/profil',
-                    })
-                  }
-                  title="Ajouter à la story (24h)"
-                >
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" />
-                    <circle cx="12" cy="12" r="3" fill="currentColor" />
-                  </svg>
-                  <span className="post-action-label-desktop">Story</span>
-                </button>
-              )}
-            </div>
+            {/* Actions du post standardisées : ❤️ 56   💬 50   ↗ 12                         🔖 */}
+            <SocialActions
+              likesCount={post.likesCount}
+              commentsCount={post.commentsCount}
+              sharesCount={post.sharesCount || 0}
+              isLiked={post.isLiked}
+              isSaved={savedPostIds[post.id] || false}
+              onLike={() => handleToggleLike(post.id)}
+              onComment={() => {}}
+              onShare={() => {
+                if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                  navigator.clipboard.writeText(window.location.href);
+                  alert('Lien de la publication copié !');
+                }
+              }}
+              onSave={() => handleToggleSave(post.id)}
+              extraRightAction={
+                onAddToStory ? (
+                  <button
+                    type="button"
+                    className="social-action-btn"
+                    onClick={() =>
+                      onAddToStory({
+                        contentType: 'publication',
+                        contentId: post.id,
+                        title: `Publication de ${post.authorName}`,
+                        description: post.content,
+                        mediaUrl: post.images && post.images.length > 0 ? post.images[0].url : undefined,
+                        badge: post.groupTag || 'Conseil',
+                        metaText: post.timeAgo,
+                        authorName: post.authorName,
+                        authorAvatar: post.authorAvatar,
+                        sharedHref: '/profil',
+                      })
+                    }
+                    title="Partager en story (24h)"
+                    aria-label="Partager en story"
+                  >
+                    <svg
+                      width="19"
+                      height="19"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="social-action-icon-svg"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="12" y1="8" x2="12" y2="16" />
+                      <line x1="8" y1="12" x2="16" y2="12" />
+                    </svg>
+                  </button>
+                ) : null
+              }
+            />
           </article>
         ))}
         </div>

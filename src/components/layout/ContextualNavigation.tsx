@@ -94,18 +94,6 @@ const CONTEXT_CONFIGS: ContextConfig[] = [
       { id: 'invitations', label: 'Invitations & Historique', href: '/visio#historique' },
     ],
   },
-  // 7. Communauté
-  {
-    rootPath: '/communaute',
-    badge: 'Réseau Social Éducatif',
-    title: 'Communauté d’Étude',
-    tabs: [
-      { id: 'fil', label: 'Fil d’actualité', href: '/communaute' },
-      { id: 'groupes', label: 'Groupes d’études', href: '/communaute#groupes' },
-      { id: 'discussions', label: 'Discussions & Débats', href: '/communaute#discussions' },
-      { id: 'membres', label: 'Trouver des pairs', href: '/communaute#membres' },
-    ],
-  },
   // 8. Exercices
   {
     rootPath: '/exercices',

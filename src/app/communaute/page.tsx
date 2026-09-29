@@ -1,203 +1,276 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { AuthModal } from '@/components/ui/AuthModal';
 
-interface PostItem {
-  id: string;
-  authorName: string;
-  authorGrade: string;
-  timeAgo: string;
-  groupTag: string;
-  content: string;
-  likesCount: number;
-  commentsCount: number;
-  sharedResource?: {
-    title: string;
-    type: 'concours' | 'livre' | 'fiche';
-    href: string;
-  };
-}
+import {
+  CommunityTab,
+  Community,
+  StudyGroup,
+  CommunityActivityPost,
+  PeerUser,
+  DiscussionTopic,
+  CreateCommunityInput,
+  CreateGroupInput,
+  CreateDiscussionInput,
+} from '@/types/community';
+import { CommunityService } from '@/services/communityService';
 
-const MOCK_POSTS: PostItem[] = [
-  {
-    id: 'p1',
-    authorName: 'Moussa Diagne',
-    authorGrade: 'Candidat FASTEF Lettres 2026',
-    timeAgo: 'Il y a 3h',
-    groupTag: 'Prépa Concours FASTEF',
-    content: 'Bonjour à tous ! Pour ceux qui préparent l’épreuve de Didactique générale, je partage une synthèse comparative entre le triangle pédagogique de Houssaye et la théorie des situations didactiques de Brousseau. Vos avis sur les pièges fréquents du jury ?',
-    likesCount: 28,
-    commentsCount: 9,
-    sharedResource: {
-      title: 'FASTEF — Théorie des Situations Didactiques (Niveau Intermédiaire)',
-      type: 'concours',
-      href: '/exercices/test-fastef-02-intermediaire',
-    },
-  },
-  {
-    id: 'p2',
-    authorName: 'Aïssatou Ndiaye',
-    authorGrade: 'Terminale S2 — Lycée Lamine Guèye',
-    timeAgo: 'Il y a 6h',
-    groupTag: 'Baccalauréat Scientifique',
-    content: 'Quelqu’un a résolu le problème de probabilités conditionnelles de l’annale Bac 2024 session normale ? J’ai un doute sur l’application de la formule de Bayes pour la question 3-b.',
-    likesCount: 17,
-    commentsCount: 14,
-    sharedResource: {
-      title: 'Probabilités : Vocabulaire & Calculs Fondamentaux',
-      type: 'livre',
-      href: '/exercices',
-    },
-  },
-];
+import { CommunityHeader } from '@/components/community/CommunityHeader';
+import { CommunityNavTabs } from '@/components/community/CommunityNavTabs';
+import { CommunityLeftSidebar } from '@/components/community/CommunityLeftSidebar';
+import { CommunityRightSidebar } from '@/components/community/CommunityRightSidebar';
+import { CommunityFeedView } from '@/components/community/CommunityFeedView';
+import { CommunityGroupsView } from '@/components/community/CommunityGroupsView';
+import { CommunityDiscussionsView } from '@/components/community/CommunityDiscussionsView';
+import { CommunityPeersView } from '@/components/community/CommunityPeersView';
+import { CreateCommunityModal } from '@/components/community/CreateCommunityModal';
+import { CreateGroupModal } from '@/components/community/CreateGroupModal';
+import { NewDiscussionModal } from '@/components/community/NewDiscussionModal';
+import { CommunityDetailModal } from '@/components/community/CommunityDetailModal';
 
-const MOCK_GROUPS = [
-  { id: 'g1', name: 'FASTEF Dakar & Régions', members: '1 420 membres', icon: '🎓' },
-  { id: 'g2', name: 'Internat & Études Médicales UCAD', members: '980 membres', icon: '🩺' },
-  { id: 'g3', name: 'Terminale S1 / S2 — Révisions Bac', members: '3 250 membres', icon: '📐' },
-  { id: 'g4', name: 'Concours ENA & Douanes', members: '840 membres', icon: '⚖️' },
-];
+import './communaute.css';
 
 export default function CommunautePage() {
+  const router = useRouter();
+
+  // Redirection immédiate si l'utilisateur arrive avec #groupes ou tab=groups
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const checkAndRedirect = () => {
+        if (window.location.hash === '#groupes' || window.location.search.includes('tab=groups')) {
+          router.replace('/groupes');
+        }
+      };
+      checkAndRedirect();
+      window.addEventListener('hashchange', checkAndRedirect);
+      return () => window.removeEventListener('hashchange', checkAndRedirect);
+    }
+  }, [router]);
+
+  // Onglet actif
+  const [activeTab, setActiveTab] = useState<CommunityTab>('feed');
+
+  // Recherche rapide
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Données dynamiques avec persistance via CommunityService
+  const [communities, setCommunities] = useState<Community[]>([]);
+  const [groups, setGroups] = useState<StudyGroup[]>([]);
+  const [posts, setPosts] = useState<CommunityActivityPost[]>([]);
+  const [peers, setPeers] = useState<PeerUser[]>([]);
+  const [discussions, setDiscussions] = useState<DiscussionTopic[]>([]);
+
+  // Modales d'action
+  const [isCreateCommunityOpen, setIsCreateCommunityOpen] = useState(false);
+  const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
+  const [isNewDiscussionOpen, setIsNewDiscussionOpen] = useState(false);
+  const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<StudyGroup | null>(null);
+
+  // Auth Modal existante
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
-  const [postDraft, setPostDraft] = useState('');
 
-  const handleOpenAuth = (mode: 'login' | 'register') => {
+  // Chargement initial des données
+  useEffect(() => {
+    setCommunities(CommunityService.getCommunities());
+    setGroups(CommunityService.getStudyGroups());
+    setPosts(CommunityService.getFeedPosts());
+    setPeers(CommunityService.getPeers());
+    setDiscussions(CommunityService.getDiscussions());
+  }, []);
+
+  const handleOpenAuth = useCallback((mode: 'login' | 'register') => {
     setAuthMode(mode);
     setAuthOpen(true);
-  };
+  }, []);
+
+  // Actions Communautés & Groupes
+  const handleToggleJoinCommunity = useCallback((id: string) => {
+    const updated = CommunityService.toggleJoinCommunity(id);
+    setCommunities(updated);
+    if (selectedCommunity && selectedCommunity.id === id) {
+      setSelectedCommunity(updated.find((c) => c.id === id) || null);
+    }
+  }, [selectedCommunity]);
+
+  const handleToggleJoinGroup = useCallback((id: string) => {
+    const updated = CommunityService.toggleJoinGroup(id);
+    setGroups(updated);
+    if (selectedGroup && selectedGroup.id === id) {
+      setSelectedGroup(updated.find((g) => g.id === id) || null);
+    }
+  }, [selectedGroup]);
+
+  const handleToggleFollowPeer = useCallback((id: string) => {
+    const updated = CommunityService.toggleFollowPeer(id);
+    setPeers(updated);
+  }, []);
+
+  const handleToggleLikePost = useCallback((postId: string) => {
+    const updated = CommunityService.toggleLikePost(postId);
+    setPosts(updated);
+  }, []);
+
+  const handleAddComment = useCallback((postId: string, text: string) => {
+    const updated = CommunityService.addCommentToPost(postId, text);
+    setPosts(updated);
+  }, []);
+
+  const handleCreatePost = useCallback(
+    (content: string, type: 'publication' | 'ressource' | 'image' | 'video' | 'question') => {
+      const updated = CommunityService.createPost(content, type);
+      setPosts(updated);
+    },
+    []
+  );
+
+  const handleCreateCommunitySubmit = useCallback((data: CreateCommunityInput) => {
+    const newComm = CommunityService.createCommunity(data);
+    setCommunities((prev) => [newComm, ...prev]);
+  }, []);
+
+  const handleCreateGroupSubmit = useCallback((data: CreateGroupInput) => {
+    const newGroup = CommunityService.createGroup(data);
+    setGroups((prev) => [newGroup, ...prev]);
+  }, []);
+
+  const handleCreateDiscussionSubmit = useCallback((data: CreateDiscussionInput) => {
+    const updated = CommunityService.createDiscussion(data);
+    setDiscussions(updated);
+    setActiveTab('discussions');
+  }, []);
 
   return (
-    <div className="communaute-page-wrapper">
+    <div className="communaute-page-root">
+      {/* Navigation globale (intacte) */}
       <Navbar onOpenAuth={handleOpenAuth} activePage="communaute" />
 
-      <main className="communaute-main-content">
-        <div className="container communaute-grid-layout">
-          {/* Colonne Gauche : Groupes d'études & Navigation sociale */}
-          <aside className="communaute-sidebar-left">
-            <div className="sidebar-group-card">
-              <h3 className="sidebar-card-title">Groupes d’études actifs</h3>
-              <div className="groups-list">
-                {MOCK_GROUPS.map((g) => (
-                  <div key={g.id} className="group-item-row">
-                    <span className="group-emoji">{g.icon}</span>
-                    <div className="group-texts">
-                      <strong className="group-name">{g.name}</strong>
-                      <span className="group-members">{g.members}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <button
-                type="button"
-                className="btn-secondary w-full join-group-btn"
-                onClick={() => handleOpenAuth('login')}
-              >
-                Rejoindre un groupe
-              </button>
-            </div>
-          </aside>
+      {/* Contenu principal de la page Communauté */}
+      <main className="communaute-main-container">
+        {/* 1. En-tête Communauté avec actions de création */}
+        <CommunityHeader
+          onCreateCommunity={() => setIsCreateCommunityOpen(true)}
+          onCreateGroup={() => setIsCreateGroupOpen(true)}
+        />
 
-          {/* Colonne Centrale : Fil d'actualité & Publications */}
-          <section className="communaute-feed-column">
-            {/* Boîte de création de publication */}
-            <div className="create-post-card">
-              <div className="create-post-top">
-                <div className="post-author-avatar">SB</div>
-                <textarea
-                  className="post-textarea"
-                  placeholder="Posez une question, partagez une astuce de révision ou une ressource..."
-                  value={postDraft}
-                  onChange={(e) => setPostDraft(e.target.value)}
-                  rows={3}
-                />
-              </div>
+        {/* 2. Navigation par onglets (Fil, Groupes, Discussions, Pairs) */}
+        <CommunityNavTabs
+          activeTab={activeTab}
+          onSelectTab={setActiveTab}
+        />
 
-              <div className="create-post-actions-row">
-                <div className="post-attachments-types">
-                  <span className="attach-tag">📎 Document</span>
-                  <span className="attach-tag">🏆 Concours</span>
-                  <span className="attach-tag">📝 Test associé</span>
-                </div>
-                <button
-                  type="button"
-                  className="btn-primary publish-btn"
-                  onClick={() => handleOpenAuth('login')}
-                >
-                  Publier
-                </button>
-              </div>
-            </div>
+        {/* 3. Grille Desktop 3 Colonnes / Flux unifié Mobile */}
+        <div className="communaute-layout-grid">
+          {/* Colonne Gauche Desktop */}
+          <CommunityLeftSidebar
+            activeTab={activeTab}
+            onSelectTab={setActiveTab}
+            communities={communities}
+            groups={groups}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            onSelectCommunity={setSelectedCommunity}
+            onSelectGroup={setSelectedGroup}
+          />
 
-            {/* Liste des publications */}
-            <div className="feed-posts-list">
-              {MOCK_POSTS.map((post) => (
-                <article key={post.id} className="feed-post-card">
-                  <div className="post-header-row">
-                    <div className="author-avatar-circle">
-                      {post.authorName.slice(0, 2).toUpperCase()}
-                    </div>
-                    <div className="post-author-meta">
-                      <div className="author-name-line">
-                        <strong className="author-name">{post.authorName}</strong>
-                        <span className="post-group-badge">{post.groupTag}</span>
-                      </div>
-                      <span className="author-grade-sub">{post.authorGrade} • {post.timeAgo}</span>
-                    </div>
-                  </div>
+          {/* Colonne Centrale Dynamique selon l'onglet actif */}
+          <section aria-label="Contenu communautaire principal">
+            {activeTab === 'feed' && (
+              <CommunityFeedView
+                posts={posts}
+                onToggleLike={handleToggleLikePost}
+                onAddComment={handleAddComment}
+                onCreatePost={handleCreatePost}
+              />
+            )}
 
-                  <p className="post-body-text">{post.content}</p>
+            {activeTab === 'groups' && (
+              <CommunityGroupsView
+                groups={groups}
+                onToggleJoinGroup={handleToggleJoinGroup}
+                onCreateGroup={() => setIsCreateGroupOpen(true)}
+                onSelectGroup={setSelectedGroup}
+              />
+            )}
 
-                  {post.sharedResource && (
-                    <Link href={post.sharedResource.href} className="post-shared-resource-card">
-                      <div className="resource-shared-icon">
-                        {post.sharedResource.type === 'concours' ? '🏆' : '📚'}
-                      </div>
-                      <div className="resource-shared-info">
-                        <span className="resource-tag-pill">Ressource rattachée</span>
-                        <h4 className="resource-shared-title">{post.sharedResource.title}</h4>
-                      </div>
-                    </Link>
-                  )}
+            {activeTab === 'discussions' && (
+              <CommunityDiscussionsView
+                discussions={discussions}
+                onOpenNewDiscussion={() => setIsNewDiscussionOpen(true)}
+              />
+            )}
 
-                  <div className="post-footer-interactions">
-                    <button type="button" className="interaction-btn" onClick={() => handleOpenAuth('login')}>
-                      <span>👍</span> <span>{post.likesCount} J'aime</span>
-                    </button>
-                    <button type="button" className="interaction-btn" onClick={() => handleOpenAuth('login')}>
-                      <span>💬</span> <span>{post.commentsCount} Commentaires</span>
-                    </button>
-                    <button type="button" className="interaction-btn" onClick={() => handleOpenAuth('login')}>
-                      <span>↗️</span> <span>Partager</span>
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </div>
+            {activeTab === 'peers' && (
+              <CommunityPeersView
+                peers={peers}
+                onToggleFollow={handleToggleFollowPeer}
+                onJoinCommonCommunity={() => setActiveTab('feed')}
+              />
+            )}
           </section>
 
-          {/* Colonne Droite : Événements communautaires & Recommandations */}
-          <aside className="communaute-sidebar-right">
-            <div className="sidebar-group-card">
-              <h3 className="sidebar-card-title">Séances d'entraide Visio</h3>
-              <p className="sidebar-text-muted">
-                Participez aux groupes de révision en direct animés par des tuteurs bénévoles.
-              </p>
-              <Link href="/visio" className="btn-secondary w-full">
-                Voir l'agenda Visio
-              </Link>
-            </div>
-          </aside>
+          {/* Colonne Droite Desktop */}
+          <CommunityRightSidebar
+            communities={communities}
+            groups={groups}
+            peers={peers}
+            onToggleJoinCommunity={handleToggleJoinCommunity}
+            onToggleJoinGroup={handleToggleJoinGroup}
+            onToggleFollowPeer={handleToggleFollowPeer}
+            onOpenAuth={handleOpenAuth}
+            onSelectTab={setActiveTab}
+          />
         </div>
       </main>
 
+      {/* Footer global intact */}
       <Footer />
-      <AuthModal isOpen={authOpen} initialMode={authMode} onClose={() => setAuthOpen(false)} />
+
+      {/* Modale Créer une communauté (avec faisceau lumineux sur 4 côtés) */}
+      <CreateCommunityModal
+        isOpen={isCreateCommunityOpen}
+        onClose={() => setIsCreateCommunityOpen(false)}
+        onSubmit={handleCreateCommunitySubmit}
+      />
+
+      {/* Modale Créer un groupe d'études (avec faisceau lumineux sur 4 côtés) */}
+      <CreateGroupModal
+        isOpen={isCreateGroupOpen}
+        onClose={() => setIsCreateGroupOpen(false)}
+        onSubmit={handleCreateGroupSubmit}
+      />
+
+      {/* Modale Nouvelle discussion */}
+      <NewDiscussionModal
+        isOpen={isNewDiscussionOpen}
+        onClose={() => setIsNewDiscussionOpen(false)}
+        onSubmit={handleCreateDiscussionSubmit}
+      />
+
+      {/* Modale Détail Groupe ou Communauté */}
+      <CommunityDetailModal
+        isOpen={!!selectedCommunity || !!selectedGroup}
+        onClose={() => {
+          setSelectedCommunity(null);
+          setSelectedGroup(null);
+        }}
+        community={selectedCommunity}
+        group={selectedGroup}
+        onToggleJoinCommunity={handleToggleJoinCommunity}
+        onToggleJoinGroup={handleToggleJoinGroup}
+      />
+
+      {/* Modale Authentification Sunubiblio */}
+      <AuthModal
+        isOpen={authOpen}
+        initialMode={authMode}
+        onClose={() => setAuthOpen(false)}
+      />
     </div>
   );
 }
