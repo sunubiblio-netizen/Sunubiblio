@@ -148,11 +148,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           </Link>
         </div>
 
-        {/* SECTION 2 — NAVIGATION & ACTIONS : [SB] (Mon Espace) ... [🔔] [SunuIA] [⋮⋮⋮] */}
+        {/* SECTION 2 — NAVIGATION & ACTIONS : [Hot Dog] (Mon Espace) ... [🔔] [SunuIA] [⋮⋮⋮] */}
         <div className="mobile-header-actions-row">
-          {/* 1. Profil & Mon Espace Biblio à gauche (remplace l'ancien menu 3 traits) */}
+          {/* 1. Menu Hot Dog stylisé à gauche pour ouvrir le menu slide */}
           <div className="mobile-profile-left">
-            <UserMenu onOpenAuth={onOpenAuth} />
+            <UserMenu onOpenAuth={onOpenAuth} triggerVariant="hotdog" />
           </div>
 
           {/* 2. Groupe compact des actions de droite : [🔔] [SunuIA] [⋮⋮⋮] */}

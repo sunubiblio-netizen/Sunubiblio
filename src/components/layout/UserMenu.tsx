@@ -13,9 +13,13 @@ import {
 
 interface UserMenuProps {
   onOpenAuth?: (mode: 'login' | 'register') => void;
+  triggerVariant?: 'hotdog' | 'avatar' | 'auto';
 }
 
-export const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuth }) => {
+export const UserMenu: React.FC<UserMenuProps> = ({
+  onOpenAuth,
+  triggerVariant = 'auto',
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
@@ -52,26 +56,50 @@ export const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuth }) => {
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
 
+  const showHotDog = triggerVariant === 'hotdog' || triggerVariant === 'auto';
+  const showAvatar = triggerVariant === 'avatar' || triggerVariant === 'auto';
+
   return (
     <div className="user-menu-wrapper" ref={menuRef}>
-      {/* Bouton Avatar avec nouveau logo profil */}
-      <button
-        type="button"
-        className={`user-avatar-trigger-btn ${isOpen ? 'is-active' : ''}`}
-        onClick={toggleMenu}
-        aria-expanded={isOpen}
-        aria-haspopup="true"
-        aria-label="Mon espace et menu utilisateur"
-        title="Mon Espace & Profil"
-      >
-        <div className="avatar-ring">
-          <img
-            src="/images/user-profile-logo.png"
-            alt="Mon Profil"
-            className="avatar-logo-img"
-          />
-        </div>
-      </button>
+      {/* 1. Variante Déclencheur HOT DOG (3 traits stylisés aux couleurs de Sunubiblio) */}
+      {showHotDog && (
+        <button
+          type="button"
+          className={`user-menu-hotdog-btn ${isOpen ? 'is-active' : ''} ${triggerVariant === 'auto' ? 'mobile-only-trigger' : ''}`}
+          onClick={toggleMenu}
+          aria-expanded={isOpen}
+          aria-haspopup="true"
+          aria-label="Ouvrir le menu de navigation et Mon Espace"
+          title="Menu de navigation"
+        >
+          <div className="hotdog-icon-wrap" aria-hidden="true">
+            <span className="hotdog-bar hotdog-bar-top" />
+            <span className="hotdog-bar hotdog-bar-middle" />
+            <span className="hotdog-bar hotdog-bar-bottom" />
+          </div>
+        </button>
+      )}
+
+      {/* 2. Variante Déclencheur AVATAR (utilisée sur Desktop) */}
+      {showAvatar && (
+        <button
+          type="button"
+          className={`user-avatar-trigger-btn ${isOpen ? 'is-active' : ''} ${triggerVariant === 'auto' ? 'desktop-only-trigger' : ''}`}
+          onClick={toggleMenu}
+          aria-expanded={isOpen}
+          aria-haspopup="true"
+          aria-label="Mon espace et menu utilisateur"
+          title="Mon Espace & Profil"
+        >
+          <div className="avatar-ring">
+            <img
+              src="/images/user-profile-logo.png"
+              alt="Mon Profil"
+              className="avatar-logo-img"
+            />
+          </div>
+        </button>
+      )}
 
       {/* Popover Menu Déroulant Moderne avec animation de slide */}
       {isOpen && (
