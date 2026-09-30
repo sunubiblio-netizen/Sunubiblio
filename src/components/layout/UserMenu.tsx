@@ -54,7 +54,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuth }) => {
 
   return (
     <div className="user-menu-wrapper" ref={menuRef}>
-      {/* Bouton Avatar avec anneau dégradé Sunubiblio */}
+      {/* Bouton Avatar avec nouveau logo profil */}
       <button
         type="button"
         className={`user-avatar-trigger-btn ${isOpen ? 'is-active' : ''}`}
@@ -65,7 +65,11 @@ export const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuth }) => {
         title="Mon Espace & Profil"
       >
         <div className="avatar-ring">
-          <span className="avatar-initials">SB</span>
+          <img
+            src="/images/user-profile-logo.png"
+            alt="Mon Profil"
+            className="avatar-logo-img"
+          />
         </div>
       </button>
 
@@ -85,7 +89,11 @@ export const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuth }) => {
             {/* 1. Carte En-tête Profil */}
           <div className="user-card-header">
             <div className="user-header-avatar">
-              <span>SB</span>
+              <img
+                src="/images/user-profile-logo.png"
+                alt="Mon Profil"
+                className="user-header-avatar-img"
+              />
             </div>
             <div className="user-header-info">
               <h3 className="user-display-name">Mon Espace Sunubiblio</h3>

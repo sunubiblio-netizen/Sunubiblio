@@ -14317,12 +14317,22 @@ input {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  padding: 2px;
-  background: linear-gradient(135deg, #4f46e5 0%, #ec4899 100%);
+  padding: 1.5px;
+  background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 50%, #6366f1 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar-logo-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
 }
 
 .avatar-initials {
@@ -14418,17 +14428,24 @@ input {
 }
 
 .user-header-avatar {
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
-  background: #1e1b4b;
-  color: #ffffff;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9375rem;
-  font-weight: 800;
+  background: transparent;
   flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.22);
+}
+
+.user-header-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
 }
 
 .user-header-info {
