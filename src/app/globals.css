@@ -14339,6 +14339,25 @@ input {
   letter-spacing: -0.01em;
 }
 
+.user-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.28);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9999;
+  animation: userMenuBackdropFadeIn 0.25s ease-out forwards;
+}
+
+@keyframes userMenuBackdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .user-menu-dropdown {
   position: absolute;
   top: calc(100% + 12px);
@@ -14348,12 +14367,24 @@ input {
   border-radius: 18px;
   border: 1px solid rgba(226, 232, 240, 0.95);
   box-shadow: 0 20px 45px -12px rgba(15, 23, 42, 0.18);
-  z-index: 1000;
+  z-index: 10001;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: launcherPop 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: userMenuSlideDownDesktop 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   transform-origin: top right;
+  will-change: transform, opacity;
+}
+
+@keyframes userMenuSlideDownDesktop {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .user-card-header {
@@ -15646,7 +15677,7 @@ input {
     padding: 0 2px 4px !important;
   }
 
-  /* User Menu sur mobile sous le header 2 sections */
+  /* User Menu sur mobile sous le header : ouverture en SLIDE fluide et élégant */
   .user-menu-dropdown {
     position: fixed !important;
     top: 98px !important;
@@ -15658,6 +15689,20 @@ input {
     margin: 0 auto !important;
     max-height: calc(100vh - 116px) !important;
     z-index: 10001 !important;
+    animation: userMenuSlideMobile 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    will-change: transform, opacity !important;
+    transform-origin: top left !important;
+  }
+
+  @keyframes userMenuSlideMobile {
+    0% {
+      opacity: 0;
+      transform: translateY(-32px) scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 
   /* Popovers Notifs & Aide sur mobile */

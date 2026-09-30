@@ -69,14 +69,20 @@ export const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuth }) => {
         </div>
       </button>
 
-      {/* Popover Menu Déroulant Moderne */}
+      {/* Popover Menu Déroulant Moderne avec animation de slide */}
       {isOpen && (
-        <div
-          className="user-menu-dropdown"
-          role="dialog"
-          aria-label="Menu personnel de Mon Espace"
-        >
-          {/* 1. Carte En-tête Profil */}
+        <>
+          <div
+            className="user-menu-backdrop"
+            onClick={() => setIsOpen(false)}
+            aria-hidden="true"
+          />
+          <div
+            className="user-menu-dropdown"
+            role="dialog"
+            aria-label="Menu personnel de Mon Espace"
+          >
+            {/* 1. Carte En-tête Profil */}
           <div className="user-card-header">
             <div className="user-header-avatar">
               <span>SB</span>
@@ -192,7 +198,8 @@ export const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuth }) => {
             </button>
           </div>
         </div>
-      )}
+      </>
+    )}
     </div>
   );
 };
