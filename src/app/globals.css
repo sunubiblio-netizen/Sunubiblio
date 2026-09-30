@@ -14483,9 +14483,9 @@ input {
   position: absolute;
   top: calc(100% + 12px);
   right: 0;
-  width: 320px;
+  width: 330px;
   background: #ffffff;
-  border-radius: 18px;
+  border-radius: 20px;
   border: 1px solid rgba(226, 232, 240, 0.95);
   box-shadow: 0 20px 45px -12px rgba(15, 23, 42, 0.18);
   z-index: 10001;
@@ -14508,12 +14508,41 @@ input {
   }
 }
 
+/* Structure en 3 zones du slide */
+.user-drawer-top {
+  flex-shrink: 0;
+  background: #ffffff;
+}
+
+.user-drawer-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.user-drawer-body::-webkit-scrollbar {
+  display: none;
+}
+
+.user-drawer-footer {
+  margin-top: auto;
+  flex-shrink: 0;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, #fafbfe 0%, #ffffff 100%);
+  border-top: 1px solid rgba(226, 232, 240, 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .user-card-header {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 16px 18px;
-  background: linear-gradient(180deg, #fafbfe 0%, #ffffff 100%);
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
   border-bottom: 1px solid #f1f5f9;
 }
 
@@ -14521,34 +14550,33 @@ input {
   display: none;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: #f1f5f9;
   color: #64748b;
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.85);
   margin-left: auto;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   flex-shrink: 0;
 }
 
 .user-drawer-close-btn:hover {
   background: #e2e8f0;
   color: #0f172a;
+  transform: scale(1.06);
 }
 
 .user-header-avatar {
-  width: 46px;
-  height: 46px;
+  position: relative;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
   flex-shrink: 0;
-  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.22);
+  padding: 2px;
+  background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 50%, #6366f1 100%);
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
 }
 
 .user-header-avatar-img {
@@ -14557,6 +14585,25 @@ input {
   object-fit: cover;
   border-radius: 50%;
   display: block;
+  background: #e2e8f0;
+}
+
+.user-header-verified-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 }
 
 .user-header-info {
@@ -14570,13 +14617,16 @@ input {
   font-weight: 800;
   color: #0f172a;
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .user-email-preview {
   font-size: 0.75rem;
   color: #64748b;
-  margin: 2px 0 4px 0;
+  margin: 2px 0 5px 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -14590,8 +14640,9 @@ input {
   font-weight: 700;
   color: #4338ca;
   background: #eef2ff;
-  padding: 2px 8px;
+  padding: 2.5px 9px;
   border-radius: 9999px;
+  border: 1px solid rgba(99, 102, 241, 0.15);
   width: fit-content;
 }
 
@@ -14716,37 +14767,108 @@ input {
   border-radius: 9999px;
 }
 
-.user-menu-action-btn {
+/* Bouton Inscription dans le footer du drawer */
+.user-drawer-register-btn {
   display: flex;
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: transparent;
-  border: none;
-  color: #dc2626;
-  font-size: 0.8125rem;
-  font-weight: 600;
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.06) 0%, rgba(37, 99, 235, 0.06) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.22);
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.user-menu-action-btn:hover {
+.user-drawer-register-btn:hover {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.12) 0%, rgba(37, 99, 235, 0.12) 100%);
+  border-color: rgba(99, 102, 241, 0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.12);
+}
+
+.register-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #4f46e5 0%, #2563eb 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+}
+
+.register-btn-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.register-main-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1e1b4b;
+  line-height: 1.2;
+}
+
+.register-sub-label {
+  font-size: 0.6875rem;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+.register-free-badge {
+  margin-left: auto;
+  font-size: 0.625rem;
+  font-weight: 800;
+  color: #059669;
+  background: #ecfdf5;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 2px 7px;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+/* Bouton Déconnexion dans le footer du drawer */
+.user-drawer-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 10px;
   background: #fef2f2;
+  border: 1px solid #fee2e2;
+  color: #dc2626;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: all 0.18s ease;
+}
+
+.user-drawer-logout-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  transform: translateY(-1px);
 }
 
 .logout-icon-wrap {
-  background: #fef2f2;
-  border-color: #fee2e2;
-}
-
-.user-menu-action-btn:hover .logout-icon-wrap {
-  background: #fee2e2;
-  border-color: #fca5a5;
-  transform: scale(1.06);
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: #ffffff;
+  border: 1px solid #fecaca;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 
@@ -15743,6 +15865,71 @@ input {
 
   .desktop-only {
     display: none !important;
+  }
+
+  /* ========================================================
+     USER MENU MOBILE : VRAI SIDE-DRAWER LATÉRAL COULISSANT
+     ======================================================== */
+  .user-menu-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    background: rgba(15, 23, 42, 0.45) !important;
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+    z-index: 10000 !important;
+    animation: userMenuBackdropFadeIn 0.25s ease-out forwards !important;
+    touch-action: none !important;
+  }
+
+  .user-menu-dropdown {
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: auto !important;
+    width: 86% !important;
+    max-width: 340px !important;
+    height: 100% !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    border: none !important;
+    border-right: 1px solid rgba(226, 232, 240, 0.9) !important;
+    border-radius: 0 24px 24px 0 !important;
+    box-shadow: 20px 0 50px -10px rgba(15, 23, 42, 0.3) !important;
+    z-index: 10001 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    animation: userMenuDrawerSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    will-change: transform !important;
+    padding: 0 !important;
+  }
+
+  @keyframes userMenuDrawerSlideIn {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  .user-drawer-top {
+    padding-top: max(14px, env(safe-area-inset-top, 14px)) !important;
+  }
+
+  .user-drawer-footer {
+    padding-bottom: max(20px, env(safe-area-inset-bottom, 20px)) !important;
+  }
+
+  .user-drawer-close-btn {
+    display: flex !important;
   }
 
   /* Menu déroulant des Applications (9 points) sur mobile */
