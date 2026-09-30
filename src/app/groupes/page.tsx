@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -8,23 +8,40 @@ import { AuthModal } from '@/components/ui/AuthModal';
 import { StudyGroup, CreateGroupInput } from '@/types/community';
 import { CommunityService } from '@/services/communityService';
 import { CreateGroupModal } from '@/components/community/CreateGroupModal';
+import { useDragScroll } from '@/hooks/useDragScroll';
 import './groupes.css';
 
-export type GroupFilterType = 'all' | 'Lycée' | 'Université' | 'Concours' | 'Collège' | 'public' | 'private';
+export type GroupTabType = 'all' | 'Lycée' | 'Université' | 'Concours' | 'my-groups';
 
 export default function GroupesDirectoryPage() {
+  const tabsScrollRef = useDragScroll<HTMLDivElement>();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
   // Données
   const [groups, setGroups] = useState<StudyGroup[]>([]);
 
-  // Filtre actif (comme sur la page Publications)
-  const [activeFilter, setActiveFilter] = useState<GroupFilterType>('all');
+  // Onglet pilule actif
+  const [activeTab, setActiveTab] = useState<GroupTabType>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [visibilityFilter, setVisibilityFilter] = useState<'all' | 'public' | 'private'>('all');
+  const [isVisibilityOpen, setIsVisibilityOpen] = useState(false);
+  const visibilityMenuRef = useRef<HTMLDivElement>(null);
 
   // Modale de création
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  // Fermer le menu de visibilité au clic extérieur
+  useEffect(() => {
+    if (!isVisibilityOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (visibilityMenuRef.current && !visibilityMenuRef.current.contains(e.target as Node)) {
+        setIsVisibilityOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isVisibilityOpen]);
 
   // Charger les groupes
   useEffect(() => {
@@ -33,413 +50,405 @@ export default function GroupesDirectoryPage() {
   }, []);
 
   // Basculer l'adhésion d'un groupe
-  const handleToggleJoin = (groupId: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleToggleJoin = (groupId: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     const updated = CommunityService.toggleJoinGroup(groupId);
     setGroups(updated);
   };
 
   // Création d'un groupe
   const handleCreateGroup = (input: CreateGroupInput) => {
-    const created = CommunityService.createGroup(input);
+    CommunityService.createGroup(input);
     const updatedList = CommunityService.getStudyGroups();
     setGroups(updatedList);
     setIsCreateModalOpen(false);
   };
 
-  // Puces de filtres horizontales défilables (identiques à la page Publications)
-  const filterChips: { id: GroupFilterType; label: string; icon: string; count?: number }[] = [
-    { id: 'all', label: 'Tous les groupes', icon: '🌐', count: groups.length },
-    { id: 'Lycée', label: 'Lycée & Bac', icon: '🎓' },
-    { id: 'Université', label: 'Université & Supérieur', icon: '🏛️' },
-    { id: 'Concours', label: 'Concours direct', icon: '🏆' },
-    { id: 'Collège', label: 'Collège', icon: '📖' },
-    { id: 'public', label: 'Publics', icon: '🌐' },
-    { id: 'private', label: 'Sur validation', icon: '🔒' },
-  ];
+  // Groupes filtrés
+  const filteredGroups = useMemo(() => {
+    return groups.filter((g) => {
+      // 1. Onglet actif
+      if (activeTab === 'my-groups') {
+        if (!g.isJoined) return false;
+      } else if (activeTab === 'Lycée') {
+        if (g.category !== 'Lycée') return false;
+      } else if (activeTab === 'Université') {
+        if (g.category !== 'Université') return false;
+      } else if (activeTab === 'Concours') {
+        if (g.category !== 'Concours' && !g.contest) return false;
+      }
 
-  // Mes groupes rejoints
-  const myJoinedGroups = useMemo(() => {
-    return groups.filter((g) => g.isJoined);
-  }, [groups]);
+      // 2. Visibilité
+      if (visibilityFilter !== 'all' && g.visibility !== visibilityFilter) {
+        return false;
+      }
 
-  // Groupes les plus populaires
+      // 3. Recherche texte
+      if (searchTerm.trim()) {
+        const query = searchTerm.toLowerCase();
+        const matchName = g.name.toLowerCase().includes(query);
+        const matchDesc = g.description.toLowerCase().includes(query);
+        const matchSubj = g.subject ? g.subject.toLowerCase().includes(query) : false;
+        const matchContest = g.contest ? g.contest.toLowerCase().includes(query) : false;
+        if (!matchName && !matchDesc && !matchSubj && !matchContest) return false;
+      }
+
+      return true;
+    });
+  }, [groups, activeTab, visibilityFilter, searchTerm]);
+
+  // Groupes populaires pour la colonne latérale
   const popularGroups = useMemo(() => {
     return [...groups].sort((a, b) => b.memberCount - a.memberCount).slice(0, 4);
   }, [groups]);
 
-  // Groupes filtrés pour la découverte
-  const discoverGroups = useMemo(() => {
-    return groups.filter((g) => {
-      // 1. Recherche texte
-      const matchSearch =
-        !searchTerm.trim() ||
-        g.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        g.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (g.subject && g.subject.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (g.contest && g.contest.toLowerCase().includes(searchTerm.toLowerCase()));
-
-      // 2. Filtre actif (style Publication)
-      let matchFilter = true;
-      if (activeFilter === 'Lycée') {
-        matchFilter = g.category === 'Lycée';
-      } else if (activeFilter === 'Université') {
-        matchFilter = g.category === 'Université';
-      } else if (activeFilter === 'Concours') {
-        matchFilter = g.category === 'Concours' || !!g.contest;
-      } else if (activeFilter === 'Collège') {
-        matchFilter = g.category === 'Collège';
-      } else if (activeFilter === 'public') {
-        matchFilter = g.visibility === 'public';
-      } else if (activeFilter === 'private') {
-        matchFilter = g.visibility === 'private';
-      }
-
-      return matchSearch && matchFilter;
-    });
-  }, [groups, searchTerm, activeFilter]);
+  const tabs: { id: GroupTabType; label: string; shortLabel: string; icon: string }[] = [
+    { id: 'all', label: 'Tous les groupes', shortLabel: 'Tous', icon: '🌐' },
+    { id: 'Lycée', label: 'Lycée & Bac', shortLabel: 'Lycée', icon: '🎓' },
+    { id: 'Université', label: 'Université & Sup.', shortLabel: 'Supérieur', icon: '🏛️' },
+    { id: 'Concours', label: 'Concours direct', shortLabel: 'Concours', icon: '🏆' },
+    { id: 'my-groups', label: 'Mes groupes', shortLabel: 'Mes groupes', icon: '🌟' },
+  ];
 
   return (
-    <div className="groupes-page-container">
+    <div className="communaute-page-root groupes-page-root">
       <Navbar
+        activePage="groupes"
         onOpenAuth={(mode) => {
           setAuthMode(mode);
           setAuthModalOpen(true);
         }}
       />
 
-      <main className="groupes-main-content">
-        {/* 1. Titre & Barre d'action supérieure */}
-        <div className="groupes-header-row">
-          <div className="groupes-header-left">
-            <h1 className="groupes-page-title">
-              <span>👥</span>
-              <span>Groupes</span>
-            </h1>
-            <p className="groupes-page-subtitle">
-              Collaborez, révisez et préparez vos examens et concours avec vos pairs
-            </p>
+      <main className="communaute-main-container">
+        {/* 1. EN-TÊTE ÉPURÉ — Style Communauté */}
+        <header className="communaute-hero-header">
+          <div className="communaute-hero-left">
+            <div className="communaute-hero-icon-box" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
+            <div className="communaute-hero-titles">
+              <div className="communaute-title-row">
+                <h1>Groupes</h1>
+                <span className="communaute-hero-badge">Entraide & Savoirs</span>
+              </div>
+              <p className="communaute-hero-desc">
+                Rejoignez des groupes d'études par concours, matière ou niveau pour réviser à plusieurs.
+              </p>
+            </div>
           </div>
 
-          {/* Bouton Créer Desktop */}
-          <button
-            type="button"
-            className="groupes-btn-create-desktop"
-            onClick={() => setIsCreateModalOpen(true)}
-          >
-            <span>+</span>
-            <span>Créer un groupe</span>
-          </button>
-
-          {/* Bouton Créer Mobile (+) */}
-          <button
-            type="button"
-            className="groupes-btn-create-mobile-fab"
-            onClick={() => setIsCreateModalOpen(true)}
-            aria-label="Créer un groupe"
-          >
-            <span aria-hidden="true" style={{ display: 'inline-block', lineHeight: 1, marginTop: '-2px' }}>+</span>
-          </button>
-        </div>
-
-        {/* 2. Barre de recherche compacte */}
-        <div className="groupes-search-bar-wrap">
-          <div className="groupes-search-box">
-            <svg
-              className="groupes-search-icon-svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <div className="communaute-hero-actions">
+            <button
+              type="button"
+              className="btn-create-community-primary"
+              onClick={() => setIsCreateModalOpen(true)}
+              aria-label="Créer un groupe"
             >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Rechercher par matière, concours (ENA, FASTEF), niveau..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              aria-label="Rechercher un groupe"
-            />
+              <svg className="create-btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              <span className="create-btn-text">Créer un groupe</span>
+            </button>
           </div>
-        </div>
+        </header>
 
-        {/* 3. Puces de filtres horizontales défilables (comme sur la page Publications) */}
-        <div className="groupes-filters-scroll-wrap" role="region" aria-label="Filtres thématiques">
-          <div className="groupes-filters-scroll">
-            {filterChips.map((chip) => {
-              const isActive = activeFilter === chip.id;
+        {/* 2. NAVIGATION PAR ONGLETS PILULES — Capsule douce style Communauté */}
+        <nav className="communaute-tabs-nav-wrapper" aria-label="Navigation des groupes">
+          <div className="communaute-tabs-nav" ref={tabsScrollRef} role="tablist">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
               return (
                 <button
-                  key={chip.id}
+                  key={tab.id}
                   type="button"
-                  className={`groupes-chip ${isActive ? 'active' : ''}`}
-                  onClick={() => setActiveFilter(chip.id)}
+                  role="tab"
+                  className={`communaute-tab-btn ${isActive ? 'active' : ''}`}
+                  onClick={() => setActiveTab(tab.id)}
+                  aria-selected={isActive}
                 >
-                  <span className="groupes-chip-icon" aria-hidden="true">{chip.icon}</span>
-                  <span className="groupes-chip-label">{chip.label}</span>
-                  {chip.count !== undefined && chip.count > 0 && (
-                    <span className="groupes-chip-badge">{chip.count}</span>
-                  )}
+                  <span className="communaute-tab-label-full">{tab.icon} {tab.label}</span>
+                  <span className="communaute-tab-label-short">{tab.shortLabel}</span>
                 </button>
               );
             })}
           </div>
-        </div>
+        </nav>
 
-        {/* 4. Disposition Principale (Contenu + Sidebar) */}
-        <div className="groupes-layout-grid">
-          {/* Colonne Principale */}
-          <div className="groupes-main-column">
-            {/* SECTION A : « MES GROUPES » (Si l'utilisateur en a rejoint) */}
-            {myJoinedGroups.length > 0 && (
-              <section aria-labelledby="mes-groupes-title">
-                <div className="groupes-section-header">
-                  <h2 id="mes-groupes-title" className="groupes-section-title">
-                    <span>🌟</span>
-                    <span>Mes groupes</span>
-                    <span className="groupes-count-badge">{myJoinedGroups.length}</span>
-                  </h2>
-                </div>
+        {/* 3. GRILLE DE MISE EN PAGE : 3 colonnes Desktop / 1 colonne fluide Mobile */}
+        <div className="communaute-layout-grid">
+          {/* Colonne Gauche Desktop */}
+          <aside className="communaute-left-sidebar" aria-label="Filières et filtres">
+            <div className="communaute-nav-card">
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '6px 12px 2px 12px' }}>
+                Filières d'études
+              </span>
 
-                <div className="groupes-my-groups-scroll">
-                  {myJoinedGroups.map((group) => (
-                    <div key={`my-${group.id}`} className="group-card-item">
-                      <div>
-                        <div className="group-card-top-row">
-                          <div className="group-card-icon-box">{group.icon || '📚'}</div>
-                          <div className="group-card-title-box">
-                            <Link href={`/groupes/${group.id}`} className="group-card-heading">
-                              {group.name}
-                            </Link>
-                            <div className="group-badges-cluster">
-                              <span className="group-pill-badge">{group.category}</span>
-                              {group.contest && (
-                                <span className="group-pill-badge contest">{group.contest}</span>
-                              )}
-                              {group.visibility === 'private' && (
-                                <span className="group-pill-badge private">🔒 Privé</span>
-                              )}
-                              <span className="group-pill-badge role">
-                                {group.userRole === 'owner' ? '👑 Admin' : '✓ Membre'}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
+              {[
+                { id: 'all', label: 'Toutes les filières', icon: '🌐' },
+                { id: 'Lycée', label: 'Lycée & Baccalauréat', icon: '🎓' },
+                { id: 'Université', label: 'Université & Supérieur', icon: '🏛️' },
+                { id: 'Concours', label: 'Concours direct (ENA...)', icon: '🏆' },
+              ].map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={`communaute-nav-item ${activeTab === item.id ? 'active' : ''}`}
+                  onClick={() => setActiveTab(item.id as GroupTabType)}
+                >
+                  <span className="communaute-nav-icon">{item.icon}</span>
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
 
-                        <p className="group-card-text">{group.description}</p>
-                      </div>
-
-                      <div className="group-card-actions-row">
-                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#475569' }}>
-                          👥 {group.memberCount} membres
-                        </span>
-
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                          <Link href={`/groupes/${group.id}`} className="group-card-btn-open">
-                            Ouvrir →
-                          </Link>
-                          <button
-                            type="button"
-                            className="group-card-btn-join joined"
-                            onClick={(e) => handleToggleJoin(group.id, e)}
-                          >
-                            ✓ Membre
-                          </button>
-                        </div>
-                      </div>
+            <div className="communaute-sidebar-block">
+              <div className="communaute-sidebar-block-header">
+                <h3 className="communaute-sidebar-block-title">Populaires en ce moment</h3>
+              </div>
+              <div className="communaute-mini-list">
+                {popularGroups.map((grp) => (
+                  <div
+                    key={`pop-${grp.id}`}
+                    className="communaute-mini-row"
+                    onClick={() => {
+                      setActiveTab(grp.category === 'Lycée' ? 'Lycée' : grp.category === 'Université' ? 'Université' : 'Concours');
+                    }}
+                  >
+                    <div className="communaute-mini-avatar">{grp.icon || '📚'}</div>
+                    <div className="communaute-mini-info">
+                      <span className="communaute-mini-name">{grp.name}</span>
+                      <span className="communaute-mini-members">👥 {grp.memberCount} membres</span>
                     </div>
-                  ))}
-                </div>
-              </section>
-            )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </aside>
 
-            {/* SECTION B : « DÉCOUVRIR DES GROUPES » */}
-            <section aria-labelledby="decouvrir-groupes-title">
-              <div className="groupes-section-header">
-                <h2 id="decouvrir-groupes-title" className="groupes-section-title">
-                  <span>🧭</span>
-                  <span>Découvrir des groupes</span>
-                  <span className="groupes-count-badge">{discoverGroups.length}</span>
-                </h2>
+          {/* Colonne Centrale : Barre de recherche + Cartes de Groupes */}
+          <section className="communaute-center-column" aria-label="Liste des groupes">
+            {/* Barre d'outils unifiée : Recherche + Sélecteur d'accès */}
+            <div
+              style={{
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: '16px',
+                padding: '12px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                flexWrap: 'wrap',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+              }}
+            >
+              <div style={{ flex: 1, minWidth: '180px', position: 'relative' }}>
+                <input
+                  type="text"
+                  placeholder="Rechercher par matière, concours (ENA, FASTEF), niveau..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="composer-input-field search-input-with-icon"
+                  style={{ width: '100%', paddingLeft: '38px', height: '38px', borderRadius: '12px' }}
+                />
+                <span
+                  style={{
+                    position: 'absolute',
+                    left: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#94a3b8',
+                    fontSize: '14px',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  🔍
+                </span>
               </div>
 
-              {discoverGroups.length === 0 ? (
+              {/* Menu déroulant de visibilité */}
+              <div className="communaute-sort-dropdown-wrap" ref={visibilityMenuRef}>
+                <button
+                  type="button"
+                  className="communaute-sort-pill-trigger"
+                  onClick={() => setIsVisibilityOpen((prev) => !prev)}
+                  aria-expanded={isVisibilityOpen}
+                  aria-label="Filtrer par type d'accès"
+                >
+                  <span className="sort-pill-icon">
+                    {visibilityFilter === 'all' && '🌐'}
+                    {visibilityFilter === 'public' && '🌐'}
+                    {visibilityFilter === 'private' && '🔒'}
+                  </span>
+                  <span className="sort-pill-label">
+                    {visibilityFilter === 'all' && 'Tous accès'}
+                    {visibilityFilter === 'public' && 'Publics'}
+                    {visibilityFilter === 'private' && 'Sur validation'}
+                  </span>
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    className={`sort-pill-chevron ${isVisibilityOpen ? 'rotated' : ''}`}
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+
+                {isVisibilityOpen && (
+                  <div className="communaute-sort-menu-panel" role="menu">
+                    {[
+                      { value: 'all', label: 'Tous accès', icon: '🌐' },
+                      { value: 'public', label: 'Publics', icon: '🌐' },
+                      { value: 'private', label: 'Sur validation', icon: '🔒' },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        className={`sort-menu-item ${visibilityFilter === opt.value ? 'active' : ''}`}
+                        onClick={() => {
+                          setVisibilityFilter(opt.value as any);
+                          setIsVisibilityOpen(false);
+                        }}
+                        role="menuitem"
+                      >
+                        <span className="sort-item-icon">{opt.icon}</span>
+                        <span className="sort-item-text">{opt.label}</span>
+                        {visibilityFilter === opt.value && (
+                          <svg className="sort-check-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2.5">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Grille fluide des groupes (exact style Communauté) */}
+            <div className="groups-directory-grid">
+              {filteredGroups.length === 0 ? (
                 <div
                   style={{
+                    gridColumn: '1 / -1',
                     textAlign: 'center',
-                    padding: '3rem 1.5rem',
+                    padding: '48px 20px',
                     background: '#ffffff',
-                    borderRadius: '18px',
+                    borderRadius: '16px',
                     border: '1px solid #e2e8f0',
                     color: '#64748b',
                   }}
                 >
-                  <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.85rem' }}>🔍</span>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0f172a', margin: '0 0 0.5rem 0' }}>
-                    Aucun groupe ne correspond à votre recherche
-                  </h3>
-                  <p style={{ fontSize: '0.88rem', margin: '0 0 1.25rem 0' }}>
-                    Essayez de sélectionner un autre filtre ou créez votre propre groupe d'entraide.
-                  </p>
+                  <span style={{ fontSize: '36px', display: 'block', marginBottom: '10px' }}>🔍</span>
+                  <p style={{ fontWeight: 700, color: '#0f172a', margin: '0 0 6px 0' }}>Aucun groupe ne correspond à votre recherche</p>
+                  <p style={{ fontSize: '13px', margin: 0 }}>Créez votre propre groupe d'études pour réviser avec vos camarades !</p>
                   <button
                     type="button"
-                    className="groupes-btn-create-desktop"
-                    style={{ display: 'inline-flex', margin: '0 auto' }}
+                    className="btn-create-community-primary"
+                    style={{ margin: '14px auto 0 auto' }}
                     onClick={() => setIsCreateModalOpen(true)}
                   >
                     + Créer ce groupe
                   </button>
                 </div>
               ) : (
-                <div className="groupes-discover-grid">
-                  {discoverGroups.map((group) => (
-                    <div key={group.id} className="group-card-item">
-                      <div>
-                        <div className="group-card-top-row">
-                          <div className="group-card-icon-box">{group.icon || '📚'}</div>
-                          <div className="group-card-title-box">
-                            <Link href={`/groupes/${group.id}`} className="group-card-heading">
-                              {group.name}
-                            </Link>
-                            <div className="group-badges-cluster">
-                              <span className="group-pill-badge">{group.category}</span>
-                              {group.contest && (
-                                <span className="group-pill-badge contest">{group.contest}</span>
-                              )}
-                              {group.visibility === 'private' && (
-                                <span className="group-pill-badge private">🔒 Privé</span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        <p className="group-card-text">{group.description}</p>
-
-                        {group.subject && (
-                          <div className="group-card-meta-line">
-                            <span>🎯 Matière :</span>
-                            <strong style={{ color: '#1e293b' }}>{group.subject}</strong>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="group-card-actions-row">
-                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#475569' }}>
-                          👥 {group.memberCount} membres
-                        </span>
-
-                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                          <Link href={`/groupes/${group.id}`} className="group-card-btn-open">
-                            Ouvrir →
-                          </Link>
-                          <button
-                            type="button"
-                            className={`group-card-btn-join ${group.isJoined ? 'joined' : ''}`}
-                            onClick={(e) => handleToggleJoin(group.id, e)}
-                          >
-                            {group.isJoined ? '✓ Membre' : 'Rejoindre'}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-          </div>
-
-          {/* Colonne Latérale (Sidebar) */}
-          <aside className="groupes-sidebar-column">
-            {/* Groupes populaires */}
-            <div className="groupes-sidebar-card">
-              <h3 className="groupes-sidebar-title">
-                <span>🔥</span>
-                <span>Groupes populaires</span>
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-                {popularGroups.map((grp) => (
-                  <div key={`pop-${grp.id}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0, flex: 1 }}>
-                      <span style={{ fontSize: '1.25rem' }}>{grp.icon || '📚'}</span>
-                      <div style={{ minWidth: 0, flex: 1 }}>
-                        <Link href={`/groupes/${grp.id}`} style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0f172a', textDecoration: 'none', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {grp.name}
+                filteredGroups.map((group) => (
+                  <div key={group.id} className="group-directory-card">
+                    <div className="group-card-top">
+                      <div className="group-card-icon">{group.icon || '📚'}</div>
+                      <div className="group-card-info">
+                        <Link href={`/groupes/${group.id}`} style={{ textDecoration: 'none' }}>
+                          <h3 className="group-card-name">{group.name}</h3>
                         </Link>
-                        <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                          👥 {grp.memberCount} membres
-                        </span>
+                        <div className="group-card-badge-row">
+                          <span className="group-type-badge">{group.category}</span>
+                          {group.contest && (
+                            <span className="group-type-badge" style={{ background: '#fef3c7', color: '#92400e' }}>
+                              {group.contest}
+                            </span>
+                          )}
+                          {group.visibility === 'private' && (
+                            <span className="group-type-badge" style={{ background: '#fee2e2', color: '#991b1b' }}>
+                              🔒 Privé
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    <button
-                      type="button"
-                      className={`group-card-btn-join ${grp.isJoined ? 'joined' : ''}`}
-                      style={{ padding: '0.35rem 0.65rem', fontSize: '0.72rem', flexShrink: 0 }}
-                      onClick={(e) => handleToggleJoin(grp.id, e)}
-                    >
-                      {grp.isJoined ? 'Membre' : 'Rejoindre'}
-                    </button>
+                    <p className="group-card-desc">{group.description}</p>
+
+                    {group.subject && (
+                      <div style={{ fontSize: '12px', color: '#475569', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span>🎯 Matière :</span>
+                        <strong>{group.subject}</strong>
+                      </div>
+                    )}
+
+                    <div className="group-card-footer">
+                      <span className="group-members-count-pill">
+                        👥 {group.memberCount} membres
+                      </span>
+
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <Link
+                          href={`/groupes/${group.id}`}
+                          className="btn-modal-cancel"
+                          style={{ padding: '6px 12px', fontSize: '12px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+                        >
+                          Ouvrir →
+                        </Link>
+
+                        <button
+                          type="button"
+                          className={`btn-widget-action ${group.isJoined ? 'joined' : ''}`}
+                          onClick={() => handleToggleJoin(group.id)}
+                        >
+                          {group.isJoined ? '✓ Membre' : 'Rejoindre'}
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                ))}
-              </div>
+                ))
+              )}
             </div>
+          </section>
 
-            {/* Catégories populaires */}
-            <div className="groupes-sidebar-card">
-              <h3 className="groupes-sidebar-title">
-                <span>📚</span>
-                <span>Filières & Catégories</span>
-              </h3>
-              <div className="groupes-category-list">
-                {[
-                  { id: 'all' as GroupFilterType, label: 'Toutes les filières', icon: '🌐' },
-                  { id: 'Lycée' as GroupFilterType, label: 'Lycée & Baccalauréat', icon: '🎓' },
-                  { id: 'Université' as GroupFilterType, label: 'Université & Supérieur', icon: '🏛️' },
-                  { id: 'Concours' as GroupFilterType, label: 'Concours direct & Pro', icon: '🏆' },
-                  { id: 'Collège' as GroupFilterType, label: 'Collège & Brevet', icon: '📖' },
-                ].map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className={`groupes-category-item ${activeFilter === item.id ? 'active' : ''}`}
-                    onClick={() => setActiveFilter(item.id)}
-                  >
-                    <span>{item.icon} {item.label}</span>
-                    <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>›</span>
-                  </button>
-                ))}
+          {/* Colonne Droite Desktop */}
+          <aside className="communaute-right-sidebar" aria-label="Conseils d'entraide">
+            <div className="communaute-sidebar-block" style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%)', borderColor: '#dbeafe' }}>
+              <div className="communaute-sidebar-block-header">
+                <h3 className="communaute-sidebar-block-title" style={{ color: '#1e3a8a' }}>🤝 Esprit d'Entraide</h3>
               </div>
-            </div>
-
-            {/* Règles et Esprit Sunubiblio */}
-            <div className="groupes-sidebar-card" style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%)', borderColor: '#dbeafe' }}>
-              <h3 className="groupes-sidebar-title" style={{ color: '#1e3a8a' }}>
-                <span>🤝</span>
-                <span>Esprit de Communauté</span>
-              </h3>
-              <p style={{ fontSize: '0.82rem', color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                Chaque groupe d’études est un espace d’entraide mutuelle et d’excellence. Partagez loyalement vos démarches, posez vos questions et progressez ensemble vers la réussite.
+              <p style={{ fontSize: '12.5px', color: '#475569', lineHeight: 1.5, margin: 0 }}>
+                Chaque groupe d’études est un espace de partage loyal et d’émulation mutuelle. Posez vos questions sans hésiter et progressez ensemble !
               </p>
             </div>
           </aside>
         </div>
       </main>
 
-      {/* Modale de création de groupe */}
+      {/* Modale de création d'un groupe */}
       <CreateGroupModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateGroup}
       />
 
-      {/* Modale d'authentification */}
+      {/* Modal d'authentification */}
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}

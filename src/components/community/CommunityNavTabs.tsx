@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { CommunityTab } from '@/types/community';
+import { useDragScroll } from '@/hooks/useDragScroll';
 
 interface CommunityNavTabsProps {
   activeTab: CommunityTab;
@@ -63,7 +64,7 @@ export const CommunityNavTabs: React.FC<CommunityNavTabsProps> = ({
   onSelectTab,
 }) => {
   const router = useRouter();
-  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const tabsContainerRef = useDragScroll<HTMLDivElement>();
 
   const handleTabClick = (tabId: CommunityTab) => {
     if (tabId === 'groups') {

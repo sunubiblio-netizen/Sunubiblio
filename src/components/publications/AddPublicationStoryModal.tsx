@@ -47,9 +47,9 @@ export const AddPublicationStoryModal: React.FC<AddPublicationStoryModalProps> =
       <div className="pub-modal-backdrop" onClick={onClose} role="dialog" aria-modal="true">
         <div className="pub-modal-content story-modal-box" onClick={(e) => e.stopPropagation()}>
           <div className="pub-modal-header">
-            <div>
+            <div className="header-title-box">
+              <span className="header-sparkle-dot" aria-hidden="true" />
               <h2 className="pub-modal-title">Ajouter une Story</h2>
-              <p className="pub-modal-subtitle">Visible pendant 24 heures par la communauté</p>
             </div>
             <button
               type="button"

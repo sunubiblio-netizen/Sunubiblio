@@ -1,13 +1,13 @@
 /* ==========================================================================
-   Sunubiblio — Styles Publications (/publications)
+   Sunubiblio — Styles Discussions (/discussions)
    Harmonisation intégrale avec le design system de Communauté (/communaute)
    Épuré, simple, fluide, rapide, moderne
    ========================================================================== */
 
 @import '../communaute/communaute.css';
 
-/* Spécificités Publications */
-.publications-page-root {
+/* Spécificités Discussions */
+.discussions-page-root {
   min-height: 100vh;
   background-color: #f8fafc;
 }

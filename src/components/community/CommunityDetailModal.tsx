@@ -42,20 +42,6 @@ export const CommunityDetailModal: React.FC<CommunityDetailModalProps> = ({
       role="dialog"
       aria-modal="true"
     >
-      {/* Cadre lumineux dynamique sur les 4 côtés DE TOUT L'ÉCRAN / VIEWPORT */}
-      <div className="sunu-edge-top" aria-hidden="true">
-        <div className="sunu-edge-beam-top" />
-      </div>
-      <div className="sunu-edge-right" aria-hidden="true">
-        <div className="sunu-edge-beam-right" />
-      </div>
-      <div className="sunu-edge-bottom" aria-hidden="true">
-        <div className="sunu-edge-beam-bottom" />
-      </div>
-      <div className="sunu-edge-left" aria-hidden="true">
-        <div className="sunu-edge-beam-left" />
-      </div>
-
       <div className="communaute-modal-panel">
         <div className="communaute-modal-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

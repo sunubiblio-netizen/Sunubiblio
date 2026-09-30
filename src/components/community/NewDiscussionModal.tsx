@@ -63,25 +63,14 @@ export const NewDiscussionModal: React.FC<NewDiscussionModalProps> = ({
       aria-modal="true"
       aria-labelledby="new-disc-title"
     >
-      {/* Cadre lumineux dynamique sur les 4 côtés DE TOUT L'ÉCRAN / VIEWPORT */}
-      <div className="sunu-edge-top" aria-hidden="true">
-        <div className="sunu-edge-beam-top" />
-      </div>
-      <div className="sunu-edge-right" aria-hidden="true">
-        <div className="sunu-edge-beam-right" />
-      </div>
-      <div className="sunu-edge-bottom" aria-hidden="true">
-        <div className="sunu-edge-beam-bottom" />
-      </div>
-      <div className="sunu-edge-left" aria-hidden="true">
-        <div className="sunu-edge-beam-left" />
-      </div>
-
       <div className="communaute-modal-panel">
         <div className="communaute-modal-header">
-          <h3 id="new-disc-title" className="communaute-modal-title">
-            Ouvrir une discussion ou un débat
-          </h3>
+          <div className="header-title-box">
+            <span className="header-sparkle-dot" aria-hidden="true" />
+            <h3 id="new-disc-title" className="communaute-modal-title">
+              Nouvelle discussion
+            </h3>
+          </div>
           <button
             type="button"
             className="communaute-modal-close-btn"

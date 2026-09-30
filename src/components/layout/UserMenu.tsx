@@ -254,7 +254,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                 </Link>
 
                 <Link
-                  href="/communaute#groupes"
+                  href="/groupes"
                   className="user-menu-link-item"
                   onClick={() => setIsOpen(false)}
                 >
@@ -265,7 +265,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                 </Link>
 
                 <Link
-                  href="/communaute#discussions"
+                  href="/discussions"
                   className="user-menu-link-item"
                   onClick={() => setIsOpen(false)}
                 >

@@ -70,26 +70,15 @@ export const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
       aria-modal="true"
       aria-labelledby="create-community-title"
     >
-      {/* Cadre lumineux dynamique sur les 4 côtés DE TOUT L'ÉCRAN / VIEWPORT */}
-      <div className="sunu-edge-top" aria-hidden="true">
-        <div className="sunu-edge-beam-top" />
-      </div>
-      <div className="sunu-edge-right" aria-hidden="true">
-        <div className="sunu-edge-beam-right" />
-      </div>
-      <div className="sunu-edge-bottom" aria-hidden="true">
-        <div className="sunu-edge-beam-bottom" />
-      </div>
-      <div className="sunu-edge-left" aria-hidden="true">
-        <div className="sunu-edge-beam-left" />
-      </div>
-
       <div className="communaute-modal-panel">
         {/* En-tête de la modale */}
         <div className="communaute-modal-header">
-          <h3 id="create-community-title" className="communaute-modal-title">
-            Créer une nouvelle communauté
-          </h3>
+          <div className="header-title-box">
+            <span className="header-sparkle-dot" aria-hidden="true" />
+            <h3 id="create-community-title" className="communaute-modal-title">
+              Créer une communauté
+            </h3>
+          </div>
           <button
             type="button"
             className="communaute-modal-close-btn"

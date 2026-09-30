@@ -2,16 +2,18 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface NavItem {
   id: string;
   label: string;
   href: string;
-  isActive?: boolean;
   icon: React.ReactNode;
 }
 
 export const ProfileLeftNav: React.FC = () => {
+  const pathname = usePathname();
+
   const navItems: NavItem[] = [
     {
       id: 'espace',
@@ -28,7 +30,6 @@ export const ProfileLeftNav: React.FC = () => {
       id: 'profil',
       label: 'Profil',
       href: '/profil',
-      isActive: true,
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
@@ -64,7 +65,7 @@ export const ProfileLeftNav: React.FC = () => {
     {
       id: 'groupes',
       label: 'Groupes',
-      href: '/communaute#groupes',
+      href: '/groupes',
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect width="7" height="7" x="3" y="3" rx="1" />
@@ -77,7 +78,7 @@ export const ProfileLeftNav: React.FC = () => {
     {
       id: 'discussions',
       label: 'Discussions',
-      href: '/communaute#discussions',
+      href: '/discussions',
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -90,17 +91,20 @@ export const ProfileLeftNav: React.FC = () => {
     <aside className="profile-left-sidebar" aria-label="Navigation sociale">
       <nav className="profile-left-nav-card">
         <ul className="profile-left-nav-list">
-          {navItems.map((item) => (
-            <li key={item.id} className="profile-left-nav-item">
-              <Link
-                href={item.href}
-                className={`profile-left-nav-link ${item.isActive ? 'active' : ''}`}
-              >
-                <span className="profile-left-nav-icon">{item.icon}</span>
-                <span className="profile-left-nav-text">{item.label}</span>
-              </Link>
-            </li>
-          ))}
+          {navItems.map((item) => {
+            const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+            return (
+              <li key={item.id} className="profile-left-nav-item">
+                <Link
+                  href={item.href}
+                  className={`profile-left-nav-link ${isActive ? 'active' : ''}`}
+                >
+                  <span className="profile-left-nav-icon">{item.icon}</span>
+                  <span className="profile-left-nav-text">{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
     </aside>

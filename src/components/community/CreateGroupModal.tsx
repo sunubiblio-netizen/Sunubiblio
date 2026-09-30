@@ -115,26 +115,15 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
       aria-modal="true"
       aria-labelledby="create-group-title"
     >
-      {/* Cadre lumineux dynamique sur les 4 côtés DE TOUT L'ÉCRAN / VIEWPORT */}
-      <div className="sunu-edge-top" aria-hidden="true">
-        <div className="sunu-edge-beam-top" />
-      </div>
-      <div className="sunu-edge-right" aria-hidden="true">
-        <div className="sunu-edge-beam-right" />
-      </div>
-      <div className="sunu-edge-bottom" aria-hidden="true">
-        <div className="sunu-edge-beam-bottom" />
-      </div>
-      <div className="sunu-edge-left" aria-hidden="true">
-        <div className="sunu-edge-beam-left" />
-      </div>
-
       <div className="communaute-modal-panel">
-        {/* En-tête de la modale (modale normale SANS faisceau lumineux autour d'elle) */}
+        {/* En-tête de la modale épurée style Image 2 */}
         <div className="communaute-modal-header">
-          <h3 id="create-group-title" className="communaute-modal-title">
-            Créer un groupe d’études
-          </h3>
+          <div className="header-title-box">
+            <span className="header-sparkle-dot" aria-hidden="true" />
+            <h3 id="create-group-title" className="communaute-modal-title">
+              Créer un groupe d’études
+            </h3>
+          </div>
           <button
             type="button"
             className="communaute-modal-close-btn"
@@ -145,7 +134,7 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
           </button>
         </div>
 
-        {/* Formulaire en accordéon compact */}
+        {/* Formulaire en accordéon épuré et moderne */}
         <form onSubmit={handleSubmit} className="communaute-modal-body modal-accordion-container">
           {errorMsg && (
             <div
@@ -171,27 +160,21 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
               aria-expanded={openSection === 'identity'}
             >
               <div className="accordion-header-left">
-                <span className="accordion-step-num">1</span>
+                <span className="accordion-chevron" aria-hidden="true">
+                  {openSection === 'identity' ? '⌄' : '›'}
+                </span>
+                <span className="accordion-icon" aria-hidden="true">📚</span>
                 <span className="accordion-title">Identité du groupe</span>
-                {openSection !== 'identity' && (
-                  <span className="accordion-preview-pill">
-                    {icon} {name.trim() || 'À renseigner *'}
+              </div>
+              <div className="accordion-header-right">
+                {name.trim() ? (
+                  <span className="current-value-badge" title={name.trim()}>
+                    {icon} {name.trim()}
                   </span>
+                ) : (
+                  <span className="default-value-hint">À renseigner *</span>
                 )}
               </div>
-              <svg
-                className={`accordion-chevron ${openSection === 'identity' ? 'rotate' : ''}`}
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
             </button>
 
             {openSection === 'identity' && (
@@ -250,27 +233,17 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
               aria-expanded={openSection === 'domain'}
             >
               <div className="accordion-header-left">
-                <span className="accordion-step-num">2</span>
+                <span className="accordion-chevron" aria-hidden="true">
+                  {openSection === 'domain' ? '⌄' : '›'}
+                </span>
+                <span className="accordion-icon" aria-hidden="true">🎓</span>
                 <span className="accordion-title">Niveau & Domaine</span>
-                {openSection !== 'domain' && (
-                  <span className="accordion-preview-pill">
-                    {category} • {level || 'Tous niveaux'}
-                  </span>
-                )}
               </div>
-              <svg
-                className={`accordion-chevron ${openSection === 'domain' ? 'rotate' : ''}`}
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
+              <div className="accordion-header-right">
+                <span className="current-value-badge">
+                  {category}{level ? ` • ${level}` : ''}
+                </span>
+              </div>
             </button>
 
             {openSection === 'domain' && (
@@ -399,27 +372,21 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
               aria-expanded={openSection === 'program'}
             >
               <div className="accordion-header-left">
-                <span className="accordion-step-num">3</span>
+                <span className="accordion-chevron" aria-hidden="true">
+                  {openSection === 'program' ? '⌄' : '›'}
+                </span>
+                <span className="accordion-icon" aria-hidden="true">📝</span>
                 <span className="accordion-title">Programme & Objectifs</span>
-                {openSection !== 'program' && (
-                  <span className="accordion-preview-pill">
-                    {description.trim() ? (description.length > 25 ? description.slice(0, 25) + '…' : description) : 'À renseigner *'}
+              </div>
+              <div className="accordion-header-right">
+                {description.trim() ? (
+                  <span className="current-value-badge" title={description.trim()}>
+                    {description.trim().length > 18 ? description.trim().slice(0, 18) + '…' : description.trim()}
                   </span>
+                ) : (
+                  <span className="default-value-hint">À renseigner *</span>
                 )}
               </div>
-              <svg
-                className={`accordion-chevron ${openSection === 'program' ? 'rotate' : ''}`}
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
             </button>
 
             {openSection === 'program' && (
@@ -462,27 +429,17 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
               aria-expanded={openSection === 'access'}
             >
               <div className="accordion-header-left">
-                <span className="accordion-step-num">4</span>
+                <span className="accordion-chevron" aria-hidden="true">
+                  {openSection === 'access' ? '⌄' : '›'}
+                </span>
+                <span className="accordion-icon" aria-hidden="true">🌐</span>
                 <span className="accordion-title">Accès & Règles</span>
-                {openSection !== 'access' && (
-                  <span className="accordion-preview-pill">
-                    {visibility === 'public' ? '🌐 Public' : '🔒 Sur validation'}
-                  </span>
-                )}
               </div>
-              <svg
-                className={`accordion-chevron ${openSection === 'access' ? 'rotate' : ''}`}
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
+              <div className="accordion-header-right">
+                <span className="current-value-badge">
+                  {visibility === 'public' ? 'Public' : 'Sur validation'}
+                </span>
+              </div>
             </button>
 
             {openSection === 'access' && (

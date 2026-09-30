@@ -243,8 +243,8 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
         {/* En-tête */}
         <div className="pub-modal-header">
           <div className="pub-modal-title-box">
+            <span className="header-sparkle-dot" aria-hidden="true" />
             <h2 className="pub-modal-title">Créer une publication</h2>
-            <p className="pub-modal-subtitle">Partagez votre savoir avec la communauté Sunubiblio</p>
           </div>
           <button
             type="button"
