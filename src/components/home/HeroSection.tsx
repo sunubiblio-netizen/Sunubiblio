@@ -202,42 +202,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }
             </svg>
           </div>
 
-          {/* Mobile Showcase Cards (displayed on mobile below the visual) */}
-          <div className="mobile-showcase-grid mobile-only">
-            <div className="mobile-showcase-pill">
-              <div className="mini-icon-box" style={{ color: '#4f46e5' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                </svg>
-              </div>
-              <div className="mini-texts">
-                <span className="mini-title">Tous niveaux</span>
-                <span className="mini-desc">Primaire au doctorat</span>
-              </div>
-            </div>
-            <div className="mobile-showcase-pill">
-              <div className="mini-icon-box" style={{ color: '#9333ea' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                </svg>
-              </div>
-              <div className="mini-texts">
-                <span className="mini-title">Préparation concours</span>
-                <span className="mini-desc">Sénégal & International</span>
-              </div>
-            </div>
-            <div className="mobile-showcase-pill">
-              <div className="mini-icon-box" style={{ color: '#ec4899' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                  <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-5.04z" />
-                </svg>
-              </div>
-              <div className="mini-texts">
-                <span className="mini-title">Tuteur IA</span>
-                <span className="mini-desc">Outils & exercices</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>

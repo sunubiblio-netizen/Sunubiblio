@@ -39,7 +39,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   activePage = 'accueil',
   hideOnMobile = false,
 }) => {
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const pathname = usePathname() || '/';
 
   // Détection active de la route courante pour la navigation essentielle et tiroirs
@@ -149,37 +148,19 @@ export const Navbar: React.FC<NavbarProps> = ({
           </Link>
         </div>
 
-        {/* SECTION 2 — NAVIGATION & ACTIONS : [☰] ... [🔔] [SunuIA] [⋮] [SB] */}
+        {/* SECTION 2 — NAVIGATION & ACTIONS : [SB] (Mon Espace) ... [🔔] [SunuIA] [⋮⋮⋮] */}
         <div className="mobile-header-actions-row">
-          {/* Menu latéral (reste exactement à sa position gauche) */}
-          <button
-            type="button"
-            className="mobile-action-btn"
-            onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
-            aria-label="Ouvrir le menu de navigation"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              {mobileDrawerOpen ? (
-                <>
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </>
-              ) : (
-                <>
-                  <line x1="3" y1="12" x2="21" y2="12" />
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <line x1="3" y1="18" x2="21" y2="18" />
-                </>
-              )}
-            </svg>
-          </button>
+          {/* 1. Profil & Mon Espace Biblio à gauche (remplace l'ancien menu 3 traits) */}
+          <div className="mobile-profile-left">
+            <UserMenu onOpenAuth={onOpenAuth} />
+          </div>
 
-          {/* Groupe compact des actions de droite : [🔔] [SunuIA] [⋮] [SB] */}
+          {/* 2. Groupe compact des actions de droite : [🔔] [SunuIA] [⋮⋮⋮] */}
           <div className="mobile-actions-right-group">
-            {/* 1. Notifications */}
+            {/* Notifications */}
             <NotificationsPopover />
 
-            {/* 2. Logo SunuIA pur (sans texte, sans cadre, sans fond, 26px) */}
+            {/* Logo SunuIA pur (26px) */}
             <Link
               href="/ia"
               className="mobile-ia-icon-link"
@@ -189,118 +170,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               <SunuIaIcon size={26} />
             </Link>
 
-            {/* 3. Applications (Lanceur grille 3x3) */}
+            {/* Applications (Lanceur grille 3x3) */}
             <AppLauncher />
-
-            {/* 4. Avatar / Mon Espace */}
-            <UserMenu onOpenAuth={onOpenAuth} />
           </div>
         </div>
       </div>
-
-      {/* =========================================================
-          TIROIR LATÉRAL MOBILE POUR LES LIENS SECONDAIRES
-          ========================================================= */}
-      {mobileDrawerOpen && (
-        <div className="mobile-menu-drawer mobile-only">
-          <div className="mobile-drawer-header">
-            <span className="drawer-heading">Menu Rapide</span>
-            <button
-              type="button"
-              className="drawer-close-icon"
-              onClick={() => setMobileDrawerOpen(false)}
-            >
-              ✕
-            </button>
-          </div>
-
-          <div className="mobile-nav-items">
-            <Link
-              href="/"
-              onClick={() => setMobileDrawerOpen(false)}
-              className={`mobile-nav-item ${pathname === '/' ? 'active' : ''}`}
-            >
-              🏠 Accueil
-            </Link>
-            <Link
-              href="/bibliotheque"
-              onClick={() => setMobileDrawerOpen(false)}
-              className={`mobile-nav-item ${isBibliotheque ? 'active' : ''}`}
-            >
-              📚 Bibliothèque
-            </Link>
-            <Link
-              href="/education"
-              onClick={() => setMobileDrawerOpen(false)}
-              className={`mobile-nav-item ${pathname.startsWith('/education') ? 'active' : ''}`}
-            >
-              🎓 Éducation
-            </Link>
-            <Link
-              href="/concours"
-              onClick={() => setMobileDrawerOpen(false)}
-              className={`mobile-nav-item ${isConcours ? 'active' : ''}`}
-            >
-              🏆 Concours
-            </Link>
-            <Link
-              href="/exercices"
-              onClick={() => setMobileDrawerOpen(false)}
-              className={`mobile-nav-item ${isExercices ? 'active' : ''}`}
-            >
-              📝 Exercices & QCM
-            </Link>
-            <Link
-              href="/ia"
-              onClick={() => setMobileDrawerOpen(false)}
-              className={`mobile-nav-item ${isIA ? 'active' : ''}`}
-            >
-              <SunuIaIcon size={18} style={{ marginRight: '8px' }} /> SunuIA
-            </Link>
-            <Link
-              href="/documents"
-              onClick={() => setMobileDrawerOpen(false)}
-              className={`mobile-nav-item ${pathname.startsWith('/documents') ? 'active' : ''}`}
-            >
-              📄 Documents & Outils
-            </Link>
-            <Link
-              href="/religion"
-              onClick={() => setMobileDrawerOpen(false)}
-              className={`mobile-nav-item ${pathname.startsWith('/religion') ? 'active' : ''}`}
-            >
-              🕌 Religion & Savoirs
-            </Link>
-            <Link
-              href="/tarifs"
-              onClick={() => setMobileDrawerOpen(false)}
-              className={`mobile-nav-item ${pathname.startsWith('/tarifs') ? 'active' : ''}`}
-            >
-              ⭐ Formules & Tarifs
-            </Link>
-            <Link
-              href="/contact"
-              onClick={() => setMobileDrawerOpen(false)}
-              className={`mobile-nav-item ${pathname.startsWith('/contact') ? 'active' : ''}`}
-            >
-              ✉️ Assistance & Contact
-            </Link>
-          </div>
-
-          <div className="mobile-drawer-auth">
-            <button
-              type="button"
-              className="btn-primary w-full"
-              onClick={() => {
-                setMobileDrawerOpen(false);
-                if (onOpenAuth) onOpenAuth('login');
-              }}
-            >
-              Se connecter / S'inscrire
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* =========================================================
           NAVIGATION CONTEXTUELLE DYNAMIQUE SOUS LE HEADER

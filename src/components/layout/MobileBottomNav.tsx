@@ -38,23 +38,21 @@ export const MobileBottomNav: React.FC = () => {
           aria-label="Aller à l'accueil"
           aria-current={isHome ? 'page' : undefined}
         >
-          <div className="tab-icon-wrap">
+          <div className="tab-pill">
             <svg
-              width="22"
-              height="22"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
-              fill={isHome ? 'rgba(79, 70, 229, 0.12)' : 'none'}
+              fill={isHome ? 'currentColor' : 'none'}
               stroke="currentColor"
-              strokeWidth="2.2"
+              strokeWidth={isHome ? '0' : '2'}
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
+              <path d="M3 9.5L12 2.5L21 9.5V20.5C21 21.0523 20.5523 21.5 20 21.5H15V15.5C15 14.9477 14.5523 14.5 14 14.5H10C9.44772 14.5 9 14.9477 9 15.5V21.5H4C3.44772 21.5 3 21.0523 3 20.5V9.5Z" />
             </svg>
           </div>
           <span className="tab-label">Accueil</span>
-          {isHome && <span className="active-dot-indicator" />}
         </Link>
 
         {/* 2. Bibliothèque */}
@@ -64,23 +62,24 @@ export const MobileBottomNav: React.FC = () => {
           aria-label="Aller à la bibliothèque"
           aria-current={isBibliotheque ? 'page' : undefined}
         >
-          <div className="tab-icon-wrap">
+          <div className="tab-pill">
             <svg
-              width="22"
-              height="22"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
-              fill={isBibliotheque ? 'rgba(79, 70, 229, 0.12)' : 'none'}
+              fill="none"
               stroke="currentColor"
-              strokeWidth="2.2"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+              <line x1="9" y1="7" x2="16" y2="7" strokeWidth="2" />
+              <line x1="9" y1="11" x2="14" y2="11" strokeWidth="2" />
             </svg>
           </div>
           <span className="tab-label">Bibliothèque</span>
-          {isBibliotheque && <span className="active-dot-indicator" />}
         </Link>
 
         {/* 3. Concours */}
@@ -90,23 +89,22 @@ export const MobileBottomNav: React.FC = () => {
           aria-label="Aller aux concours"
           aria-current={isConcours ? 'page' : undefined}
         >
-          <div className="tab-icon-wrap">
+          <div className="tab-pill">
             <svg
-              width="22"
-              height="22"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
-              fill={isConcours ? 'rgba(79, 70, 229, 0.12)' : 'none'}
+              fill={isConcours ? 'currentColor' : 'none'}
               stroke="currentColor"
-              strokeWidth="2.2"
+              strokeWidth={isConcours ? '0' : '2'}
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <circle cx="12" cy="8" r="7" />
-              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+              <circle cx="12" cy="8" r="6" />
+              <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
             </svg>
           </div>
           <span className="tab-label">Concours</span>
-          {isConcours && <span className="active-dot-indicator" />}
         </Link>
 
         {/* 4. Favoris */}
@@ -116,48 +114,40 @@ export const MobileBottomNav: React.FC = () => {
           aria-label="Aller aux favoris"
           aria-current={isFavoris ? 'page' : undefined}
         >
-          <div className="tab-icon-wrap">
+          <div className="tab-pill">
             <svg
-              width="22"
-              height="22"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
-              fill={isFavoris ? 'rgba(236, 72, 153, 0.15)' : 'none'}
-              stroke={isFavoris ? '#ec4899' : 'currentColor'}
-              strokeWidth="2.2"
+              fill={isFavoris ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth={isFavoris ? '0' : '2'}
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
             </svg>
           </div>
           <span className="tab-label">Favoris</span>
-          {isFavoris && <span className="active-dot-indicator" />}
         </Link>
 
-        {/* 5. Profil */}
+        {/* 5. Profil (avec avatar Telegram circulaire compact) */}
         <Link
           href="/profil"
           className={`nav-tab-item ${isProfil ? 'active' : ''}`}
           aria-label="Accéder au profil"
           aria-current={isProfil ? 'page' : undefined}
         >
-          <div className="tab-icon-wrap">
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill={isProfil ? 'rgba(79, 70, 229, 0.12)' : 'none'}
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
+          <div className="tab-pill">
+            <div className={`telegram-avatar-frame ${isProfil ? 'is-active' : ''}`}>
+              <img
+                src="/avatar_mamadou.jpg"
+                alt="Profil"
+                className="telegram-avatar-img"
+              />
+            </div>
           </div>
           <span className="tab-label">Profil</span>
-          {isProfil && <span className="active-dot-indicator" />}
         </Link>
       </div>
     </nav>

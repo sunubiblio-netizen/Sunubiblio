@@ -975,21 +975,123 @@ input {
 
   .hero-visual-col {
     min-height: auto;
-    flex-direction: column;
-    padding: 10px 0;
+    width: 100%;
+    max-width: 350px;
+    height: 310px;
+    margin: 12px auto 6px auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    padding: 0;
+    box-sizing: border-box;
   }
 
-  .float-wrapper {
-    display: none !important;
-  }
-
+  /* La fleur tournante centrale bien aérée et visible */
   .petal-composition {
-    width: 220px;
-    height: 220px;
+    width: 145px;
+    height: 145px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .petal-svg {
+    width: 100%;
+    height: 100%;
+    animation: subtle-rotate 25s linear infinite !important;
+  }
+
+  /* Les 3 cartes flottantes disposées autour sans écraser le logo */
+  .float-wrapper {
+    display: block !important;
+    position: absolute !important;
+    z-index: 10 !important;
+  }
+
+  .float-wrapper.top-right {
+    top: 4px !important;
+    right: 8px !important;
+    left: auto !important;
+    bottom: auto !important;
+  }
+
+  .float-wrapper.center-left {
+    top: 48% !important;
+    transform: translateY(-50%) !important;
+    left: 4px !important;
+    right: auto !important;
+    bottom: auto !important;
+  }
+
+  .float-wrapper.bottom-right {
+    bottom: 4px !important;
+    right: 8px !important;
+    left: auto !important;
+    top: auto !important;
+  }
+
+  /* Cartes flottantes rétrécies & discrètes pour laisser respirer le logo */
+  .float-card {
+    padding: 5px 8px !important;
+    gap: 6px !important;
+    border-radius: 11px !important;
+    max-width: 135px !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    border: 1px solid rgba(226, 232, 240, 0.9) !important;
+    box-shadow: 0 6px 18px -3px rgba(79, 70, 229, 0.14), 0 2px 5px rgba(15, 23, 42, 0.04) !important;
+    box-sizing: border-box !important;
+  }
+
+  .float-card-content {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+
+  .float-card-icon-wrap {
+    width: 22px !important;
+    height: 22px !important;
+    border-radius: 6px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .float-card-icon-wrap svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .float-card-title {
+    font-size: 9.5px !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+    white-space: normal !important;
+    margin: 0 !important;
+  }
+
+  .float-card-subtitle {
+    font-size: 8px !important;
+    line-height: 1.15 !important;
+    color: #64748b !important;
+    white-space: normal !important;
+    margin: 0 !important;
+  }
+
+  .float-card-accent {
+    width: 12px !important;
+    height: 2px !important;
+    margin-top: 2px !important;
   }
 
   .mobile-showcase-grid {
-    display: flex !important;
+    display: none !important;
   }
 }
 
@@ -1016,10 +1118,41 @@ input {
     padding-left: 4px;
     padding-right: 4px;
   }
+}
+
+@media (max-width: 375px) {
+  .hero-visual-col {
+    max-width: 310px !important;
+    height: 250px !important;
+  }
 
   .petal-composition {
-    width: 180px;
-    height: 180px;
+    width: 135px !important;
+    height: 135px !important;
+  }
+
+  .float-card {
+    padding: 5px 7px !important;
+    max-width: 145px !important;
+    gap: 5px !important;
+  }
+
+  .float-card-title {
+    font-size: 9px !important;
+  }
+
+  .float-card-subtitle {
+    font-size: 8px !important;
+  }
+
+  .float-card-icon-wrap {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .float-card-icon-wrap svg {
+    width: 12px !important;
+    height: 12px !important;
   }
 }
 
@@ -1294,136 +1427,110 @@ input {
 }
 
 /* ==========================================================================
-   FOOTER SECTION
+   FOOTER SECTION (Ultra-minimaliste - Une seule section propre & responsive)
    ========================================================================== */
 .footer-root {
-  background: #ffffff;
+  background: #faf8ff;
   border-top: 1px solid rgba(226, 232, 240, 0.85);
-  padding-top: 54px;
-  padding-bottom: 32px;
+  padding: 14px 0;
   position: relative;
   z-index: 2;
   width: 100%;
+  margin-top: auto;
 }
 
-.footer-main-grid {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1fr;
-  gap: 40px;
-  margin-bottom: 40px;
-}
-
-.footer-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-.footer-brand-title {
-  font-size: 20px;
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.footer-brand-desc {
-  font-size: 13.5px;
-  color: #64748b;
-  line-height: 1.6;
-  margin-bottom: 16px;
-  max-width: 320px;
-}
-
-.footer-badge-flag {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #334155;
-  background: #f1f5f9;
-  padding: 5px 12px;
-  border-radius: 9999px;
-}
-
-.dot-green {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #10b981;
-}
-
-.footer-col-heading {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: #0f172a;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 16px;
-}
-
-.footer-links-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.footer-links-list a {
-  font-size: 13.5px;
-  color: #64748b;
-  transition: all 0.2s ease;
-}
-
-.footer-links-list a:hover {
-  color: #4f46e5;
-  transform: translateX(2px);
-  display: inline-block;
-}
-
-.footer-bottom-bar {
+.footer-minimal-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 24px;
-  border-top: 1px solid #f1f5f9;
   gap: 16px;
+  width: 100%;
 }
 
-.copyright-text {
-  font-size: 12.5px;
-  color: #94a3b8;
-}
-
-.social-links {
+/* 1. Gauche : Logo & Slogan */
+.footer-left-side {
   display: flex;
+  align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
-.social-pill {
-  font-size: 11.5px;
-  color: #6366f1;
-  background: rgba(99, 102, 241, 0.08);
-  padding: 3px 10px;
-  border-radius: 9999px;
-  font-weight: 600;
+.footer-logo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: #0f172a;
 }
 
-@media (max-width: 960px) {
-  .footer-main-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
+.footer-logo-img {
+  display: block;
+  flex-shrink: 0;
+}
+
+.footer-brand-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.footer-slogan-desktop {
+  font-size: 12.5px;
+  color: #64748b;
+  font-weight: 400;
+}
+
+/* 2. Droite : Droits & Petit Fall (même couleur sobre) */
+.footer-right-side {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.footer-copyright-full,
+.footer-copyright-mobile {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+@media (max-width: 860px) {
+  .footer-root {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
   }
-}
 
-@media (max-width: 600px) {
-  .footer-main-grid {
-    grid-template-columns: 1fr;
-    gap: 28px;
+  .footer-minimal-row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    gap: 8px !important;
   }
-  .footer-bottom-bar {
-    flex-direction: column;
-    text-align: center;
+
+  .footer-left-side {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+  }
+
+  .footer-brand-title {
+    font-size: 14px !important;
+  }
+
+  .footer-right-side {
+    text-align: right !important;
+    flex-shrink: 0 !important;
+  }
+
+  .footer-copyright-mobile {
+    font-size: 11px !important;
+    color: #94a3b8 !important;
+    white-space: nowrap !important;
   }
 }
 
@@ -1443,17 +1550,20 @@ input {
   }
   .mobile-bottom-nav-root {
     position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    z-index: 90 !important;
-    background: rgba(255, 255, 255, 0.96) !important;
+    bottom: max(10px, env(safe-area-inset-bottom, 10px)) !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: 370px !important;
+    margin: 0 auto !important;
+    z-index: 990 !important;
+    background: rgba(255, 255, 255, 0.94) !important;
     -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
     backdrop-filter: blur(20px) saturate(180%) !important;
-    border-top: 1px solid rgba(226, 232, 240, 0.85) !important;
-    box-shadow: 0 -4px 20px -2px rgba(15, 23, 42, 0.07), 0 -1px 3px rgba(15, 23, 42, 0.03) !important;
-    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    border: 1px solid rgba(226, 232, 240, 0.9) !important;
+    border-radius: 28px !important;
+    box-shadow: 0 10px 25px -4px rgba(79, 70, 229, 0.12), 0 3px 10px -1px rgba(15, 23, 42, 0.06) !important;
+    padding: 3px 6px !important;
     user-select: none !important;
     -webkit-user-select: none !important;
   }
@@ -1487,10 +1597,9 @@ input {
     display: grid !important;
     grid-template-columns: repeat(5, 1fr) !important;
     width: 100% !important;
-    max-width: 500px !important;
-    margin: 0 auto !important;
-    height: 62px !important;
-    align-items: stretch !important;
+    height: 44px !important;
+    align-items: center !important;
+    gap: 1px !important;
   }
 
   .mobile-bottom-nav-root .nav-tab-item {
@@ -1498,63 +1607,62 @@ input {
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 3px !important;
+    gap: 2px !important;
     color: #64748b !important;
     text-decoration: none !important;
     height: 100% !important;
-    padding: 6px 2px !important;
+    padding: 1px 0 !important;
     position: relative !important;
-    transition: color 0.18s ease, transform 0.18s ease !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     -webkit-tap-highlight-color: transparent !important;
     cursor: pointer !important;
   }
 
   .mobile-bottom-nav-root .nav-tab-item:active {
-    opacity: 0.75 !important;
-    transform: scale(0.96) !important;
+    transform: scale(0.93) !important;
+    opacity: 0.8 !important;
   }
 
-  .mobile-bottom-nav-root .tab-icon-wrap {
+  /* Pastille active Telegram adaptée aux couleurs du site */
+  .mobile-bottom-nav-root .tab-pill {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    width: 44px !important;
     height: 24px !important;
-    color: inherit !important;
-    transition: transform 0.18s ease, color 0.18s ease !important;
+    border-radius: 9999px !important;
+    background: transparent !important;
+    color: #64748b !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
-  .mobile-bottom-nav-root .tab-icon-wrap svg {
+  .mobile-bottom-nav-root .tab-pill svg {
     color: inherit !important;
-    stroke: currentColor !important;
-    transition: stroke 0.18s ease, fill 0.18s ease !important;
+    transition: all 0.2s ease !important;
   }
 
   .mobile-bottom-nav-root .tab-label {
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    line-height: 1.1 !important;
+    font-size: 10px !important;
+    font-weight: 500 !important;
+    line-height: 1 !important;
     letter-spacing: -0.01em !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     max-width: 100% !important;
     padding: 0 1px !important;
-    color: inherit !important;
-    transition: color 0.18s ease, font-weight 0.18s ease !important;
+    color: #64748b !important;
+    transition: color 0.2s ease, font-weight 0.2s ease !important;
   }
 
-  /* Active state */
+  /* État actif aux couleurs officielles Sunubiblio */
   .mobile-bottom-nav-root .nav-tab-item.active {
     color: #4f46e5 !important;
   }
 
-  .mobile-bottom-nav-root .nav-tab-item.active .tab-icon-wrap {
-    transform: translateY(-1px) !important;
+  .mobile-bottom-nav-root .nav-tab-item.active .tab-pill {
+    background: #eef2ff !important;
     color: #4f46e5 !important;
-  }
-
-  .mobile-bottom-nav-root .nav-tab-item.active .tab-icon-wrap svg {
-    stroke: #4f46e5 !important;
   }
 
   .mobile-bottom-nav-root .nav-tab-item.active .tab-label {
@@ -1562,27 +1670,64 @@ input {
     font-weight: 700 !important;
   }
 
-  /* Top active indicator pill */
-  .mobile-bottom-nav-root .active-dot-indicator {
-    position: absolute !important;
-    top: 0 !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: 24px !important;
-    height: 3px !important;
-    border-radius: 0 0 9999px 9999px !important;
-    background: linear-gradient(90deg, #6366f1, #9333ea) !important;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.5) !important;
+  /* Avatar Profil compact aux couleurs du site */
+  .mobile-bottom-nav-root .telegram-avatar-frame {
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    border: 1.5px solid #cbd5e1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+    box-sizing: border-box !important;
+  }
+
+  .mobile-bottom-nav-root .telegram-avatar-frame.is-active {
+    border-color: #4f46e5 !important;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25) !important;
+  }
+
+  .mobile-bottom-nav-root .telegram-avatar-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+    display: block !important;
   }
 }
 
 @media (max-width: 360px) {
+  .mobile-bottom-nav-root {
+    left: 8px !important;
+    right: 8px !important;
+    padding: 3px 2px !important;
+    max-width: 100% !important;
+  }
+  .mobile-bottom-nav-root .tab-pill {
+    width: 38px !important;
+    height: 22px !important;
+  }
   .mobile-bottom-nav-root .tab-label {
-    font-size: 10px !important;
+    font-size: 9.5px !important;
   }
-  .mobile-bottom-nav-root .bottom-nav-grid {
-    height: 58px !important;
-  }
+}
+
+.page-wrapper,
+.education-page-wrapper,
+.tarifs-page-wrapper,
+.about-page-wrapper,
+.contact-page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-wrapper > main,
+.education-page-wrapper > main,
+.tarifs-page-wrapper > main {
+  flex: 1 0 auto;
 }
 
 @media (max-width: 768px) {
@@ -1592,7 +1737,7 @@ input {
   .about-page-wrapper,
   .contact-page-wrapper,
   .documents-page-root {
-    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: 0 !important;
   }
 }
 
@@ -15429,7 +15574,7 @@ input {
     display: inline-block !important;
   }
 
-  /* SECTION 2 — NAVIGATION & ACTIONS : [☰] ... [🔔] [SunuIA] [⋮] [SB] */
+  /* SECTION 2 — NAVIGATION & ACTIONS : [SB] ... [🔔] [SunuIA] [⋮⋮⋮] */
   .mobile-header-actions-row {
     display: flex;
     align-items: center;
@@ -15440,26 +15585,16 @@ input {
     box-sizing: border-box;
   }
 
-  /* Bouton Menu ☰ gauche */
-  .mobile-action-btn {
+  /* Profil SB à gauche (remplace l'ancien menu 3 traits) */
+  .mobile-profile-left {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    color: #1e1b4b;
-    cursor: pointer;
-    padding: 0;
     flex-shrink: 0;
-    transition: all 0.15s ease;
   }
 
-  .mobile-action-btn:active {
-    transform: scale(0.96);
-    background: #e2e8f0;
+  .mobile-profile-left .user-avatar-trigger-btn {
+    width: 36px !important;
+    height: 36px !important;
   }
 
   /* Groupe compact des actions de droite : [🔔] [SunuIA] [⋮] [SB] */
