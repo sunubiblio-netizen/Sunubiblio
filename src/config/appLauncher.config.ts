@@ -55,11 +55,6 @@ export const APP_LAUNCHER_CATEGORIES: AppCategoryData[] = [
     description: 'Cours approfondis, ressources académiques et traditions',
   },
   {
-    key: 'communaute',
-    title: 'COMMUNAUTÉ',
-    description: 'Réseau collaboratif, échanges, groupes et profils',
-  },
-  {
     key: 'visio_rdv',
     title: 'VISIO & RENDEZ-VOUS',
     description: 'Salons d’étude en direct, tutorat et planning',
@@ -197,66 +192,7 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
   },
 
   // ==========================================
-  // 3. COMMUNAUTÉ
-  // ==========================================
-  {
-    id: 'communaute',
-    name: 'Communauté',
-    shortDescription: 'Espace d’entraide',
-    href: '/communaute',
-    iconId: 'communaute',
-    category: 'communaute',
-    order: 1,
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'profil',
-    name: 'Profil',
-    shortDescription: 'Espace personnel',
-    href: '/profil',
-    iconId: 'profil',
-    category: 'communaute',
-    order: 2,
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'publications',
-    name: 'Publications',
-    shortDescription: 'Articles et partages',
-    href: '/communaute',
-    iconId: 'publications',
-    category: 'communaute',
-    order: 3,
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'groupes',
-    name: 'Groupes',
-    shortDescription: 'Salons thématiques',
-    href: '/communaute',
-    iconId: 'groupes',
-    category: 'communaute',
-    order: 4,
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'discussions',
-    name: 'Discussions',
-    shortDescription: 'Échanges en direct',
-    href: '/communaute',
-    iconId: 'discussions',
-    category: 'communaute',
-    order: 5,
-    enabled: true,
-    available: true,
-  },
-
-  // ==========================================
-  // 4. VISIO & RENDEZ-VOUS
+  // 3. VISIO & RENDEZ-VOUS
   // ==========================================
   {
     id: 'visio',
