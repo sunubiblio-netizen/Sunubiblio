@@ -99,8 +99,21 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }
           <div className="visual-glow-backdrop" />
           <div className="visual-glow-secondary" />
 
-          {/* Floating Card 1: Top Left - Préparez vos concours */}
-          <div className="float-wrapper top-left float-anim-slow">
+          {/* Desktop Floating Cards */}
+          <div className="float-wrapper top-right float-anim-slow">
+            <FloatCard
+              icon={
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+              }
+              title="Des ressources pour tous les niveaux"
+              subtitle="Du primaire au doctorat"
+              accentColor="#4f46e5"
+            />
+          </div>
+
+          <div className="float-wrapper center-left float-anim-mid">
             <FloatCard
               icon={
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -114,22 +127,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }
             />
           </div>
 
-          {/* Floating Card 2: Top Right - Des ressources pour tous les niveaux */}
-          <div className="float-wrapper top-right float-anim-mid">
-            <FloatCard
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-              }
-              title="Des ressources pour tous les niveaux"
-              subtitle="Du primaire au doctorat"
-              accentColor="#4f46e5"
-            />
-          </div>
-
-          {/* Floating Card 3: Bottom Left - IA intégrée */}
-          <div className="float-wrapper bottom-left float-anim-fast">
+          <div className="float-wrapper bottom-right float-anim-fast">
             <FloatCard
               icon={
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ec4899" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -140,20 +138,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }
               title="IA intégrée"
               subtitle="Des outils pour mieux apprendre"
               accentColor="#ec4899"
-            />
-          </div>
-
-          {/* Floating Card 4: Bottom Right - Deviens membre */}
-          <div className="float-wrapper bottom-right float-anim-slow">
-            <FloatCard
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" />
-                </svg>
-              }
-              title="Deviens membre"
-              subtitle="Accès illimité et avantages"
-              accentColor="#f59e0b"
             />
           </div>
 
@@ -214,6 +198,44 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }
                 />
               </g>
             </svg>
+          </div>
+
+          {/* Mobile Showcase Cards (displayed on mobile below the visual) */}
+          <div className="mobile-showcase-grid mobile-only">
+            <div className="mobile-showcase-pill">
+              <div className="mini-icon-box" style={{ color: '#4f46e5' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                  <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                </svg>
+              </div>
+              <div className="mini-texts">
+                <span className="mini-title">Tous niveaux</span>
+                <span className="mini-desc">Primaire au doctorat</span>
+              </div>
+            </div>
+            <div className="mobile-showcase-pill">
+              <div className="mini-icon-box" style={{ color: '#9333ea' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+              </div>
+              <div className="mini-texts">
+                <span className="mini-title">Préparation concours</span>
+                <span className="mini-desc">Sénégal & International</span>
+              </div>
+            </div>
+            <div className="mobile-showcase-pill">
+              <div className="mini-icon-box" style={{ color: '#ec4899' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-5.04z" />
+                </svg>
+              </div>
+              <div className="mini-texts">
+                <span className="mini-title">Tuteur IA</span>
+                <span className="mini-desc">Outils & exercices</span>
+              </div>
+            </div>
           </div>
 
         </div>
