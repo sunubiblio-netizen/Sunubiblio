@@ -15886,50 +15886,58 @@ input {
 
   .user-menu-dropdown {
     position: fixed !important;
-    top: 0 !important;
-    bottom: 0 !important;
-    left: 0 !important;
+    top: max(10px, env(safe-area-inset-top, 10px)) !important;
+    bottom: max(14px, env(safe-area-inset-bottom, 14px)) !important;
+    left: max(8px, env(safe-area-inset-left, 8px)) !important;
     right: auto !important;
-    width: 86% !important;
-    max-width: 340px !important;
-    height: 100% !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    max-height: 100dvh !important;
+    width: calc(88% - 8px) !important;
+    max-width: 335px !important;
+    height: auto !important;
+    max-height: calc(100dvh - max(24px, env(safe-area-inset-top, 10px) + env(safe-area-inset-bottom, 14px))) !important;
     margin: 0 !important;
-    background: #ffffff !important;
-    border: none !important;
-    border-right: 1px solid rgba(226, 232, 240, 0.9) !important;
-    border-radius: 0 24px 24px 0 !important;
-    box-shadow: 20px 0 50px -10px rgba(15, 23, 42, 0.3) !important;
+    background: linear-gradient(175deg, #ffffff 0%, #fbfcfe 55%, #f6f8fe 100%) !important;
+    backdrop-filter: blur(28px) !important;
+    -webkit-backdrop-filter: blur(28px) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+    /* Courbure sculptée continue ultra fluide inspirée de l'image de référence */
+    border-radius: 20px 52px 52px 20px / 24px 60px 60px 24px !important;
+    box-shadow: 0 24px 65px -12px rgba(15, 23, 42, 0.32), 12px 0 35px -6px rgba(79, 70, 229, 0.18), inset 0 1.5px 3px rgba(255, 255, 255, 1) !important;
     z-index: 10001 !important;
     display: flex !important;
     flex-direction: column !important;
     overflow: hidden !important;
-    animation: userMenuDrawerSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-    will-change: transform !important;
+    animation: userMenuDrawerSlideIn 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    will-change: transform, opacity !important;
     padding: 0 !important;
   }
 
   @keyframes userMenuDrawerSlideIn {
     0% {
-      transform: translateX(-100%);
+      opacity: 0;
+      transform: translateX(-108%) scale(0.96);
+    }
+    60% {
+      opacity: 1;
     }
     100% {
-      transform: translateX(0);
+      opacity: 1;
+      transform: translateX(0) scale(1);
     }
   }
 
   .user-drawer-top {
-    padding-top: max(14px, env(safe-area-inset-top, 14px)) !important;
+    padding-top: 10px !important;
+    border-top-right-radius: 50px !important;
   }
 
   .user-drawer-footer {
-    padding-bottom: max(20px, env(safe-area-inset-bottom, 20px)) !important;
+    padding-bottom: 12px !important;
+    border-bottom-right-radius: 50px !important;
   }
 
   .user-drawer-close-btn {
     display: flex !important;
+    margin-right: 12px !important;
   }
 
   /* Menu déroulant des Applications (9 points) sur mobile */
