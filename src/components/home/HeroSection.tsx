@@ -99,22 +99,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }
           <div className="visual-glow-backdrop" />
           <div className="visual-glow-secondary" />
 
-          {/* Floating Card Top Right */}
-          <div className="float-wrapper top-right float-anim-slow">
-            <FloatCard
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-              }
-              title="Des ressources pour tous les niveaux"
-              subtitle="Du primaire au doctorat"
-              accentColor="#4f46e5"
-            />
-          </div>
-
-          {/* Floating Card Center Left */}
-          <div className="float-wrapper center-left float-anim-mid">
+          {/* Floating Card 1: Top Left - Préparez vos concours */}
+          <div className="float-wrapper top-left float-anim-slow">
             <FloatCard
               icon={
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -128,11 +114,25 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }
             />
           </div>
 
-          {/* Floating Card Bottom Right */}
-          <div className="float-wrapper bottom-right float-anim-fast">
+          {/* Floating Card 2: Top Right - Des ressources pour tous les niveaux */}
+          <div className="float-wrapper top-right float-anim-mid">
             <FloatCard
               icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9333ea" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+              }
+              title="Des ressources pour tous les niveaux"
+              subtitle="Du primaire au doctorat"
+              accentColor="#4f46e5"
+            />
+          </div>
+
+          {/* Floating Card 3: Bottom Left - IA intégrée */}
+          <div className="float-wrapper bottom-left float-anim-fast">
+            <FloatCard
+              icon={
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ec4899" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-5.04z" />
                   <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-5.04z" />
                 </svg>
@@ -140,6 +140,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }
               title="IA intégrée"
               subtitle="Des outils pour mieux apprendre"
               accentColor="#ec4899"
+            />
+          </div>
+
+          {/* Floating Card 4: Bottom Right - Deviens membre */}
+          <div className="float-wrapper bottom-right float-anim-slow">
+            <FloatCard
+              icon={
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" />
+                </svg>
+              }
+              title="Deviens membre"
+              subtitle="Accès illimité et avantages"
+              accentColor="#f59e0b"
             />
           </div>
 

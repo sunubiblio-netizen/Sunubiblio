@@ -786,20 +786,24 @@ input {
   z-index: 10;
 }
 
-.float-wrapper.top-right {
-  top: 12px;
-  right: -10px;
+.float-wrapper.top-left {
+  top: 14px;
+  left: -24px;
 }
 
-.float-wrapper.center-left {
-  top: 48%;
-  left: -36px;
-  transform: translateY(-50%);
+.float-wrapper.top-right {
+  top: 14px;
+  right: -24px;
+}
+
+.float-wrapper.bottom-left {
+  bottom: 20px;
+  left: -24px;
 }
 
 .float-wrapper.bottom-right {
   bottom: 20px;
-  right: -10px;
+  right: -24px;
 }
 
 /* Float Card Internal Styles */
@@ -973,12 +977,13 @@ input {
     scrollbar-width: none;
   }
 
+  /* Section centrale mobile : compacte, centrée et agréable à voir */
   .hero-visual-col {
     min-height: auto;
     width: 100%;
-    max-width: 420px;
-    height: 310px;
-    margin: 8px auto 6px auto;
+    max-width: 400px;
+    height: 290px;
+    margin: 4px auto 4px auto;
     position: relative;
     display: flex;
     align-items: center;
@@ -988,14 +993,14 @@ input {
     box-sizing: border-box;
   }
 
-  /* La fleur tournante centrale bien visible, légèrement décalée pour que les cartes l'effleurent subtilement */
+  /* Logo Sunubiblio central tournant : parfaitement centré au milieu */
   .petal-composition {
-    width: 160px;
-    height: 160px;
+    width: 132px;
+    height: 132px;
     position: absolute;
-    left: 58%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
     z-index: 2;
     display: flex;
     align-items: center;
@@ -1008,53 +1013,60 @@ input {
     animation: subtle-rotate 25s linear infinite !important;
   }
 
-  /* Les 3 cartes flottantes disposées en couronne effleurant juste le bord extérieur de la fleur */
+  /* Disposition circulaire des 4 cartes flottantes : 2 en haut + 2 en bas */
   .float-wrapper {
     display: block !important;
     position: absolute !important;
     z-index: 10 !important;
   }
 
-  /* 1. Haut Droite : effleure la pointe supérieure droite */
+  /* 1. Haut Gauche (Préparez vos concours) */
+  .float-wrapper.top-left {
+    top: 8px !important;
+    left: 8px !important;
+    right: auto !important;
+    bottom: auto !important;
+  }
+
+  /* 2. Haut Droite (Des ressources pour tous les niveaux) */
   .float-wrapper.top-right {
-    top: 16px !important;
+    top: 48px !important;
     right: 8px !important;
     left: auto !important;
     bottom: auto !important;
   }
 
-  /* 2. Centre Gauche : effleure délicatement l'extrémité du pétale gauche sans empiéter */
-  .float-wrapper.center-left {
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    left: 4px !important;
+  /* 3. Bas Gauche (IA intégrée) */
+  .float-wrapper.bottom-left {
+    bottom: 48px !important;
+    left: 8px !important;
     right: auto !important;
-    bottom: auto !important;
+    top: auto !important;
   }
 
-  /* 3. Bas Droite : effleure la pointe inférieure droite */
+  /* 4. Bas Droite (Deviens membre) */
   .float-wrapper.bottom-right {
-    bottom: 16px !important;
-    right: 10px !important;
+    bottom: 8px !important;
+    right: 8px !important;
     left: auto !important;
     top: auto !important;
   }
 
-  /* Cartes flottantes au format allongé sur une seule ligne (comme référence utilisateur) */
+  /* Les 4 cartes : LONGUES, MINCES, MÊME LONGUEUR & MÊME STYLE PARFAITEMENT ÉQUILIBRÉES */
   .float-card {
     display: flex !important;
     align-items: center !important;
-    gap: 9px !important;
-    padding: 7px 13px !important;
-    border-radius: 16px !important;
-    width: fit-content !important;
-    max-width: none !important;
+    gap: 8px !important;
+    padding: 5px 11px !important;
+    border-radius: 14px !important;
+    width: 226px !important;
+    height: 38px !important;
+    box-sizing: border-box !important;
     background: rgba(255, 255, 255, 0.96) !important;
     backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
-    border: 1px solid rgba(226, 232, 240, 0.9) !important;
-    box-shadow: 0 8px 24px -4px rgba(79, 70, 229, 0.12), 0 2px 6px rgba(15, 23, 42, 0.04) !important;
-    box-sizing: border-box !important;
+    border: 1px solid rgba(226, 232, 240, 0.92) !important;
+    box-shadow: 0 5px 16px -3px rgba(79, 70, 229, 0.12), 0 2px 4px rgba(15, 23, 42, 0.04) !important;
     white-space: nowrap !important;
   }
 
@@ -1063,14 +1075,15 @@ input {
     flex-direction: column !important;
     align-items: flex-start !important;
     text-align: left !important;
-    gap: 1.5px !important;
+    gap: 1px !important;
     min-width: 0 !important;
+    flex: 1 1 auto !important;
   }
 
   .float-card-icon-wrap {
-    width: 28px !important;
-    height: 28px !important;
-    border-radius: 8px !important;
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 7px !important;
     background: rgba(99, 102, 241, 0.08) !important;
     display: flex !important;
     align-items: center !important;
@@ -1079,13 +1092,13 @@ input {
   }
 
   .float-card-icon-wrap svg {
-    width: 14px !important;
-    height: 14px !important;
+    width: 12.5px !important;
+    height: 12.5px !important;
   }
 
   .float-card-title {
-    font-size: 10.5px !important;
-    line-height: 1.25 !important;
+    font-size: 10px !important;
+    line-height: 1.2 !important;
     font-weight: 700 !important;
     color: #0f172a !important;
     text-align: left !important;
@@ -1094,8 +1107,8 @@ input {
   }
 
   .float-card-subtitle {
-    font-size: 9px !important;
-    line-height: 1.25 !important;
+    font-size: 8.5px !important;
+    line-height: 1.2 !important;
     color: #64748b !important;
     text-align: left !important;
     white-space: nowrap !important;
@@ -1103,10 +1116,10 @@ input {
   }
 
   .float-card-accent {
-    width: 18px !important;
+    width: 16px !important;
     height: 2px !important;
     border-radius: 9999px !important;
-    margin-top: 3px !important;
+    margin-top: 2px !important;
     align-self: flex-start !important;
   }
 
@@ -1143,22 +1156,43 @@ input {
 @media (max-width: 375px) {
   .hero-visual-col {
     max-width: 350px !important;
-    height: 290px !important;
+    height: 280px !important;
   }
 
   .petal-composition {
-    width: 145px !important;
-    height: 145px !important;
-    left: 56% !important;
+    width: 120px !important;
+    height: 120px !important;
+  }
+
+  .float-wrapper.top-left {
+    top: 6px !important;
+    left: 5px !important;
+  }
+
+  .float-wrapper.top-right {
+    top: 44px !important;
+    right: 5px !important;
+  }
+
+  .float-wrapper.bottom-left {
+    bottom: 44px !important;
+    left: 5px !important;
+  }
+
+  .float-wrapper.bottom-right {
+    bottom: 6px !important;
+    right: 5px !important;
   }
 
   .float-card {
-    padding: 5px 9px !important;
+    width: 206px !important;
+    height: 35px !important;
+    padding: 4px 8px !important;
     gap: 6px !important;
   }
 
   .float-card-title {
-    font-size: 9px !important;
+    font-size: 9.2px !important;
   }
 
   .float-card-subtitle {
