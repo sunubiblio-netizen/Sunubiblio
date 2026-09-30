@@ -976,9 +976,9 @@ input {
   .hero-visual-col {
     min-height: auto;
     width: 100%;
-    max-width: 350px;
-    height: 290px;
-    margin: 10px auto 6px auto;
+    max-width: 420px;
+    height: 310px;
+    margin: 8px auto 6px auto;
     position: relative;
     display: flex;
     align-items: center;
@@ -988,12 +988,12 @@ input {
     box-sizing: border-box;
   }
 
-  /* La fleur tournante centrale agrandie, majestueuse et bien visible */
+  /* La fleur tournante centrale bien visible, légèrement décalée pour que les cartes l'effleurent subtilement */
   .petal-composition {
-    width: 172px;
-    height: 172px;
+    width: 160px;
+    height: 160px;
     position: absolute;
-    left: 50%;
+    left: 58%;
     top: 50%;
     transform: translate(-50%, -50%);
     z-index: 2;
@@ -1008,7 +1008,7 @@ input {
     animation: subtle-rotate 25s linear infinite !important;
   }
 
-  /* Les 3 cartes flottantes disposées en cercle effleurant juste le bord de la fleur */
+  /* Les 3 cartes flottantes disposées en couronne effleurant juste le bord extérieur de la fleur */
   .float-wrapper {
     display: block !important;
     position: absolute !important;
@@ -1017,80 +1017,97 @@ input {
 
   /* 1. Haut Droite : effleure la pointe supérieure droite */
   .float-wrapper.top-right {
-    top: 24px !important;
-    right: 18px !important;
+    top: 16px !important;
+    right: 8px !important;
     left: auto !important;
     bottom: auto !important;
   }
 
-  /* 2. Centre Gauche : effleure la pointe gauche sans jamais masquer le centre */
+  /* 2. Centre Gauche : effleure délicatement l'extrémité du pétale gauche sans empiéter */
   .float-wrapper.center-left {
     top: 50% !important;
     transform: translateY(-50%) !important;
-    left: 14px !important;
+    left: 4px !important;
     right: auto !important;
     bottom: auto !important;
   }
 
   /* 3. Bas Droite : effleure la pointe inférieure droite */
   .float-wrapper.bottom-right {
-    bottom: 22px !important;
-    right: 20px !important;
+    bottom: 16px !important;
+    right: 10px !important;
     left: auto !important;
     top: auto !important;
   }
 
-  /* Cartes flottantes rétrécies, ultra-fines & design pro UI/UX */
+  /* Cartes flottantes au format allongé sur une seule ligne (comme référence utilisateur) */
   .float-card {
-    padding: 4px 7px !important;
-    gap: 5px !important;
-    border-radius: 11px !important;
-    max-width: 122px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+    padding: 7px 13px !important;
+    border-radius: 16px !important;
+    width: fit-content !important;
+    max-width: none !important;
     background: rgba(255, 255, 255, 0.96) !important;
-    backdrop-filter: blur(14px) !important;
-    -webkit-backdrop-filter: blur(14px) !important;
-    border: 1px solid rgba(226, 232, 240, 0.95) !important;
-    box-shadow: 0 4px 14px -2px rgba(79, 70, 229, 0.16), 0 2px 4px rgba(15, 23, 42, 0.04) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(226, 232, 240, 0.9) !important;
+    box-shadow: 0 8px 24px -4px rgba(79, 70, 229, 0.12), 0 2px 6px rgba(15, 23, 42, 0.04) !important;
     box-sizing: border-box !important;
+    white-space: nowrap !important;
   }
 
   .float-card-content {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+    gap: 1.5px !important;
     min-width: 0 !important;
-    flex: 1 1 auto !important;
   }
 
   .float-card-icon-wrap {
-    width: 20px !important;
-    height: 20px !important;
-    border-radius: 5px !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 8px !important;
+    background: rgba(99, 102, 241, 0.08) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     flex-shrink: 0 !important;
   }
 
   .float-card-icon-wrap svg {
-    width: 11px !important;
-    height: 11px !important;
+    width: 14px !important;
+    height: 14px !important;
   }
 
   .float-card-title {
-    font-size: 8.5px !important;
-    line-height: 1.15 !important;
+    font-size: 10.5px !important;
+    line-height: 1.25 !important;
     font-weight: 700 !important;
-    white-space: normal !important;
+    color: #0f172a !important;
+    text-align: left !important;
+    white-space: nowrap !important;
     margin: 0 !important;
   }
 
   .float-card-subtitle {
-    font-size: 7.5px !important;
-    line-height: 1.15 !important;
+    font-size: 9px !important;
+    line-height: 1.25 !important;
     color: #64748b !important;
-    white-space: normal !important;
+    text-align: left !important;
+    white-space: nowrap !important;
     margin: 0 !important;
   }
 
   .float-card-accent {
-    width: 10px !important;
-    height: 1.5px !important;
-    margin-top: 1.5px !important;
+    width: 18px !important;
+    height: 2px !important;
+    border-radius: 9999px !important;
+    margin-top: 3px !important;
+    align-self: flex-start !important;
   }
 
   .mobile-showcase-grid {
@@ -1125,19 +1142,19 @@ input {
 
 @media (max-width: 375px) {
   .hero-visual-col {
-    max-width: 310px !important;
-    height: 250px !important;
+    max-width: 350px !important;
+    height: 290px !important;
   }
 
   .petal-composition {
-    width: 135px !important;
-    height: 135px !important;
+    width: 145px !important;
+    height: 145px !important;
+    left: 56% !important;
   }
 
   .float-card {
-    padding: 5px 7px !important;
-    max-width: 145px !important;
-    gap: 5px !important;
+    padding: 5px 9px !important;
+    gap: 6px !important;
   }
 
   .float-card-title {
@@ -1145,7 +1162,7 @@ input {
   }
 
   .float-card-subtitle {
-    font-size: 8px !important;
+    font-size: 7.8px !important;
   }
 
   .float-card-icon-wrap {
@@ -1154,8 +1171,8 @@ input {
   }
 
   .float-card-icon-wrap svg {
-    width: 12px !important;
-    height: 12px !important;
+    width: 11px !important;
+    height: 11px !important;
   }
 }
 
