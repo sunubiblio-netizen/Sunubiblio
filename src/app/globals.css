@@ -14396,6 +14396,27 @@ input {
   border-bottom: 1px solid #f1f5f9;
 }
 
+.user-drawer-close-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  margin-left: auto;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.user-drawer-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
 .user-header-avatar {
   width: 44px;
   height: 44px;
@@ -15677,32 +15698,57 @@ input {
     padding: 0 2px 4px !important;
   }
 
-  /* User Menu sur mobile sous le header : ouverture en SLIDE fluide et élégant */
-  .user-menu-dropdown {
+  /* User Menu sur mobile : Side-Drawer latéral coulissant depuis la gauche */
+  .user-menu-backdrop {
     position: fixed !important;
-    top: 98px !important;
-    bottom: auto !important;
-    right: 12px !important;
-    left: 12px !important;
-    width: auto !important;
-    max-width: 390px !important;
-    margin: 0 auto !important;
-    max-height: calc(100vh - 116px) !important;
-    z-index: 10001 !important;
-    animation: userMenuSlideMobile 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-    will-change: transform, opacity !important;
-    transform-origin: top left !important;
+    inset: 0 !important;
+    background: rgba(15, 23, 42, 0.38) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    z-index: 10000 !important;
+    animation: userMenuBackdropFadeIn 0.26s ease-out forwards !important;
   }
 
-  @keyframes userMenuSlideMobile {
+  .user-menu-dropdown {
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: auto !important;
+    width: 82% !important;
+    max-width: 320px !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    border: none !important;
+    border-right: 1px solid rgba(226, 232, 240, 0.88) !important;
+    border-radius: 0 28px 28px 0 !important;
+    box-shadow: 14px 0 40px -6px rgba(15, 23, 42, 0.22) !important;
+    z-index: 10001 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    animation: userMenuDrawerSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    will-change: transform !important;
+    padding-top: max(16px, env(safe-area-inset-top, 16px)) !important;
+    padding-bottom: max(24px, env(safe-area-inset-bottom, 24px)) !important;
+  }
+
+  @keyframes userMenuDrawerSlideIn {
     0% {
-      opacity: 0;
-      transform: translateY(-32px) scale(0.98);
+      transform: translateX(-100%);
     }
     100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translateX(0);
     }
+  }
+
+  .user-drawer-close-btn {
+    display: flex !important;
   }
 
   /* Popovers Notifs & Aide sur mobile */
