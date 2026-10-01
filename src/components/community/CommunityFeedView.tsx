@@ -8,12 +8,33 @@ import {
   FeedSortOption,
 } from '@/types/community';
 import { SocialActions } from '@/components/social/SocialActions';
+import {
+  CreateCommunityPostModal,
+  CommunityPostFormat,
+  CreateCommunityPostInput,
+} from './CreateCommunityPostModal';
 
 interface CommunityFeedViewProps {
   posts: CommunityActivityPost[];
   onToggleLike: (postId: string) => void;
   onAddComment: (postId: string, text: string) => void;
-  onCreatePost: (content: string, type: 'publication' | 'ressource' | 'image' | 'video' | 'question') => void;
+  onCreatePost: (
+    content: string,
+    type: 'publication' | 'ressource' | 'image' | 'video' | 'question',
+    options?: {
+      mediaUrl?: string;
+      videoThumbnailUrl?: string;
+      videoDuration?: string;
+      sharedResource?: {
+        title: string;
+        type: 'cours' | 'concours' | 'livre' | 'fiche' | 'exercice';
+        metaText?: string;
+        thumbnailUrl?: string;
+        href: string;
+      };
+      locationTag?: string;
+    }
+  ) => void;
 }
 
 export const CommunityFeedView: React.FC<CommunityFeedViewProps> = ({
@@ -22,8 +43,9 @@ export const CommunityFeedView: React.FC<CommunityFeedViewProps> = ({
   onAddComment,
   onCreatePost,
 }) => {
-  const [draftContent, setDraftContent] = useState('');
-  const [draftType, setDraftType] = useState<'publication' | 'ressource' | 'image' | 'video' | 'question'>('publication');
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [postModalFormat, setPostModalFormat] = useState<CommunityPostFormat>('publication');
+
   const [filterChip, setFilterChip] = useState<FeedFilterChip>('tout');
   const [sortOption, setSortOption] = useState<FeedSortOption>('recent');
   const [expandedComments, setExpandedComments] = useState<Record<string, boolean>>({
@@ -33,11 +55,21 @@ export const CommunityFeedView: React.FC<CommunityFeedViewProps> = ({
   const [activeVideoPlayer, setActiveVideoPlayer] = useState<string | null>(null);
   const [shareToast, setShareToast] = useState<string | null>(null);
 
-  const handlePublish = () => {
-    if (!draftContent.trim()) return;
-    onCreatePost(draftContent.trim(), draftType);
-    setDraftContent('');
-    setDraftType('publication');
+  const handleOpenModal = (format: CommunityPostFormat = 'publication') => {
+    setPostModalFormat(format);
+    setIsPostModalOpen(true);
+  };
+
+  const handleModalSubmit = (data: CreateCommunityPostInput) => {
+    onCreatePost(data.content, data.format, {
+      mediaUrl: data.mediaUrl,
+      videoThumbnailUrl: data.videoThumbnailUrl,
+      videoDuration: data.videoDuration,
+      sharedResource: data.sharedResource,
+      locationTag: data.locationTag,
+    });
+    setShareToast('Publication partagée avec succès dans la communauté !');
+    setTimeout(() => setShareToast(null), 3000);
   };
 
   const toggleComments = (postId: string) => {
@@ -136,38 +168,23 @@ export const CommunityFeedView: React.FC<CommunityFeedViewProps> = ({
       <div className="communaute-composer-card">
         <div className="communaute-composer-top">
           <div className="composer-user-avatar">SB</div>
-          <input
-            type="text"
-            className="composer-input-field"
-            placeholder="Que voulez-vous partager avec la communauté ?"
-            value={draftContent}
-            onChange={(e) => setDraftContent(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handlePublish();
-            }}
-          />
+          <button
+            type="button"
+            className="composer-trigger-button"
+            onClick={() => handleOpenModal('publication')}
+            aria-label="Que souhaitez-vous partager avec la communauté ?"
+          >
+            <span>Que souhaitez-vous partager avec la communauté ?</span>
+          </button>
         </div>
 
         <div className="communaute-composer-bottom">
           <div className="composer-actions-group">
             <button
               type="button"
-              className={`composer-attach-btn ${draftType === 'ressource' ? 'active' : ''}`}
-              onClick={() => setDraftType(draftType === 'ressource' ? 'publication' : 'ressource')}
-              title="Attacher un document"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-              </svg>
-              <span>Document</span>
-            </button>
-
-            <button
-              type="button"
-              className={`composer-attach-btn ${draftType === 'image' ? 'active' : ''}`}
-              onClick={() => setDraftType(draftType === 'image' ? 'publication' : 'image')}
-              title="Ajouter une image"
+              className="composer-attach-btn"
+              onClick={() => handleOpenModal('image')}
+              title="Ajouter une photo ou prendre une photo en direct"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
@@ -179,22 +196,34 @@ export const CommunityFeedView: React.FC<CommunityFeedViewProps> = ({
 
             <button
               type="button"
-              className={`composer-attach-btn ${draftType === 'video' ? 'active' : ''}`}
-              onClick={() => setDraftType(draftType === 'video' ? 'publication' : 'video')}
-              title="Ajouter une vidéo"
+              className="composer-attach-btn"
+              onClick={() => handleOpenModal('video')}
+              title="Ajouter une vidéo ou filmer en direct"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polygon points="6 3 20 12 6 21 6 3" />
               </svg>
               <span>Vidéo</span>
             </button>
+
+            <button
+              type="button"
+              className="composer-attach-btn"
+              onClick={() => handleOpenModal('ressource')}
+              title="Partager un cours ou document"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+              <span>Ressource</span>
+            </button>
           </div>
 
           <button
             type="button"
             className="composer-publish-btn"
-            onClick={handlePublish}
-            disabled={!draftContent.trim()}
+            onClick={() => handleOpenModal('publication')}
           >
             <span>Publier</span>
           </button>
@@ -358,6 +387,18 @@ export const CommunityFeedView: React.FC<CommunityFeedViewProps> = ({
                   </Link>
                 )}
 
+                {/* Image rattachée */}
+                {post.type === 'image' && post.mediaUrl && (
+                  <div className="feed-shared-image-box">
+                    <img
+                      src={post.mediaUrl}
+                      alt="Image partagée"
+                      className="feed-shared-img"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+
                 {/* Vidéo rattachée */}
                 {post.type === 'video' && post.mediaUrl && (
                   <div className="feed-shared-video-box">
@@ -380,9 +421,11 @@ export const CommunityFeedView: React.FC<CommunityFeedViewProps> = ({
                       </div>
                     )}
                     <div className="feed-video-meta-bar">
-                      <span className="feed-video-title">Méthodes de révision efficaces pour réussir</span>
+                      <span className="feed-video-title">
+                        {post.content.length > 50 ? `${post.content.slice(0, 50)}...` : post.content || 'Vidéo explicative'}
+                      </span>
                       <span className="feed-video-duration">
-                        {post.videoDuration || 'YouTube • 8 min'}
+                        {post.videoDuration || 'Vidéo communautaire'}
                       </span>
                     </div>
                   </div>
@@ -452,6 +495,14 @@ export const CommunityFeedView: React.FC<CommunityFeedViewProps> = ({
           })
         )}
       </div>
+
+      {/* Modale de création communautaire unifiée & caméra directe */}
+      <CreateCommunityPostModal
+        isOpen={isPostModalOpen}
+        initialFormat={postModalFormat}
+        onClose={() => setIsPostModalOpen(false)}
+        onSubmit={handleModalSubmit}
+      />
     </div>
   );
 };

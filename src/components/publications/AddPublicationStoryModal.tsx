@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { CameraCaptureModal, CameraCaptureResult } from '@/components/camera/CameraCaptureModal';
+import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 
 interface AddPublicationStoryModalProps {
   isOpen: boolean;
@@ -12,8 +13,8 @@ interface AddPublicationStoryModalProps {
 const STORY_PRESETS = [
   { label: 'Révision Mathématiques', url: '/vid_fonctions.jpg' },
   { label: 'Méthodologie Bac', url: '/vid_bac.jpg' },
-  { label: 'Campus Sunubiblio', url: '/bac_maths.jpg' },
-  { label: 'Sciences & Nature', url: '/svt_cours.jpg' },
+  { label: 'Campus Sunubiblio', url: '/math_bac_s1.jpg' },
+  { label: 'Sciences & Nature', url: '/livre_philosophie.jpg' },
 ];
 
 export const AddPublicationStoryModal: React.FC<AddPublicationStoryModalProps> = ({
@@ -21,6 +22,7 @@ export const AddPublicationStoryModal: React.FC<AddPublicationStoryModalProps> =
   onClose,
   onSubmit,
 }) => {
+  useLockBodyScroll(isOpen);
   const [caption, setCaption] = useState('');
   const [selectedMedia, setSelectedMedia] = useState(STORY_PRESETS[0].url);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
@@ -43,118 +45,124 @@ export const AddPublicationStoryModal: React.FC<AddPublicationStoryModalProps> =
   };
 
   return (
-    <>
-      <div className="pub-modal-backdrop" onClick={onClose} role="dialog" aria-modal="true">
-        <div className="pub-modal-content story-modal-box" onClick={(e) => e.stopPropagation()}>
-          <div className="pub-modal-header">
-            <div className="header-title-box">
-              <span className="header-sparkle-dot" aria-hidden="true" />
-              <h2 className="pub-modal-title">Ajouter une Story</h2>
+    <div
+      className="pub-modal-floating-overlay"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="pub-modal-floating-card"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="pub-modal-floating-header">
+          <div className="pub-modal-header-left">
+            <span className="pub-modal-dot-purple" aria-hidden="true" />
+            <h2 className="pub-modal-floating-title">Ajouter une Story</h2>
+          </div>
+          <button
+            type="button"
+            className="pub-modal-floating-close-btn"
+            onClick={onClose}
+            aria-label="Fermer"
+          >
+            ✕
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="pub-modal-floating-body">
+          {/* Action Caméra Directe */}
+          <button
+            type="button"
+            className="pub-modal-upload-trigger"
+            onClick={() => setIsCameraOpen(true)}
+            style={{ padding: '0.85rem' }}
+          >
+            <span style={{ fontSize: '1.25rem' }}>📸</span>
+            <span>{isCustomCapture ? 'Reprendre une photo/vidéo' : 'Ouvrir la caméra pour la Story'}</span>
+          </button>
+
+          {/* Aperçu */}
+          {isCustomCapture ? (
+            <div className="pub-modal-preview-box">
+              <img src={selectedMedia} alt="Aperçu Story" className="pub-modal-img-preview" />
+              <button
+                type="button"
+                className="pub-modal-remove-preview-btn"
+                onClick={() => {
+                  setIsCustomCapture(false);
+                  setSelectedMedia(STORY_PRESETS[0].url);
+                }}
+              >
+                Changer
+              </button>
             </div>
-            <button
-              type="button"
-              className="pub-modal-close"
-              onClick={onClose}
-              aria-label="Fermer"
-            >
-              ✕
-            </button>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b' }}>
+                Ou choisissez parmi nos visuels suggérés :
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.35rem' }}>
+                {STORY_PRESETS.map((p) => (
+                  <button
+                    key={p.url}
+                    type="button"
+                    onClick={() => setSelectedMedia(p.url)}
+                    style={{
+                      border: selectedMedia === p.url ? '2px solid #4f46e5' : '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      height: '60px',
+                      padding: 0,
+                      cursor: 'pointer',
+                      background: '#f8fafc',
+                    }}
+                  >
+                    <img src={p.url} alt={p.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Légende */}
+          <div className="pub-modal-input-group">
+            <input
+              type="text"
+              className="pub-modal-text-input"
+              placeholder="Ajouter une légende (optionnel)..."
+              value={caption}
+              onChange={(e) => setCaption(e.target.value)}
+            />
           </div>
 
-          <form onSubmit={handleSubmit} className="pub-modal-form">
-            {/* Action Caméra Directe Sunubiblio */}
-            <div className="pub-actions-row">
-              <button
-                type="button"
-                className="pub-btn-action pub-btn-create"
-                onClick={() => setIsCameraOpen(true)}
-                style={{ width: '100%', padding: '0.75rem' }}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
-                  <circle cx="12" cy="13" r="3"/>
-                </svg>
-                <span>{isCustomCapture ? '📸 Reprendre une photo/vidéo' : '📸 Ouvrir la caméra pour la Story'}</span>
-              </button>
-            </div>
-
-            {/* Aperçu du média personnalisé capturé */}
-            {isCustomCapture ? (
-              <div className="pub-thumb-wrap" style={{ width: '100%', height: '140px', borderRadius: '10px' }}>
-                <img src={selectedMedia} alt="Aperçu Story capturée" className="pub-thumb-img" />
-                <button
-                  type="button"
-                  className="pub-thumb-remove"
-                  onClick={() => {
-                    setIsCustomCapture(false);
-                    setSelectedMedia(STORY_PRESETS[0].url);
-                  }}
-                  title="Changer"
-                >
-                  ✕
-                </button>
-              </div>
-            ) : (
-              <div className="pub-story-preset-section">
-                <label className="pub-extra-label">Ou choisissez parmi nos arrière-plans :</label>
-                <div className="pub-story-preset-grid">
-                  {STORY_PRESETS.map((item) => (
-                    <button
-                      key={item.url}
-                      type="button"
-                      className={`story-preset-thumb-btn ${selectedMedia === item.url ? 'active' : ''}`}
-                      onClick={() => {
-                        setSelectedMedia(item.url);
-                        setIsCustomCapture(false);
-                      }}
-                    >
-                      <img src={item.url} alt={item.label} className="story-preset-thumb-img" />
-                      <span className="story-preset-thumb-label">{item.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="pub-input-group">
-              <label className="pub-extra-label">Légende (optionnelle) :</label>
-              <input
-                type="text"
-                className="pub-input-text"
-                placeholder="Ex: Révision collective ce soir à 20h..."
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-                maxLength={120}
-              />
-            </div>
-
-            <div className="pub-modal-footer">
-              <button
-                type="button"
-                className="pub-btn-cancel"
-                onClick={onClose}
-              >
-                Annuler
-              </button>
-              <button
-                type="submit"
-                className="pub-btn-submit"
-              >
-                Partager en Story (24 h)
-              </button>
-            </div>
-          </form>
-        </div>
+          <div className="pub-modal-floating-footer">
+            <button
+              type="button"
+              className="pub-modal-btn-cancel"
+              onClick={onClose}
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              className="pub-modal-btn-publish"
+            >
+              Partager en Story
+            </button>
+          </div>
+        </form>
       </div>
 
-      {/* SYSTÈME CAMÉRA UNIQUE SUNUBIBLIO */}
-      <CameraCaptureModal
-        isOpen={isCameraOpen}
-        initialMode="photo"
-        allowModeSwitch={true}
-        onClose={() => setIsCameraOpen(false)}
-        onCapture={handleCameraCapture}
-      />
-    </>
+      {/* Caméra Capture Modal si activée */}
+      {isCameraOpen && (
+        <CameraCaptureModal
+          isOpen={isCameraOpen}
+          initialMode="photo"
+          onClose={() => setIsCameraOpen(false)}
+          onCapture={handleCameraCapture}
+        />
+      )}
+    </div>
   );
 };

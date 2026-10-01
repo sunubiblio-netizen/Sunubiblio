@@ -122,8 +122,24 @@ export default function CommunautePage() {
   }, []);
 
   const handleCreatePost = useCallback(
-    (content: string, type: 'publication' | 'ressource' | 'image' | 'video' | 'question') => {
-      const updated = CommunityService.createPost(content, type);
+    (
+      content: string,
+      type: 'publication' | 'ressource' | 'image' | 'video' | 'question' = 'publication',
+      options?: {
+        mediaUrl?: string;
+        videoThumbnailUrl?: string;
+        videoDuration?: string;
+        sharedResource?: {
+          title: string;
+          type: 'cours' | 'concours' | 'livre' | 'fiche' | 'exercice';
+          metaText?: string;
+          thumbnailUrl?: string;
+          href: string;
+        };
+        locationTag?: string;
+      }
+    ) => {
+      const updated = CommunityService.createPost(content, type, 'Mamadou Diop', options);
       setPosts(updated);
     },
     []

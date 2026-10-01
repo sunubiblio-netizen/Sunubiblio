@@ -22,6 +22,7 @@ export interface PublicationSharedResource {
   type: 'cours' | 'concours' | 'livre' | 'document' | 'exercice';
   href: string;
   badge?: string;
+  thumbnailUrl?: string;
   pagesCount?: number;
   subject?: string;
 }

@@ -78,9 +78,10 @@ export const ScrollNavigation: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Masquer le bouton de défilement pendant un test de révision, si aucun défilement possible, ou si une modale est ouverte
+  // Masquer le bouton de défilement pendant un test de révision, sur la page discussions (messagerie intégrée), si aucun défilement possible, ou si une modale est ouverte
   const isExercisePlayer = pathname.startsWith('/exercices/') && pathname !== '/exercices';
-  if (isExercisePlayer || (!canScrollUp && !canScrollDown) || isModalOpen) {
+  const isDiscussions = pathname.startsWith('/discussions');
+  if (isExercisePlayer || isDiscussions || (!canScrollUp && !canScrollDown) || isModalOpen) {
     return null;
   }
 

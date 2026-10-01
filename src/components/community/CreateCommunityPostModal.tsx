@@ -1,63 +1,71 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  PublicationFormat,
-  PublicationVisibility,
-  CreatePublicationInput,
-} from '@/types/publication';
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 import { CameraCaptureModal, CameraCaptureResult } from '@/components/camera/CameraCaptureModal';
 
-interface CreatePublicationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (data: CreatePublicationInput) => void;
-  initialFormat?: PublicationFormat;
+export type CommunityPostFormat = 'publication' | 'image' | 'video' | 'ressource';
+
+export interface CreateCommunityPostInput {
+  content: string;
+  format: CommunityPostFormat;
+  mediaUrl?: string;
+  videoThumbnailUrl?: string;
+  videoDuration?: string;
+  sharedResource?: {
+    title: string;
+    type: 'cours' | 'concours' | 'livre' | 'fiche' | 'exercice';
+    metaText?: string;
+    thumbnailUrl?: string;
+    href: string;
+  };
+  locationTag?: string;
 }
 
-export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
+interface CreateCommunityPostModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: CreateCommunityPostInput) => void;
+  initialFormat?: CommunityPostFormat;
+}
+
+export const CreateCommunityPostModal: React.FC<CreateCommunityPostModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
-  initialFormat = 'text',
+  initialFormat = 'publication',
 }) => {
-  // Verrouillage du scroll propre et fail-safe
   useLockBodyScroll(isOpen);
 
-  const [format, setFormat] = useState<PublicationFormat>(initialFormat);
+  const [format, setFormat] = useState<CommunityPostFormat>(initialFormat);
   const [content, setContent] = useState('');
-  const [category, setCategory] = useState<string>('all');
-  const [visibility, setVisibility] = useState<PublicationVisibility>('public');
+  const [locationTag, setLocationTag] = useState('Dans Discussion générale');
 
-  // Caméra directe (photo & vidéo)
-  const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [cameraMode, setCameraMode] = useState<'photo' | 'video'>('photo');
-
-  // Image
+  // Médias
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageUrlInput, setImageUrlInput] = useState('');
   const [showImageUrlField, setShowImageUrlField] = useState(false);
 
-  // Vidéo
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const [videoUrlInput, setVideoUrlInput] = useState('');
   const [showVideoUrlField, setShowVideoUrlField] = useState(false);
 
   // Ressource
   const [resourceTitle, setResourceTitle] = useState('');
-  const [resourceType, setResourceType] = useState<'cours' | 'concours' | 'livre' | 'document' | 'exercice'>('cours');
+  const [resourceType, setResourceType] = useState<'cours' | 'concours' | 'livre' | 'fiche' | 'exercice'>('cours');
   const [resourceFileName, setResourceFileName] = useState<string | null>(null);
-  const [resourceCategory, setResourceCategory] = useState<string>('maths');
+
+  // Caméra en direct
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [cameraMode, setCameraMode] = useState<'photo' | 'video'>('photo');
 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const documentInputRef = useRef<HTMLInputElement>(null);
 
-  // Synchroniser le format initial à l'ouverture
   useEffect(() => {
     if (isOpen) {
-      setFormat(initialFormat || 'text');
+      setFormat(initialFormat || 'publication');
     }
   }, [isOpen, initialFormat]);
 
@@ -73,7 +81,7 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
 
   if (!isOpen) return null;
 
-  // Gestion import image par fichier
+  // Import Image par fichier
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -86,15 +94,7 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
     }
   };
 
-  // Gestion ajout image par URL
-  const handleApplyImageUrl = () => {
-    if (imageUrlInput.trim()) {
-      setImagePreview(imageUrlInput.trim());
-      setShowImageUrlField(false);
-    }
-  };
-
-  // Gestion import vidéo par fichier
+  // Import Vidéo par fichier
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -104,15 +104,7 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
     }
   };
 
-  // Gestion ajout vidéo par URL
-  const handleApplyVideoUrl = () => {
-    if (videoUrlInput.trim()) {
-      setVideoPreview(videoUrlInput.trim());
-      setShowVideoUrlField(false);
-    }
-  };
-
-  // Gestion import ressource / document
+  // Import Document / Ressource
   const handleDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -124,7 +116,7 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
     }
   };
 
-  // Gestion capture directe Caméra (Photo ou Vidéo)
+  // Capture directe Caméra (Photo ou Vidéo)
   const handleCameraCapture = (result: CameraCaptureResult) => {
     if (result.type === 'photo') {
       setImagePreview(result.dataUrl);
@@ -136,44 +128,63 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
     setIsCameraOpen(false);
   };
 
-  // Validation
+  const handleApplyImageUrl = () => {
+    if (imageUrlInput.trim()) {
+      setImagePreview(imageUrlInput.trim());
+      setShowImageUrlField(false);
+    }
+  };
+
+  const handleApplyVideoUrl = () => {
+    if (videoUrlInput.trim()) {
+      setVideoPreview(videoUrlInput.trim());
+      setShowVideoUrlField(false);
+    }
+  };
+
   const canPublish =
     Boolean(content.trim()) ||
     Boolean(imagePreview) ||
     Boolean(videoPreview) ||
     Boolean(resourceTitle.trim() || resourceFileName);
 
-  // Soumission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canPublish) return;
 
     let finalContent = content.trim();
     if (!finalContent) {
-      if (format === 'resource') {
+      if (format === 'ressource') {
         finalContent = `Partage de la ressource : ${resourceTitle || resourceFileName || 'Document d’étude'}`;
       } else if (format === 'image') {
-        finalContent = 'Partage d’une illustration pour nos révisions.';
+        finalContent = 'Partage d’une photo avec la communauté.';
       } else if (format === 'video') {
         finalContent = 'Partage d’une vidéo explicative.';
       } else {
-        finalContent = 'Nouvelle publication.';
+        finalContent = 'Nouvelle publication communautaire.';
       }
     }
 
     onSubmit({
-      format,
       content: finalContent,
-      category: format === 'resource' ? resourceCategory : category,
-      visibility,
-      mediaUrls: imagePreview ? [imagePreview] : undefined,
-      mediaUrl: videoPreview || undefined,
-      resourceTitle: resourceTitle.trim() || resourceFileName || undefined,
-      resourceType: format === 'resource' ? resourceType : undefined,
-      resourceHref: format === 'resource' ? '/education' : undefined,
+      format,
+      locationTag,
+      mediaUrl: format === 'image' ? (imagePreview || undefined) : format === 'video' ? (videoPreview || undefined) : undefined,
+      videoThumbnailUrl: format === 'video' ? (videoPreview || '/vid_bac.jpg') : undefined,
+      videoDuration: format === 'video' ? 'Vidéo communautaire' : undefined,
+      sharedResource:
+        format === 'ressource' && (resourceTitle.trim() || resourceFileName)
+          ? {
+              title: resourceTitle.trim() || resourceFileName || 'Document d’étude',
+              type: resourceType,
+              metaText: `${resourceType.toUpperCase()} • Partagé avec la communauté`,
+              thumbnailUrl: '/vid_math.jpg',
+              href: '/education',
+            }
+          : undefined,
     });
 
-    // Réinitialisation propre
+    // Réinitialisation
     setContent('');
     setImagePreview(null);
     setImageUrlInput('');
@@ -192,24 +203,24 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-labelledby="modal-title"
+      aria-labelledby="community-modal-title"
     >
       <div
         className="pub-modal-floating-card"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* En-tête épuré : Point violet + Titre + Bouton fermer ✕ */}
+        {/* En-tête épuré : Point violet + Titre + Bouton ✕ */}
         <div className="pub-modal-floating-header">
           <div className="pub-modal-header-left">
             <span className="pub-modal-dot-purple" aria-hidden="true" />
-            <h2 id="modal-title" className="pub-modal-floating-title">
+            <h2 id="community-modal-title" className="pub-modal-floating-title">
               {format === 'image'
-                ? 'Publier une image'
+                ? 'Partager une photo'
                 : format === 'video'
-                ? 'Publier une vidéo'
-                : format === 'resource'
+                ? 'Partager une vidéo'
+                : format === 'ressource'
                 ? 'Partager une ressource'
-                : 'Créer une publication'}
+                : 'Publier dans la communauté'}
             </h2>
           </div>
           <button
@@ -222,19 +233,19 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
           </button>
         </div>
 
-        {/* 4 Onglets Formats épurés : Texte, Image, Vidéo, Ressource */}
+        {/* 4 Onglets Formats : Publication, Image, Vidéo, Ressource */}
         <div className="pub-modal-format-pills" role="tablist">
           {[
-            { id: 'text', label: 'Texte', icon: '📝' },
+            { id: 'publication', label: 'Texte', icon: '📝' },
             { id: 'image', label: 'Image', icon: '🖼️' },
             { id: 'video', label: 'Vidéo', icon: '🎥' },
-            { id: 'resource', label: 'Ressource', icon: '📚' },
+            { id: 'ressource', label: 'Ressource', icon: '📚' },
           ].map((item) => (
             <button
               key={item.id}
               type="button"
               className={`pub-modal-format-pill ${format === item.id ? 'active' : ''}`}
-              onClick={() => setFormat(item.id as PublicationFormat)}
+              onClick={() => setFormat(item.id as CommunityPostFormat)}
             >
               <span>{item.icon}</span>
               <span>{item.label}</span>
@@ -242,7 +253,7 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
           ))}
         </div>
 
-        {/* Corps du formulaire épuré */}
+        {/* Formulaire épuré */}
         <form onSubmit={handleSubmit} className="pub-modal-floating-body">
           {/* Zone de texte principale */}
           <div className="pub-modal-input-group">
@@ -253,8 +264,8 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
                   ? 'Ajoutez une légende pour cette image...'
                   : format === 'video'
                   ? 'Décrivez le contenu de cette vidéo explicative...'
-                  : format === 'resource'
-                  ? 'Pourquoi recommandez-vous ce document ou ce cours ?'
+                  : format === 'ressource'
+                  ? 'Pourquoi recommandez-vous cette ressource aux membres ?'
                   : 'Que souhaitez-vous partager avec la communauté ?'
               }
               value={content}
@@ -274,9 +285,10 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
                 onChange={handleImageChange}
                 style={{ display: 'none' }}
               />
+
               {imagePreview ? (
                 <div className="pub-modal-preview-box">
-                  <img src={imagePreview} alt="Aperçu importé" className="pub-modal-img-preview" />
+                  <img src={imagePreview} alt="Aperçu photo" className="pub-modal-img-preview" />
                   <div className="pub-modal-preview-actions">
                     <button
                       type="button"
@@ -294,7 +306,7 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
                       className="pub-modal-action-link"
                       onClick={() => imageInputRef.current?.click()}
                     >
-                      📁 Changer de fichier
+                      📁 Choisir un fichier
                     </button>
                     <span className="pub-dot-separator">·</span>
                     <button
@@ -332,8 +344,8 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
                       <circle cx="9" cy="9" r="2"/>
                       <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
                     </svg>
-                    <span className="pub-modal-upload-main-text">Choisir une image depuis votre appareil</span>
-                    <span className="pub-modal-upload-sub-text">PNG, JPG, WebP jusqu’à 10 Mo</span>
+                    <span className="pub-modal-upload-main-text">Choisir une image depuis l'appareil</span>
+                    <span className="pub-modal-upload-sub-text">PNG, JPG, WebP</span>
                   </button>
 
                   {/* Option C : URL */}
@@ -380,6 +392,7 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
                 onChange={handleVideoChange}
                 style={{ display: 'none' }}
               />
+
               {videoPreview ? (
                 <div className="pub-modal-preview-box">
                   <video src={videoPreview} controls className="pub-modal-vid-preview" />
@@ -400,7 +413,7 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
                       className="pub-modal-action-link"
                       onClick={() => videoInputRef.current?.click()}
                     >
-                      📁 Changer de fichier
+                      📁 Choisir un fichier
                     </button>
                     <span className="pub-dot-separator">·</span>
                     <button
@@ -437,8 +450,8 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
                       <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/>
                       <rect x="2" y="6" width="14" height="12" rx="2"/>
                     </svg>
-                    <span className="pub-modal-upload-main-text">Choisir une vidéo de cours ou d'explication</span>
-                    <span className="pub-modal-upload-sub-text">MP4, WebM jusqu’à 100 Mo</span>
+                    <span className="pub-modal-upload-main-text">Choisir un fichier vidéo (MP4, WebM)</span>
+                    <span className="pub-modal-upload-sub-text">Jusqu’à 100 Mo</span>
                   </button>
 
                   {/* Option C : URL */}
@@ -475,8 +488,8 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
             </div>
           )}
 
-          {/* 3. MODULE RESSOURCE : Document, Type, Catégorie */}
-          {format === 'resource' && (
+          {/* 3. MODULE RESSOURCE : Document PDF/Word & Type */}
+          {format === 'ressource' && (
             <div className="pub-modal-resource-slot">
               <input
                 ref={documentInputRef}
@@ -491,42 +504,25 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
                 <input
                   type="text"
                   className="pub-modal-text-input"
-                  placeholder="Ex : Fiche méthode probabilités Bac S1"
+                  placeholder="Ex : Guide de révision Électrostatique Terminale"
                   value={resourceTitle}
                   onChange={(e) => setResourceTitle(e.target.value)}
                 />
               </div>
 
-              <div className="pub-modal-field-grid">
-                <div className="pub-modal-field-col">
-                  <label className="pub-modal-field-label">Discipline / Thématique :</label>
-                  <select
-                    className="pub-modal-select"
-                    value={resourceCategory}
-                    onChange={(e) => setResourceCategory(e.target.value)}
-                  >
-                    <option value="maths">Mathématiques</option>
-                    <option value="pc">Physique - Chimie</option>
-                    <option value="concours">Concours & Annales</option>
-                    <option value="lettres">Lettres & Philo</option>
-                    <option value="svt">Sciences Naturelles</option>
-                    <option value="autre">Général</option>
-                  </select>
-                </div>
-
-                <div className="pub-modal-field-col">
-                  <label className="pub-modal-field-label">Type de document :</label>
-                  <select
-                    className="pub-modal-select"
-                    value={resourceType}
-                    onChange={(e) => setResourceType(e.target.value as any)}
-                  >
-                    <option value="cours">Cours & Synthèse</option>
-                    <option value="exercice">Exercices & Corrigés</option>
-                    <option value="concours">Concours & Annales</option>
-                    <option value="livre">Livre de référence</option>
-                  </select>
-                </div>
+              <div className="pub-modal-field-row">
+                <label className="pub-modal-field-label">Type de document :</label>
+                <select
+                  className="pub-modal-select"
+                  value={resourceType}
+                  onChange={(e) => setResourceType(e.target.value as any)}
+                >
+                  <option value="cours">Cours & Synthèse</option>
+                  <option value="exercice">Exercices & Corrigés</option>
+                  <option value="concours">Concours & Annales</option>
+                  <option value="fiche">Fiche méthode</option>
+                  <option value="livre">Livre de référence</option>
+                </select>
               </div>
 
               {resourceFileName ? (
@@ -562,7 +558,22 @@ export const CreatePublicationModal: React.FC<CreatePublicationModalProps> = ({
             </div>
           )}
 
-          {/* Pied de la modale flottante : Annuler & Publier (Style carte utilisateur) */}
+          {/* Espace communautaire de destination */}
+          <div className="pub-modal-field-row">
+            <label className="pub-modal-field-label">Lieu de publication :</label>
+            <select
+              className="pub-modal-select"
+              value={locationTag}
+              onChange={(e) => setLocationTag(e.target.value)}
+            >
+              <option value="Dans Discussion générale">Discussion générale</option>
+              <option value="Dans Préparation Bac S1 2027">Préparation Bac S1 2027</option>
+              <option value="Dans Club Mathématiques & Olympiades">Club Mathématiques & Olympiades</option>
+              <option value="Dans Concours FASTEF / ENA">Concours FASTEF / ENA</option>
+            </select>
+          </div>
+
+          {/* Pied de la modale flottante : Annuler & Publier */}
           <div className="pub-modal-floating-footer">
             <button
               type="button"

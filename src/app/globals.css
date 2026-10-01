@@ -187,7 +187,7 @@ input {
     display: flex !important;
   }
   body {
-    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: 0 !important;
   }
   .page-wrapper,
   .library-page-wrapper,
@@ -196,8 +196,18 @@ input {
   .profil-page-wrapper,
   .tarifs-page-wrapper,
   .about-page-wrapper,
-  .contact-page-wrapper {
-    padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important;
+  .contact-page-wrapper,
+  .education-page-wrapper,
+  .documents-page-root,
+  .religion-page-wrapper,
+  .communaute-page-wrapper,
+  .professeurs-page-wrapper,
+  .visio-page-wrapper,
+  .marketplace-page-wrapper,
+  .exercices-page-wrapper,
+  .publications-page,
+  .discussions-page-root {
+    padding-bottom: 0 !important;
   }
 }
 
@@ -1418,8 +1428,11 @@ input {
 
 @media (max-width: 860px) {
   .footer-root {
-    padding-top: 12px !important;
-    padding-bottom: 12px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    position: relative !important;
+    margin-top: auto !important;
+    width: 100% !important;
   }
 
   .footer-minimal-row {
@@ -1634,28 +1647,65 @@ input {
 }
 
 .page-wrapper,
+.library-page-wrapper,
+.concours-page-wrapper,
+.favoris-page-wrapper,
+.profil-page-wrapper,
 .education-page-wrapper,
 .tarifs-page-wrapper,
 .about-page-wrapper,
-.contact-page-wrapper {
+.contact-page-wrapper,
+.documents-page-root,
+.religion-page-wrapper,
+.communaute-page-wrapper,
+.professeurs-page-wrapper,
+.visio-page-wrapper,
+.marketplace-page-wrapper,
+.exercices-page-wrapper,
+.publications-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
 .page-wrapper > main,
+.library-page-wrapper > main,
+.concours-page-wrapper > main,
+.favoris-page-wrapper > main,
+.profil-page-wrapper > main,
 .education-page-wrapper > main,
-.tarifs-page-wrapper > main {
+.tarifs-page-wrapper > main,
+.about-page-wrapper > main,
+.contact-page-wrapper > main,
+.documents-page-root > main,
+.religion-page-wrapper > main,
+.communaute-page-wrapper > main,
+.professeurs-page-wrapper > main,
+.visio-page-wrapper > main,
+.marketplace-page-wrapper > main,
+.exercices-page-wrapper > main {
   flex: 1 0 auto;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 860px) {
   .page-wrapper,
+  .library-page-wrapper,
+  .concours-page-wrapper,
+  .favoris-page-wrapper,
+  .profil-page-wrapper,
   .education-page-wrapper,
   .tarifs-page-wrapper,
   .about-page-wrapper,
   .contact-page-wrapper,
-  .documents-page-root {
+  .documents-page-root,
+  .religion-page-wrapper,
+  .communaute-page-wrapper,
+  .professeurs-page-wrapper,
+  .visio-page-wrapper,
+  .marketplace-page-wrapper,
+  .exercices-page-wrapper,
+  .publications-page,
+  .discussions-page-root {
     padding-bottom: 0 !important;
   }
 }

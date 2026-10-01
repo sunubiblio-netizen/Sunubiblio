@@ -271,9 +271,26 @@ export class CommunityService {
   }
 
   /**
-   * Crée une nouvelle contribution rapide dans le fil
+   * Crée une nouvelle contribution rapide dans le fil avec support média & ressource
    */
-  static createPost(content: string, type: 'publication' | 'ressource' | 'image' | 'video' | 'question' = 'publication', authorName = 'Mamadou Diop'): CommunityActivityPost[] {
+  static createPost(
+    content: string,
+    type: 'publication' | 'ressource' | 'image' | 'video' | 'question' = 'publication',
+    authorName = 'Mamadou Diop',
+    options?: {
+      mediaUrl?: string;
+      videoThumbnailUrl?: string;
+      videoDuration?: string;
+      sharedResource?: {
+        title: string;
+        type: 'cours' | 'concours' | 'livre' | 'fiche' | 'exercice';
+        metaText?: string;
+        thumbnailUrl?: string;
+        href: string;
+      };
+      locationTag?: string;
+    }
+  ): CommunityActivityPost[] {
     const newPost: CommunityActivityPost = {
       id: `post-${Date.now()}`,
       authorId: 'user-current',
@@ -281,9 +298,13 @@ export class CommunityService {
       authorAvatar: '/avatar_mamadou.jpg',
       authorBadge: 'Membre actif',
       timeAgo: 'À l’instant',
-      locationTag: 'Dans Discussion générale',
+      locationTag: options?.locationTag || 'Dans Discussion générale',
       type,
       content,
+      mediaUrl: options?.mediaUrl,
+      videoThumbnailUrl: options?.videoThumbnailUrl,
+      videoDuration: options?.videoDuration,
+      sharedResource: options?.sharedResource,
       likesCount: 0,
       commentsCount: 0,
       sharesCount: 0,
