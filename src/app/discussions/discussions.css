@@ -1725,11 +1725,11 @@
     display: none !important;
   }
 
-  /* Fil des messages : seule zone avec défilement interne, proportion serrée et élégante type WhatsApp */
+  /* Fil des messages : seule zone avec défilement interne, proportion idéale type WhatsApp */
   .chat-messages-container {
     flex: 1 1 0% !important;
     min-height: 0 !important;
-    padding: 0.75rem 0.65rem calc(58px + env(safe-area-inset-bottom, 8px)) 0.65rem !important;
+    padding: 0.75rem 0.65rem calc(66px + env(safe-area-inset-bottom, 8px)) 0.65rem !important;
     gap: 0.65rem;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;

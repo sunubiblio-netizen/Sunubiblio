@@ -8,6 +8,7 @@ export const viewport: Viewport = {
   userScalable: false,
   viewportFit: 'cover',
   themeColor: '#ffffff',
+  colorScheme: 'light',
   interactiveWidget: 'resizes-content',
 };
 
