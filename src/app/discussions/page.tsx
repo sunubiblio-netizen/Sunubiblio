@@ -174,8 +174,8 @@ export default function DiscussionsPage() {
     }, 1400);
   };
 
-  // Envoyer une note vocale
-  const handleSendVoiceNote = () => {
+  // Envoyer une note vocale avec durée réelle
+  const handleSendVoiceNote = (duration?: string) => {
     const now = new Date();
     const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now
       .getMinutes()
@@ -193,7 +193,7 @@ export default function DiscussionsPage() {
       type: 'audio',
       attachment: {
         name: 'Note vocale',
-        duration: '0:38',
+        duration: duration || '0:15',
       },
     };
 
