@@ -70,8 +70,15 @@ export default function DiscussionsPage() {
 
     const updateViewportHeight = () => {
       if (!isMobileChatActive) return;
-      const height = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      document.documentElement.style.setProperty('--chat-viewport-height', `${height}px`);
+      if (window.visualViewport) {
+        const height = window.visualViewport.height;
+        const top = window.visualViewport.offsetTop || 0;
+        document.documentElement.style.setProperty('--chat-viewport-height', `${height}px`);
+        document.documentElement.style.setProperty('--chat-viewport-top', `${top}px`);
+      } else {
+        document.documentElement.style.setProperty('--chat-viewport-height', `${window.innerHeight}px`);
+        document.documentElement.style.setProperty('--chat-viewport-top', '0px');
+      }
     };
 
     if (isMobileChatActive) {
@@ -92,6 +99,7 @@ export default function DiscussionsPage() {
         window.removeEventListener('resize', updateViewportHeight);
       }
       document.documentElement.style.removeProperty('--chat-viewport-height');
+      document.documentElement.style.removeProperty('--chat-viewport-top');
     };
   }, [isMobileChatActive]);
 

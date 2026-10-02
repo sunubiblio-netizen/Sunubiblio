@@ -45,9 +45,7 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
   const [isEphemeral, setIsEphemeral] = useState(false);
   const [chatToast, setChatToast] = useState<string | null>(null);
 
-  // État flottant dynamique et détection du clavier mobile
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const [keyboardOffset, setKeyboardOffset] = useState(0);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -60,51 +58,20 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
     setTimeout(() => setChatToast(null), 2800);
   };
 
-  // Synchronisation dynamique en temps réel avec le clavier virtuel et barres d'outils mobiles (Tecno, Samsung, Xiaomi, iPhone)
+  const scrollToBottom = (smooth = true) => {
+    if (!messagesEndRef.current) return;
+    messagesEndRef.current.scrollIntoView({
+      behavior: smooth ? 'smooth' : 'auto',
+      block: 'end',
+      inline: 'nearest',
+    });
+  };
+
+  // Auto-scroll au dernier message (immédiat puis différé pour laisser le rendu DOM s'ajuster)
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const handleViewportChange = () => {
-      if (window.innerWidth > 768) {
-        setKeyboardOffset(0);
-        return;
-      }
-
-      if (window.visualViewport) {
-        const vv = window.visualViewport;
-        const totalHeight = window.innerHeight;
-        const offsetBottom = totalHeight - (vv.height + (vv.offsetTop || 0));
-        // Si le clavier ou la barre d'outils basse réduit la zone visible
-        if (offsetBottom > 15) {
-          setKeyboardOffset(Math.round(offsetBottom));
-        } else {
-          setKeyboardOffset(0);
-        }
-      }
-    };
-
-    handleViewportChange();
-
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', handleViewportChange);
-      window.visualViewport.addEventListener('scroll', handleViewportChange);
-    } else {
-      window.addEventListener('resize', handleViewportChange);
-    }
-
-    return () => {
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', handleViewportChange);
-        window.visualViewport.removeEventListener('scroll', handleViewportChange);
-      } else {
-        window.removeEventListener('resize', handleViewportChange);
-      }
-    };
-  }, []);
-
-  // Auto-scroll au dernier message
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    scrollToBottom(false);
+    const timer = setTimeout(() => scrollToBottom(true), 80);
+    return () => clearTimeout(timer);
   }, [messages]);
 
   const handleSend = (e?: React.FormEvent) => {
@@ -123,38 +90,20 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
 
   const handleInputFocus = () => {
     setIsInputFocused(true);
-    // Verrouiller la position et empêcher tout saut de page intempestif
     if (typeof window !== 'undefined') {
       window.scrollTo(0, 0);
     }
+    // Quand le clavier virtuel mobile s'ouvre, scroller au dernier message
     setTimeout(() => {
-      if (typeof window !== 'undefined' && window.visualViewport && window.innerWidth <= 768) {
-        const vv = window.visualViewport;
-        const totalHeight = window.innerHeight;
-        const offsetBottom = totalHeight - (vv.height + (vv.offsetTop || 0));
-        if (offsetBottom > 15) {
-          setKeyboardOffset(Math.round(offsetBottom));
-        }
-      }
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      scrollToBottom(true);
       if (typeof window !== 'undefined') {
         window.scrollTo(0, 0);
       }
-    }, 120);
+    }, 160);
   };
 
   const handleInputBlur = () => {
     setIsInputFocused(false);
-    setTimeout(() => {
-      if (typeof window !== 'undefined' && window.visualViewport) {
-        const vv = window.visualViewport;
-        const totalHeight = window.innerHeight;
-        const offsetBottom = totalHeight - (vv.height + (vv.offsetTop || 0));
-        if (offsetBottom <= 15) {
-          setKeyboardOffset(0);
-        }
-      }
-    }, 150);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -404,12 +353,7 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
       )}
 
       {/* 2. Fil des messages */}
-      <div
-        className="chat-messages-container"
-        style={{
-          paddingBottom: keyboardOffset > 0 ? `${keyboardOffset + 75}px` : undefined,
-        }}
-      >
+      <div className="chat-messages-container">
         {/* Séparateur de date */}
         <div className="chat-date-separator">
           <span>Aujourd'hui</span>
@@ -565,16 +509,12 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
           );
         })}
 
+        <div style={{ height: '12px', flexShrink: 0 }} aria-hidden="true" />
         <div ref={messagesEndRef} />
       </div>
 
       {/* 3. Barre de saisie en bas — Disposition exacte WhatsApp */}
-      <div
-        className={`chat-input-bar-wrap ${isInputFocused ? 'is-focused-floating' : ''}`}
-        style={{
-          bottom: keyboardOffset > 0 ? `${keyboardOffset}px` : undefined,
-        }}
-      >
+      <div className={`chat-input-bar-wrap ${isInputFocused ? 'is-focused-floating' : ''}`}>
         {/* Menu pièces jointes popover façon WhatsApp */}
         {isAttachMenuOpen && (
           <>
