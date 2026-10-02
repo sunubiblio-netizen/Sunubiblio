@@ -223,7 +223,10 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                   <div className="user-menu-icon-wrap">
                     <IconProfil size={20} className="user-menu-vector-icon" />
                   </div>
-                  <span>Voir mon profil</span>
+                  <span className="user-menu-item-text">Voir mon profil</span>
+                  <svg className="user-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
                 </Link>
               </div>
 
@@ -239,7 +242,10 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                   <div className="user-menu-icon-wrap">
                     <IconCommunaute size={20} className="user-menu-vector-icon" />
                   </div>
-                  <span>Communauté</span>
+                  <span className="user-menu-item-text">Communauté</span>
+                  <svg className="user-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
                 </Link>
 
                 <Link
@@ -250,7 +256,10 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                   <div className="user-menu-icon-wrap">
                     <IconPublications size={20} className="user-menu-vector-icon" />
                   </div>
-                  <span>Publications</span>
+                  <span className="user-menu-item-text">Publications</span>
+                  <svg className="user-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
                 </Link>
 
                 <Link
@@ -261,7 +270,10 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                   <div className="user-menu-icon-wrap">
                     <IconGroupes size={20} className="user-menu-vector-icon" />
                   </div>
-                  <span>Groupes</span>
+                  <span className="user-menu-item-text">Groupes</span>
+                  <svg className="user-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
                 </Link>
 
                 <Link
@@ -272,7 +284,10 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                   <div className="user-menu-icon-wrap">
                     <IconDiscussions size={20} className="user-menu-vector-icon" />
                   </div>
-                  <span>Messages</span>
+                  <span className="user-menu-item-text">Messages</span>
+                  <svg className="user-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
                 </Link>
               </div>
             </div>
