@@ -8,13 +8,15 @@ import { getAppLauncherIcon } from './AppLauncherIcons';
 interface AppLauncherItemProps {
   app: AppLauncherItemData;
   isActive?: boolean;
-  onSelectApp: () => void;
+  isClicked?: boolean;
+  onSelectApp: (appId: string) => void;
   variant?: 'grid' | 'service-row';
 }
 
 export const AppLauncherItem: React.FC<AppLauncherItemProps> = ({
   app,
   isActive = false,
+  isClicked = false,
   onSelectApp,
   variant = 'grid',
 }) => {
@@ -25,8 +27,8 @@ export const AppLauncherItem: React.FC<AppLauncherItemProps> = ({
     return (
       <Link
         href={app.href}
-        onClick={onSelectApp}
-        className={`app-launcher-service-card ${isActive ? 'is-active-service' : ''}`}
+        onClick={() => onSelectApp(app.id)}
+        className={`app-launcher-service-card ${isClicked ? 'is-clicked-floating' : ''} ${isActive ? 'is-active-service' : ''}`}
         title={app.shortDescription || app.name}
         aria-label={`${app.name}${app.badge ? ` (${app.badge.text})` : ''} — ${app.shortDescription || ''}`}
       >
@@ -59,8 +61,8 @@ export const AppLauncherItem: React.FC<AppLauncherItemProps> = ({
   return (
     <Link
       href={app.href}
-      onClick={onSelectApp}
-      className={`app-launcher-tile ${isActive ? 'is-active-tile' : ''}`}
+      onClick={() => onSelectApp(app.id)}
+      className={`app-launcher-tile ${isClicked ? 'is-clicked-floating' : ''} ${isActive ? 'is-active-tile' : ''}`}
       title={app.shortDescription || app.name}
       aria-label={`${app.name}${app.badge ? ` (${app.badge.text})` : ''}`}
     >

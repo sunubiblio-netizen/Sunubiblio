@@ -8,13 +8,15 @@ interface AppLauncherCategoryProps {
   category: AppCategoryData;
   apps: AppLauncherItemData[];
   currentPathname: string;
-  onSelectApp: () => void;
+  clickedAppId?: string | null;
+  onSelectApp: (appId: string) => void;
 }
 
 export const AppLauncherCategory: React.FC<AppLauncherCategoryProps> = ({
   category,
   apps,
   currentPathname,
+  clickedAppId,
   onSelectApp,
 }) => {
   if (apps.length === 0) return null;
@@ -39,6 +41,7 @@ export const AppLauncherCategory: React.FC<AppLauncherCategoryProps> = ({
               <AppLauncherItem
                 app={app}
                 isActive={false}
+                isClicked={clickedAppId === app.id}
                 onSelectApp={onSelectApp}
                 variant="service-row"
               />
@@ -52,6 +55,7 @@ export const AppLauncherCategory: React.FC<AppLauncherCategoryProps> = ({
               <AppLauncherItem
                 app={app}
                 isActive={false}
+                isClicked={clickedAppId === app.id}
                 onSelectApp={onSelectApp}
               />
             </div>

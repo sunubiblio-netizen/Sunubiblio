@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
   APP_LAUNCHER_CATEGORIES,
@@ -17,6 +17,16 @@ export const AppLauncherPanel: React.FC<AppLauncherPanelProps> = ({
   currentPathname,
   onClose,
 }) => {
+  const [clickedAppId, setClickedAppId] = useState<string | null>(null);
+
+  const handleSelectApp = (appId: string) => {
+    setClickedAppId(appId);
+    // Petit délai de 180ms pour laisser l'utilisateur voir l'effet flottant avant navigation
+    setTimeout(() => {
+      onClose();
+    }, 180);
+  };
+
   // Regroupement optimisé des applications par catégorie
   const categoriesWithApps = useMemo(() => {
     return APP_LAUNCHER_CATEGORIES.map((cat) => {
@@ -68,7 +78,8 @@ export const AppLauncherPanel: React.FC<AppLauncherPanelProps> = ({
             category={category}
             apps={apps}
             currentPathname={currentPathname}
-            onSelectApp={onClose}
+            clickedAppId={clickedAppId}
+            onSelectApp={handleSelectApp}
           />
         ))}
       </div>
