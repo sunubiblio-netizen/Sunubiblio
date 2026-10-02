@@ -51,7 +51,7 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const editableRef = useRef<HTMLDivElement>(null);
 
   const showChatToast = (msg: string) => {
     setChatToast(msg);
@@ -78,12 +78,16 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
 
   const handleSend = (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!inputText.trim()) return;
-    onSendMessage(inputText.trim());
+    const text = (editableRef.current ? editableRef.current.innerText : inputText).trim();
+    if (!text) return;
+    onSendMessage(text);
     setInputText('');
+    if (editableRef.current) {
+      editableRef.current.innerHTML = '';
+    }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -654,7 +658,14 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
               className="chat-wa-pill-btn chat-wa-emoji-btn"
               title="Émojis"
               aria-label="Ajouter un émoji"
-              onClick={() => setInputText((prev) => prev + ' 😊 ')}
+              onClick={() => {
+                if (editableRef.current) {
+                  editableRef.current.innerText += ' 😊 ';
+                  setInputText(editableRef.current.innerText);
+                } else {
+                  setInputText((prev) => prev + ' 😊 ');
+                }
+              }}
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
@@ -664,24 +675,28 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
               </svg>
             </button>
 
-            <input
-              ref={inputRef}
-              type="text"
-              size={1}
-              className="chat-wa-text-input"
-              placeholder="Message"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
+            <div
+              ref={editableRef}
+              role="textbox"
+              contentEditable={true}
+              aria-multiline={true}
+              aria-label="Message"
+              className="chat-wa-text-input chat-wa-editable-input"
+              data-placeholder="Message"
+              onInput={(e) => {
+                const text = e.currentTarget.innerText || '';
+                if (!text.trim() && e.currentTarget.innerHTML !== '') {
+                  e.currentTarget.innerHTML = '';
+                }
+                setInputText(text);
+              }}
               onKeyDown={handleKeyPress}
               onFocus={handleInputFocus}
               onBlur={handleInputBlur}
-              autoComplete="off"
-              autoCorrect="on"
               spellCheck={false}
-              name="chat_message_input"
-              data-form-type="other"
-              data-lpignore="true"
-              inputMode="text"
+              autoCorrect="off"
+              autoCapitalize="sentences"
+              suppressContentEditableWarning={true}
             />
 
             <button

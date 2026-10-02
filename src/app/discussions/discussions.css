@@ -2274,6 +2274,25 @@ body.chat-conversation-active .mobile-bottom-nav-root {
   color: #94a3b8;
 }
 
+.chat-wa-editable-input {
+  display: block;
+  max-height: 100px;
+  overflow-y: auto;
+  word-break: break-word;
+  white-space: pre-wrap;
+  user-select: text;
+  -webkit-user-select: text;
+  cursor: text;
+  line-height: 1.35;
+}
+
+.chat-wa-editable-input:empty::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+  pointer-events: none;
+  cursor: text;
+}
+
 /* Bouton d'action circulaire extérieur (Micro ou Envoi) */
 .chat-wa-action-btn {
   flex: 0 0 auto;
