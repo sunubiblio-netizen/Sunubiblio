@@ -64,44 +64,7 @@ export default function DiscussionsPage() {
     };
   }, [isMobileChatActive]);
 
-  // Synchronisation dynamique avec le clavier virtuel mobile (Tecno, Samsung, Xiaomi, iPhone)
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
 
-    const updateViewportHeight = () => {
-      if (!isMobileChatActive) return;
-      if (window.visualViewport) {
-        const height = window.visualViewport.height;
-        const top = window.visualViewport.offsetTop || 0;
-        document.documentElement.style.setProperty('--chat-viewport-height', `${height}px`);
-        document.documentElement.style.setProperty('--chat-viewport-top', `${top}px`);
-      } else {
-        document.documentElement.style.setProperty('--chat-viewport-height', `${window.innerHeight}px`);
-        document.documentElement.style.setProperty('--chat-viewport-top', '0px');
-      }
-    };
-
-    if (isMobileChatActive) {
-      updateViewportHeight();
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', updateViewportHeight);
-        window.visualViewport.addEventListener('scroll', updateViewportHeight);
-      } else {
-        window.addEventListener('resize', updateViewportHeight);
-      }
-    }
-
-    return () => {
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', updateViewportHeight);
-        window.visualViewport.removeEventListener('scroll', updateViewportHeight);
-      } else {
-        window.removeEventListener('resize', updateViewportHeight);
-      }
-      document.documentElement.style.removeProperty('--chat-viewport-height');
-      document.documentElement.style.removeProperty('--chat-viewport-top');
-    };
-  }, [isMobileChatActive]);
 
   // Modale d'appel
   const [callState, setCallState] = useState<{

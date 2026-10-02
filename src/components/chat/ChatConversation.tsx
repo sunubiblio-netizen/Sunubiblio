@@ -509,7 +509,7 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
           );
         })}
 
-        <div style={{ height: '12px', flexShrink: 0 }} aria-hidden="true" />
+        <div style={{ height: '75px', flexShrink: 0 }} aria-hidden="true" />
         <div ref={messagesEndRef} />
       </div>
 
