@@ -13,8 +13,10 @@ export const MobileBottomNav: React.FC = () => {
       ? pathname.slice(0, -1)
       : pathname;
 
-  // Masquer la navigation mobile inférieure pendant le passage d'un test spécifique (/exercices/[id])
+  // Masquer la navigation mobile inférieure pendant le passage d'un test spécifique ou dans les discussions
   const isExercisePlayer = cleanPath.startsWith('/exercices/') && cleanPath !== '/exercices';
+  const isDiscussions = cleanPath.startsWith('/discussions');
+  const shouldHideBottomNav = isExercisePlayer || isDiscussions;
 
   // Determine active route
   const isHome = cleanPath === '/' || cleanPath === '';
@@ -25,10 +27,10 @@ export const MobileBottomNav: React.FC = () => {
 
   return (
     <nav
-      className={`mobile-bottom-nav-root ${isExercisePlayer ? 'is-hidden-on-player' : ''}`}
-      style={isExercisePlayer ? { display: 'none' } : undefined}
+      className={`mobile-bottom-nav-root ${shouldHideBottomNav ? 'is-hidden-on-player' : ''}`}
+      style={shouldHideBottomNav ? { display: 'none' } : undefined}
       aria-label="Navigation mobile principale"
-      aria-hidden={isExercisePlayer ? 'true' : undefined}
+      aria-hidden={shouldHideBottomNav ? 'true' : undefined}
     >
       <div className="bottom-nav-grid">
         {/* 1. Accueil */}

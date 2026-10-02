@@ -45,15 +45,62 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
   const [isEphemeral, setIsEphemeral] = useState(false);
   const [chatToast, setChatToast] = useState<string | null>(null);
 
+  // État flottant dynamique et détection du clavier mobile
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const showChatToast = (msg: string) => {
     setChatToast(msg);
     setTimeout(() => setChatToast(null), 2800);
   };
+
+  // Synchronisation dynamique en temps réel avec le clavier virtuel et barres d'outils mobiles (Tecno, Samsung, Xiaomi, iPhone)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleViewportChange = () => {
+      if (window.innerWidth > 768) {
+        setKeyboardOffset(0);
+        return;
+      }
+
+      if (window.visualViewport) {
+        const vv = window.visualViewport;
+        const totalHeight = window.innerHeight;
+        const offsetBottom = totalHeight - (vv.height + (vv.offsetTop || 0));
+        // Si le clavier ou la barre d'outils basse réduit la zone visible
+        if (offsetBottom > 15) {
+          setKeyboardOffset(Math.round(offsetBottom));
+        } else {
+          setKeyboardOffset(0);
+        }
+      }
+    };
+
+    handleViewportChange();
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewportChange);
+      window.visualViewport.addEventListener('scroll', handleViewportChange);
+    } else {
+      window.addEventListener('resize', handleViewportChange);
+    }
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleViewportChange);
+        window.visualViewport.removeEventListener('scroll', handleViewportChange);
+      } else {
+        window.removeEventListener('resize', handleViewportChange);
+      }
+    };
+  }, []);
 
   // Auto-scroll au dernier message
   useEffect(() => {
@@ -75,12 +122,39 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
   };
 
   const handleInputFocus = () => {
+    setIsInputFocused(true);
+    // Verrouiller la position et empêcher tout saut de page intempestif
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+    }
     setTimeout(() => {
+      if (typeof window !== 'undefined' && window.visualViewport && window.innerWidth <= 768) {
+        const vv = window.visualViewport;
+        const totalHeight = window.innerHeight;
+        const offsetBottom = totalHeight - (vv.height + (vv.offsetTop || 0));
+        if (offsetBottom > 15) {
+          setKeyboardOffset(Math.round(offsetBottom));
+        }
+      }
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
       if (typeof window !== 'undefined') {
         window.scrollTo(0, 0);
       }
     }, 120);
+  };
+
+  const handleInputBlur = () => {
+    setIsInputFocused(false);
+    setTimeout(() => {
+      if (typeof window !== 'undefined' && window.visualViewport) {
+        const vv = window.visualViewport;
+        const totalHeight = window.innerHeight;
+        const offsetBottom = totalHeight - (vv.height + (vv.offsetTop || 0));
+        if (offsetBottom <= 15) {
+          setKeyboardOffset(0);
+        }
+      }
+    }, 150);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -330,7 +404,12 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
       )}
 
       {/* 2. Fil des messages */}
-      <div className="chat-messages-container">
+      <div
+        className="chat-messages-container"
+        style={{
+          paddingBottom: keyboardOffset > 0 ? `${keyboardOffset + 75}px` : undefined,
+        }}
+      >
         {/* Séparateur de date */}
         <div className="chat-date-separator">
           <span>Aujourd'hui</span>
@@ -490,7 +569,12 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
       </div>
 
       {/* 3. Barre de saisie en bas — Disposition exacte WhatsApp */}
-      <div className="chat-input-bar-wrap">
+      <div
+        className={`chat-input-bar-wrap ${isInputFocused ? 'is-focused-floating' : ''}`}
+        style={{
+          bottom: keyboardOffset > 0 ? `${keyboardOffset}px` : undefined,
+        }}
+      >
         {/* Menu pièces jointes popover façon WhatsApp */}
         {isAttachMenuOpen && (
           <>
@@ -633,6 +717,7 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
             </button>
 
             <input
+              ref={inputRef}
               type="text"
               size={1}
               className="chat-wa-text-input"
@@ -641,6 +726,7 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyPress}
               onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
               autoComplete="off"
               autoCorrect="on"
             />
