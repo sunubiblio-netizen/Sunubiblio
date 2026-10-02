@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { ChatUser, ChatMessage } from '@/types/chat';
+import { ChatUser, ChatMessage, EphemeralDuration } from '@/types/chat';
 
 interface ChatConversationProps {
   activeUser: ChatUser;
@@ -36,15 +36,18 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
   const [audioProgress, setAudioProgress] = useState(35);
   const [isAttachMenuOpen, setIsAttachMenuOpen] = useState(false);
 
-  // Nouvelles fonctionnalités WhatsApp
+  // Nouvelles fonctionnalités WhatsApp & Infos du contact
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [contactModalView, setContactModalView] = useState<'main' | 'ephemeral'>('main');
+  const [activeMediaTab, setActiveMediaTab] = useState<'media' | 'docs' | 'links'>('media');
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(false);
-  const [isEphemeral, setIsEphemeral] = useState(false);
+  const [ephemeralDuration, setEphemeralDuration] = useState<EphemeralDuration>('off');
+  const [showPhoneToggle, setShowPhoneToggle] = useState<boolean>(!!activeUser.showPhone);
   const [chatToast, setChatToast] = useState<string | null>(null);
-
   const [isInputFocused, setIsInputFocused] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -53,10 +56,46 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const editableRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    setShowPhoneToggle(!!activeUser.showPhone);
+  }, [activeUser]);
+
   const showChatToast = (msg: string) => {
     setChatToast(msg);
-    setTimeout(() => setChatToast(null), 2800);
+    setTimeout(() => setChatToast(null), 3000);
   };
+
+  const handleSetEphemeral = (duration: EphemeralDuration) => {
+    setEphemeralDuration(duration);
+    const labels: Record<EphemeralDuration, string> = {
+      off: 'Messages éphémères désactivés',
+      '24h': 'Messages éphémères définis sur 24 heures',
+      '7d': 'Messages éphémères définis sur 7 jours',
+      '90d': 'Messages éphémères définis sur 90 jours',
+    };
+    showChatToast(labels[duration]);
+  };
+
+  // Exemples réalistes de médias, documents PDF et liens partagés
+  const contactMediaItems = [
+    { id: 'm-1', title: 'Schéma Intégrales & Analyse L3', src: '/math_bac_s1.jpg', date: 'Hier, 14:20' },
+    { id: 'm-2', title: 'Exercices Suites & Continuité', src: '/vid_fonctions.jpg', date: 'Hier, 11:05' },
+    { id: 'm-3', title: 'Fiche Méthodologie Dissertation', src: '/livre_philosophie.jpg', date: '28 Sept' },
+    { id: 'm-4', title: 'Algorithmique & Structures de Données', src: '/vid_python.jpg', date: '24 Sept' },
+  ];
+
+  const contactPdfItems = [
+    { id: 'pdf-1', title: 'Synthese_Algebre_Lineaire_L3.pdf', pages: '28 pages', size: '2.4 Mo', date: 'Hier', downloads: 14 },
+    { id: 'pdf-2', title: 'Concours_ENA_2025_Epreuve_Culture.pdf', pages: '12 pages', size: '1.8 Mo', date: '29 Sept', downloads: 38 },
+    { id: 'pdf-3', title: 'Fascicule_Physique_Mecanique_BacS.pdf', pages: '45 pages', size: '4.1 Mo', date: '22 Sept', downloads: 52 },
+    { id: 'pdf-4', title: 'Guide_Methodologie_Recherche_Sunubiblio.pdf', pages: '16 pages', size: '980 Ko', date: '15 Sept', downloads: 89 },
+  ];
+
+  const contactLinksItems = [
+    { id: 'lnk-1', title: 'Sunubiblio • Cours Algèbre Linéaire Avancée', url: 'https://sunubiblio.sn/bibliotheque/livres/algebre-avancee', domain: 'sunubiblio.sn' },
+    { id: 'lnk-2', title: 'Annales & Conseils Officiels Concours ENA 2026', url: 'https://sunubiblio.sn/concours/ena-senegal-2025', domain: 'sunubiblio.sn' },
+    { id: 'lnk-3', title: 'Club Académique Sciences & Mathématiques Sunubiblio', url: 'https://sunubiblio.sn/communaute/club-mathematiques', domain: 'sunubiblio.sn' },
+  ];
 
   const scrollToBottom = (smooth = true) => {
     if (!messagesEndRef.current) return;
@@ -171,7 +210,15 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
               {isMuted && <span className="chat-mute-icon" title="Notifications en sourdine"> 🔇</span>}
             </h2>
             <span className="chat-conv-status-text">
-              {isEphemeral ? '⏱️ Messages éphémères' : activeUser.isOnline ? 'En ligne' : activeUser.lastSeen || 'Hors ligne'}
+              {ephemeralDuration !== 'off' ? (
+                <span className="chat-ephemeral-header-badge">
+                  ⏱️ {ephemeralDuration === '24h' ? '24h' : ephemeralDuration === '7d' ? '7j' : '90j'}
+                </span>
+              ) : activeUser.isOnline ? (
+                'En ligne'
+              ) : (
+                activeUser.lastSeen || 'Hors ligne'
+              )}
             </span>
           </div>
         </div>
@@ -293,11 +340,11 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
                     className="chat-dropdown-item"
                     onClick={() => {
                       setIsMenuOpen(false);
-                      setIsEphemeral(!isEphemeral);
-                      showChatToast(!isEphemeral ? 'Messages éphémères activés' : 'Messages éphémères désactivés');
+                      setContactModalView('ephemeral');
+                      setIsContactModalOpen(true);
                     }}
                   >
-                    <span>Messages éphémères</span>
+                    <span>Messages éphémères ({ephemeralDuration === 'off' ? 'Désactivé' : ephemeralDuration})</span>
                   </button>
 
                   <div className="chat-dropdown-divider" />
@@ -366,6 +413,18 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
         <div className="chat-date-separator">
           <span>Aujourd'hui</span>
         </div>
+
+        {ephemeralDuration !== 'off' && (
+          <div className="chat-ephemeral-banner-pill">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <span>
+              Messages éphémères activés ({ephemeralDuration === '24h' ? '24 heures' : ephemeralDuration === '7d' ? '7 jours' : '90 jours'}). Les nouveaux messages disparaîtront automatiquement de cette discussion.
+            </span>
+          </div>
+        )}
 
         {displayedMessages.length === 0 && searchQuery.trim() && (
           <div className="chat-search-empty-state">
@@ -756,138 +815,611 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
         </form>
       </div>
 
-      {/* 4. Modal "Afficher le contact" façon WhatsApp */}
+      {/* 4. Modal "Infos du contact" repensée façon WhatsApp x Sunubiblio Haute Définition */}
       {isContactModalOpen && (
         <div className="chat-contact-modal-overlay" onClick={() => setIsContactModalOpen(false)}>
           <div className="chat-contact-modal-sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="chat-contact-modal-header">
-              <button
-                type="button"
-                className="chat-contact-close-btn"
-                onClick={() => setIsContactModalOpen(false)}
-                aria-label="Fermer"
-              >
-                ✕
-              </button>
-              <h3 className="chat-contact-modal-title">Infos du contact</h3>
-            </div>
+            
+            {/* VUE 1 : Fiche principale d'infos du contact */}
+            {contactModalView === 'main' && (
+              <>
+                <div className="chat-contact-modal-header">
+                  <button
+                    type="button"
+                    className="chat-contact-close-btn"
+                    onClick={() => setIsContactModalOpen(false)}
+                    aria-label="Fermer"
+                  >
+                    ✕
+                  </button>
+                  <h3 className="chat-contact-modal-title">Infos du contact</h3>
+                  <button
+                    type="button"
+                    className="chat-contact-header-share-btn"
+                    onClick={() => showChatToast('Lien du profil étudiant copié !')}
+                    title="Partager le contact"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                      <polyline points="16 6 12 2 8 6" />
+                      <line x1="12" y1="2" x2="12" y2="15" />
+                    </svg>
+                  </button>
+                </div>
 
-            <div className="chat-contact-profile-hero">
-              <div className="chat-contact-avatar-large">
-                <Image
-                  src={activeUser.avatar}
-                  alt={activeUser.name}
-                  width={96}
-                  height={96}
-                  className="chat-contact-avatar-img"
-                />
-                <span className={`chat-contact-status-dot ${activeUser.isOnline ? 'online' : 'offline'}`} />
+                <div className="chat-contact-scroll-body">
+                  {/* Hero Profil avec Bannière décorative */}
+                  <div className="chat-contact-profile-hero">
+                    <div className="chat-contact-avatar-wrapper">
+                      <div className="chat-contact-avatar-large">
+                        <Image
+                          src={activeUser.avatar}
+                          alt={activeUser.name}
+                          width={104}
+                          height={104}
+                          className="chat-contact-avatar-img"
+                        />
+                        <span className={`chat-contact-status-dot ${activeUser.isOnline ? 'online' : 'offline'}`} />
+                      </div>
+                    </div>
+
+                    <div className="chat-contact-name-row">
+                      <h2 className="chat-contact-name-title">{activeUser.name}</h2>
+                      <span className="chat-contact-verified-badge" title="Profil vérifié Sunubiblio">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#0284c7">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                      </span>
+                    </div>
+
+                    {/* Rôle et affiliation académique Sunubiblio */}
+                    <div className="chat-contact-role-container">
+                      <span className="chat-contact-academic-role">
+                        {activeUser.role || 'Étudiant certifié'}
+                      </span>
+                      {activeUser.institution && (
+                        <span className="chat-contact-inst-badge">
+                          🏛️ {activeUser.institution}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Numéro de téléphone conditionnel selon le souhait de l'utilisateur */}
+                    {activeUser.phone && showPhoneToggle ? (
+                      <div className="chat-contact-phone-active-box">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                        <span className="chat-contact-phone-number">{activeUser.phone}</span>
+                      </div>
+                    ) : (
+                      <div className="chat-contact-privacy-chip">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <span>Numéro masqué • Respect de la vie privée</span>
+                      </div>
+                    )}
+
+                    <span className={`chat-contact-presence-badge ${activeUser.isOnline ? 'online' : 'offline'}`}>
+                      {activeUser.isOnline ? 'En ligne actuellement' : `Vu à ${activeUser.lastSeen || '10:00'}`}
+                    </span>
+                  </div>
+
+                  {/* Actions Rapides Stylisées */}
+                  <div className="chat-contact-quick-actions">
+                    <button
+                      type="button"
+                      className="chat-contact-act-btn"
+                      onClick={() => {
+                        setIsContactModalOpen(false);
+                        onStartCall('vocal');
+                      }}
+                    >
+                      <div className="chat-act-icon-wrap vocal">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                      </div>
+                      <span>Appel</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="chat-contact-act-btn"
+                      onClick={() => {
+                        setIsContactModalOpen(false);
+                        onStartCall('video');
+                      }}
+                    >
+                      <div className="chat-act-icon-wrap video">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" />
+                          <rect x="2" y="6" width="14" height="12" rx="2" />
+                        </svg>
+                      </div>
+                      <span>Vidéo</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="chat-contact-act-btn"
+                      onClick={() => {
+                        setIsContactModalOpen(false);
+                        setIsSearchOpen(true);
+                      }}
+                    >
+                      <div className="chat-act-icon-wrap search">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="11" cy="11" r="8" />
+                          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                      </div>
+                      <span>Rechercher</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="chat-contact-act-btn"
+                      onClick={() => showChatToast('Contact partagé avec votre groupe de révision !')}
+                    >
+                      <div className="chat-act-icon-wrap forward">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="18" cy="5" r="3" />
+                          <circle cx="6" cy="12" r="3" />
+                          <circle cx="18" cy="19" r="3" />
+                          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                        </svg>
+                      </div>
+                      <span>Partager</span>
+                    </button>
+                  </div>
+
+                  {/* Section 1 : Statut & À propos académique */}
+                  <div className="chat-contact-card">
+                    <div className="chat-contact-card-header">
+                      <span className="chat-contact-card-label">Statut & Biographie</span>
+                    </div>
+                    <p className="chat-contact-bio-quote">
+                      {activeUser.bio || 'Passionné de savoir, d’échanges académiques et d’entraide sur la plateforme Sunubiblio 📚🚀'}
+                    </p>
+                    
+                    <div className="chat-contact-meta-footer">
+                      <span className="chat-contact-meta-item">
+                        🗓️ {activeUser.memberSince ? `Membre depuis ${activeUser.memberSince}` : 'Membre certifié Sunubiblio'}
+                      </span>
+                      {activeUser.badges && activeUser.badges.length > 0 && (
+                        <div className="chat-contact-badges-row">
+                          {activeUser.badges.map((b, idx) => (
+                            <span key={idx} className="chat-contact-badge-chip">
+                              ✨ {b}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Section 2 : Médias, Documents PDF et Liens Réels */}
+                  <div className="chat-contact-card">
+                    <div className="chat-contact-card-header flex-between">
+                      <span className="chat-contact-card-label">Médias, Liens & Documents</span>
+                      <span className="chat-contact-count-chip">
+                        {activeMediaTab === 'media' ? `${contactMediaItems.length} photos` : activeMediaTab === 'docs' ? `${contactPdfItems.length} PDFs` : `${contactLinksItems.length} liens`}
+                      </span>
+                    </div>
+
+                    {/* Onglets de sélection */}
+                    <div className="chat-contact-tabs-bar">
+                      <button
+                        type="button"
+                        className={`chat-contact-tab-btn ${activeMediaTab === 'media' ? 'active' : ''}`}
+                        onClick={() => setActiveMediaTab('media')}
+                      >
+                        🖼️ Médias ({contactMediaItems.length})
+                      </button>
+                      <button
+                        type="button"
+                        className={`chat-contact-tab-btn ${activeMediaTab === 'docs' ? 'active' : ''}`}
+                        onClick={() => setActiveMediaTab('docs')}
+                      >
+                        📄 Documents ({contactPdfItems.length})
+                      </button>
+                      <button
+                        type="button"
+                        className={`chat-contact-tab-btn ${activeMediaTab === 'links' ? 'active' : ''}`}
+                        onClick={() => setActiveMediaTab('links')}
+                      >
+                        🔗 Liens ({contactLinksItems.length})
+                      </button>
+                    </div>
+
+                    {/* Onglet 1 : Médias (Photos / Schémas réels) */}
+                    {activeMediaTab === 'media' && (
+                      <div className="chat-contact-media-grid">
+                        {contactMediaItems.map((item) => (
+                          <div
+                            key={item.id}
+                            className="chat-contact-media-cell"
+                            onClick={() => setPreviewImage(item.src)}
+                            title="Cliquez pour agrandir"
+                          >
+                            <Image
+                              src={item.src}
+                              alt={item.title}
+                              fill
+                              sizes="(max-width: 480px) 50vw, 120px"
+                              className="chat-contact-media-img"
+                            />
+                            <div className="chat-contact-media-overlay">
+                              <span className="chat-contact-media-date">{item.date}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Onglet 2 : Documents PDF Réalistes */}
+                    {activeMediaTab === 'docs' && (
+                      <div className="chat-contact-docs-list">
+                        {contactPdfItems.map((doc) => (
+                          <div key={doc.id} className="chat-contact-doc-item">
+                            <div className="chat-contact-doc-icon-badge">
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="#ef4444">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" fill="#fca5a5" />
+                                <line x1="16" y1="13" x2="8" y2="13" stroke="#fff" strokeWidth="2" />
+                                <line x1="16" y1="17" x2="8" y2="17" stroke="#fff" strokeWidth="2" />
+                                <polyline points="10 9 9 9 8 9" stroke="#fff" strokeWidth="2" />
+                              </svg>
+                            </div>
+                            <div className="chat-contact-doc-info">
+                              <h4 className="chat-contact-doc-title">{doc.title}</h4>
+                              <p className="chat-contact-doc-sub">
+                                {doc.pages} • {doc.size} • {doc.date}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              className="chat-contact-doc-download-btn"
+                              onClick={() => showChatToast(`Téléchargement de ${doc.title}...`)}
+                              title="Télécharger le document"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Onglet 3 : Liens partagés */}
+                    {activeMediaTab === 'links' && (
+                      <div className="chat-contact-links-list">
+                        {contactLinksItems.map((lnk) => (
+                          <div key={lnk.id} className="chat-contact-link-item">
+                            <div className="chat-contact-link-icon">
+                              🔗
+                            </div>
+                            <div className="chat-contact-link-content">
+                              <h4 className="chat-contact-link-title">{lnk.title}</h4>
+                              <span className="chat-contact-link-url">{lnk.domain}</span>
+                            </div>
+                            <button
+                              type="button"
+                              className="chat-contact-link-btn"
+                              onClick={() => showChatToast('Lien de la ressource ouvert dans la bibliothèque')}
+                            >
+                              ↗
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Section 3 : Confidentialité & Paramètres WhatsApp interactifs */}
+                  <div className="chat-contact-card">
+                    <div className="chat-contact-card-header">
+                      <span className="chat-contact-card-label">Confidentialité & Paramètres</span>
+                    </div>
+
+                    {/* Messages éphémères cliquables (Ouvre la sous-vue) */}
+                    <div
+                      className="chat-contact-interactive-row"
+                      onClick={() => setContactModalView('ephemeral')}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <div className="chat-row-left">
+                        <div className="chat-row-icon-pill">
+                          ⏱️
+                        </div>
+                        <div className="chat-row-text">
+                          <span className="chat-row-title">Messages éphémères</span>
+                          <span className="chat-row-desc">
+                            {ephemeralDuration === 'off'
+                              ? 'Désactivé'
+                              : ephemeralDuration === '24h'
+                              ? 'Délai : 24 heures'
+                              : ephemeralDuration === '7d'
+                              ? 'Délai : 7 jours'
+                              : 'Délai : 90 jours'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="chat-row-right">
+                        <span className={`chat-duration-pill ${ephemeralDuration !== 'off' ? 'active' : ''}`}>
+                          {ephemeralDuration === 'off' ? 'Désactivé' : ephemeralDuration}
+                        </span>
+                        <span className="chat-chevron-arrow">›</span>
+                      </div>
+                    </div>
+
+                    {/* Mode silencieux */}
+                    <div className="chat-contact-switch-row">
+                      <div className="chat-row-left">
+                        <div className="chat-row-icon-pill">
+                          🔔
+                        </div>
+                        <div className="chat-row-text">
+                          <span className="chat-row-title">Mode silencieux</span>
+                          <span className="chat-row-desc">Désactiver les alertes sonores pour cette discussion</span>
+                        </div>
+                      </div>
+                      <label className="chat-ios-switch">
+                        <input
+                          type="checkbox"
+                          checked={isMuted}
+                          onChange={(e) => {
+                            setIsMuted(e.target.checked);
+                            showChatToast(e.target.checked ? 'Discussion mise en sourdine' : 'Notifications activées');
+                          }}
+                        />
+                        <span className="chat-ios-slider" />
+                      </label>
+                    </div>
+
+                    {/* Partage du numéro (À la condition du souhait de l'utilisateur) */}
+                    <div className="chat-contact-switch-row">
+                      <div className="chat-row-left">
+                        <div className="chat-row-icon-pill">
+                          📱
+                        </div>
+                        <div className="chat-row-text">
+                          <span className="chat-row-title">Afficher le numéro de téléphone</span>
+                          <span className="chat-row-desc">
+                            {showPhoneToggle ? 'Le numéro est visible par ce contact' : 'Numéro gardé confidentiel'}
+                          </span>
+                        </div>
+                      </div>
+                      <label className="chat-ios-switch">
+                        <input
+                          type="checkbox"
+                          checked={showPhoneToggle}
+                          onChange={(e) => {
+                            setShowPhoneToggle(e.target.checked);
+                            showChatToast(e.target.checked ? 'Numéro de téléphone rendu visible' : 'Numéro de téléphone masqué');
+                          }}
+                        />
+                        <span className="chat-ios-slider" />
+                      </label>
+                    </div>
+
+                    {/* Chiffrement de bout en bout */}
+                    <div className="chat-contact-security-row">
+                      <div className="chat-sec-icon">🔒</div>
+                      <div className="chat-sec-text">
+                        <strong>Chiffrement de bout en bout</strong>
+                        <p>Les messages et les appels personnels sont protégés selon le protocole de confidentialité Sunubiblio.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions de blocage / signalement */}
+                  <div className="chat-contact-card danger-card">
+                    <button
+                      type="button"
+                      className="chat-contact-danger-btn"
+                      onClick={() => showChatToast(`Contact ${activeUser.name} bloqué.`)}
+                    >
+                      🚫 Bloquer {activeUser.name}
+                    </button>
+                    <button
+                      type="button"
+                      className="chat-contact-danger-btn report"
+                      onClick={() => showChatToast('Signalement transmis à l’équipe de modération Sunubiblio.')}
+                    >
+                      ⚠️ Signaler le contact
+                    </button>
+                  </div>
+                </div>
+
+                <div className="chat-contact-modal-footer">
+                  <button
+                    type="button"
+                    className="chat-contact-modal-done-btn"
+                    onClick={() => setIsContactModalOpen(false)}
+                  >
+                    Fermer
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* VUE 2 : Sélecteur de Messages Éphémères (24h / 7 jours / 90 jours / Non) */}
+            {contactModalView === 'ephemeral' && (
+              <div className="chat-ephemeral-subview">
+                <div className="chat-contact-modal-header">
+                  <button
+                    type="button"
+                    className="chat-contact-back-btn"
+                    onClick={() => setContactModalView('main')}
+                    aria-label="Retour"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </button>
+                  <h3 className="chat-contact-modal-title">Messages éphémères</h3>
+                  <button
+                    type="button"
+                    className="chat-contact-close-btn"
+                    onClick={() => setIsContactModalOpen(false)}
+                    aria-label="Fermer"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="chat-contact-scroll-body">
+                  <div className="chat-ephemeral-hero-banner">
+                    <div className="chat-ephemeral-hero-icon-ring">
+                      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                    </div>
+                    <h3 className="chat-ephemeral-hero-title">Faites disparaître les messages</h3>
+                    <p className="chat-ephemeral-hero-desc">
+                      Pour plus de confidentialité, les nouveaux messages envoyés dans cette discussion disparaîtront pour tout le monde après la durée sélectionnée.
+                    </p>
+                  </div>
+
+                  <div className="chat-ephemeral-options-group">
+                    <div className="chat-ephemeral-section-subtitle">Délai avant disparition :</div>
+
+                    {/* Option 1 : 24 heures */}
+                    <div
+                      className={`chat-ephemeral-choice-card ${ephemeralDuration === '24h' ? 'selected' : ''}`}
+                      onClick={() => handleSetEphemeral('24h')}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <div className="chat-choice-content">
+                        <div className="chat-choice-title">
+                          <strong>24 heures</strong>
+                          <span className="chat-choice-badge">Rapide & Éphémère</span>
+                        </div>
+                        <p className="chat-choice-desc">Les messages s'effacent automatiquement 24h après leur émission.</p>
+                      </div>
+                      <div className="chat-choice-radio">
+                        {ephemeralDuration === '24h' && <span className="chat-radio-checked-dot" />}
+                      </div>
+                    </div>
+
+                    {/* Option 2 : 7 jours */}
+                    <div
+                      className={`chat-ephemeral-choice-card ${ephemeralDuration === '7d' ? 'selected' : ''}`}
+                      onClick={() => handleSetEphemeral('7d')}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <div className="chat-choice-content">
+                        <div className="chat-choice-title">
+                          <strong>7 jours</strong>
+                          <span className="chat-choice-badge recommend">Recommandé Études</span>
+                        </div>
+                        <p className="chat-choice-desc">Idéal pour le travail hebdomadaire, les devoirs et exercices de la semaine.</p>
+                      </div>
+                      <div className="chat-choice-radio">
+                        {ephemeralDuration === '7d' && <span className="chat-radio-checked-dot" />}
+                      </div>
+                    </div>
+
+                    {/* Option 3 : 90 jours */}
+                    <div
+                      className={`chat-ephemeral-choice-card ${ephemeralDuration === '90d' ? 'selected' : ''}`}
+                      onClick={() => handleSetEphemeral('90d')}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <div className="chat-choice-content">
+                        <div className="chat-choice-title">
+                          <strong>90 jours</strong>
+                          <span className="chat-choice-badge">Semestre complet</span>
+                        </div>
+                        <p className="chat-choice-desc">Conserve les échanges et les fichiers pendant toute la durée d'un trimestre.</p>
+                      </div>
+                      <div className="chat-choice-radio">
+                        {ephemeralDuration === '90d' && <span className="chat-radio-checked-dot" />}
+                      </div>
+                    </div>
+
+                    {/* Option 4 : Désactivé (Non) */}
+                    <div
+                      className={`chat-ephemeral-choice-card ${ephemeralDuration === 'off' ? 'selected' : ''}`}
+                      onClick={() => handleSetEphemeral('off')}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <div className="chat-choice-content">
+                        <div className="chat-choice-title">
+                          <strong>Désactivé (Non)</strong>
+                        </div>
+                        <p className="chat-choice-desc">Les messages restent indéfiniment disponibles dans cette discussion.</p>
+                      </div>
+                      <div className="chat-choice-radio">
+                        {ephemeralDuration === 'off' && <span className="chat-radio-checked-dot" />}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="chat-contact-modal-footer">
+                  <button
+                    type="button"
+                    className="chat-ephemeral-apply-btn"
+                    onClick={() => setContactModalView('main')}
+                  >
+                    Valider & Revenir aux infos
+                  </button>
+                </div>
               </div>
-              <h2 className="chat-contact-name-title">{activeUser.name}</h2>
-              <p className="chat-contact-phone-number">+221 77 458 92 10</p>
-              <span className="chat-contact-presence-badge">
-                {activeUser.isOnline ? 'En ligne' : `Vu à ${activeUser.lastSeen}`}
-              </span>
-            </div>
+            )}
+          </div>
+        </div>
+      )}
 
-            <div className="chat-contact-quick-actions">
-              <button
-                type="button"
-                className="chat-contact-act-btn"
-                onClick={() => {
-                  setIsContactModalOpen(false);
-                  onStartCall('vocal');
-                }}
-              >
-                <div className="chat-act-icon-wrap">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                  </svg>
-                </div>
-                <span>Appel</span>
-              </button>
-              <button
-                type="button"
-                className="chat-contact-act-btn"
-                onClick={() => {
-                  setIsContactModalOpen(false);
-                  onStartCall('video');
-                }}
-              >
-                <div className="chat-act-icon-wrap">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" />
-                    <rect x="2" y="6" width="14" height="12" rx="2" />
-                  </svg>
-                </div>
-                <span>Vidéo</span>
-              </button>
-              <button
-                type="button"
-                className="chat-contact-act-btn"
-                onClick={() => {
-                  setIsContactModalOpen(false);
-                  setIsSearchOpen(true);
-                }}
-              >
-                <div className="chat-act-icon-wrap">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="11" cy="11" r="8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                  </svg>
-                </div>
-                <span>Rechercher</span>
-              </button>
-            </div>
-
-            <div className="chat-contact-info-section">
-              <div className="chat-contact-info-block">
-                <span className="chat-info-label">Statut & Biographie</span>
-                <p className="chat-info-val">Étudiant passionné • Sunubiblio Club Math & Physique 📚🚀</p>
-              </div>
-
-              <div className="chat-contact-info-block">
-                <span className="chat-info-label">Médias, liens et documents</span>
-                <div className="chat-contact-media-preview-row">
-                  <div className="chat-media-preview-tile">📄 4 PDFs</div>
-                  <div className="chat-media-preview-tile">🖼️ 12 Photos</div>
-                  <div className="chat-media-preview-tile">🔗 3 Liens</div>
-                </div>
-              </div>
-
-              <div className="chat-contact-info-block toggles">
-                <div className="chat-contact-toggle-row">
-                  <span>Mode silencieux</span>
-                  <input
-                    type="checkbox"
-                    checked={isMuted}
-                    onChange={(e) => {
-                      setIsMuted(e.target.checked);
-                      showChatToast(e.target.checked ? 'Discussion mise en sourdine' : 'Notifications activées');
-                    }}
-                  />
-                </div>
-                <div className="chat-contact-toggle-row">
-                  <span>Messages éphémères</span>
-                  <input
-                    type="checkbox"
-                    checked={isEphemeral}
-                    onChange={(e) => {
-                      setIsEphemeral(e.target.checked);
-                      showChatToast(e.target.checked ? 'Messages éphémères activés (24h)' : 'Messages éphémères désactivés');
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-
+      {/* 5. Lightbox / Aperçu d'image en grand format */}
+      {previewImage && (
+        <div className="chat-lightbox-overlay" onClick={() => setPreviewImage(null)}>
+          <div className="chat-lightbox-content" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
-              className="chat-contact-modal-done-btn"
-              onClick={() => setIsContactModalOpen(false)}
+              className="chat-lightbox-close-btn"
+              onClick={() => setPreviewImage(null)}
+              aria-label="Fermer la prévisualisation"
             >
-              Fermer
+              ✕
             </button>
+            <div className="chat-lightbox-img-wrap">
+              <Image
+                src={previewImage}
+                alt="Aperçu du média"
+                width={800}
+                height={600}
+                className="chat-lightbox-img"
+              />
+            </div>
+            <div className="chat-lightbox-footer">
+              <span>Ressource pédagogique partagée par {activeUser.name}</span>
+              <button
+                type="button"
+                className="chat-lightbox-action-btn"
+                onClick={() => {
+                  showChatToast('Image enregistrée dans vos téléchargements');
+                  setPreviewImage(null);
+                }}
+              >
+                📥 Enregistrer
+              </button>
+            </div>
           </div>
         </div>
       )}

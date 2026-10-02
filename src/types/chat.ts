@@ -2,6 +2,8 @@
  * Types stricts pour la messagerie & discussions Sunubiblio
  */
 
+export type EphemeralDuration = 'off' | '24h' | '7d' | '90d';
+
 export interface ChatUser {
   id: string;
   name: string;
@@ -12,6 +14,13 @@ export interface ChatUser {
   time: string;
   unreadCount?: number;
   role?: string;
+  phone?: string;
+  showPhone?: boolean;
+  bio?: string;
+  faculty?: string;
+  institution?: string;
+  memberSince?: string;
+  badges?: string[];
 }
 
 export interface ChatGroup {
