@@ -196,8 +196,8 @@ export const UserMenu: React.FC<UserMenuProps> = ({
               {/* Bannière d'accès rapide / Callout Gold */}
               <div className="user-menu-banner">
                 <div className="banner-left">
-                  <strong>Passez à Sunubiblio Gold</strong>
-                  <span>Accès illimité aux concours, documents & IA</span>
+                  <strong>Sunubiblio Gold</strong>
+                  <span>Accès illimité Concours, IA & Docs</span>
                 </div>
                 <Link
                   href="/tarifs"
@@ -272,7 +272,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                   <div className="user-menu-icon-wrap">
                     <IconDiscussions size={20} className="user-menu-vector-icon" />
                   </div>
-                  <span>Discussions</span>
+                  <span>Messages</span>
                 </Link>
               </div>
             </div>
@@ -296,10 +296,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                     <line x1="23" y1="11" x2="17" y2="11" />
                   </svg>
                 </div>
-                <div className="register-btn-text">
-                  <span className="register-main-label">Inscription</span>
-                  <span className="register-sub-label">Créer un nouveau compte</span>
-                </div>
+                <span className="register-main-label">Inscription</span>
                 <span className="register-free-badge">Gratuit</span>
               </button>
 

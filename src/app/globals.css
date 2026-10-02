@@ -16233,8 +16233,8 @@ input {
     bottom: 0 !important;
     left: 0 !important;
     right: auto !important;
-    width: 82% !important;
-    max-width: 320px !important;
+    width: 76% !important;
+    max-width: 285px !important;
     height: 100vh !important;
     height: 100dvh !important;
     max-height: 100dvh !important;
@@ -16242,7 +16242,7 @@ input {
     background: #ffffff !important;
     border: none !important;
     border-right: 1px solid rgba(226, 232, 240, 0.88) !important;
-    border-radius: 0 28px 28px 0 !important;
+    border-radius: 0 24px 24px 0 !important;
     box-shadow: 14px 0 40px -6px rgba(15, 23, 42, 0.22) !important;
     z-index: 10001 !important;
     display: flex !important;
@@ -16252,8 +16252,8 @@ input {
     scrollbar-width: none !important;
     animation: userMenuDrawerSlideIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
     will-change: transform !important;
-    padding-top: max(16px, env(safe-area-inset-top, 16px)) !important;
-    padding-bottom: max(24px, env(safe-area-inset-bottom, 24px)) !important;
+    padding-top: max(8px, env(safe-area-inset-top, 8px)) !important;
+    padding-bottom: max(10px, env(safe-area-inset-bottom, 10px)) !important;
   }
 
   @keyframes userMenuDrawerSlideIn {
@@ -16267,6 +16267,115 @@ input {
 
   .user-drawer-close-btn {
     display: flex !important;
+  }
+
+  /* Calibrage ultra-compact sur mobile pour voir tous les éléments (dont Messages) sans défiler */
+  .user-card-header {
+    padding: 8px 12px 6px !important;
+    gap: 8px !important;
+  }
+
+  .user-header-avatar {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .user-display-name {
+    font-size: 0.84rem !important;
+  }
+
+  .user-email-preview {
+    font-size: 0.65rem !important;
+    margin: 1px 0 2px 0 !important;
+  }
+
+  .user-plan-tag {
+    padding: 1px 6px !important;
+    font-size: 0.58rem !important;
+  }
+
+  .user-menu-banner {
+    margin: 4px 8px 2px !important;
+    padding: 5px 8px !important;
+    border-radius: 9px !important;
+    gap: 6px !important;
+  }
+
+  .banner-left strong {
+    font-size: 0.72rem !important;
+  }
+
+  .banner-left span {
+    font-size: 0.6rem !important;
+  }
+
+  .user-upgrade-pill-btn {
+    font-size: 0.65rem !important;
+    padding: 3px 8px !important;
+  }
+
+  .user-menu-section {
+    padding: 2px 6px !important;
+    gap: 0 !important;
+  }
+
+  .user-section-title {
+    padding: 2px 6px 1px !important;
+    font-size: 0.625rem !important;
+  }
+
+  .user-menu-link-item {
+    padding: 4.5px 7px !important;
+    font-size: 0.78125rem !important;
+    gap: 8px !important;
+  }
+
+  .user-menu-icon-wrap {
+    width: 25px !important;
+    height: 25px !important;
+  }
+
+  .user-menu-icon-wrap svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+
+  .user-drawer-footer {
+    padding: 6px 10px !important;
+    gap: 4px !important;
+  }
+
+  .user-drawer-register-btn {
+    padding: 5px 8px !important;
+    border-radius: 8px !important;
+    gap: 6px !important;
+  }
+
+  .register-icon-wrap {
+    width: 22px !important;
+    height: 22px !important;
+    border-radius: 6px !important;
+  }
+
+  .register-main-label {
+    font-size: 0.75rem !important;
+  }
+
+  .register-free-badge {
+    font-size: 0.5625rem !important;
+    padding: 1px 5px !important;
+  }
+
+  .user-drawer-logout-btn {
+    padding: 4px 8px !important;
+    border-radius: 8px !important;
+    font-size: 0.75rem !important;
+    gap: 6px !important;
+  }
+
+  .logout-icon-wrap {
+    width: 20px !important;
+    height: 20px !important;
   }
 
   /* Popovers Notifs & Aide sur mobile */
