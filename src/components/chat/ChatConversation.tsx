@@ -67,17 +67,7 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
     });
   };
 
-  const toggleFullscreen = () => {
-    if (typeof document !== 'undefined') {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen?.().catch(() => {});
-        showChatToast('Mode plein écran activé (barre navigateur masquée)');
-      } else {
-        document.exitFullscreen?.().catch(() => {});
-        showChatToast('Mode plein écran désactivé');
-      }
-    }
-  };
+
 
   // Auto-scroll au dernier message (immédiat puis différé pour laisser le rendu DOM s'ajuster)
   useEffect(() => {
@@ -236,16 +226,7 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
                   onClick={() => setIsMenuOpen(false)}
                 />
                 <div className="chat-dots-dropdown-menu">
-                  <button
-                    type="button"
-                    className="chat-dropdown-item"
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      toggleFullscreen();
-                    }}
-                  >
-                    <span>Mode plein écran (Masquer l'URL)</span>
-                  </button>
+
 
                   <button
                     type="button"
@@ -532,7 +513,7 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
           );
         })}
 
-        <div style={{ height: '28px', flexShrink: 0 }} aria-hidden="true" />
+        <div style={{ height: '24px', flexShrink: 0 }} aria-hidden="true" />
         <div ref={messagesEndRef} />
       </div>
 
