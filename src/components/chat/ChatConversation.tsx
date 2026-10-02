@@ -74,6 +74,15 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
     }
   };
 
+  const handleInputFocus = () => {
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      if (typeof window !== 'undefined') {
+        window.scrollTo(0, 0);
+      }
+    }, 120);
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -625,11 +634,13 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
 
             <input
               type="text"
+              size={1}
               className="chat-wa-text-input"
               placeholder="Message"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyPress}
+              onFocus={handleInputFocus}
               autoComplete="off"
               autoCorrect="on"
             />
