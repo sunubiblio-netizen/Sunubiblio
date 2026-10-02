@@ -509,7 +509,7 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
           );
         })}
 
-        <div style={{ height: '75px', flexShrink: 0 }} aria-hidden="true" />
+        <div style={{ height: '8px', flexShrink: 0 }} aria-hidden="true" />
         <div ref={messagesEndRef} />
       </div>
 
@@ -638,8 +638,12 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
           style={{ display: 'none' }}
         />
 
-        {/* Ligne de saisie WhatsApp : Capsule (Emoji + Message + Pièce jointe + Caméra) + Bouton action rond (Micro / Envoyer) */}
-        <form className="chat-wa-input-row" onSubmit={handleSend}>
+        <form
+          className="chat-wa-input-row"
+          onSubmit={handleSend}
+          autoComplete="off"
+          data-lpignore="true"
+        >
           <div className="chat-wa-input-pill">
             <button
               type="button"
@@ -669,6 +673,11 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
               onBlur={handleInputBlur}
               autoComplete="off"
               autoCorrect="on"
+              spellCheck={false}
+              name="chat_message_input"
+              data-form-type="other"
+              data-lpignore="true"
+              inputMode="text"
             />
 
             <button
