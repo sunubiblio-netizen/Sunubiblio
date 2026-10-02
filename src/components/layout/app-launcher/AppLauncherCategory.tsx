@@ -34,34 +34,28 @@ export const AppLauncherCategory: React.FC<AppLauncherCategoryProps> = ({
 
       {isServicesCategory ? (
         <div className="category-services-list" role="list">
-          {apps.map((app) => {
-            const isActive = currentPathname === app.href || (app.href !== '/' && currentPathname.startsWith(`${app.href}/`));
-            return (
-              <div key={app.id} role="listitem">
-                <AppLauncherItem
-                  app={app}
-                  isActive={isActive}
-                  onSelectApp={onSelectApp}
-                  variant="service-row"
-                />
-              </div>
-            );
-          })}
+          {apps.map((app) => (
+            <div key={app.id} role="listitem">
+              <AppLauncherItem
+                app={app}
+                isActive={false}
+                onSelectApp={onSelectApp}
+                variant="service-row"
+              />
+            </div>
+          ))}
         </div>
       ) : (
         <div className="category-apps-grid" role="list">
-          {apps.map((app) => {
-            const isActive = currentPathname === app.href || (app.href !== '/' && currentPathname.startsWith(`${app.href}/`));
-            return (
-              <div key={app.id} role="listitem">
-                <AppLauncherItem
-                  app={app}
-                  isActive={isActive}
-                  onSelectApp={onSelectApp}
-                />
-              </div>
-            );
-          })}
+          {apps.map((app) => (
+            <div key={app.id} role="listitem">
+              <AppLauncherItem
+                app={app}
+                isActive={false}
+                onSelectApp={onSelectApp}
+              />
+            </div>
+          ))}
         </div>
       )}
     </section>
