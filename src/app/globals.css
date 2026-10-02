@@ -77,10 +77,8 @@ body[style*="overflow: hidden"] .scroll-navigation-global {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-}
-
-html {
-  scrollbar-gutter: stable;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
 }
 
 html, body {
@@ -90,6 +88,50 @@ html, body {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+}
+
+/* ==========================================================================
+   SUPPRESSION UNIVERSELLE DU TAP-HIGHLIGHT ET DU RECTANGLE BLEU MOBILE
+   ========================================================================== */
+a,
+button,
+input,
+textarea,
+select,
+summary,
+svg,
+span,
+div,
+li,
+nav,
+[role="button"],
+[tabindex] {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+  -webkit-touch-callout: none;
+}
+
+/* Suppression du contour/carré de focus natif des navigateurs mobiles lors d'un tap tactile */
+:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible),
+div:focus:not(:focus-visible),
+span:focus:not(:focus-visible),
+svg:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button:active,
+button:focus,
+a:active,
+a:focus {
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 body {
@@ -450,14 +492,19 @@ input {
   cursor: pointer;
   position: relative;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  outline: none;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 .header-icon-btn:hover,
+.header-icon-btn:focus,
+.header-icon-btn:active,
 .header-icon-btn.is-active {
   background: #f1f5f9;
   border-color: #e2e8f0;
   color: #0f172a;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 /* Bouton IA Sunubiblio */
