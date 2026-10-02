@@ -1814,6 +1814,13 @@
     transform: translateY(-2px) !important;
   }
 
+  .chat-input-bar-wrap.is-hidden-by-modal {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: translateY(20px) !important;
+  }
+
   .chat-wa-input-row {
     display: flex !important;
     align-items: center !important;
@@ -2436,14 +2443,16 @@ body.chat-conversation-active .mobile-bottom-nav-root {
 .chat-contact-modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 200;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  z-index: 1000000 !important;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 16px 12px;
   animation: fadeInModal 0.2s ease-out;
+  box-sizing: border-box;
 }
 
 @keyframes fadeInModal {
@@ -2456,12 +2465,14 @@ body.chat-conversation-active .mobile-bottom-nav-root {
   width: 100%;
   max-width: 400px;
   border-radius: 24px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
-  max-height: 90vh;
+  max-height: min(88vh, 88dvh);
   animation: slideUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
 }
 
 @keyframes slideUpModal {
@@ -2669,6 +2680,7 @@ body.chat-conversation-active .mobile-bottom-nav-root {
 
 .chat-contact-modal-done-btn {
   margin: 12px 20px 20px;
+  flex-shrink: 0;
   background: #f1f5f9;
   border: none;
   border-radius: 12px;

@@ -522,7 +522,7 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
       </div>
 
       {/* 3. Barre de saisie en bas — Disposition exacte WhatsApp */}
-      <div className={`chat-input-bar-wrap ${isInputFocused ? 'is-focused-floating' : ''}`}>
+      <div className={`chat-input-bar-wrap ${isInputFocused ? 'is-focused-floating' : ''} ${isContactModalOpen ? 'is-hidden-by-modal' : ''}`}>
         {/* Menu pièces jointes popover façon WhatsApp */}
         {isAttachMenuOpen && (
           <>
