@@ -16054,35 +16054,40 @@ input {
 
   .app-launcher-dropdown {
     position: fixed !important;
-    top: 98px !important;
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
     bottom: auto !important;
-    left: 10px !important;
-    right: 10px !important;
-    width: auto !important;
-    max-width: 410px !important;
-    margin: 0 auto !important;
-    max-height: calc(100vh - 116px) !important;
-    border-radius: 18px !important;
+    transform: translate(-50%, -50%) !important;
+    width: calc(100vw - 28px) !important;
+    max-width: 390px !important;
+    margin: 0 !important;
+    max-height: min(76dvh, 560px) !important;
+    border-radius: 22px !important;
     background: #ffffff !important;
     border: 1px solid rgba(226, 232, 240, 0.95) !important;
-    box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.25) !important;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35) !important;
     z-index: 10001 !important;
     display: flex !important;
     flex-direction: column !important;
     overflow: hidden !important;
-    animation: launcherDropdownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-    transform-origin: top center !important;
+    animation: launcherModalCenter 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    transform-origin: center center !important;
   }
 
-  @keyframes launcherDropdownFade {
+  @keyframes launcherModalCenter {
     0% {
       opacity: 0;
-      transform: translateY(-8px) scale(0.98);
+      transform: translate(-50%, calc(-50% + 12px)) scale(0.96);
     }
     100% {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translate(-50%, -50%) scale(1);
     }
+  }
+
+  .launcher-header {
+    flex-shrink: 0 !important;
   }
 
   .launcher-close-btn {
@@ -16097,11 +16102,17 @@ input {
   }
 
   .launcher-body-scroll {
-    max-height: calc(100vh - 250px) !important;
+    flex: 1 1 auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
     padding: 12px 10px 16px !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
     overscroll-behavior: contain !important;
+  }
+
+  .launcher-footer {
+    flex-shrink: 0 !important;
   }
 
   /* Grille 2 colonnes sur mobile selon les exigences */
