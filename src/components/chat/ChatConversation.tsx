@@ -5,12 +5,14 @@ import Image from 'next/image';
 import { ChatUser, ChatMessage, EphemeralDuration } from '@/types/chat';
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 import { ChatEmojiPicker } from './ChatEmojiPicker';
+import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
+import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 
 interface ChatConversationProps {
   activeUser: ChatUser;
   messages: ChatMessage[];
   onSendMessage: (text: string) => void;
-  onSendVoiceNote: (duration?: string) => void;
+  onSendVoiceNote: (duration?: string, audioUrl?: string) => void;
   onSendDocument: (file: File) => void;
   onSendImage: (file: File) => void;
   onStartCall: (type: 'vocal' | 'video' | 'screen') => void;
@@ -34,8 +36,6 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
   onBackMobile,
 }) => {
   const [inputText, setInputText] = useState('');
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const [audioProgress, setAudioProgress] = useState(35);
   const [isAttachMenuOpen, setIsAttachMenuOpen] = useState(false);
 
   // Nouvelles fonctionnalités WhatsApp & Infos du contact
@@ -51,83 +51,42 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
   const [showPhoneToggle, setShowPhoneToggle] = useState<boolean>(!!activeUser.showPhone);
   const [chatToast, setChatToast] = useState<string | null>(null);
   const [isInputFocused, setIsInputFocused] = useState(false);
-
-  // États WhatsApp Voice Recording (Image 2) & Emoji Picker (Image 3)
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
-  const [isRecordingVoice, setIsRecordingVoice] = useState(false);
-  const [recordingSeconds, setRecordingSeconds] = useState(0);
-  const [isPausedRecording, setIsPausedRecording] = useState(false);
-  const [isLockedVoice, setIsLockedVoice] = useState(false);
-  const touchStartYRef = useRef<number | null>(null);
 
-  // Chronomètre dynamique de l'enregistrement vocal
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-    if (isRecordingVoice && !isPausedRecording) {
-      interval = setInterval(() => {
-        setRecordingSeconds((prev) => prev + 1);
-      }, 1000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isRecordingVoice, isPausedRecording]);
+  // Système Audio Player réel et Waveform interactif
+  const {
+    activeAudioId,
+    isPlaying: isAudioPlaying,
+    progress: audioProgressVal,
+    currentTime: audioCurrentTime,
+    duration: audioDurationVal,
+    togglePlayAudio,
+    seekAudio,
+  } = useAudioPlayer();
 
-  const formattedVoiceTimer = useMemo(() => {
-    const mins = Math.floor(recordingSeconds / 60);
-    const secs = recordingSeconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  }, [recordingSeconds]);
-
-  // Actions d'enregistrement vocal
-  const startVoiceRecording = () => {
-    setIsRecordingVoice(true);
-    setRecordingSeconds(0);
-    setIsPausedRecording(false);
-    setIsLockedVoice(false);
-    setIsEmojiPickerOpen(false);
-    setIsAttachMenuOpen(false);
-  };
-
-  const stopAndSendVoiceRecording = () => {
-    const duration = formattedVoiceTimer === '0:00' ? '0:04' : formattedVoiceTimer;
-    onSendVoiceNote(duration);
-    setIsRecordingVoice(false);
-    setRecordingSeconds(0);
-    setIsPausedRecording(false);
-    setIsLockedVoice(false);
-  };
-
-  const cancelVoiceRecording = () => {
-    setIsRecordingVoice(false);
-    setRecordingSeconds(0);
-    setIsPausedRecording(false);
-    setIsLockedVoice(false);
-    showChatToast('Note vocale annulée');
-  };
-
-  const togglePauseVoiceRecording = () => {
-    setIsPausedRecording((prev) => !prev);
-  };
-
-  const handleMicTouchStart = (e: React.TouchEvent) => {
-    touchStartYRef.current = e.touches[0].clientY;
-    startVoiceRecording();
-  };
-
-  const handleMicTouchMove = (e: React.TouchEvent) => {
-    if (touchStartYRef.current === null) return;
-    const currentY = e.touches[0].clientY;
-    const diffY = touchStartYRef.current - currentY;
-    if (diffY > 35 && !isLockedVoice) {
-      setIsLockedVoice(true);
-      showChatToast('🔒 Enregistrement vocal verrouillé');
-    }
-  };
-
-  const handleMicTouchEnd = () => {
-    touchStartYRef.current = null;
-  };
+  // Système WhatsApp Voice Recorder réel avec MediaRecorder, gestes tactiles & cadenas
+  const {
+    isRecording: isRecordingVoice,
+    isHolding: isHoldingVoice,
+    isLocked: isLockedVoice,
+    isPaused: isPausedRecording,
+    recordingSeconds,
+    formattedTimer: formattedVoiceTimer,
+    dragOffsetX,
+    dragOffsetY,
+    liveVolume,
+    isNearCancel,
+    startRecording: startVoiceRecording,
+    lockRecording,
+    togglePause: togglePauseVoiceRecording,
+    cancelRecording: cancelVoiceRecording,
+    stopAndSend: stopAndSendVoiceRecording,
+    handleTouchStart: handleMicTouchStart,
+    handleTouchMove: handleMicTouchMove,
+    handleTouchEnd: handleMicTouchEnd,
+  } = useVoiceRecorder((result) => {
+    onSendVoiceNote(result.duration, result.audioUrl);
+  });
 
   const handleSelectEmoji = (emoji: string) => {
     if (editableRef.current) {
@@ -586,17 +545,17 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
                 </div>
               )}
 
-              {/* Message Note vocale avec Waveform interactif */}
+              {/* Message Note vocale avec Waveform interactif et vrai son */}
               {msg.type === 'audio' && (
                 <div className={`chat-bubble audio-bubble ${isMine ? 'mine' : 'other'}`}>
                   <div className="chat-audio-player">
                     <button
                       type="button"
                       className="chat-audio-play-btn"
-                      onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-                      aria-label={isPlayingAudio ? 'Mettre en pause' : 'Écouter la note vocale'}
+                      onClick={() => togglePlayAudio(msg.id, msg.attachment?.url, msg.attachment?.duration)}
+                      aria-label={activeAudioId === msg.id && isAudioPlaying ? 'Mettre en pause' : 'Écouter la note vocale'}
                     >
-                      {isPlayingAudio ? (
+                      {activeAudioId === msg.id && isAudioPlaying ? (
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                           <rect x="6" y="4" width="4" height="16" rx="1" />
                           <rect x="14" y="4" width="4" height="16" rx="1" />
@@ -608,21 +567,38 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
                       )}
                     </button>
 
-                    {/* Fausse onde sonore animée (waveform) */}
-                    <div className="chat-waveform-bars">
+                    {/* Onde sonore animée et interactive (waveform) */}
+                    <div className="chat-waveform-bars" role="progressbar" aria-label="Progression audio">
                       {[40, 65, 80, 50, 95, 70, 45, 85, 60, 40, 75, 90, 55, 35, 70, 50, 60, 40, 30].map(
-                        (h, idx) => (
-                          <span
-                            key={idx}
-                            className={`waveform-bar ${idx < 10 ? 'played' : ''} ${isPlayingAudio ? 'animating' : ''}`}
-                            style={{ height: `${h}%` }}
-                          />
-                        )
+                        (h, idx, arr) => {
+                          const isThisAudio = activeAudioId === msg.id;
+                          const barPct = (idx / arr.length) * 100;
+                          const isPlayed = isThisAudio && barPct <= audioProgressVal;
+                          const isAnimating = isThisAudio && isAudioPlaying;
+
+                          return (
+                            <span
+                              key={idx}
+                              className={`waveform-bar ${isPlayed ? 'played' : ''} ${isAnimating ? 'animating' : ''}`}
+                              style={{ height: `${h}%` }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (isThisAudio) {
+                                  seekAudio(barPct);
+                                } else {
+                                  togglePlayAudio(msg.id, msg.attachment?.url, msg.attachment?.duration);
+                                }
+                              }}
+                            />
+                          );
+                        }
                       )}
                     </div>
 
                     <span className="chat-audio-duration">
-                      {msg.attachment?.duration || '0:45'}
+                      {activeAudioId === msg.id && isAudioPlaying
+                        ? `${Math.floor(audioCurrentTime / 60)}:${(audioCurrentTime % 60).toString().padStart(2, '0')}`
+                        : (msg.attachment?.duration || '0:15')}
                     </span>
                   </div>
 
@@ -740,7 +716,8 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
                 className="chat-wa-attach-grid-item"
                 onClick={() => {
                   setIsAttachMenuOpen(false);
-                  onSendVoiceNote();
+                  startVoiceRecording();
+                  lockRecording();
                 }}
               >
                 <div className="chat-wa-attach-circle attach-audio">
@@ -803,8 +780,24 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
           onClose={() => setIsEmojiPickerOpen(false)}
         />
 
-        {/* Barre d'enregistrement vocal WhatsApp (Image 2) */}
-        {isRecordingVoice ? (
+        {/* 1. Cadenas flottant vertical WhatsApp au-dessus du micro (Visible lors du maintien tactile / survol) */}
+        {isHoldingVoice && !isLockedVoice && (
+          <div className="chat-wa-lock-capsule-wrapper">
+            <div className={`chat-wa-lock-capsule ${dragOffsetY > 25 ? 'snapping' : ''}`}>
+              <div className="chat-wa-lock-chevron">^</div>
+              <div className="chat-wa-lock-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 2. Affichage selon l'état d'enregistrement */}
+        {isLockedVoice ? (
+          /* A. Mode Verrouillé (Mains libres avec waveform dynamique, corbeille, pause et envoi) */
           <div className="chat-wa-voice-recording-pill">
             {/* 1. Bouton Corbeille (Supprimer / Annuler) */}
             <button
@@ -823,24 +816,26 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
               </svg>
             </button>
 
-            {/* 2. Centre : Point rouge + Timer + Ondes sonores animées + Pause */}
+            {/* 2. Centre : Point rouge + Timer + Ondes dynamiques en direct + Pause */}
             <div className="chat-wa-voice-center-track">
               <span className={`chat-wa-voice-rec-dot ${isPausedRecording ? 'is-paused' : ''}`} />
               <span className="chat-wa-voice-timer">{formattedVoiceTimer}</span>
 
-              {/* Ondes audio WhatsApp en direct */}
+              {/* Ondes audio WhatsApp en direct basées sur le volume réel */}
               <div className="chat-wa-voice-live-waves">
                 {[35, 60, 85, 45, 95, 70, 50, 80, 100, 65, 40, 90, 75, 55, 85, 60, 40, 70, 95, 50, 75, 45, 30].map(
-                  (h, idx) => (
-                    <span
-                      key={idx}
-                      className={`chat-wa-wave-bar ${!isPausedRecording ? 'animating' : ''}`}
-                      style={{
-                        height: isPausedRecording ? '20%' : `${h}%`,
-                        animationDelay: `${(idx % 6) * 0.1}s`,
-                      }}
-                    />
-                  )
+                  (baseH, idx) => {
+                    const dynamicHeight = isPausedRecording
+                      ? 15
+                      : Math.min(100, Math.max(15, baseH * liveVolume * 1.5));
+                    return (
+                      <span
+                        key={idx}
+                        className={`chat-wa-wave-bar ${!isPausedRecording ? 'animating' : ''}`}
+                        style={{ height: `${dynamicHeight}%` }}
+                      />
+                    );
+                  }
                 )}
               </div>
 
@@ -869,7 +864,7 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
             <button
               type="button"
               className="chat-wa-voice-send-btn"
-              onClick={stopAndSendVoiceRecording}
+              onClick={() => stopAndSendVoiceRecording()}
               title="Envoyer la note vocale"
               aria-label="Envoyer"
             >
@@ -879,7 +874,52 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
               </svg>
             </button>
           </div>
+        ) : isHoldingVoice ? (
+          /* B. Mode Maintien Tactile Mobile (Image du prompt : barre sombre + slide to cancel + bouton micro agrandi) */
+          <div className="chat-wa-input-row">
+            <div className="chat-wa-holding-bar">
+              <div className="chat-wa-holding-left">
+                <div className="chat-wa-rec-indicator">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="#ef4444">
+                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" fill="none" />
+                    <line x1="12" y1="19" x2="12" y2="22" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <span className="chat-wa-digital-timer">{formattedVoiceTimer}</span>
+              </div>
+
+              <div
+                className={`chat-wa-slide-cancel ${isNearCancel ? 'near-cancel' : ''}`}
+                style={{ transform: `translateX(${dragOffsetX}px)` }}
+              >
+                <span className="chat-wa-slide-chevron">‹</span>
+                <span className="chat-wa-slide-text">
+                  {isNearCancel ? 'Relâcher pour annuler' : 'Faire glisser pour annuler'}
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="chat-wa-action-btn chat-mic-active recording-holding"
+              onTouchStart={handleMicTouchStart}
+              onTouchMove={handleMicTouchMove}
+              onTouchEnd={handleMicTouchEnd}
+              onMouseDown={startVoiceRecording}
+              onMouseUp={() => stopAndSendVoiceRecording()}
+              title="Enregistrement en cours..."
+              aria-label="Enregistrement en cours"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                <line x1="12" y1="19" x2="12" y2="22" />
+              </svg>
+            </button>
+          </div>
         ) : (
+          /* C. Mode Normal (Formulaire texte ou micro inactif) */
           <form
             className="chat-wa-input-row"
             onSubmit={handleSend}
@@ -969,10 +1009,16 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
               <button
                 type="button"
                 className="chat-wa-action-btn chat-mic-active"
-                onClick={startVoiceRecording}
+                onClick={() => {
+                  startVoiceRecording();
+                  lockRecording();
+                }}
                 onTouchStart={handleMicTouchStart}
                 onTouchMove={handleMicTouchMove}
                 onTouchEnd={handleMicTouchEnd}
+                onMouseDown={() => {
+                  startVoiceRecording();
+                }}
                 title="Message vocal (Cliquer ou maintenir)"
                 aria-label="Enregistrer un message vocal"
               >

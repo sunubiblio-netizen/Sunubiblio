@@ -39,8 +39,9 @@ export interface ChatAttachment {
   name: string;
   size?: string;
   url?: string;
-  fileType?: 'pdf' | 'docx' | 'epub' | 'image' | 'video';
+  fileType?: 'pdf' | 'docx' | 'epub' | 'image' | 'video' | 'audio';
   duration?: string;
+  audioBlobUrl?: string;
 }
 
 export interface ChatMessage {

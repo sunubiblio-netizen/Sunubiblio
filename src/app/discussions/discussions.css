@@ -4006,3 +4006,201 @@ body.chat-conversation-active .mobile-bottom-nav-root {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
+/* ==========================================================================
+   WHATSAPP MOBILE VOICE HOLDING & LOCK SYSTEM (Survol / Maintien tactile)
+   ========================================================================== */
+
+/* 1. Capsule Cadenas Flottant (Au-dessus du micro) */
+.chat-wa-lock-capsule-wrapper {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  right: 14px;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  animation: lockCapsuleFloatIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes lockCapsuleFloatIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.chat-wa-lock-capsule {
+  background: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  width: 48px;
+  height: 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chat-wa-lock-capsule.snapping {
+  background: #00a884;
+  transform: scale(1.15) translateY(-4px);
+  box-shadow: 0 0 25px rgba(0, 168, 132, 0.7);
+  border-color: #00a884;
+}
+
+.chat-wa-lock-chevron {
+  font-size: 1.1rem;
+  color: #94a3b8;
+  font-weight: 800;
+  line-height: 1;
+  animation: lockChevronBounce 0.9s infinite alternate ease-in-out;
+}
+
+@keyframes lockChevronBounce {
+  0% { transform: translateY(3px); opacity: 0.4; }
+  100% { transform: translateY(-3px); opacity: 1; color: #ffffff; }
+}
+
+.chat-wa-lock-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+/* 2. Barre de Maintien Tactile Mobile ("< Faire glisser pour annuler") */
+.chat-wa-holding-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex: 1 !important;
+  background: #182229 !important; /* WhatsApp Dark Recording Bar exacte */
+  border-radius: 34px !important;
+  padding: 6px 18px !important;
+  min-height: 48px !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3) !important;
+  box-sizing: border-box !important;
+  user-select: none !important;
+  touch-action: none !important;
+  overflow: hidden !important;
+  animation: slideInVoiceBar 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.chat-wa-holding-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chat-wa-rec-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: recMicPulse 1s infinite alternate ease-in-out;
+}
+
+@keyframes recMicPulse {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.5));
+  }
+  100% {
+    transform: scale(1.18);
+    filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.9));
+  }
+}
+
+.chat-wa-digital-timer {
+  font-family: monospace, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.6px;
+}
+
+.chat-wa-slide-cancel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  font-size: 0.86rem;
+  font-weight: 500;
+  transition: transform 0.05s linear, color 0.15s ease;
+  user-select: none;
+  pointer-events: none;
+}
+
+.chat-wa-slide-cancel.near-cancel {
+  color: #ef4444 !important;
+  font-weight: 700;
+  transform: scale(1.05);
+}
+
+.chat-wa-slide-chevron {
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1;
+  animation: chevronNudge 0.9s infinite ease-in-out;
+}
+
+@keyframes chevronNudge {
+  0%, 100% { transform: translateX(0); opacity: 0.5; }
+  50% { transform: translateX(-6px); opacity: 1; color: #ffffff; }
+}
+
+/* Bouton micro actif en cours de maintien */
+.chat-wa-action-btn.recording-holding {
+  transform: scale(1.24) !important;
+  background: #00a884 !important;
+  box-shadow: 0 0 24px rgba(0, 168, 132, 0.75) !important;
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 125 !important;
+}
+
+/* Lecteur audio et barres waveform interactives */
+.chat-waveform-bars {
+  cursor: pointer;
+}
+
+.waveform-bar {
+  cursor: pointer;
+  transition: height 0.12s ease, background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.waveform-bar:hover {
+  opacity: 0.85;
+  filter: brightness(1.25);
+}
+
+.chat-bubble.audio-bubble.mine .waveform-bar.played {
+  background: #ffffff !important;
+}
+
+.chat-bubble.audio-bubble.mine .waveform-bar {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.chat-bubble.audio-bubble.other .waveform-bar.played {
+  background: #00a884 !important;
+}
+
+.chat-bubble.audio-bubble.other .waveform-bar {
+  background: #cbd5e1;
+}
+
+.chat-bubble.audio-bubble.other .chat-audio-play-btn {
+  background: #00a884;
+  color: #ffffff;
+}
+
+
