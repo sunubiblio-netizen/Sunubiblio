@@ -790,15 +790,30 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
         {isHoldingVoice && !isLockedVoice && (
           <div
             className="chat-wa-lock-capsule-wrapper"
-            onClick={() => lockRecording()}
-            title="Cliquer ou glisser vers le haut pour verrouiller"
+            title="Glisser vers le haut pour verrouiller"
           >
-            <div className={`chat-wa-lock-capsule ${dragOffsetY > 25 ? 'snapping' : ''}`}>
-              <div className="chat-wa-lock-chevron">^</div>
-              <div className="chat-wa-lock-icon">
+            <div className={`chat-wa-lock-capsule ${dragOffsetY > 38 ? 'snapping' : ''}`}>
+              <div
+                className="chat-wa-lock-chevron"
+                style={{
+                  transform: `translateY(-${Math.min(8, dragOffsetY * 0.2)}px)`,
+                  opacity: Math.max(0.3, 1 - (dragOffsetY / 65) * 0.6),
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="18 15 12 9 6 15" />
+                </svg>
+              </div>
+              <div
+                className="chat-wa-lock-icon"
+                style={{
+                  transform: dragOffsetY > 45 ? 'scale(1.15)' : 'scale(1)',
+                  transition: 'transform 0.15s ease',
+                }}
+              >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  <path d={dragOffsetY > 45 ? "M7 11V7a5 5 0 0 1 10 0v4" : "M7 11V7a5 5 0 0 1 9.5-1.5"} />
                 </svg>
               </div>
             </div>
@@ -1010,7 +1025,20 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
                   onPointerMove={handlePointerMove}
                   onPointerUp={handlePointerUp}
                   onPointerCancel={handlePointerCancel}
-                  style={{ touchAction: 'none', userSelect: 'none' }}
+                  style={{
+                    touchAction: 'none',
+                    userSelect: 'none',
+                    ...(isHoldingVoice
+                      ? {
+                          transform: `translate3d(0, -${dragOffsetY}px, 0) scale(${1.22 + (dragOffsetY / 120) * 0.08})`,
+                          boxShadow: `0 ${Math.max(2, Math.round(dragOffsetY * 0.35))}px ${16 + Math.round(dragOffsetY * 0.35)}px rgba(0, 168, 132, ${Math.min(0.95, 0.75 + (dragOffsetY / 60) * 0.2)})`,
+                          transition:
+                            dragOffsetY === 0
+                              ? 'transform 0.15s cubic-bezier(0.16, 1, 0.3, 1)'
+                              : 'transform 0.12s cubic-bezier(0.18, 0.89, 0.32, 1.1), box-shadow 0.15s ease',
+                        }
+                      : {}),
+                  }}
                   title="Message vocal (Maintenir pour parler, glisser à gauche pour annuler, glisser en haut pour verrouiller)"
                   aria-label="Enregistrer un message vocal"
                 >

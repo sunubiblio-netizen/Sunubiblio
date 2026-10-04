@@ -2329,6 +2329,10 @@ body.chat-conversation-active .mobile-bottom-nav-root {
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 168, 132, 0.35);
   transition: transform 0.15s ease, background 0.15s ease;
+  touch-action: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
 }
 
 .chat-wa-action-btn:active {
@@ -4014,12 +4018,13 @@ body.chat-conversation-active .mobile-bottom-nav-root {
 .chat-wa-lock-capsule-wrapper {
   position: absolute;
   bottom: calc(100% + 14px);
-  right: 14px;
+  right: 12px;
   z-index: 120;
   display: flex;
   flex-direction: column;
   align-items: center;
-  pointer-events: none;
+  pointer-events: auto !important;
+  cursor: pointer;
   animation: lockCapsuleFloatIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -4047,13 +4052,15 @@ body.chat-conversation-active .mobile-bottom-nav-root {
   padding: 12px 0;
   box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
   color: #ffffff;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  touch-action: none;
 }
 
 .chat-wa-lock-capsule.snapping {
-  background: #00a884;
-  transform: scale(1.15) translateY(-4px);
-  box-shadow: 0 0 25px rgba(0, 168, 132, 0.7);
+  background: #00a884 !important;
+  transform: scale(1.12) translateY(-4px);
+  box-shadow: 0 0 28px rgba(0, 168, 132, 0.85);
   border-color: #00a884;
 }
 
@@ -4160,11 +4167,10 @@ body.chat-conversation-active .mobile-bottom-nav-root {
 
 /* Bouton micro actif en cours de maintien */
 .chat-wa-action-btn.recording-holding {
-  transform: scale(1.24) !important;
   background: #00a884 !important;
   box-shadow: 0 0 24px rgba(0, 168, 132, 0.75) !important;
-  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 125 !important;
+  will-change: transform, box-shadow;
 }
 
 /* Lecteur audio et barres waveform interactives */

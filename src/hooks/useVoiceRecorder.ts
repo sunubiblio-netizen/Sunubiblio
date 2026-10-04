@@ -44,6 +44,8 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
   const isLockedRef = useRef<boolean>(false);
   const isRecordingRef = useRef<boolean>(false);
   const isCancelledRef = useRef<boolean>(false);
+  const lockedDuringGestureRef = useRef<boolean>(false);
+  const lockedTimestampRef = useRef<number>(0);
 
   // Synchronisation des refs avec l'état pour les callbacks d'événements
   isLockedRef.current = isLocked;
@@ -129,6 +131,8 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
     // Réinitialisation préalable
     cleanupAudio();
     isCancelledRef.current = false;
+    lockedDuringGestureRef.current = false;
+    lockedTimestampRef.current = 0;
     audioChunksRef.current = [];
 
     // Activation immédiate de l'interface visuelle et du compteur
@@ -247,6 +251,9 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
   const lockRecording = useCallback(() => {
     setIsLocked(true);
     setIsHolding(false);
+    isLockedRef.current = true;
+    lockedDuringGestureRef.current = true;
+    lockedTimestampRef.current = Date.now();
     setDragOffsetY(0);
     setDragOffsetX(0);
     setIsNearCancel(false);
@@ -321,6 +328,10 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
 
   // Arrêter et envoyer la note vocale enregistrée
   const stopAndSend = useCallback(async (): Promise<VoiceRecorderResult | null> => {
+    // Si l'utilisateur vient tout juste de verrouiller (< 450ms), ignorer tout clic accidentel
+    if (Date.now() - lockedTimestampRef.current < 450) {
+      return null;
+    }
     if (!isRecordingRef.current) return null;
 
     const totalSec = Math.max(1, recordingSeconds || Math.round((Date.now() - startTimeRef.current) / 1000));
@@ -426,19 +437,41 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
       const diffX = e.clientX - pointerStartRef.current.x;
       const diffY = pointerStartRef.current.y - e.clientY; // Positif vers le haut
 
-      // 1. Glissement vers la gauche pour annuler ("< Faire glisser pour annuler")
+      // 1. Détection prioritaire du glissement vertical vers le haut pour VERROUILLER
+      if (diffY > 0) {
+        // Amorti progressif (légère inertie agréable, monte avec fluidité sans précipitation)
+        const progressiveY = Math.pow(diffY, 0.94);
+        const clampedY = Math.min(75, Math.max(0, progressiveY));
+        setDragOffsetY(clampedY);
+
+        // Seuil d'enclenchement posé au sommet du rail vers le cadenas : 68px
+        // L'utilisateur profite pleinement de l'effet de survolage sans déclenchement trop hâtif
+        if (clampedY >= 68 && !isLockedRef.current && !lockedDuringGestureRef.current) {
+          lockRecording();
+          return;
+        }
+      } else {
+        setDragOffsetY(0);
+      }
+
+      // Si l'enregistrement a été verrouillé (glissé vers le haut), ne pas traiter l'annulation
+      if (isLockedRef.current || lockedDuringGestureRef.current) {
+        return;
+      }
+
+      // 2. Glissement vers la gauche pour annuler ("< Faire glisser pour annuler")
       if (diffX < 0) {
         const clampedX = Math.max(-130, diffX);
         setDragOffsetX(clampedX);
 
-        if (diffX < -70) {
+        if (diffX < -65) {
           setIsNearCancel(true);
         } else {
           setIsNearCancel(false);
         }
 
         // Annulation automatique si glissé très loin vers la gauche (> 100px)
-        if (diffX < -105) {
+        if (diffX < -100) {
           try {
             if (pointerTargetRef.current && pointerIdRef.current !== null) {
               pointerTargetRef.current.releasePointerCapture(pointerIdRef.current);
@@ -454,25 +487,6 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
       } else {
         setDragOffsetX(0);
         setIsNearCancel(false);
-      }
-
-      // 2. Glissement vers le haut pour verrouiller (Cadenas vertical WhatsApp)
-      if (diffY > 0) {
-        setDragOffsetY(Math.min(90, diffY));
-        if (diffY > 40 && !isLockedRef.current) {
-          lockRecording();
-          try {
-            if (pointerTargetRef.current && pointerIdRef.current !== null) {
-              pointerTargetRef.current.releasePointerCapture(pointerIdRef.current);
-            }
-          } catch {
-            // Ignorer
-          }
-          isDraggingRef.current = false;
-          pointerStartRef.current = null;
-        }
-      } else {
-        setDragOffsetY(0);
       }
     },
     [cancelRecording, lockRecording]
@@ -492,20 +506,27 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
       }
 
       const startPos = pointerStartRef.current;
+      const wasLocked = isLockedRef.current || lockedDuringGestureRef.current;
+
       isDraggingRef.current = false;
       pointerStartRef.current = null;
       pointerIdRef.current = null;
       pointerTargetRef.current = null;
 
-      // Si l'enregistrement a été verrouillé, relâcher le doigt ne coupe PAS l'enregistrement
-      if (isLockedRef.current) {
+      // CRITIQUE WHATSAPP : Si l'enregistrement a été verrouillé (glissé vers le haut),
+      // relâcher le doigt NE COUPE PAS et N'ENVOIE PAS l'enregistrement !
+      // L'utilisateur peut continuer à parler normalement les mains libres !
+      if (wasLocked) {
         setIsHolding(false);
+        setTimeout(() => {
+          lockedDuringGestureRef.current = false;
+        }, 400);
         return;
       }
 
       // Si l'utilisateur a glissé vers la gauche pour annuler
       const diffX = startPos ? e.clientX - startPos.x : 0;
-      if (diffX < -65 || isNearCancel) {
+      if (diffX < -60 || isNearCancel) {
         cancelRecording();
         return;
       }
@@ -513,16 +534,16 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
       // Durée du maintien
       const durationHeld = startPos ? Date.now() - startPos.time : 1000;
 
-      // Si clic très court (< 350ms), basculer en mode verrouillé pour permettre de parler les mains libres
-      if (durationHeld < 350) {
-        lockRecording();
+      // WhatsApp : Si clic ou tapotement court (< 500ms) sans appui long, annuler automatiquement
+      if (durationHeld < 500) {
+        cancelRecording();
         return;
       }
 
-      // Si maintenu et relâché normalement, envoyer la note vocale immédiatement (WhatsApp)
+      // Si vrai appui long maintenu et relâché normalement -> envoyer !
       stopAndSend();
     },
-    [isNearCancel, cancelRecording, lockRecording, stopAndSend]
+    [isNearCancel, cancelRecording, stopAndSend]
   );
 
   const handlePointerCancel = useCallback(
@@ -539,7 +560,7 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
       pointerIdRef.current = null;
       pointerTargetRef.current = null;
 
-      if (!isLockedRef.current) {
+      if (!isLockedRef.current && !lockedDuringGestureRef.current) {
         cancelRecording();
       }
     },
