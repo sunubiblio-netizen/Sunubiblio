@@ -36,7 +36,9 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
 
   // Références de synchronisation temporelle et tactile
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const startTimeRef = useRef<number>(0);
+  const accumulatedTimeRef = useRef<number>(0);
+  const segmentStartTimeRef = useRef<number>(0);
+  const isPausedRef = useRef<boolean>(false);
   const pointerStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const pointerIdRef = useRef<number | null>(null);
   const pointerTargetRef = useRef<HTMLElement | null>(null);
@@ -50,6 +52,7 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
   // Synchronisation des refs avec l'état pour les callbacks d'événements
   isLockedRef.current = isLocked;
   isRecordingRef.current = isRecording;
+  isPausedRef.current = isPaused;
 
   // Formatage propre du chronomètre
   const formattedTimer = useMemo(() => {
@@ -75,8 +78,21 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
     return undefined;
   };
 
+  // Arrêt immédiat du chronomètre
+  const stopTimer = useCallback(() => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+  }, []);
+
   // Nettoyage complet des flux et de l'AudioContext
   const cleanupAudio = useCallback(() => {
+    stopTimer();
+    accumulatedTimeRef.current = 0;
+    segmentStartTimeRef.current = 0;
+    isPausedRef.current = false;
+
     if (animFrameRef.current) {
       cancelAnimationFrame(animFrameRef.current);
       animFrameRef.current = null;
@@ -103,28 +119,22 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
       });
       audioStreamRef.current = null;
     }
+  }, [stopTimer]);
 
+  // Chronomètre haute précision basé sur segments réels accumulés (pause-friendly)
+  const startTimer = useCallback(() => {
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
       timerIntervalRef.current = null;
     }
-  }, []);
-
-  // Chronomètre haute précision basé sur Date.now()
-  const startTimer = useCallback(() => {
-    if (timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current);
-    }
-    startTimeRef.current = Date.now();
-    setRecordingSeconds(0);
 
     timerIntervalRef.current = setInterval(() => {
-      if (startTimeRef.current > 0 && !isPaused) {
-        const elapsed = Math.max(0, Math.floor((Date.now() - startTimeRef.current) / 1000));
-        setRecordingSeconds(elapsed);
-      }
-    }, 500);
-  }, [isPaused]);
+      if (isPausedRef.current || segmentStartTimeRef.current === 0) return;
+      const currentSegmentMs = Date.now() - segmentStartTimeRef.current;
+      const totalMs = accumulatedTimeRef.current + currentSegmentMs;
+      setRecordingSeconds(Math.max(0, Math.floor(totalMs / 1000)));
+    }, 200);
+  }, []);
 
   // Démarrer l'enregistrement vocal réel avec le microphone
   const startRecording = useCallback(async () => {
@@ -134,6 +144,9 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
     lockedDuringGestureRef.current = false;
     lockedTimestampRef.current = 0;
     audioChunksRef.current = [];
+    accumulatedTimeRef.current = 0;
+    segmentStartTimeRef.current = Date.now();
+    isPausedRef.current = false;
 
     // Activation immédiate de l'interface visuelle et du compteur
     setIsRecording(true);
@@ -188,6 +201,11 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
           const dataArray = new Uint8Array(analyser.frequencyBinCount);
           const trackVolume = () => {
             if (!isRecordingRef.current) return;
+            if (isPausedRef.current) {
+              setLiveVolume(0.15);
+              animFrameRef.current = requestAnimationFrame(trackVolume);
+              return;
+            }
             analyser.getByteFrequencyData(dataArray);
             let sum = 0;
             for (let i = 0; i < dataArray.length; i++) {
@@ -219,7 +237,7 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
       mediaRecorderRef.current = recorder;
 
       recorder.ondataavailable = (event: BlobEvent) => {
-        if (event.data && event.data.size > 0) {
+        if (event.data && event.data.size > 0 && !isPausedRef.current) {
           audioChunksRef.current.push(event.data);
         }
       };
@@ -266,34 +284,83 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
     }
   }, []);
 
-  // Mettre en pause ou reprendre
+  // Mettre en pause ou reprendre l'enregistrement vocal
   const togglePause = useCallback(() => {
-    if (!isRecording) return;
+    if (!isRecordingRef.current) return;
 
-    if (isPaused) {
+    if (isPausedRef.current) {
+      // 1. REPRENDRE
+      isPausedRef.current = false;
+      setIsPaused(false);
+
+      // Réactiver le flux microphone
+      if (audioStreamRef.current) {
+        audioStreamRef.current.getAudioTracks().forEach((track) => {
+          track.enabled = true;
+        });
+      }
+
+      // Reprendre AudioContext si suspendu
+      if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+        audioContextRef.current.resume().catch(() => {});
+      }
+
+      // Reprendre MediaRecorder si en pause
       if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'paused') {
         try {
           mediaRecorderRef.current.resume();
-        } catch {
-          // Ignorer
+        } catch (e) {
+          console.warn('Erreur reprise MediaRecorder:', e);
         }
       }
-      setIsPaused(false);
+
+      // Relancer le chronomètre à partir du timestamp actuel
+      segmentStartTimeRef.current = Date.now();
+      startTimer();
     } else {
+      // 2. METTRE EN PAUSE
+      isPausedRef.current = true;
+      setIsPaused(true);
+
+      // Couper immédiatement le timer pour figer la durée
+      stopTimer();
+
+      // Accumuler le temps réellement enregistré avant la pause
+      if (segmentStartTimeRef.current > 0) {
+        accumulatedTimeRef.current += Date.now() - segmentStartTimeRef.current;
+        segmentStartTimeRef.current = 0;
+      }
+      setRecordingSeconds(Math.max(0, Math.floor(accumulatedTimeRef.current / 1000)));
+
+      // Mettre en pause MediaRecorder
       if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
         try {
           mediaRecorderRef.current.pause();
-        } catch {
-          // Ignorer
+        } catch (e) {
+          console.warn('Erreur pause MediaRecorder:', e);
         }
       }
-      setIsPaused(true);
+
+      // Désactiver le micro au niveau matériel pour ne capter aucun son pendant la pause
+      if (audioStreamRef.current) {
+        audioStreamRef.current.getAudioTracks().forEach((track) => {
+          track.enabled = false;
+        });
+      }
+
+      // Suspendre AudioContext et figer les ondes
+      if (audioContextRef.current && audioContextRef.current.state === 'running') {
+        audioContextRef.current.suspend().catch(() => {});
+      }
+      setLiveVolume(0.15);
     }
-  }, [isRecording, isPaused]);
+  }, [stopTimer, startTimer]);
 
   // Annuler et supprimer l'enregistrement
   const cancelRecording = useCallback(() => {
     isCancelledRef.current = true;
+    isPausedRef.current = false;
+    stopTimer();
 
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       try {
@@ -324,7 +391,7 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
         // Ignorer
       }
     }
-  }, [cleanupAudio]);
+  }, [cleanupAudio, stopTimer]);
 
   // Arrêter et envoyer la note vocale enregistrée
   const stopAndSend = useCallback(async (): Promise<VoiceRecorderResult | null> => {
@@ -334,7 +401,15 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
     }
     if (!isRecordingRef.current) return null;
 
-    const totalSec = Math.max(1, recordingSeconds || Math.round((Date.now() - startTimeRef.current) / 1000));
+    stopTimer();
+
+    // Accumuler le dernier segment actif si on n'était pas en pause
+    if (segmentStartTimeRef.current > 0 && !isPausedRef.current) {
+      accumulatedTimeRef.current += Date.now() - segmentStartTimeRef.current;
+      segmentStartTimeRef.current = 0;
+    }
+
+    const totalSec = Math.max(1, Math.round(accumulatedTimeRef.current / 1000) || recordingSeconds);
     const finalDurationText = formatAudioDuration(totalSec);
 
     return new Promise((resolve) => {
@@ -400,7 +475,7 @@ export function useVoiceRecorder({ onSendAudio, onError }: UseVoiceRecorderOptio
         finalize(blob);
       }
     });
-  }, [cleanupAudio, onSendAudio, recordingSeconds]);
+  }, [cleanupAudio, onSendAudio, recordingSeconds, stopTimer]);
 
   // Gestion des événements Pointer (Mobile Touch + Souris Desktop unifiés)
   const handlePointerDown = useCallback(
