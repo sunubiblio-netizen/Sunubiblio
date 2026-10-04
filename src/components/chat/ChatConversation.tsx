@@ -74,18 +74,24 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
     formattedTimer: formattedVoiceTimer,
     dragOffsetX,
     dragOffsetY,
-    liveVolume,
     isNearCancel,
+    liveVolume,
     startRecording: startVoiceRecording,
     lockRecording,
     togglePause: togglePauseVoiceRecording,
     cancelRecording: cancelVoiceRecording,
     stopAndSend: stopAndSendVoiceRecording,
-    handleTouchStart: handleMicTouchStart,
-    handleTouchMove: handleMicTouchMove,
-    handleTouchEnd: handleMicTouchEnd,
-  } = useVoiceRecorder((result) => {
-    onSendVoiceNote(result.duration, result.audioUrl);
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+    handlePointerCancel,
+  } = useVoiceRecorder({
+    onSendAudio: (result) => {
+      onSendVoiceNote(result.duration, result.audioUrl);
+    },
+    onError: (msg) => {
+      showChatToast(msg);
+    },
   });
 
   const handleSelectEmoji = (emoji: string) => {
@@ -780,9 +786,13 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
           onClose={() => setIsEmojiPickerOpen(false)}
         />
 
-        {/* 1. Cadenas flottant vertical WhatsApp au-dessus du micro (Visible lors du maintien tactile / survol) */}
+        {/* 1. Cadenas flottant vertical WhatsApp au-dessus du micro (Visible lors du maintien tactile / Pointer) */}
         {isHoldingVoice && !isLockedVoice && (
-          <div className="chat-wa-lock-capsule-wrapper">
+          <div
+            className="chat-wa-lock-capsule-wrapper"
+            onClick={() => lockRecording()}
+            title="Cliquer ou glisser vers le haut pour verrouiller"
+          >
             <div className={`chat-wa-lock-capsule ${dragOffsetY > 25 ? 'snapping' : ''}`}>
               <div className="chat-wa-lock-chevron">^</div>
               <div className="chat-wa-lock-icon">
@@ -795,242 +805,225 @@ export const ChatConversation: React.FC<ChatConversationProps> = ({
           </div>
         )}
 
-        {/* 2. Affichage selon l'état d'enregistrement */}
-        {isLockedVoice ? (
-          /* A. Mode Verrouillé (Mains libres avec waveform dynamique, corbeille, pause et envoi) */
-          <div className="chat-wa-voice-recording-pill">
-            {/* 1. Bouton Corbeille (Supprimer / Annuler) */}
-            <button
-              type="button"
-              className="chat-wa-voice-trash-btn"
-              onClick={cancelVoiceRecording}
-              title="Supprimer la note vocale"
-              aria-label="Supprimer la note vocale"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 6h18" />
-                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                <line x1="10" y1="11" x2="10" y2="17" />
-                <line x1="14" y1="11" x2="14" y2="17" />
-              </svg>
-            </button>
-
-            {/* 2. Centre : Point rouge + Timer + Ondes dynamiques en direct + Pause */}
-            <div className="chat-wa-voice-center-track">
-              <span className={`chat-wa-voice-rec-dot ${isPausedRecording ? 'is-paused' : ''}`} />
-              <span className="chat-wa-voice-timer">{formattedVoiceTimer}</span>
-
-              {/* Ondes audio WhatsApp en direct basées sur le volume réel */}
-              <div className="chat-wa-voice-live-waves">
-                {[35, 60, 85, 45, 95, 70, 50, 80, 100, 65, 40, 90, 75, 55, 85, 60, 40, 70, 95, 50, 75, 45, 30].map(
-                  (baseH, idx) => {
-                    const dynamicHeight = isPausedRecording
-                      ? 15
-                      : Math.min(100, Math.max(15, baseH * liveVolume * 1.5));
-                    return (
-                      <span
-                        key={idx}
-                        className={`chat-wa-wave-bar ${!isPausedRecording ? 'animating' : ''}`}
-                        style={{ height: `${dynamicHeight}%` }}
-                      />
-                    );
-                  }
-                )}
-              </div>
-
-              {/* Bouton Pause / Reprendre */}
+        {/* 2. Barre d'entrée principale WhatsApp */}
+        <div className="chat-wa-input-row">
+          {isLockedVoice ? (
+            /* A. Mode Verrouillé (Mains libres avec Corbeille, Timer, Waveform micro dynamique, Pause, Envoi) */
+            <div className="chat-wa-voice-recording-pill">
               <button
                 type="button"
-                className="chat-wa-voice-pause-btn"
-                onClick={togglePauseVoiceRecording}
-                title={isPausedRecording ? 'Reprendre' : 'Mettre en pause'}
-                aria-label={isPausedRecording ? 'Reprendre' : 'Mettre en pause'}
+                className="chat-wa-voice-trash-btn"
+                onClick={cancelVoiceRecording}
+                title="Supprimer la note vocale"
+                aria-label="Supprimer la note vocale"
               >
-                {isPausedRecording ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#ef4444">
-                    <polygon points="5 3 19 12 5 21 5 3" />
-                  </svg>
-                ) : (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#ef4444">
-                    <rect x="6" y="4" width="4" height="16" rx="1" />
-                    <rect x="14" y="4" width="4" height="16" rx="1" />
-                  </svg>
-                )}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                  <line x1="10" y1="11" x2="10" y2="17" />
+                  <line x1="14" y1="11" x2="14" y2="17" />
+                </svg>
               </button>
-            </div>
 
-            {/* 3. Bouton Envoi Vert Circulaire WhatsApp (➤) */}
-            <button
-              type="button"
-              className="chat-wa-voice-send-btn"
-              onClick={() => stopAndSendVoiceRecording()}
-              title="Envoyer la note vocale"
-              aria-label="Envoyer"
-            >
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13" />
-                <polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor" />
-              </svg>
-            </button>
-          </div>
-        ) : isHoldingVoice ? (
-          /* B. Mode Maintien Tactile Mobile (Image du prompt : barre sombre + slide to cancel + bouton micro agrandi) */
-          <div className="chat-wa-input-row">
-            <div className="chat-wa-holding-bar">
-              <div className="chat-wa-holding-left">
-                <div className="chat-wa-rec-indicator">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="#ef4444">
-                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" fill="none" />
-                    <line x1="12" y1="19" x2="12" y2="22" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
+              <div className="chat-wa-voice-center-track">
+                <span className={`chat-wa-voice-rec-dot ${isPausedRecording ? 'is-paused' : ''}`} />
+                <span className="chat-wa-voice-timer">{formattedVoiceTimer}</span>
+
+                {/* Ondes audio qui réagissent en temps réel au son du microphone */}
+                <div className="chat-wa-voice-live-waves">
+                  {[25, 50, 75, 40, 90, 65, 35, 80, 100, 70, 45, 85, 75, 45, 80, 60, 35, 70, 95, 50, 70, 40, 25].map(
+                    (baseH, idx) => {
+                      const dynamicHeight = isPausedRecording
+                        ? 14
+                        : Math.min(100, Math.max(12, baseH * liveVolume * 1.6));
+                      return (
+                        <span
+                          key={idx}
+                          className={`chat-wa-wave-bar ${!isPausedRecording ? 'animating' : ''}`}
+                          style={{ height: `${dynamicHeight}%` }}
+                        />
+                      );
+                    }
+                  )}
                 </div>
-                <span className="chat-wa-digital-timer">{formattedVoiceTimer}</span>
+
+                <button
+                  type="button"
+                  className="chat-wa-voice-pause-btn"
+                  onClick={togglePauseVoiceRecording}
+                  title={isPausedRecording ? 'Reprendre' : 'Mettre en pause'}
+                  aria-label={isPausedRecording ? 'Reprendre' : 'Mettre en pause'}
+                >
+                  {isPausedRecording ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#ef4444">
+                      <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#ef4444">
+                      <rect x="6" y="4" width="4" height="16" rx="1" />
+                      <rect x="14" y="4" width="4" height="16" rx="1" />
+                    </svg>
+                  )}
+                </button>
               </div>
 
-              <div
-                className={`chat-wa-slide-cancel ${isNearCancel ? 'near-cancel' : ''}`}
-                style={{ transform: `translateX(${dragOffsetX}px)` }}
-              >
-                <span className="chat-wa-slide-chevron">‹</span>
-                <span className="chat-wa-slide-text">
-                  {isNearCancel ? 'Relâcher pour annuler' : 'Faire glisser pour annuler'}
-                </span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              className="chat-wa-action-btn chat-mic-active recording-holding"
-              onTouchStart={handleMicTouchStart}
-              onTouchMove={handleMicTouchMove}
-              onTouchEnd={handleMicTouchEnd}
-              onMouseDown={startVoiceRecording}
-              onMouseUp={() => stopAndSendVoiceRecording()}
-              title="Enregistrement en cours..."
-              aria-label="Enregistrement en cours"
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                <line x1="12" y1="19" x2="12" y2="22" />
-              </svg>
-            </button>
-          </div>
-        ) : (
-          /* C. Mode Normal (Formulaire texte ou micro inactif) */
-          <form
-            className="chat-wa-input-row"
-            onSubmit={handleSend}
-            autoComplete="off"
-            data-lpignore="true"
-          >
-            <div className="chat-wa-input-pill">
+              {/* Bouton Envoi Vert Circulaire WhatsApp (➤) */}
               <button
                 type="button"
-                className={`chat-wa-pill-btn chat-wa-emoji-btn ${isEmojiPickerOpen ? 'active' : ''}`}
-                title="Émojis"
-                aria-label="Choisir un émoji"
-                onClick={() => setIsEmojiPickerOpen(!isEmojiPickerOpen)}
+                className="chat-wa-voice-send-btn"
+                onClick={() => stopAndSendVoiceRecording()}
+                title="Envoyer la note vocale"
+                aria-label="Envoyer"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-                  <line x1="9" y1="9" x2="9.01" y2="9" strokeWidth="3" />
-                  <line x1="15" y1="9" x2="15.01" y2="9" strokeWidth="3" />
-                </svg>
-              </button>
-
-              <div
-                ref={editableRef}
-                role="textbox"
-                contentEditable={true}
-                aria-multiline={true}
-                aria-label="Message"
-                className="chat-wa-text-input chat-wa-editable-input"
-                data-placeholder="Message"
-                onInput={(e) => {
-                  const text = e.currentTarget.innerText || '';
-                  if (!text.trim() && e.currentTarget.innerHTML !== '') {
-                    e.currentTarget.innerHTML = '';
-                  }
-                  setInputText(text);
-                }}
-                onKeyDown={handleKeyPress}
-                onFocus={handleInputFocus}
-                onBlur={handleInputBlur}
-                spellCheck={false}
-                autoCorrect="off"
-                autoCapitalize="sentences"
-                suppressContentEditableWarning={true}
-              />
-
-              <button
-                type="button"
-                className="chat-wa-pill-btn chat-wa-clip-btn"
-                title="Joindre un fichier"
-                aria-label="Joindre un fichier"
-                onClick={() => setIsAttachMenuOpen(!isAttachMenuOpen)}
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-                </svg>
-              </button>
-
-              <button
-                type="button"
-                className="chat-wa-pill-btn chat-wa-cam-btn"
-                title="Prendre une photo"
-                aria-label="Prendre une photo ou vidéo"
-                onClick={() => cameraInputRef.current?.click()}
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                  <circle cx="12" cy="13" r="4" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Bouton d'action circulaire WhatsApp : Micro si vide, Envoi si texte */}
-            {inputText.trim() ? (
-              <button
-                type="submit"
-                className="chat-wa-action-btn chat-send-active"
-                title="Envoyer le message"
-                aria-label="Envoyer le message"
-              >
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="22" y1="2" x2="11" y2="13" />
                   <polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor" />
                 </svg>
               </button>
-            ) : (
-              <button
-                type="button"
-                className="chat-wa-action-btn chat-mic-active"
-                onClick={() => {
-                  startVoiceRecording();
-                  lockRecording();
-                }}
-                onTouchStart={handleMicTouchStart}
-                onTouchMove={handleMicTouchMove}
-                onTouchEnd={handleMicTouchEnd}
-                onMouseDown={() => {
-                  startVoiceRecording();
-                }}
-                title="Message vocal (Cliquer ou maintenir)"
-                aria-label="Enregistrer un message vocal"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                  <line x1="12" y1="19" x2="12" y2="22" />
-                </svg>
-              </button>
-            )}
-          </form>
-        )}
+            </div>
+          ) : (
+            <>
+              {isHoldingVoice ? (
+                /* B. Mode Maintien Tactile Mobile (Barre sombre WhatsApp + micro rouge + ondes + slide pour annuler) */
+                <div className="chat-wa-holding-bar">
+                  <div className="chat-wa-holding-left">
+                    <div className="chat-wa-rec-indicator">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="#ef4444">
+                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" fill="none" />
+                        <line x1="12" y1="19" x2="12" y2="22" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    </div>
+                    <span className="chat-wa-digital-timer">{formattedVoiceTimer}</span>
+
+                    {/* Ondes réactives au volume vocal en direct */}
+                    <div className="chat-wa-holding-waves">
+                      {[30, 60, 95, 45, 85, 55, 75, 40].map((baseH, idx) => (
+                        <span
+                          key={idx}
+                          className="chat-wa-wave-bar animating"
+                          style={{ height: `${Math.min(100, Math.max(16, baseH * liveVolume * 1.5))}%` }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div
+                    className={`chat-wa-slide-cancel ${isNearCancel ? 'near-cancel' : ''}`}
+                    style={{ transform: `translateX(${dragOffsetX}px)` }}
+                  >
+                    <span className="chat-wa-slide-chevron">‹</span>
+                    <span className="chat-wa-slide-text">
+                      {isNearCancel ? 'Relâcher pour annuler' : 'Faire glisser pour annuler'}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                /* C. Mode Normal : Pilule de saisie (Émojis, Input, Fichier, Caméra) */
+                <div className="chat-wa-input-pill">
+                  <button
+                    type="button"
+                    className={`chat-wa-pill-btn chat-wa-emoji-btn ${isEmojiPickerOpen ? 'active' : ''}`}
+                    title="Émojis"
+                    aria-label="Choisir un émoji"
+                    onClick={() => setIsEmojiPickerOpen(!isEmojiPickerOpen)}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                      <line x1="9" y1="9" x2="9.01" y2="9" strokeWidth="3" />
+                      <line x1="15" y1="9" x2="15.01" y2="9" strokeWidth="3" />
+                    </svg>
+                  </button>
+
+                  <div
+                    ref={editableRef}
+                    role="textbox"
+                    contentEditable={true}
+                    aria-multiline={true}
+                    aria-label="Message"
+                    className="chat-wa-text-input chat-wa-editable-input"
+                    data-placeholder="Message"
+                    onInput={(e) => {
+                      const text = e.currentTarget.innerText || '';
+                      if (!text.trim() && e.currentTarget.innerHTML !== '') {
+                        e.currentTarget.innerHTML = '';
+                      }
+                      setInputText(text);
+                    }}
+                    onKeyDown={handleKeyPress}
+                    onFocus={handleInputFocus}
+                    onBlur={handleInputBlur}
+                    spellCheck={false}
+                    autoCorrect="off"
+                    autoCapitalize="sentences"
+                    suppressContentEditableWarning={true}
+                  />
+
+                  <button
+                    type="button"
+                    className="chat-wa-pill-btn chat-wa-clip-btn"
+                    title="Joindre un fichier"
+                    aria-label="Joindre un fichier"
+                    onClick={() => setIsAttachMenuOpen(!isAttachMenuOpen)}
+                  >
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                    </svg>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="chat-wa-pill-btn chat-wa-cam-btn"
+                    title="Prendre une photo"
+                    aria-label="Prendre une photo ou vidéo"
+                    onClick={() => cameraInputRef.current?.click()}
+                  >
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                      <circle cx="12" cy="13" r="4" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+
+              {/* Bouton d'action stable à droite : Envoi si texte, Micro si vide ou maintien */}
+              {inputText.trim() && !isHoldingVoice ? (
+                <button
+                  type="button"
+                  className="chat-wa-action-btn chat-send-active"
+                  onClick={() => handleSend()}
+                  title="Envoyer le message"
+                  aria-label="Envoyer le message"
+                >
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13" />
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor" />
+                  </svg>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className={`chat-wa-action-btn chat-mic-active ${isHoldingVoice ? 'recording-holding' : ''}`}
+                  onPointerDown={handlePointerDown}
+                  onPointerMove={handlePointerMove}
+                  onPointerUp={handlePointerUp}
+                  onPointerCancel={handlePointerCancel}
+                  style={{ touchAction: 'none', userSelect: 'none' }}
+                  title="Message vocal (Maintenir pour parler, glisser à gauche pour annuler, glisser en haut pour verrouiller)"
+                  aria-label="Enregistrer un message vocal"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                    <line x1="12" y1="19" x2="12" y2="22" />
+                  </svg>
+                </button>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       {/* 4. Modal "Infos du contact" repensée façon WhatsApp x Sunubiblio Haute Définition */}

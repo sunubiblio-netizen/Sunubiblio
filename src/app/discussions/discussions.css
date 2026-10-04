@@ -4203,4 +4203,31 @@ body.chat-conversation-active .mobile-bottom-nav-root {
   color: #ffffff;
 }
 
+.chat-wa-holding-waves {
+  display: flex;
+  align-items: center;
+  gap: 2.5px;
+  height: 22px;
+  margin-left: 6px;
+  min-width: 48px;
+}
+
+.chat-wa-holding-waves .chat-wa-wave-bar {
+  background: #00a884;
+  width: 2.5px;
+  border-radius: 2px;
+  transition: height 0.08s ease;
+}
+
+.chat-wa-lock-capsule-wrapper {
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
+.chat-wa-lock-capsule {
+  cursor: pointer;
+  touch-action: none;
+}
+
+
 
