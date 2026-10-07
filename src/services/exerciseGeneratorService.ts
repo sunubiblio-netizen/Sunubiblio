@@ -337,6 +337,54 @@ Stabilité asymptotique globale démontrée selon les standards de l'automatique
           },
         ];
 
+      case 'autres':
+        return [
+          {
+            id: 1,
+            title: `Exercice 1 : Mise en situation pratique & Réflexion — ${cleanTopic}`,
+            duration: '20 min',
+            statement: `Mise en pratique appliquée sur « ${cleanTopic} » :
+1. Analyser la situation concrète et identifier les enjeux majeurs.
+2. Poser un raisonnement méthodique en évaluant les avantages et les limites de l'approche.
+3. Formuler une recommandation d'action claire et directement exploitable.`,
+            solution: `📌 SYNTHÈSE MÉTHODOLOGIQUE & APPLICATION :
+Pour aborder efficacement « ${cleanTopic} » dans un contexte personnel ou professionnel :
+
+✍️ DÉMARCHE D'ANALYSE :
+1. Diagnostic de situation :
+   Identification des facteurs déterminants et des contraintes réelles du contexte.
+2. Évaluation des leviers d'action :
+   Comparaison des solutions possibles : prioriser la simplicité, la conformité et l'impact direct.
+3. Plan d'application :
+   Mise en œuvre progressive avec indicateurs simples de suivi.
+
+🎯 CONCLUSION OPÉRATIONNELLE :
+Recommandation robuste, pragmatique et immédiatement transposable sur le terrain.`,
+            isSolutionVisible: false,
+          },
+          {
+            id: 2,
+            title: `Exercice 2 : Cas pratique d'analyse & Prise de décision — ${cleanTopic}`,
+            duration: '25 min',
+            statement: `Étude de cas appliquée sur « ${cleanTopic} » :
+Face à une situation concrète comportant plusieurs variables :
+1. Dégager le problème central.
+2. Argumenter votre choix en confrontant les différentes options.
+3. Synthétiser les bonnes pratiques à retenir pour agir avec discernement.`,
+            solution: `📌 DÉMARCHE DE DÉCISION ÉCLAIRÉE :
+La résolution de cas pratique repose sur la rigueur de l'argumentation et le bon sens opérationnel.
+
+✍️ CORRIGÉ DU CAS PRATIQUE :
+• Problématique identifiée : arbitrage entre efficacité immédiate et pérennité à long terme.
+• Analyse critique : démonstration de la solution optimale en éliminant les biais de confirmation.
+• Guide de bonnes pratiques : 3 règles d'or à conserver pour agir avec méthode.
+
+🎯 SYNTHÈSE :
+Décision argumentée avec discernement et recul critique.`,
+            isSolutionVisible: false,
+          },
+        ];
+
       case 'concours':
       default:
         return [
@@ -815,6 +863,82 @@ Prestation convaincante démontrant une véritable hauteur de vue.`,
           },
         ];
 
+      case 'autres':
+        return [
+          {
+            id: 1,
+            question: `Dans une approche pratique et concrète de « ${cleanTopic} », quel réflexe garantit la meilleure prise de décision ?`,
+            options: [
+              `Croiser les sources d'information fiables et évaluer les faits avec esprit critique`,
+              `Suivre la première opinion venue sans vérification`,
+              `Prendre une décision impulsive sous le coup de l'émotion`,
+              `Ignorer le contexte réel`,
+            ],
+            correctIndex: 0,
+            explanation: `✅ Le discernement et le croisement des faits constituent la base d'une réflexion adulte solide.`,
+          },
+          {
+            id: 2,
+            question: `Quelle méthode permet de structurer efficacement un projet ou une réflexion sur « ${cleanTopic} » ?`,
+            options: [
+              `Définir un objectif clair, planifier les étapes clés et mesurer les résultats intermédiaires`,
+              `Agir au hasard sans calendrier ni vision d'ensemble`,
+              `Tout reporter au lendemain indéfiniment`,
+              `Changer d'objectif toutes les heures`,
+            ],
+            correctIndex: 0,
+            explanation: `✅ La clarté des objectifs et le suivi méthodique sont les piliers de la réussite opérationnelle.`,
+          },
+          {
+            id: 3,
+            question: `Face à une difficulté ou un problème inattendu sur « ${cleanTopic} », quelle attitude adopter ?`,
+            options: [
+              `Isoler la cause racine avec méthode plutôt que de traiter uniquement les symptômes visibles`,
+              `Paniquer et abandonner immédiatement`,
+              `Accuser les autres sans chercher à comprendre`,
+              `Répéter la même erreur en boucle`,
+            ],
+            correctIndex: 0,
+            explanation: `✅ Résoudre la cause profonde (méthode des 5 pourquoi) évite la réapparition du problème.`,
+          },
+          {
+            id: 4,
+            question: `Sur « ${cleanTopic} », quelle est la valeur ajoutée de la culture générale et de la formation continue ?`,
+            options: [
+              `Elle permet d'élargir ses perspectives, d'adapter ses compétences et d'innover`,
+              `Elle ne sert à rien une fois les études terminées`,
+              `Elle encombre inutilement l'esprit`,
+              `Elle empêche d'agir concrètement`,
+            ],
+            correctIndex: 0,
+            explanation: `✅ L'apprentissage tout au long de la vie est un moteur constant d'épanouissement et d'agilité.`,
+          },
+          {
+            id: 5,
+            question: `En communication professionnelle ou personnelle autour de « ${cleanTopic} », qu'est-ce qui favorise l'adhésion ?`,
+            options: [
+              `La clarté, l'écoute active des interlocuteurs et des arguments factuels`,
+              `L'agressivité et l'imposition unilatérale`,
+              `Le flou volontaire et les contradictions permanentes`,
+              `Le refus du dialogue`,
+            ],
+            correctIndex: 0,
+            explanation: `✅ Une communication bienveillante, transparente et étayée emporte toujours la conviction.`,
+          },
+          {
+            id: 6,
+            question: `Pour maintenir un niveau d'excellence durable sur « ${cleanTopic} », quelle habitude cultiver ?`,
+            options: [
+              `La veille régulière, la remise en question constructive et la pratique continue`,
+              `Considérer que l'on sait déjà tout`,
+              `Refuser toute nouvelle information`,
+              `Dormir sur ses acquis sans jamais évoluer`,
+            ],
+            correctIndex: 0,
+            explanation: `✅ L'humilité et la curiosité intellectuelle continue sont la marque des véritables experts.`,
+          },
+        ];
+
       case 'concours':
       default:
         return [
@@ -1007,6 +1131,21 @@ Prestation convaincante démontrant une véritable hauteur de vue.`,
             'Préciser la compacité relative de l\'espace sous-jacent.',
           ],
           summary: `Travail d'un niveau remarquable sur « ${cleanTopic} ». Rigueur démonstrative digne d'un futur diplômé de Master / Grande École.`,
+        };
+
+      case 'autres':
+        return {
+          grade: '18 / 20 (Excellence pratique)',
+          strengths: [
+            'Raisonnement pragmatique et ancré dans les réalités du terrain.',
+            'Bonne capacité de synthèse et clarté des arguments avancés.',
+            'Recul critique appréciable et sens des priorités.',
+          ],
+          improvements: [
+            'Développer encore plus les perspectives d\'anticipation à moyen terme.',
+            'Structurer la mise en application par des indicateurs concrets.',
+          ],
+          summary: `Excellent travail sur « ${cleanTopic} ». Votre approche allie bon sens, rigueur et pertinence opérationnelle. Continuez à cultiver cet esprit d'apprentissage continu !`,
         };
 
       case 'concours':

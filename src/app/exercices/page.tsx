@@ -84,51 +84,50 @@ interface EducationLevel {
   label: string;
   shortLabel: string;
   icon: string;
-  description: string;
 }
 
 const EDUCATION_LEVELS: EducationLevel[] = [
   {
     id: 'auto',
-    label: 'Tous niveaux (Auto)',
-    shortLabel: 'Tous niveaux',
+    label: 'Tous les niveaux',
+    shortLabel: 'Tous les niveaux',
     icon: '🌟',
-    description: 'Calibré automatiquement selon le document ou sujet',
   },
   {
     id: 'primaire',
     label: 'Primaire',
     shortLabel: 'Primaire',
     icon: '✏️',
-    description: 'CI, CP, CE1, CE2, CM1, CM2 — Entrée en 6e / CFEE',
   },
   {
     id: 'college',
     label: 'Collège',
     shortLabel: 'Collège',
     icon: '🎒',
-    description: '6e, 5e, 4e, 3e — Préparation BFEM',
   },
   {
     id: 'lycee',
     label: 'Lycée',
     shortLabel: 'Lycée',
     icon: '📚',
-    description: 'Seconde, Première, Terminale — Préparation BAC',
   },
   {
     id: 'superieur',
-    label: 'Université / Supérieur',
-    shortLabel: 'Supérieur',
+    label: 'Université',
+    shortLabel: 'Université',
     icon: '🎓',
-    description: 'Licence (L1, L2, L3), Master, Doctorat & Grandes Écoles',
   },
   {
     id: 'concours',
-    label: 'Concours & Examens',
+    label: 'Concours',
     shortLabel: 'Concours',
     icon: '🏆',
-    description: 'Concours administratifs, recrutement, filières sélectives',
+  },
+  {
+    id: 'autres',
+    label: 'Autres',
+    shortLabel: 'Autres',
+    icon: '💼',
   },
 ];
 
@@ -345,12 +344,10 @@ export default function ExercicesPage() {
                 onClick={() => setIsLevelMenuOpen((prev) => !prev)}
                 aria-expanded={isLevelMenuOpen}
                 aria-haspopup="true"
-                title="Choisir le niveau scolaire ou académique"
+                title="Choisir le niveau"
               >
                 <span className="level-pill-icon">{selectedLevel.icon}</span>
-                <span className="level-pill-label">
-                  <span className="level-pill-prefix">Niveau :</span> {selectedLevel.shortLabel}
-                </span>
+                <span className="level-pill-label">{selectedLevel.label}</span>
                 <svg
                   className={`level-chevron ${isLevelMenuOpen ? 'is-open' : ''}`}
                   width="13"
@@ -366,10 +363,6 @@ export default function ExercicesPage() {
 
               {isLevelMenuOpen && (
                 <div className="header-level-popover">
-                  <div className="level-popover-header">
-                    <span className="level-popover-title">Sélectionner un niveau</span>
-                    <span className="level-popover-sub">Adapte les énoncés & la difficulté</span>
-                  </div>
                   <div className="level-popover-list">
                     {EDUCATION_LEVELS.map((level) => {
                       const isSelected = level.id === selectedLevelId;
@@ -384,10 +377,7 @@ export default function ExercicesPage() {
                           }}
                         >
                           <span className="level-item-icon">{level.icon}</span>
-                          <div className="level-item-text">
-                            <span className="level-item-title">{level.label}</span>
-                            <span className="level-item-desc">{level.description}</span>
-                          </div>
+                          <span className="level-item-title">{level.label}</span>
                           {isSelected && (
                             <svg className="level-item-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                               <polyline points="20 6 9 17 4 12" />
@@ -1027,8 +1017,8 @@ export default function ExercicesPage() {
           position: absolute;
           top: calc(100% + 8px);
           right: 0;
-          width: 310px;
-          max-width: calc(100vw - 32px);
+          width: 205px;
+          max-width: calc(100vw - 24px);
           background: #ffffff;
           border-radius: 14px;
           border: 1px solid #e2e8f0;
@@ -1049,31 +1039,11 @@ export default function ExercicesPage() {
           }
         }
 
-        .level-popover-header {
-          padding: 10px 14px 8px;
-          background: #f8fafc;
-          border-bottom: 1px solid #e2e8f0;
+        .level-popover-list {
+          padding: 5px;
           display: flex;
           flex-direction: column;
           gap: 2px;
-        }
-
-        .level-popover-title {
-          font-size: 0.8125rem;
-          font-weight: 800;
-          color: #0f172a;
-        }
-
-        .level-popover-sub {
-          font-size: 0.6875rem;
-          color: #64748b;
-        }
-
-        .level-popover-list {
-          padding: 6px;
-          display: flex;
-          flex-direction: column;
-          gap: 3px;
           max-height: 380px;
           overflow-y: auto;
         }
@@ -1081,9 +1051,9 @@ export default function ExercicesPage() {
         .level-popover-item {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 9px;
           padding: 8px 10px;
-          border-radius: 10px;
+          border-radius: 9px;
           border: 1px solid transparent;
           background: transparent;
           text-align: left;
@@ -1103,21 +1073,17 @@ export default function ExercicesPage() {
         }
 
         .level-item-icon {
-          font-size: 1.1rem;
+          font-size: 1.05rem;
           flex-shrink: 0;
-        }
-
-        .level-item-text {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          min-width: 0;
         }
 
         .level-item-title {
           font-size: 0.8125rem;
           font-weight: 700;
           color: #1e293b;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .level-popover-item.is-selected .level-item-title {
@@ -1125,15 +1091,10 @@ export default function ExercicesPage() {
           font-weight: 800;
         }
 
-        .level-item-desc {
-          font-size: 0.6875rem;
-          color: #64748b;
-          line-height: 1.35;
-        }
-
         .level-item-check {
           color: #2563eb;
           flex-shrink: 0;
+          margin-left: auto;
         }
 
         .workspace-container {
@@ -2387,7 +2348,8 @@ export default function ExercicesPage() {
             display: none;
           }
           .header-level-popover {
-            width: 285px;
+            width: 200px;
+            max-width: calc(100vw - 20px);
             right: 0;
             top: calc(100% + 6px);
           }
