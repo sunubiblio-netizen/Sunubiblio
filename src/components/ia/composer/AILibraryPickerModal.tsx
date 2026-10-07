@@ -52,6 +52,13 @@ export const AILibraryPickerModal: React.FC<AILibraryPickerModalProps> = ({
   if (!isOpen || !mounted || typeof document === 'undefined' || !document.body) return null;
 
   const handlePick = (res: typeof MOCK_RESOURCES[0]) => {
+    const rawConcepts = [
+      res.subject ? res.subject.toUpperCase() : '',
+      res.level?.grade || '',
+      'Notions clés du programme',
+      'Méthodes & Application',
+    ].filter(Boolean);
+
     const attachment: AIAttachment = {
       id: 'lib-' + res.id + '-' + Date.now(),
       type: 'library',
@@ -60,7 +67,11 @@ export const AILibraryPickerModal: React.FC<AILibraryPickerModalProps> = ({
       subject: res.subject ? res.subject.toUpperCase() : 'Général',
       level: res.level?.grade || 'Tous niveaux',
       size: `${res.pagesCount || 120} pages`,
-      status: 'ready'
+      status: 'ready',
+      description: res.description,
+      extractedText: `${res.title}.\n${res.subtitle || ''}\n${res.description || ''}\nDiscipline: ${res.subject || 'Général'}\nNiveau officiel: ${res.level?.grade || 'Tous niveaux'}\nÉtablissement référent: ${res.institution || 'Sunubiblio'}`,
+      keyConcepts: rawConcepts,
+      pagesCount: res.pagesCount || 120,
     };
     onSelectResource(attachment);
     onClose();

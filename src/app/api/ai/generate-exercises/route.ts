@@ -30,6 +30,17 @@ export async function POST(req: NextRequest) {
         });
 
         if (geminiResult) {
+          if (mode === 'exercices' && Array.isArray(geminiResult.exercises)) {
+            const kindInfo = exerciseGeneratorService.classifyTopic(topicName, levelId);
+            geminiResult.exercises = geminiResult.exercises.map((ex: any) => ({
+              ...ex,
+              topicKind: kindInfo.kind,
+              minWordsRequired: kindInfo.minWords,
+              kindLabel: kindInfo.label,
+              badgeIcon: kindInfo.badgeIcon,
+              instructionHint: kindInfo.instructionHint,
+            }));
+          }
           return NextResponse.json({
             success: true,
             provider: 'gemini',

@@ -22,6 +22,10 @@ export interface AIAttachment {
   level?: string;
   status: 'ready' | 'uploading' | 'error';
   errorMessage?: string;
+  description?: string;
+  extractedText?: string;
+  keyConcepts?: string[];
+  pagesCount?: number;
 }
 
 export interface AIMessageSource {

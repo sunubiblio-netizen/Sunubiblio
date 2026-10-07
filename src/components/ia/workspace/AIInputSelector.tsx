@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useImperativeHandle } from 'react';
 import { AILibraryPickerModal } from '../composer/AILibraryPickerModal';
 import { AIAttachment } from '@/types/ai';
 
@@ -17,6 +17,13 @@ export interface AIInputContent {
   wordCount?: number;
 }
 
+export interface AIInputSelectorHandle {
+  openFilePicker: () => void;
+  openLibraryModal: () => void;
+  focusText: () => void;
+  getActiveType: () => AIInputType;
+}
+
 interface AIInputSelectorProps {
   label?: string;
   placeholder?: string;
@@ -24,12 +31,12 @@ interface AIInputSelectorProps {
   onContentChange?: (content: AIInputContent) => void;
 }
 
-export const AIInputSelector: React.FC<AIInputSelectorProps> = ({ 
+export const AIInputSelector = React.forwardRef<AIInputSelectorHandle, AIInputSelectorProps>(({ 
   label = "Source du contenu à analyser",
   placeholder,
   defaultType = 'text',
   onContentChange
-}) => {
+}, ref) => {
   const [activeType, setActiveType] = useState<AIInputType>(defaultType);
   const [textContent, setTextContent] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -42,9 +49,51 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
     cleanedTitle: string;
     keyConcepts: string[];
     summary?: string;
+    text?: string;
   } | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    openFilePicker: () => fileInputRef.current?.click(),
+    openLibraryModal: () => setIsLibraryModalOpen(true),
+    focusText: () => textareaRef.current?.focus(),
+    getActiveType: () => activeType,
+  }));
+
+  const handleSwitchTab = (newType: AIInputType) => {
+    setActiveType(newType);
+    if (!onContentChange) return;
+
+    if (newType === 'text') {
+      onContentChange({
+        type: 'text',
+        text: textContent,
+        extractedText: textContent,
+        documentTitle: textContent.trim().slice(0, 50),
+      });
+    } else if (newType === 'file') {
+      onContentChange({
+        type: 'file',
+        file: selectedFile || undefined,
+        text: extractionInfo?.text || undefined,
+        extractedText: extractionInfo?.text || undefined,
+        documentTitle: extractionInfo?.cleanedTitle || (selectedFile ? selectedFile.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ') : undefined),
+        keyConcepts: extractionInfo?.keyConcepts || [],
+        wordCount: extractionInfo?.wordCount,
+      });
+    } else if (newType === 'library') {
+      onContentChange({
+        type: 'library',
+        libraryResource: selectedLibraryResource || undefined,
+        documentTitle: selectedLibraryResource?.name,
+        extractedText: selectedLibraryResource?.extractedText || selectedLibraryResource?.description,
+        keyConcepts: selectedLibraryResource?.keyConcepts || [],
+        wordCount: selectedLibraryResource ? (selectedLibraryResource.pagesCount || 120) * 250 : undefined,
+      });
+    }
+  };
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
@@ -79,6 +128,7 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
             cleanedTitle: data.cleanedTitle,
             keyConcepts: data.keyConcepts || [],
             summary: data.summary,
+            text: data.text,
           });
 
           if (onContentChange) {
@@ -109,6 +159,7 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
         wordCount: words.length,
         cleanedTitle: title,
         keyConcepts: ['Notion centrale', 'Méthode', 'Analyse'],
+        text: raw,
       });
       if (onContentChange) {
         onContentChange({
@@ -131,7 +182,14 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
   const handleLibrarySelected = (resource: AIAttachment) => {
     setSelectedLibraryResource(resource);
     if (onContentChange) {
-      onContentChange({ type: 'library', libraryResource: resource });
+      onContentChange({
+        type: 'library',
+        libraryResource: resource,
+        documentTitle: resource.name,
+        extractedText: resource.extractedText || resource.description || resource.name,
+        keyConcepts: resource.keyConcepts || (resource.subject ? [resource.subject] : ['Notions clés']),
+        wordCount: (resource.pagesCount || 120) * 250,
+      });
     }
   };
 
@@ -197,7 +255,7 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
           role="tab"
           aria-selected={activeType === 'text'}
           className={`tab-pill ${activeType === 'text' ? 'active' : ''}`}
-          onClick={() => setActiveType('text')}
+          onClick={() => handleSwitchTab('text')}
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="4 7 4 4 20 4 20 7"></polyline>
@@ -215,7 +273,7 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
           role="tab"
           aria-selected={activeType === 'file'}
           className={`tab-pill ${activeType === 'file' ? 'active' : ''}`}
-          onClick={() => setActiveType('file')}
+          onClick={() => handleSwitchTab('file')}
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -232,7 +290,7 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
           role="tab"
           aria-selected={activeType === 'library'}
           className={`tab-pill ${activeType === 'library' ? 'active' : ''}`}
-          onClick={() => setActiveType('library')}
+          onClick={() => handleSwitchTab('library')}
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
@@ -251,6 +309,7 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
         {activeType === 'text' && (
           <div className="text-editor-wrap">
             <textarea 
+              ref={textareaRef}
               placeholder={placeholder || "Collez ou rédigez ici votre énoncé, votre devoir, vos notes de cours ou le paragraphe à analyser..."}
               value={textContent}
               onChange={handleTextChange}
@@ -352,7 +411,18 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
                     type="button"
                     onClick={() => {
                       setSelectedFile(null);
-                      if (onContentChange) onContentChange({ type: 'file', file: undefined });
+                      setExtractionInfo(null);
+                      if (onContentChange) {
+                        onContentChange({
+                          type: 'file',
+                          file: undefined,
+                          text: '',
+                          extractedText: '',
+                          documentTitle: '',
+                          keyConcepts: [],
+                          wordCount: 0,
+                        });
+                      }
                     }}
                     className="btn-remove-doc-text"
                   >
@@ -426,7 +496,16 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
                     type="button"
                     onClick={() => {
                       setSelectedLibraryResource(null);
-                      if (onContentChange) onContentChange({ type: 'library', libraryResource: undefined });
+                      if (onContentChange) {
+                        onContentChange({
+                          type: 'library',
+                          libraryResource: undefined,
+                          extractedText: '',
+                          documentTitle: '',
+                          keyConcepts: [],
+                          wordCount: 0,
+                        });
+                      }
                     }}
                     className="btn-remove-doc-text"
                   >
@@ -1010,4 +1089,6 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
       `}</style>
     </div>
   );
-};
+});
+
+AIInputSelector.displayName = 'AIInputSelector';

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { AuthModal } from '@/components/ui/AuthModal';
-import { AIInputSelector, AIInputType, AIInputContent } from '@/components/ia/workspace/AIInputSelector';
+import { AIInputSelector, AIInputType, AIInputContent, AIInputSelectorHandle } from '@/components/ia/workspace/AIInputSelector';
 import { AIAttachment } from '@/types/ai';
 import { exerciseGeneratorService, GeneratedExercise, TopicKind } from '@/services/exerciseGeneratorService';
 
@@ -148,6 +148,7 @@ export default function ExercicesPage() {
   // Mode actif & Menu popover type Chat
   const [activeMode, setActiveMode] = useState<ExerciseMode>('exercices');
   const [isModeMenuOpen, setIsModeMenuOpen] = useState(false);
+  const aiInputRef = useRef<AIInputSelectorHandle>(null);
 
   // Contenu sélectionné
   const [inputContent, setInputContent] = useState<AIInputContent>({
@@ -195,6 +196,20 @@ export default function ExercicesPage() {
   };
 
   const handleStartGeneration = async () => {
+    // 1. Validation interactive selon la catégorie d'entrée active
+    if (inputContent.type === 'file' && !inputContent.file) {
+      aiInputRef.current?.openFilePicker();
+      return;
+    }
+    if (inputContent.type === 'library' && !inputContent.libraryResource) {
+      aiInputRef.current?.openLibraryModal();
+      return;
+    }
+    if (inputContent.type === 'text' && (!inputContent.text || !inputContent.text.trim())) {
+      aiInputRef.current?.focusText();
+      return;
+    }
+
     setIsLoading(true);
     setIsSessionActive(true);
     setChatMessages([]);
@@ -208,17 +223,21 @@ export default function ExercicesPage() {
     setCurrentQCMIndex(0);
 
     const topicName =
-      inputContent.documentTitle ||
-      (inputContent.text?.trim()
-        ? inputContent.text
-        : inputContent.libraryResource
-        ? inputContent.libraryResource.name
-        : inputContent.file
-        ? inputContent.file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ')
-        : 'Sujet d’entraînement');
+      inputContent.type === 'library'
+        ? inputContent.libraryResource?.name || 'Ressource de la bibliothèque'
+        : inputContent.type === 'file'
+        ? inputContent.documentTitle || (inputContent.file ? inputContent.file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ') : 'Document importé')
+        : inputContent.documentTitle || (inputContent.text?.trim() ? inputContent.text.trim().split('\n')[0].slice(0, 60) : 'Sujet d’entraînement');
 
-    const extractedText = inputContent.extractedText || inputContent.text || '';
-    const keyConcepts = inputContent.keyConcepts || [];
+    const extractedText =
+      inputContent.type === 'library'
+        ? inputContent.libraryResource?.extractedText || inputContent.libraryResource?.description || inputContent.libraryResource?.name || ''
+        : inputContent.extractedText || inputContent.text || '';
+
+    const keyConcepts =
+      inputContent.type === 'library'
+        ? inputContent.libraryResource?.keyConcepts || (inputContent.libraryResource?.subject ? [inputContent.libraryResource.subject] : [])
+        : inputContent.keyConcepts || [];
 
     try {
       const res = await fetch('/api/ai/generate-exercises', {
@@ -454,6 +473,7 @@ export default function ExercicesPage() {
               {/* Étape 1 : Support / Contenu avec les 3 onglets (Exactement la capture) */}
               <div className="section-block">
                 <AIInputSelector
+                  ref={aiInputRef}
                   label="Sur quelle leçon ou thème voulez-vous des exercices ?"
                   placeholder="Entrez un thème précis (ex: Équations différentielles, Droit des obligations, Génétique...) ou collez votre cours..."
                   onContentChange={setInputContent}
@@ -518,7 +538,15 @@ export default function ExercicesPage() {
                   onClick={handleStartGeneration}
                   disabled={isLoading}
                   aria-label={`Lancer : ${currentModeConfig.title}`}
-                  title={`Lancer : ${currentModeConfig.title}`}
+                  title={
+                    inputContent.type === 'file' && !inputContent.file
+                      ? 'Parcourir et importer un document (PDF, Word, TXT)'
+                      : inputContent.type === 'library' && !inputContent.libraryResource
+                      ? 'Parcourir et choisir une ressource de la bibliothèque'
+                      : inputContent.type === 'text' && (!inputContent.text || !inputContent.text.trim())
+                      ? 'Saisissez ou collez un sujet à analyser'
+                      : `Lancer : ${currentModeConfig.title}`
+                  }
                 >
                   {isLoading ? (
                     <span className="spinner-send-bullet" />
@@ -559,17 +587,14 @@ export default function ExercicesPage() {
 
                 <div className="session-topic-full-banner">
                   <span className="topic-icon">
-                    {inputContent.file ? '📄' : inputContent.libraryResource ? '📖' : '📝'}
+                    {inputContent.type === 'file' ? '📄' : inputContent.type === 'library' ? '📖' : '📝'}
                   </span>
                   <span className="session-topic-full-text">
-                    {inputContent.documentTitle ||
-                      (inputContent.text?.trim()
-                        ? inputContent.text
-                        : inputContent.libraryResource?.name
-                        ? inputContent.libraryResource.name
-                        : inputContent.file
-                        ? inputContent.file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ')
-                        : 'Session active')}
+                    {inputContent.type === 'library'
+                      ? inputContent.libraryResource?.name || 'Ressource de la bibliothèque'
+                      : inputContent.type === 'file'
+                      ? inputContent.documentTitle || (inputContent.file ? inputContent.file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ') : 'Document analysé')
+                      : inputContent.documentTitle || (inputContent.text?.trim() ? inputContent.text.trim().split('\n')[0].slice(0, 70) : 'Session active')}
                   </span>
                 </div>
               </div>
