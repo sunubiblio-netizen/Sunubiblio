@@ -627,15 +627,16 @@ export default function ExercicesPage() {
                                 type="button"
                                 className="btn-review-questions"
                                 onClick={() => {
-                                  setIsQCMFinished(false);
+                                  setSelectedQCMAnswers({});
                                   setCurrentQCMIndex(0);
+                                  setIsQCMFinished(false);
                                 }}
                               >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                   <polyline points="1 4 1 10 7 10" />
                                   <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
                                 </svg>
-                                <span>Revoir & Modifier les questions une par une</span>
+                                <span>Refaire ce QCM (nouvel essai)</span>
                               </button>
                             </div>
 
@@ -675,8 +676,8 @@ export default function ExercicesPage() {
 
                       const q = generatedQCM[currentQCMIndex] || generatedQCM[0];
                       const selectedIdx = selectedQCMAnswers[q.id];
-                      const isQuestionValidated = !!validatedQCMQuestions[q.id];
-                      const isCorrect = selectedIdx === q.correctIndex;
+                      const answeredCount = Object.keys(selectedQCMAnswers).length;
+                      const hasSelectedCurrent = selectedIdx !== undefined;
 
                       return (
                         <div className="single-qcm-container">
@@ -688,28 +689,24 @@ export default function ExercicesPage() {
                               </span>
                               <div className="stepper-dots">
                                 {generatedQCM.map((item, idx) => {
-                                  const isItemValidated = !!validatedQCMQuestions[item.id];
-                                  const isItemCorrect = selectedQCMAnswers[item.id] === item.correctIndex;
-                                  const isUnlocked = idx === 0 || !!validatedQCMQuestions[generatedQCM[idx - 1]?.id];
+                                  const isAnswered = selectedQCMAnswers[item.id] !== undefined;
                                   return (
                                     <button
                                       key={item.id}
                                       type="button"
-                                      disabled={!isUnlocked}
-                                      className={`step-dot ${idx === currentQCMIndex ? 'is-active' : ''} ${!isUnlocked ? 'is-locked' : ''} ${isItemValidated ? (isItemCorrect ? 'is-good' : 'is-wrong') : ''}`}
-                                      onClick={() => {
-                                        if (isUnlocked) {
-                                          setCurrentQCMIndex(idx);
-                                        }
-                                      }}
-                                      title={isUnlocked ? `Aller à la question ${idx + 1}` : `Validez d'abord la question ${idx} pour débloquer`}
+                                      className={`step-dot ${idx === currentQCMIndex ? 'is-active' : ''} ${isAnswered ? 'is-answered' : ''}`}
+                                      onClick={() => setCurrentQCMIndex(idx)}
+                                      title={`Aller à la question ${idx + 1}`}
                                     >
-                                      {isUnlocked ? idx + 1 : '🔒'}
+                                      {idx + 1}
                                     </button>
                                   );
                                 })}
                               </div>
                             </div>
+                            <span className="qcm-answered-counter-pill">
+                              {answeredCount} / {generatedQCM.length} répondu{answeredCount > 1 ? 'es' : 'e'}
+                            </span>
                           </div>
 
                           <div className="qcm-interactive-card">
@@ -719,29 +716,13 @@ export default function ExercicesPage() {
 
                             <div className="qcm-options-stack">
                               {q.options.map((opt, optIdx) => {
-                                let optionStateClass = '';
-                                if (isQuestionValidated) {
-                                  if (optIdx === q.correctIndex) {
-                                    optionStateClass = 'option-correct';
-                                  } else if (optIdx === selectedIdx) {
-                                    optionStateClass = 'option-wrong';
-                                  }
-                                } else if (selectedIdx === optIdx) {
-                                  optionStateClass = 'is-selected';
-                                }
-
+                                const isSelected = selectedIdx === optIdx;
                                 return (
                                   <button
                                     key={optIdx}
                                     type="button"
-                                    className={`qcm-option-btn ${optionStateClass}`}
-                                    onClick={() => {
-                                      handleSelectOption(q.id, optIdx);
-                                      // Si l'utilisateur clique sur une autre option après validation, lui permettre de changer
-                                      if (isQuestionValidated && selectedIdx !== optIdx) {
-                                        setValidatedQCMQuestions((prev) => ({ ...prev, [q.id]: false }));
-                                      }
-                                    }}
+                                    className={`qcm-option-btn ${isSelected ? 'is-selected' : ''}`}
+                                    onClick={() => handleSelectOption(q.id, optIdx)}
                                   >
                                     <span className="option-letter">{String.fromCharCode(65 + optIdx)}</span>
                                     <span className="option-text">{opt}</span>
@@ -750,36 +731,6 @@ export default function ExercicesPage() {
                               })}
                             </div>
 
-                            {/* Feedback ou bouton de validation */}
-                            {isQuestionValidated ? (
-                              <div className={`qcm-feedback-banner ${isCorrect ? 'is-success' : 'is-error'}`}>
-                                <span className="feedback-icon">{isCorrect ? '✅' : '❌'}</span>
-                                <div className="feedback-text">
-                                  <strong>{isCorrect ? 'Excellente réponse !' : 'Réponse incorrecte.'}</strong>
-                                  <p>{q.explanation}</p>
-                                  {!isCorrect && (
-                                    <p className="hint-recheck">
-                                      💡 <em>Vous vous êtes trompé ? Cliquez directement sur une autre option ci-dessus pour corriger votre réponse.</em>
-                                    </p>
-                                  )}
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="qcm-current-validation-row">
-                                <button
-                                  type="button"
-                                  className="btn-validate-step"
-                                  disabled={selectedIdx === undefined}
-                                  onClick={() => handleValidateCurrentQCM(q.id)}
-                                >
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                    <polyline points="20 6 9 17 4 12" />
-                                  </svg>
-                                  <span>{selectedIdx === undefined ? 'Choisissez une option pour valider' : 'Valider ma réponse'}</span>
-                                </button>
-                              </div>
-                            )}
-
                             {/* Navigation QCM : Flèche retour ⬅ et flèche suivante ➔ */}
                             <div className="qcm-navigation-bar">
                               {currentQCMIndex > 0 ? (
@@ -787,20 +738,20 @@ export default function ExercicesPage() {
                                   type="button"
                                   className="btn-qcm-arrow-nav btn-qcm-prev"
                                   onClick={() => setCurrentQCMIndex((prev) => Math.max(0, prev - 1))}
-                                  title="Revenir à la question précédente si vous vous êtes trompé"
+                                  title="Revenir à la question précédente"
                                 >
                                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                     <line x1="19" y1="12" x2="5" y2="12" />
                                     <polyline points="12 19 5 12 12 5" />
                                   </svg>
-                                  <span>Question précédente ({currentQCMIndex})</span>
+                                  <span>Question précédente</span>
                                 </button>
                               ) : <div />}
 
-                              {currentQCMIndex < generatedQCM.length - 1 && isQuestionValidated && (
+                              {currentQCMIndex < generatedQCM.length - 1 ? (
                                 <button
                                   type="button"
-                                  className="btn-qcm-arrow-nav btn-qcm-next"
+                                  className={`btn-qcm-arrow-nav btn-qcm-next ${!hasSelectedCurrent ? 'is-subtle' : ''}`}
                                   onClick={() => setCurrentQCMIndex((prev) => Math.min(generatedQCM.length - 1, prev + 1))}
                                   title="Passer à la question suivante"
                                 >
@@ -810,19 +761,16 @@ export default function ExercicesPage() {
                                     <polyline points="12 5 19 12 12 19" />
                                   </svg>
                                 </button>
-                              )}
-
-                              {currentQCMIndex === generatedQCM.length - 1 && isQuestionValidated && (
+                              ) : (
                                 <button
                                   type="button"
                                   className="btn-qcm-arrow-nav btn-qcm-finish"
                                   onClick={handleSubmitQCM}
-                                  title="Terminer le QCM et voir le score complet"
+                                  title="Terminer le QCM et voir les réponses et le corrigé complet"
                                 >
-                                  <span>Terminer le QCM & Bilan final</span>
+                                  <span>Terminer le QCM & Voir les réponses</span>
                                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                    <line x1="5" y1="12" x2="19" y2="12" />
-                                    <polyline points="12 5 19 12 12 19" />
+                                    <polyline points="20 6 9 17 4 12" />
                                   </svg>
                                 </button>
                               )}
@@ -1637,6 +1585,30 @@ export default function ExercicesPage() {
         .step-dot.is-locked:hover {
           border-color: #e2e8f0;
           color: #94a3b8;
+        }
+
+        .step-dot.is-answered {
+          border-color: #3b82f6;
+          background: #eff6ff;
+          color: #1d4ed8;
+          font-weight: 800;
+        }
+
+        .step-dot.is-answered.is-active {
+          border-color: #2563eb;
+          background: #2563eb;
+          color: #ffffff;
+          box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+        }
+
+        .qcm-answered-counter-pill {
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #64748b;
+          background: #f1f5f9;
+          padding: 3px 10px;
+          border-radius: 9999px;
+          white-space: nowrap;
         }
 
         /* Barres de navigation séquentielle (Flèches Suivant / Retour) */
