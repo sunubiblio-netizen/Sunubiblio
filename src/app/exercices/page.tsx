@@ -151,7 +151,7 @@ export default function ExercicesPage() {
     // Simulation de génération IA
     setTimeout(() => {
       const topicName = inputContent.text?.trim()
-        ? inputContent.text.slice(0, 45)
+        ? inputContent.text
         : inputContent.file
         ? inputContent.file.name
         : inputContent.libraryResource
@@ -422,28 +422,35 @@ export default function ExercicesPage() {
             <div className="interactive-chat-workspace">
               {/* Barre supérieure de session */}
               <div className="session-top-bar">
-                <div className="session-meta">
+                <div className="session-top-header-row">
                   <span className="session-badge" style={{ color: currentModeConfig.color, background: currentModeConfig.bgColor }}>
                     {currentModeConfig.title}
                   </span>
-                  <span className="session-topic-tag">
-                    {inputContent.text?.trim()
-                      ? inputContent.text.slice(0, 30) + '...'
-                      : inputContent.file?.name || 'Session active'}
-                  </span>
+
+                  <button
+                    type="button"
+                    className="btn-new-exercise"
+                    onClick={handleReset}
+                    title="Commencer un nouvel exercice"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                      <polyline points="1 4 1 10 7 10" />
+                      <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                    </svg>
+                    <span>Nouvel exercice</span>
+                  </button>
                 </div>
 
-                <button
-                  type="button"
-                  className="btn-new-exercise"
-                  onClick={handleReset}
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                    <polyline points="1 4 1 10 7 10" />
-                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
-                  </svg>
-                  <span>Nouvel exercice</span>
-                </button>
+                <div className="session-topic-full-banner">
+                  <span className="topic-icon">
+                    {inputContent.file ? '📄' : inputContent.libraryResource ? '📖' : '📝'}
+                  </span>
+                  <span className="session-topic-full-text">
+                    {inputContent.text?.trim()
+                      ? inputContent.text
+                      : inputContent.file?.name || (inputContent.libraryResource?.name ? inputContent.libraryResource.name : 'Session active')}
+                  </span>
+                </div>
               </div>
 
               {/* Zone principale interactive */}
@@ -1173,34 +1180,28 @@ export default function ExercicesPage() {
           background: #f8fafc;
           border-bottom: 1px solid #e2e8f0;
           display: flex;
-          align-items: center;
-          justify-content: space-between;
+          flex-direction: column;
+          gap: 10px;
         }
 
-        .session-meta {
+        .session-top-header-row {
           display: flex;
           align-items: center;
+          justify-content: space-between;
           gap: 10px;
         }
 
         .session-badge {
           font-size: 0.7813rem;
           font-weight: 800;
-          padding: 4px 10px;
-          border-radius: 6px;
-        }
-
-        .session-topic-tag {
-          font-size: 0.7813rem;
-          color: #64748b;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 240px;
+          padding: 5px 12px;
+          border-radius: 8px;
+          display: inline-flex;
+          align-items: center;
         }
 
         .btn-new-exercise {
-          display: flex;
+          display: inline-flex;
           align-items: center;
           gap: 6px;
           font-size: 0.7813rem;
@@ -1212,10 +1213,39 @@ export default function ExercicesPage() {
           border-radius: 8px;
           cursor: pointer;
           transition: all 0.15s ease;
+          flex-shrink: 0;
         }
 
         .btn-new-exercise:hover {
           background: #eff6ff;
+          border-color: #2563eb;
+        }
+
+        .session-topic-full-banner {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 10px;
+          padding: 8px 12px;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .topic-icon {
+          font-size: 0.95rem;
+          flex-shrink: 0;
+          line-height: 1.4;
+        }
+
+        .session-topic-full-text {
+          font-size: 0.8125rem;
+          font-weight: 600;
+          color: #334155;
+          line-height: 1.45;
+          word-break: break-all;
+          overflow-wrap: anywhere;
+          flex: 1;
         }
 
         .interactive-viewport {
@@ -1281,17 +1311,19 @@ export default function ExercicesPage() {
 
         .card-head-row {
           display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 12px;
-          gap: 10px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+          margin-bottom: 14px;
+          width: 100%;
         }
 
         .card-title-badge-group {
           display: flex;
-          align-items: center;
-          gap: 8px;
-          flex-wrap: wrap;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 6px;
+          width: 100%;
         }
 
         .ex-number-badge {
@@ -1302,6 +1334,7 @@ export default function ExercicesPage() {
           color: #2563eb;
           padding: 3px 8px;
           border-radius: 6px;
+          display: inline-block;
         }
 
         .card-ex-title {
@@ -1309,6 +1342,10 @@ export default function ExercicesPage() {
           font-weight: 800;
           color: #0f172a;
           margin: 0;
+          line-height: 1.45;
+          word-break: break-all;
+          overflow-wrap: anywhere;
+          width: 100%;
         }
 
         .card-ex-duration {
@@ -1874,6 +1911,9 @@ export default function ExercicesPage() {
           color: #0f172a;
           margin: 0 0 12px;
           line-height: 1.45;
+          word-break: break-all;
+          overflow-wrap: anywhere;
+          width: 100%;
         }
 
         .qcm-options-stack {
@@ -2171,10 +2211,84 @@ export default function ExercicesPage() {
           .correction-points-grid {
             grid-template-columns: 1fr;
           }
+          .session-top-bar {
+            padding: 10px 12px;
+            gap: 8px;
+          }
+          .session-top-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            width: 100%;
+          }
+          .session-badge {
+            font-size: 0.7188rem;
+            padding: 4px 8px;
+            white-space: nowrap;
+          }
+          .btn-new-exercise {
+            font-size: 0.7188rem;
+            padding: 4px 8px;
+            gap: 4px;
+            white-space: nowrap;
+          }
+          .session-topic-full-banner {
+            padding: 8px 10px;
+            gap: 6px;
+            width: 100%;
+            box-sizing: border-box;
+          }
+          .session-topic-full-text {
+            font-size: 0.75rem;
+            line-height: 1.4;
+            word-break: break-all;
+            overflow-wrap: anywhere;
+            white-space: normal;
+            width: 100%;
+          }
+          .exercise-stepper-header,
+          .qcm-stepper-header {
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0 0 4px;
+          }
+          .stepper-badge-wrap {
+            flex-wrap: wrap;
+            gap: 8px;
+          }
           .exercise-interactive-card,
           .qcm-interactive-card {
             padding: 14px 12px;
             border-radius: 14px;
+            width: 100%;
+            box-sizing: border-box;
+          }
+          .card-head-row {
+            margin-bottom: 10px;
+            width: 100%;
+          }
+          .card-title-badge-group {
+            width: 100%;
+            min-width: 0;
+          }
+          .card-ex-title {
+            font-size: 0.84rem;
+            font-weight: 800;
+            line-height: 1.45;
+            word-break: break-all;
+            overflow-wrap: anywhere;
+            white-space: normal;
+            width: 100%;
+            min-width: 0;
+          }
+          .qcm-question-title {
+            font-size: 0.84rem;
+            word-break: break-all;
+            overflow-wrap: anywhere;
+            white-space: normal;
+            width: 100%;
+            min-width: 0;
           }
           .card-ex-statement {
             font-size: 0.8125rem;
@@ -2218,6 +2332,15 @@ export default function ExercicesPage() {
           .interactive-chat-workspace {
             margin-bottom: 12px;
             border-radius: 16px;
+            min-height: auto;
+            width: 100%;
+            box-sizing: border-box;
+          }
+          .interactive-viewport {
+            padding: 12px 10px;
+            max-height: none;
+            overflow-y: visible;
+            gap: 12px;
           }
         }
       `}</style>
