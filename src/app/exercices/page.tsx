@@ -280,21 +280,10 @@ export default function ExercicesPage() {
       <Navbar onOpenAuth={handleOpenAuth} />
 
       <main className="exercices-main-container">
-        {/* En-tête Compact et Moderne */}
+        {/* En-tête Simple et Épuré */}
         <header className="page-header-compact">
           <div className="container">
-            <div className="header-meta-box">
-              <div className="header-badge">
-                <span className="badge-dot" />
-                <span>Espace Exercices & Évaluations</span>
-              </div>
-              <h1 className="header-title">
-                Génération & <span className="header-gradient-text">Entraînement IA</span>
-              </h1>
-              <p className="header-subtitle">
-                Générez des exercices, testez-vous avec des QCM ou faites corriger vos devoirs directement sur cette page.
-              </p>
-            </div>
+            <h1 className="header-simple-title">Exercice</h1>
           </div>
         </header>
 
@@ -658,64 +647,22 @@ export default function ExercicesPage() {
         }
 
         .page-header-compact {
-          padding: 28px 0 14px;
+          padding: 16px 0 6px;
           text-align: center;
-          background: linear-gradient(180deg, #eff6ff 0%, #f8fafc 100%);
-          border-bottom: 1px solid #e2e8f0;
+          background: transparent;
         }
 
-        .header-meta-box {
-          max-width: 720px;
-          margin: 0 auto;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        .header-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 5px 14px;
-          border-radius: 9999px;
-          background: #e0e7ff;
-          color: #3730a3;
-          font-size: 0.7813rem;
-          font-weight: 700;
-          margin-bottom: 10px;
-        }
-
-        .badge-dot {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: #4f46e5;
-        }
-
-        .header-title {
-          font-size: clamp(1.65rem, 3.2vw, 2.15rem);
+        .header-simple-title {
+          font-size: clamp(1.5rem, 3.5vw, 2rem);
           font-weight: 900;
           color: #0f172a;
-          margin: 0 0 6px;
-          letter-spacing: -0.02em;
-        }
-
-        .header-gradient-text {
-          background: linear-gradient(135deg, #2563eb, #7c3aed);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-
-        .header-subtitle {
-          font-size: 0.9rem;
-          color: #64748b;
           margin: 0;
-          line-height: 1.5;
+          letter-spacing: -0.025em;
         }
 
         .workspace-container {
           max-width: 840px;
-          padding: 20px 16px 40px;
+          padding: 16px 16px 40px;
           flex: 1;
         }
 
@@ -1443,9 +1390,25 @@ export default function ExercicesPage() {
         }
 
         @media (max-width: 640px) {
+          .page-header-compact {
+            padding: 8px 0 2px;
+          }
+          .header-simple-title {
+            font-size: 1.5rem;
+          }
+          .workspace-container {
+            padding: 6px 12px 100px;
+          }
+          .card-workspace-input {
+            padding: 12px;
+            border-radius: 16px;
+            gap: 12px;
+          }
           .chat-action-bar-wrap {
             flex-direction: column;
             align-items: stretch;
+            gap: 8px;
+            padding-top: 10px;
           }
           .action-selector-relative {
             width: 100%;
@@ -1453,6 +1416,8 @@ export default function ExercicesPage() {
           .btn-chat-mode-pill {
             width: 100%;
             justify-content: space-between;
+            padding: 8px 14px;
+            font-size: 0.8125rem;
           }
           .chat-mode-popover {
             width: 100%;
@@ -1461,12 +1426,15 @@ export default function ExercicesPage() {
           .btn-launch-generation {
             width: 100%;
             justify-content: center;
+            padding: 11px 16px;
+            font-size: 0.875rem;
           }
           .correction-points-grid {
             grid-template-columns: 1fr;
           }
-          .card-workspace-input {
-            padding: 14px;
+          .interactive-chat-workspace {
+            margin-bottom: 90px;
+            border-radius: 16px;
           }
         }
       `}</style>

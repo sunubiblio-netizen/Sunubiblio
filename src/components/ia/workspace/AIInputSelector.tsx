@@ -793,14 +793,48 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
         }
 
         @media (max-width: 600px) {
-          .input-tabs-capsule {
+          .selector-head {
             flex-direction: column;
-            border-radius: 16px;
+            align-items: flex-start;
+            gap: 2px;
+            margin-bottom: 8px;
+          }
+          .input-label {
+            font-size: 13px;
+          }
+          .source-hint {
+            font-size: 11px;
+          }
+          .input-tabs-capsule {
+            flex-direction: row;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 9999px;
+            padding: 3px;
+            gap: 2px;
+            scrollbar-width: none;
+          }
+          .input-tabs-capsule::-webkit-scrollbar {
+            display: none;
+          }
+          .tab-pill {
+            padding: 6px 10px;
+            font-size: 12px;
+            gap: 6px;
+            white-space: nowrap;
+            flex-shrink: 0;
+          }
+          .ai-textarea-pro {
+            min-height: 130px;
+            padding: 12px;
+            font-size: 13.5px;
+            border-radius: 14px;
           }
           .selected-document-card,
           .selected-library-card {
             flex-direction: column;
             align-items: flex-start;
+            padding: 12px;
           }
           .doc-right-actions,
           .lib-card-right {
