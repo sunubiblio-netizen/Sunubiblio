@@ -103,9 +103,13 @@ export default function ExercicesPage() {
 
   // Données générées
   const [generatedExercises, setGeneratedExercises] = useState<ExerciseItem[]>([]);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [generatedQCM, setGeneratedQCM] = useState<QCMItem[]>([]);
+  const [currentQCMIndex, setCurrentQCMIndex] = useState(0);
   const [selectedQCMAnswers, setSelectedQCMAnswers] = useState<Record<number, number>>({});
+  const [validatedQCMQuestions, setValidatedQCMQuestions] = useState<Record<number, boolean>>({});
   const [isQCMSubmitted, setIsQCMSubmitted] = useState(false);
+  const [isQCMFinished, setIsQCMFinished] = useState(false);
   const [studentAnswers, setStudentAnswers] = useState<Record<number, string>>({});
   const [validatedExercises, setValidatedExercises] = useState<Record<number, boolean>>({});
   const [correctionReport, setCorrectionReport] = useState<{
@@ -136,9 +140,13 @@ export default function ExercicesPage() {
     setIsSessionActive(true);
     setChatMessages([]);
     setSelectedQCMAnswers({});
+    setValidatedQCMQuestions({});
     setIsQCMSubmitted(false);
+    setIsQCMFinished(false);
     setStudentAnswers({});
     setValidatedExercises({});
+    setCurrentExerciseIndex(0);
+    setCurrentQCMIndex(0);
 
     // Simulation de génération IA
     setTimeout(() => {
@@ -242,15 +250,22 @@ export default function ExercicesPage() {
   };
 
   const handleSelectOption = (questionId: number, optionIndex: number) => {
-    if (isQCMSubmitted) return;
     setSelectedQCMAnswers((prev) => ({
       ...prev,
       [questionId]: optionIndex,
     }));
   };
 
+  const handleValidateCurrentQCM = (questionId: number) => {
+    setValidatedQCMQuestions((prev) => ({
+      ...prev,
+      [questionId]: true,
+    }));
+  };
+
   const handleSubmitQCM = () => {
     setIsQCMSubmitted(true);
+    setIsQCMFinished(true);
   };
 
   const handleSendFollowup = (textToSend?: string) => {
@@ -291,9 +306,13 @@ export default function ExercicesPage() {
     setGeneratedExercises([]);
     setGeneratedQCM([]);
     setSelectedQCMAnswers({});
+    setValidatedQCMQuestions({});
     setIsQCMSubmitted(false);
+    setIsQCMFinished(false);
     setStudentAnswers({});
     setValidatedExercises({});
+    setCurrentExerciseIndex(0);
+    setCurrentQCMIndex(0);
     setCorrectionReport(null);
     setChatMessages([]);
   };
@@ -441,176 +460,361 @@ export default function ExercicesPage() {
                   </div>
                 ) : (
                   <>
-                    {/* MODE 1 : EXERCICES D'ENTRAÎNEMENT INTERACTIFS */}
-                    {activeMode === 'exercices' && (
-                      <div className="generated-exercises-list">
-                        {generatedExercises.map((ex) => {
-                          const isValidated = !!validatedExercises[ex.id];
-                          const answer = studentAnswers[ex.id] || '';
+                    {/* MODE 1 : EXERCICES D'ENTRAÎNEMENT 1 PAR 1 */}
+                    {activeMode === 'exercices' && generatedExercises.length > 0 && (() => {
+                      const ex = generatedExercises[currentExerciseIndex] || generatedExercises[0];
+                      const isValidated = !!validatedExercises[ex.id];
+                      const answer = studentAnswers[ex.id] || '';
 
-                          return (
-                            <div key={ex.id} className="exercise-interactive-card">
-                              <div className="card-head-row">
-                                <div className="card-title-badge-group">
-                                  <span className="ex-number-badge">Exercice #{ex.id}</span>
-                                  <h3 className="card-ex-title">{ex.title}</h3>
+                      return (
+                        <div className="single-exercise-container">
+                          {/* Barre d'étape / progression de l'exercice */}
+                          <div className="exercise-stepper-header">
+                            <div className="stepper-badge-wrap">
+                              <span className="stepper-indicator-badge">
+                                Exercice {currentExerciseIndex + 1} / {generatedExercises.length}
+                              </span>
+                              <div className="stepper-dots">
+                                {generatedExercises.map((item, idx) => (
+                                  <button
+                                    key={item.id}
+                                    type="button"
+                                    className={`step-dot ${idx === currentExerciseIndex ? 'is-active' : ''} ${validatedExercises[item.id] ? 'is-done' : ''}`}
+                                    onClick={() => setCurrentExerciseIndex(idx)}
+                                    title={`Aller directement à l'exercice ${idx + 1}`}
+                                  >
+                                    {idx + 1}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                            <span className="card-ex-duration">⏱️ {ex.duration}</span>
+                          </div>
+
+                          <div className="exercise-interactive-card">
+                            <div className="card-head-row">
+                              <div className="card-title-badge-group">
+                                <span className="ex-number-badge">Exercice #{ex.id}</span>
+                                <h3 className="card-ex-title">{ex.title}</h3>
+                              </div>
+                            </div>
+
+                            <div className="statement-box">
+                              <span className="statement-tag">Énoncé de travail</span>
+                              <p className="card-ex-statement">{ex.statement}</p>
+                            </div>
+
+                            {!isValidated ? (
+                              <div className="student-workspace-block">
+                                <label className="student-input-label">
+                                  <span>Votre réponse ou démarche d'entraînement :</span>
+                                  <span className="hint-optional">(faites votre essai avant de débloquer la solution)</span>
+                                </label>
+                                <textarea
+                                  className="student-answer-textarea"
+                                  placeholder="Rédigez ici votre réponse, vos calculs ou votre raisonnement..."
+                                  rows={3}
+                                  value={answer}
+                                  onChange={(e) => setStudentAnswers((prev) => ({ ...prev, [ex.id]: e.target.value }))}
+                                />
+                                <div className="card-ex-action-row">
+                                  <button
+                                    type="button"
+                                    className="btn-validate-step"
+                                    onClick={() => handleValidateExercise(ex.id)}
+                                  >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                      <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                    <span>Valider & Débloquer le corrigé détaillé</span>
+                                  </button>
                                 </div>
-                                <span className="card-ex-duration">⏱️ {ex.duration}</span>
                               </div>
+                            ) : (
+                              <div className="solution-unlocked-section">
+                                {answer.trim() && (
+                                  <div className="student-submitted-box">
+                                    <span className="submitted-tag">Votre proposition enregistrée :</span>
+                                    <p className="submitted-content">{answer}</p>
+                                  </div>
+                                )}
 
-                              <div className="statement-box">
-                                <span className="statement-tag">Énoncé de travail</span>
-                                <p className="card-ex-statement">{ex.statement}</p>
-                              </div>
-
-                              {!isValidated ? (
-                                <div className="student-workspace-block">
-                                  <label className="student-input-label">
-                                    <span>Votre réponse ou démarche d'entraînement :</span>
-                                    <span className="hint-optional">(faites votre essai avant de débloquer la solution)</span>
-                                  </label>
-                                  <textarea
-                                    className="student-answer-textarea"
-                                    placeholder="Rédigez ici votre réponse, vos calculs ou votre raisonnement..."
-                                    rows={3}
-                                    value={answer}
-                                    onChange={(e) => setStudentAnswers((prev) => ({ ...prev, [ex.id]: e.target.value }))}
-                                  />
-                                  <div className="card-ex-action-row">
+                                <div className="card-ex-solution-box">
+                                  <div className="solution-header-bar">
+                                    <span className="solution-badge-ok">✓ Corrigé & Méthode officielle</span>
                                     <button
                                       type="button"
-                                      className="btn-validate-step"
-                                      onClick={() => handleValidateExercise(ex.id)}
+                                      className="btn-ask-about-this"
+                                      onClick={() => handleSendFollowup(`Peux-tu m'expliquer plus en détail la méthode de l'exercice ${ex.id} ?`)}
                                     >
-                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                        <polyline points="20 6 9 17 4 12" />
-                                      </svg>
-                                      <span>Valider & Débloquer le corrigé détaillé</span>
+                                      💬 Poser une question sur cette correction
                                     </button>
                                   </div>
+                                  <pre className="solution-text">{ex.solution}</pre>
                                 </div>
-                              ) : (
-                                <div className="solution-unlocked-section">
-                                  {answer.trim() && (
-                                    <div className="student-submitted-box">
-                                      <span className="submitted-tag">Votre proposition enregistrée :</span>
-                                      <p className="submitted-content">{answer}</p>
+
+                                {/* Navigation séquentielle : passer au numéro 2 après validation */}
+                                <div className="exercise-navigation-bar">
+                                  {currentExerciseIndex > 0 ? (
+                                    <button
+                                      type="button"
+                                      className="btn-ex-nav-step btn-ex-nav-prev"
+                                      onClick={() => setCurrentExerciseIndex((prev) => Math.max(0, prev - 1))}
+                                    >
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <line x1="19" y1="12" x2="5" y2="12" />
+                                        <polyline points="12 19 5 12 12 5" />
+                                      </svg>
+                                      <span>Exercice précédent ({currentExerciseIndex})</span>
+                                    </button>
+                                  ) : <div />}
+
+                                  {currentExerciseIndex < generatedExercises.length - 1 ? (
+                                    <button
+                                      type="button"
+                                      className="btn-ex-nav-step btn-ex-nav-next"
+                                      onClick={() => setCurrentExerciseIndex((prev) => Math.min(generatedExercises.length - 1, prev + 1))}
+                                    >
+                                      <span>Passer au numéro {currentExerciseIndex + 2}</span>
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <line x1="5" y1="12" x2="19" y2="12" />
+                                        <polyline points="12 5 19 12 12 19" />
+                                      </svg>
+                                    </button>
+                                  ) : (
+                                    <div className="all-exercises-finished-pill">
+                                      <span>🎉 Série terminée ! Tous les exercices sont complétés</span>
                                     </div>
                                   )}
-
-                                  <div className="card-ex-solution-box">
-                                    <div className="solution-header-bar">
-                                      <span className="solution-badge-ok">✓ Corrigé & Méthode officielle</span>
-                                      <button
-                                        type="button"
-                                        className="btn-ask-about-this"
-                                        onClick={() => handleSendFollowup(`Peux-tu m'expliquer plus en détail la méthode de l'exercice ${ex.id} ?`)}
-                                      >
-                                        💬 Poser une question sur cette correction
-                                      </button>
-                                    </div>
-                                    <pre className="solution-text">{ex.solution}</pre>
-                                  </div>
                                 </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
 
-                    {/* MODE 2 : QCM INTERACTIF AVEC VALIDATION EN PREMIER */}
-                    {activeMode === 'qcm' && (
-                      <div className="generated-qcm-list">
-                        {isQCMSubmitted && (
-                          <div className="qcm-score-banner">
-                            <div className="score-circle">
-                              {generatedQCM.filter((q) => selectedQCMAnswers[q.id] === q.correctIndex).length} / {generatedQCM.length}
+                    {/* MODE 2 : QCM INTERACTIF QUESTION PAR QUESTION */}
+                    {activeMode === 'qcm' && generatedQCM.length > 0 && (() => {
+                      if (isQCMFinished) {
+                        const correctCount = generatedQCM.filter((q) => selectedQCMAnswers[q.id] === q.correctIndex).length;
+                        return (
+                          <div className="qcm-final-summary-view">
+                            <div className="qcm-score-banner">
+                              <div className="score-circle">
+                                {correctCount} / {generatedQCM.length}
+                              </div>
+                              <div className="score-meta">
+                                <h4>
+                                  {correctCount === generatedQCM.length
+                                    ? '🎉 Excellent ! Score parfait sur ce QCM'
+                                    : `Bilan : ${correctCount} bonne(s) réponse(s) sur ${generatedQCM.length}`}
+                                </h4>
+                                <p>Consultez vos résultats ci-dessous ou posez des questions de révision au tuteur.</p>
+                              </div>
                             </div>
-                            <div className="score-meta">
-                              <h4>
-                                {generatedQCM.filter((q) => selectedQCMAnswers[q.id] === q.correctIndex).length === generatedQCM.length
-                                  ? '🎉 Excellent ! Score parfait sur ce QCM'
-                                  : 'Correction débloquée — Consultez vos résultats ci-dessous'}
-                              </h4>
-                              <p>Lisez les explications officielles et posez vos questions au tuteur IA ci-dessous.</p>
+
+                            <div className="qcm-summary-actions-bar">
+                              <button
+                                type="button"
+                                className="btn-review-questions"
+                                onClick={() => {
+                                  setIsQCMFinished(false);
+                                  setCurrentQCMIndex(0);
+                                }}
+                              >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <polyline points="1 4 1 10 7 10" />
+                                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                                </svg>
+                                <span>Revoir & Modifier les questions une par une</span>
+                              </button>
+                            </div>
+
+                            <div className="qcm-recap-cards-list">
+                              {generatedQCM.map((q) => {
+                                const selectedIdx = selectedQCMAnswers[q.id];
+                                const isCorrect = selectedIdx === q.correctIndex;
+                                return (
+                                  <div key={q.id} className="qcm-recap-mini-card">
+                                    <div className="recap-header">
+                                      <span className={`recap-badge ${isCorrect ? 'is-good' : 'is-wrong'}`}>
+                                        {isCorrect ? '✓ Correct' : '✗ Incorrect'}
+                                      </span>
+                                      <span className="recap-q-num">Question #{q.id}</span>
+                                    </div>
+                                    <p className="recap-question-text">{q.question}</p>
+                                    <div className="recap-explanation">
+                                      <div className="recap-choice-line">
+                                        <span className="recap-label">Bonne réponse :</span>
+                                        <span className="recap-val-ok">{q.options[q.correctIndex]}</span>
+                                      </div>
+                                      {selectedIdx !== undefined && !isCorrect && (
+                                        <div className="recap-choice-line">
+                                          <span className="recap-label">Votre choix :</span>
+                                          <span className="recap-val-wrong">{q.options[selectedIdx]}</span>
+                                        </div>
+                                      )}
+                                      <p className="recap-detail">{q.explanation}</p>
+                                    </div>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
-                        )}
-                        {generatedQCM.map((q) => {
-                          const selectedIdx = selectedQCMAnswers[q.id];
-                          const isCorrect = selectedIdx === q.correctIndex;
+                        );
+                      }
 
-                          return (
-                            <div key={q.id} className="qcm-interactive-card">
-                              <h3 className="qcm-question-title">
-                                Question {q.id} : {q.question}
-                              </h3>
+                      const q = generatedQCM[currentQCMIndex] || generatedQCM[0];
+                      const selectedIdx = selectedQCMAnswers[q.id];
+                      const isQuestionValidated = !!validatedQCMQuestions[q.id];
+                      const isCorrect = selectedIdx === q.correctIndex;
 
-                              <div className="qcm-options-stack">
-                                {q.options.map((opt, optIdx) => {
-                                  let optionStateClass = '';
-                                  if (isQCMSubmitted) {
-                                    if (optIdx === q.correctIndex) {
-                                      optionStateClass = 'option-correct';
-                                    } else if (optIdx === selectedIdx) {
-                                      optionStateClass = 'option-wrong';
-                                    }
-                                  } else if (selectedIdx === optIdx) {
-                                    optionStateClass = 'is-selected';
-                                  }
-
+                      return (
+                        <div className="single-qcm-container">
+                          {/* En-tête de progression QCM */}
+                          <div className="qcm-stepper-header">
+                            <div className="stepper-badge-wrap">
+                              <span className="stepper-indicator-badge">
+                                Question {currentQCMIndex + 1} / {generatedQCM.length}
+                              </span>
+                              <div className="stepper-dots">
+                                {generatedQCM.map((item, idx) => {
+                                  const isItemValidated = !!validatedQCMQuestions[item.id];
+                                  const isItemCorrect = selectedQCMAnswers[item.id] === item.correctIndex;
                                   return (
                                     <button
-                                      key={optIdx}
+                                      key={item.id}
                                       type="button"
-                                      disabled={isQCMSubmitted}
-                                      className={`qcm-option-btn ${optionStateClass}`}
-                                      onClick={() => handleSelectOption(q.id, optIdx)}
+                                      className={`step-dot ${idx === currentQCMIndex ? 'is-active' : ''} ${isItemValidated ? (isItemCorrect ? 'is-good' : 'is-wrong') : ''}`}
+                                      onClick={() => setCurrentQCMIndex(idx)}
+                                      title={`Aller à la question ${idx + 1}`}
                                     >
-                                      <span className="option-letter">
-                                        {String.fromCharCode(65 + optIdx)}
-                                      </span>
-                                      <span className="option-text">{opt}</span>
+                                      {idx + 1}
                                     </button>
                                   );
                                 })}
                               </div>
+                            </div>
+                          </div>
 
-                              {isQCMSubmitted && (
-                                <div className={`qcm-feedback-banner ${isCorrect ? 'is-success' : 'is-error'}`}>
-                                  <span className="feedback-icon">{isCorrect ? '✅' : '❌'}</span>
-                                  <div className="feedback-text">
-                                    <strong>{isCorrect ? 'Excellente réponse !' : 'Réponse incorrecte.'}</strong>
-                                    <p>{q.explanation}</p>
-                                  </div>
+                          <div className="qcm-interactive-card">
+                            <h3 className="qcm-question-title">
+                              Question {q.id} : {q.question}
+                            </h3>
+
+                            <div className="qcm-options-stack">
+                              {q.options.map((opt, optIdx) => {
+                                let optionStateClass = '';
+                                if (isQuestionValidated) {
+                                  if (optIdx === q.correctIndex) {
+                                    optionStateClass = 'option-correct';
+                                  } else if (optIdx === selectedIdx) {
+                                    optionStateClass = 'option-wrong';
+                                  }
+                                } else if (selectedIdx === optIdx) {
+                                  optionStateClass = 'is-selected';
+                                }
+
+                                return (
+                                  <button
+                                    key={optIdx}
+                                    type="button"
+                                    className={`qcm-option-btn ${optionStateClass}`}
+                                    onClick={() => {
+                                      handleSelectOption(q.id, optIdx);
+                                      // Si l'utilisateur clique sur une autre option après validation, lui permettre de changer
+                                      if (isQuestionValidated && selectedIdx !== optIdx) {
+                                        setValidatedQCMQuestions((prev) => ({ ...prev, [q.id]: false }));
+                                      }
+                                    }}
+                                  >
+                                    <span className="option-letter">{String.fromCharCode(65 + optIdx)}</span>
+                                    <span className="option-text">{opt}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+
+                            {/* Feedback ou bouton de validation */}
+                            {isQuestionValidated ? (
+                              <div className={`qcm-feedback-banner ${isCorrect ? 'is-success' : 'is-error'}`}>
+                                <span className="feedback-icon">{isCorrect ? '✅' : '❌'}</span>
+                                <div className="feedback-text">
+                                  <strong>{isCorrect ? 'Excellente réponse !' : 'Réponse incorrecte.'}</strong>
+                                  <p>{q.explanation}</p>
+                                  {!isCorrect && (
+                                    <p className="hint-recheck">
+                                      💡 <em>Vous vous êtes trompé ? Cliquez directement sur une autre option ci-dessus pour corriger votre réponse.</em>
+                                    </p>
+                                  )}
                                 </div>
+                              </div>
+                            ) : (
+                              <div className="qcm-current-validation-row">
+                                <button
+                                  type="button"
+                                  className="btn-validate-step"
+                                  disabled={selectedIdx === undefined}
+                                  onClick={() => handleValidateCurrentQCM(q.id)}
+                                >
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                  </svg>
+                                  <span>{selectedIdx === undefined ? 'Choisissez une option pour valider' : 'Valider ma réponse'}</span>
+                                </button>
+                              </div>
+                            )}
+
+                            {/* Navigation QCM : Flèche retour ⬅ et flèche suivante ➔ */}
+                            <div className="qcm-navigation-bar">
+                              {currentQCMIndex > 0 ? (
+                                <button
+                                  type="button"
+                                  className="btn-qcm-arrow-nav btn-qcm-prev"
+                                  onClick={() => setCurrentQCMIndex((prev) => Math.max(0, prev - 1))}
+                                  title="Revenir à la question précédente si vous vous êtes trompé"
+                                >
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <line x1="19" y1="12" x2="5" y2="12" />
+                                    <polyline points="12 19 5 12 12 5" />
+                                  </svg>
+                                  <span>Question précédente ({currentQCMIndex})</span>
+                                </button>
+                              ) : <div />}
+
+                              {currentQCMIndex < generatedQCM.length - 1 ? (
+                                <button
+                                  type="button"
+                                  className={`btn-qcm-arrow-nav btn-qcm-next ${!isQuestionValidated ? 'is-subtle' : ''}`}
+                                  onClick={() => setCurrentQCMIndex((prev) => Math.min(generatedQCM.length - 1, prev + 1))}
+                                  title="Passer à la question suivante"
+                                >
+                                  <span>Question suivante ({currentQCMIndex + 2})</span>
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                    <polyline points="12 5 19 12 12 19" />
+                                  </svg>
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="btn-qcm-arrow-nav btn-qcm-finish"
+                                  onClick={handleSubmitQCM}
+                                  title="Terminer le QCM et voir le score complet"
+                                >
+                                  <span>Terminer le QCM & Bilan final</span>
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                    <polyline points="12 5 19 12 12 19" />
+                                  </svg>
+                                </button>
                               )}
                             </div>
-                          );
-                        })}
-
-                        {!isQCMSubmitted && (
-                          <div className="qcm-submit-container">
-                            <button
-                              type="button"
-                              className="btn-submit-qcm-all"
-                              onClick={handleSubmitQCM}
-                              disabled={Object.keys(selectedQCMAnswers).length === 0}
-                            >
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                <polyline points="20 6 9 17 4 12" />
-                              </svg>
-                              <span>
-                                {Object.keys(selectedQCMAnswers).length === 0
-                                  ? 'Cochez au moins une réponse pour valider'
-                                  : `Valider mes réponses (${Object.keys(selectedQCMAnswers).length}/${generatedQCM.length}) & voir le corrigé`}
-                              </span>
-                            </button>
                           </div>
-                        )}
-                      </div>
-                    )}
+                        </div>
+                      );
+                    })()}
 
                     {/* MODE 3 : RAPPORT DE CORRECTION SUR PLACE */}
                     {activeMode === 'corriger' && correctionReport && (
@@ -1338,11 +1542,317 @@ export default function ExercicesPage() {
           line-height: 1.6;
         }
 
-        /* QCM avec bannière de score et validation par lot */
-        .generated-qcm-list {
+        /* Steppers & Progression 1 par 1 (Exercices & QCM) */
+        .single-exercise-container,
+        .single-qcm-container {
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 12px;
+          animation: cardPop 0.2s ease;
+        }
+
+        .exercise-stepper-header,
+        .qcm-stepper-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 2px 4px 6px;
+        }
+
+        .stepper-badge-wrap {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .stepper-indicator-badge {
+          font-size: 0.7813rem;
+          font-weight: 800;
+          color: #1e40af;
+          background: #eff6ff;
+          border: 1px solid #bfdbfe;
+          padding: 4px 12px;
+          border-radius: 9999px;
+        }
+
+        .stepper-dots {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .step-dot {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          font-size: 0.75rem;
+          font-weight: 700;
+          border: 1.5px solid #cbd5e1;
+          background: #ffffff;
+          color: #64748b;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.15s ease;
+        }
+
+        .step-dot:hover {
+          border-color: #2563eb;
+          color: #2563eb;
+        }
+
+        .step-dot.is-active {
+          border-color: #2563eb;
+          background: #2563eb;
+          color: #ffffff;
+          box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+        }
+
+        .step-dot.is-done,
+        .step-dot.is-good {
+          border-color: #16a34a;
+          color: #16a34a;
+          background: #f0fdf4;
+        }
+
+        .step-dot.is-done.is-active,
+        .step-dot.is-good.is-active {
+          background: #16a34a;
+          color: #ffffff;
+          box-shadow: 0 2px 8px rgba(22, 163, 74, 0.35);
+        }
+
+        .step-dot.is-wrong {
+          border-color: #ef4444;
+          color: #ef4444;
+          background: #fef2f2;
+        }
+
+        .step-dot.is-wrong.is-active {
+          background: #ef4444;
+          color: #ffffff;
+          box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
+        }
+
+        /* Barres de navigation séquentielle (Flèches Suivant / Retour) */
+        .exercise-navigation-bar,
+        .qcm-navigation-bar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+          margin-top: 14px;
+          padding-top: 14px;
+          border-top: 1px dashed #e2e8f0;
+          flex-wrap: wrap;
+        }
+
+        .btn-ex-nav-step,
+        .btn-qcm-arrow-nav {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-weight: 700;
+          font-size: 0.8125rem;
+          border-radius: 10px;
+          padding: 9px 16px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          border: none;
+        }
+
+        .btn-ex-nav-prev,
+        .btn-qcm-prev {
+          background: #f8fafc;
+          border: 1px solid #cbd5e1;
+          color: #334155;
+        }
+
+        .btn-ex-nav-prev:hover,
+        .btn-qcm-prev:hover {
+          background: #f1f5f9;
+          border-color: #94a3b8;
+          color: #0f172a;
+        }
+
+        .btn-ex-nav-next,
+        .btn-qcm-next {
+          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          color: #ffffff;
+          box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-ex-nav-next:hover,
+        .btn-qcm-next:hover {
+          background: #1e40af;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+        }
+
+        .btn-qcm-next.is-subtle {
+          background: #eff6ff;
+          color: #1d4ed8;
+          border: 1px solid #bfdbfe;
+          box-shadow: none;
+        }
+
+        .btn-qcm-next.is-subtle:hover {
+          background: #dbeafe;
+          transform: none;
+        }
+
+        .btn-qcm-finish {
+          background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+          color: #ffffff;
+          box-shadow: 0 3px 10px rgba(22, 163, 74, 0.25);
+        }
+
+        .btn-qcm-finish:hover {
+          background: #15803d;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35);
+        }
+
+        .all-exercises-finished-pill {
+          font-size: 0.8125rem;
+          font-weight: 700;
+          color: #15803d;
+          background: #f0fdf4;
+          border: 1px solid #bbf7d0;
+          padding: 8px 14px;
+          border-radius: 10px;
+        }
+
+        .qcm-current-validation-row {
+          margin-top: 12px;
+          display: flex;
+          justify-content: flex-end;
+        }
+
+        .hint-recheck {
+          margin: 6px 0 0;
+          font-size: 0.75rem;
+          color: #b91c1c;
+        }
+
+        /* Vue Récapitulative finale QCM */
+        .qcm-final-summary-view {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          animation: cardPop 0.2s ease;
+        }
+
+        .qcm-summary-actions-bar {
+          display: flex;
+          justify-content: flex-end;
+        }
+
+        .btn-review-questions {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 14px;
+          border-radius: 9999px;
+          border: 1px solid #cbd5e1;
+          background: #ffffff;
+          color: #2563eb;
+          font-size: 0.7813rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .btn-review-questions:hover {
+          background: #eff6ff;
+          border-color: #93c5fd;
+        }
+
+        .qcm-recap-cards-list {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .qcm-recap-mini-card {
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 12px 14px;
+          background: #ffffff;
+        }
+
+        .recap-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 6px;
+        }
+
+        .recap-badge {
+          font-size: 0.6875rem;
+          font-weight: 800;
+          padding: 2px 8px;
+          border-radius: 9999px;
+        }
+
+        .recap-badge.is-good {
+          background: #f0fdf4;
+          color: #166534;
+          border: 1px solid #bbf7d0;
+        }
+
+        .recap-badge.is-wrong {
+          background: #fef2f2;
+          color: #991b1b;
+          border: 1px solid #fecaca;
+        }
+
+        .recap-q-num {
+          font-size: 0.7188rem;
+          font-weight: 700;
+          color: #64748b;
+        }
+
+        .recap-question-text {
+          font-size: 0.8125rem;
+          font-weight: 700;
+          color: #0f172a;
+          margin: 0 0 8px;
+        }
+
+        .recap-explanation {
+          font-size: 0.75rem;
+          background: #f8fafc;
+          border-radius: 8px;
+          padding: 8px 10px;
+          border-left: 3px solid #2563eb;
+        }
+
+        .recap-choice-line {
+          margin-bottom: 4px;
+        }
+
+        .recap-label {
+          color: #64748b;
+          margin-right: 6px;
+          font-weight: 600;
+        }
+
+        .recap-val-ok {
+          color: #166534;
+          font-weight: 700;
+        }
+
+        .recap-val-wrong {
+          color: #991b1b;
+          font-weight: 700;
+        }
+
+        .recap-detail {
+          margin: 4px 0 0;
+          color: #475569;
+          font-style: italic;
         }
 
         .qcm-score-banner {
@@ -1382,39 +1892,6 @@ export default function ExercicesPage() {
           font-size: 0.7813rem;
           opacity: 0.9;
           margin: 0;
-        }
-
-        .qcm-submit-container {
-          display: flex;
-          justify-content: center;
-          padding: 8px 0;
-        }
-
-        .btn-submit-qcm-all {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 12px 24px;
-          border-radius: 9999px;
-          background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-          color: #ffffff;
-          font-size: 0.875rem;
-          font-weight: 800;
-          border: none;
-          cursor: pointer;
-          box-shadow: 0 4px 14px rgba(22, 163, 74, 0.28);
-          transition: transform 0.15s ease, box-shadow 0.15s ease;
-        }
-
-        .btn-submit-qcm-all:hover:not(:disabled) {
-          transform: translateY(-1px);
-          box-shadow: 0 6px 18px rgba(22, 163, 74, 0.35);
-        }
-
-        .btn-submit-qcm-all:disabled {
-          opacity: 0.45;
-          cursor: not-allowed;
-          box-shadow: none;
         }
 
         .qcm-interactive-card {
@@ -1470,6 +1947,18 @@ export default function ExercicesPage() {
           justify-content: center;
           flex-shrink: 0;
           color: #475569;
+        }
+
+        .qcm-option-btn.is-selected {
+          border-color: #2563eb;
+          background: #eff6ff;
+          color: #1d4ed8;
+          font-weight: 600;
+        }
+
+        .qcm-option-btn.is-selected .option-letter {
+          background: #2563eb;
+          color: #ffffff;
         }
 
         .qcm-option-btn.option-correct {
@@ -1647,6 +2136,9 @@ export default function ExercicesPage() {
           display: flex;
           flex-direction: column;
           gap: 8px;
+          position: sticky;
+          bottom: 0;
+          z-index: 30;
         }
 
         .quick-action-chips {
@@ -1725,7 +2217,7 @@ export default function ExercicesPage() {
             font-weight: 800;
           }
           .workspace-container {
-            padding: 4px 10px 85px;
+            padding: 4px 10px 135px;
           }
           .card-workspace-input {
             padding: 12px 10px;
@@ -1790,7 +2282,8 @@ export default function ExercicesPage() {
           .correction-points-grid {
             grid-template-columns: 1fr;
           }
-          .exercise-interactive-card {
+          .exercise-interactive-card,
+          .qcm-interactive-card {
             padding: 14px 12px;
             border-radius: 14px;
           }
@@ -1812,6 +2305,17 @@ export default function ExercicesPage() {
             width: 100%;
             text-align: center;
           }
+          .exercise-navigation-bar,
+          .qcm-navigation-bar {
+            flex-direction: column;
+            gap: 8px;
+          }
+          .btn-ex-nav-step,
+          .btn-qcm-arrow-nav {
+            width: 100%;
+            justify-content: center;
+            padding: 10px 14px;
+          }
           .qcm-score-banner {
             padding: 12px 14px;
             gap: 12px;
@@ -1822,22 +2326,41 @@ export default function ExercicesPage() {
             height: 44px;
             font-size: 1rem;
           }
-          .btn-submit-qcm-all {
-            width: 100%;
-            justify-content: center;
-            font-size: 0.8125rem;
-            padding: 11px 14px;
+          .interactive-chat-workspace {
+            margin-bottom: 25px;
+            border-radius: 16px;
+            position: relative;
+          }
+          .interactive-chat-bottom-bar {
+            position: sticky;
+            bottom: 74px; /* Reste 100% visible et flottant au-dessus de la barre mobile de navigation */
+            z-index: 950;
+            background: #ffffff;
+            border: 1.5px solid #bfdbfe;
+            border-radius: 16px;
+            box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.12);
+            padding: 8px 10px 10px;
+            margin: 10px 0 0;
           }
           .quick-action-chips {
-            gap: 4px;
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 5px;
+            padding-bottom: 3px;
+            -webkit-overflow-scrolling: touch;
+          }
+          .quick-action-chips::-webkit-scrollbar {
+            display: none;
           }
           .chip-btn {
+            white-space: nowrap;
+            flex-shrink: 0;
             font-size: 0.6875rem;
             padding: 3px 8px;
           }
-          .interactive-chat-workspace {
-            margin-bottom: 90px;
-            border-radius: 16px;
+          .chat-input-row {
+            height: 42px;
           }
         }
       `}</style>
