@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -78,9 +78,79 @@ const ACTION_MODES_CONFIG = [
   },
 ];
 
+interface EducationLevel {
+  id: string;
+  label: string;
+  shortLabel: string;
+  icon: string;
+  description: string;
+}
+
+const EDUCATION_LEVELS: EducationLevel[] = [
+  {
+    id: 'auto',
+    label: 'Tous niveaux (Auto)',
+    shortLabel: 'Tous niveaux',
+    icon: '🌟',
+    description: 'Calibré automatiquement selon le document ou sujet',
+  },
+  {
+    id: 'primaire',
+    label: 'Primaire',
+    shortLabel: 'Primaire',
+    icon: '✏️',
+    description: 'CI, CP, CE1, CE2, CM1, CM2 — Entrée en 6e / CFEE',
+  },
+  {
+    id: 'college',
+    label: 'Collège',
+    shortLabel: 'Collège',
+    icon: '🎒',
+    description: '6e, 5e, 4e, 3e — Préparation BFEM',
+  },
+  {
+    id: 'lycee',
+    label: 'Lycée',
+    shortLabel: 'Lycée',
+    icon: '📚',
+    description: 'Seconde, Première, Terminale — Préparation BAC',
+  },
+  {
+    id: 'superieur',
+    label: 'Université / Supérieur',
+    shortLabel: 'Supérieur',
+    icon: '🎓',
+    description: 'Licence (L1, L2, L3), Master, Doctorat & Grandes Écoles',
+  },
+  {
+    id: 'concours',
+    label: 'Concours & Examens',
+    shortLabel: 'Concours',
+    icon: '🏆',
+    description: 'Concours administratifs, recrutement, filières sélectives',
+  },
+];
+
 export default function ExercicesPage() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+
+  // Niveau éducatif sélectionné
+  const [selectedLevelId, setSelectedLevelId] = useState<string>('auto');
+  const [isLevelMenuOpen, setIsLevelMenuOpen] = useState(false);
+  const levelMenuRef = useRef<HTMLDivElement>(null);
+
+  // Fermer le menu popover de niveau lors d'un clic extérieur
+  useEffect(() => {
+    if (!isLevelMenuOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (levelMenuRef.current && !levelMenuRef.current.contains(e.target as Node)) {
+        setIsLevelMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isLevelMenuOpen]);
 
   // Mode actif & Menu popover type Chat
   const [activeMode, setActiveMode] = useState<ExerciseMode>('exercices');
@@ -124,6 +194,7 @@ export default function ExercicesPage() {
   const [followupText, setFollowupText] = useState('');
 
   const currentModeConfig = ACTION_MODES_CONFIG.find((m) => m.id === activeMode) || ACTION_MODES_CONFIG[0];
+  const selectedLevel = EDUCATION_LEVELS.find((l) => l.id === selectedLevelId) || EDUCATION_LEVELS[0];
 
   const handleOpenAuth = (mode: 'login' | 'register') => {
     setAuthMode(mode);
@@ -158,21 +229,27 @@ export default function ExercicesPage() {
         ? inputContent.libraryResource.name
         : 'Sujet d’entraînement';
 
+      const levelSuffix = selectedLevel.id !== 'auto' ? ` (${selectedLevel.shortLabel})` : '';
+
       if (activeMode === 'exercices') {
         setGeneratedExercises([
           {
             id: 1,
-            title: `Exercice 1 : Application directe — ${topicName}`,
-            duration: '15 min',
-            statement: `À partir des notions fondamentales du cours, définir rigoureusement les concepts clés et déterminer les conditions de validité. Calculer les grandeurs caractéristiques et vérifier la cohérence des unités.`,
+            title: `Exercice 1 : Application directe — ${topicName}${levelSuffix}`,
+            duration: selectedLevel.id === 'primaire' ? '10 min' : '15 min',
+            statement: selectedLevel.id === 'primaire'
+              ? `À partir de la leçon, réponds aux questions simples, effectue les calculs de base et vérifie attentivement ton écriture.`
+              : `À partir des notions fondamentales du cours, définir rigoureusement les concepts clés et déterminer les conditions de validité. Calculer les grandeurs caractéristiques et vérifier la cohérence des unités.`,
             solution: `Étape 1 : Poser les hypothèses de travail.\nÉtape 2 : Appliquer la formule standard adaptée au niveau choisi.\nÉtape 3 : Conclusion numérique et interprétation pédagogique validée.`,
             isSolutionVisible: false,
           },
           {
             id: 2,
-            title: `Exercice 2 : Problème de synthèse & Raisonnement guidé`,
-            duration: '30 min',
-            statement: `Mise en situation complète reliant plusieurs aspects du programme. Analyser les données fournies, modéliser le problème et proposer une démarche de résolution argumentée.`,
+            title: `Exercice 2 : Problème d'approfondissement${levelSuffix}`,
+            duration: selectedLevel.id === 'primaire' ? '15 min' : '30 min',
+            statement: selectedLevel.id === 'primaire'
+              ? `Résous ce petit problème pas à pas en justifiant ton résultat avec une phrase claire.`
+              : `Mise en situation complète reliant plusieurs aspects du programme. Analyser les données fournies, modéliser le problème et proposer une démarche de résolution argumentée.`,
             solution: `1. Identification des variables interdépendantes.\n2. Résolution du système d'équations / construction du plan de dissertation.\n3. Analyse critique du résultat obtenu.`,
             isSolutionVisible: false,
           },
@@ -181,7 +258,7 @@ export default function ExercicesPage() {
         setGeneratedQCM([
           {
             id: 1,
-            question: `Dans le cadre du thème « ${topicName} », quelle est la définition ou la formule exacte à appliquer en priorité ?`,
+            question: `Dans le cadre du thème « ${topicName} »${levelSuffix}, quelle est la réponse ou la formule exacte à appliquer en priorité ?`,
             options: [
               `Le théorème de proportionnalité sans restriction`,
               `Le principe de conservation et d'équilibre en régime stable`,
@@ -322,10 +399,75 @@ export default function ExercicesPage() {
       <Navbar onOpenAuth={handleOpenAuth} />
 
       <main className="exercices-main-container">
-        {/* En-tête Simple et Épuré */}
+        {/* En-tête : Titre Exercice à gauche, Sélecteur de niveau à droite */}
         <header className="page-header-compact">
-          <div className="container">
-            <h1 className="header-simple-title">Exercice</h1>
+          <div className="container header-container-flex">
+            <div className="header-left-group">
+              <h1 className="header-simple-title">Exercice</h1>
+            </div>
+
+            <div className="header-level-wrapper" ref={levelMenuRef}>
+              <button
+                type="button"
+                className="btn-header-level-pill"
+                onClick={() => setIsLevelMenuOpen((prev) => !prev)}
+                aria-expanded={isLevelMenuOpen}
+                aria-haspopup="true"
+                title="Choisir le niveau scolaire ou académique"
+              >
+                <span className="level-pill-icon">{selectedLevel.icon}</span>
+                <span className="level-pill-label">
+                  <span className="level-pill-prefix">Niveau :</span> {selectedLevel.shortLabel}
+                </span>
+                <svg
+                  className={`level-chevron ${isLevelMenuOpen ? 'is-open' : ''}`}
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+
+              {isLevelMenuOpen && (
+                <div className="header-level-popover">
+                  <div className="level-popover-header">
+                    <span className="level-popover-title">Sélectionner un niveau</span>
+                    <span className="level-popover-sub">Adapte les énoncés & la difficulté</span>
+                  </div>
+                  <div className="level-popover-list">
+                    {EDUCATION_LEVELS.map((level) => {
+                      const isSelected = level.id === selectedLevelId;
+                      return (
+                        <button
+                          key={level.id}
+                          type="button"
+                          className={`level-popover-item ${isSelected ? 'is-selected' : ''}`}
+                          onClick={() => {
+                            setSelectedLevelId(level.id);
+                            setIsLevelMenuOpen(false);
+                          }}
+                        >
+                          <span className="level-item-icon">{level.icon}</span>
+                          <div className="level-item-text">
+                            <span className="level-item-title">{level.label}</span>
+                            <span className="level-item-desc">{level.description}</span>
+                          </div>
+                          {isSelected && (
+                            <svg className="level-item-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
@@ -862,13 +1004,30 @@ export default function ExercicesPage() {
         }
 
         .page-header-compact {
-          padding: 18px 0 8px;
-          text-align: center;
+          padding: 16px 0 10px;
           background: transparent;
+          position: relative;
+          z-index: 60;
+        }
+
+        .header-container-flex {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          max-width: 840px;
+          padding: 0 16px;
+          box-sizing: border-box;
+        }
+
+        .header-left-group {
+          display: flex;
+          align-items: center;
+          gap: 10px;
         }
 
         .header-simple-title {
-          font-size: clamp(1.6rem, 3.2vw, 2rem);
+          font-size: clamp(1.5rem, 3.2vw, 1.9rem);
           font-weight: 800;
           background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #4f46e5 100%);
           -webkit-background-clip: text;
@@ -876,7 +1035,173 @@ export default function ExercicesPage() {
           color: #1e3a8a;
           margin: 0;
           letter-spacing: -0.025em;
-          display: inline-block;
+          text-align: left;
+        }
+
+        .header-level-wrapper {
+          position: relative;
+          z-index: 70;
+        }
+
+        .btn-header-level-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          background: #ffffff;
+          border: 1.5px solid #cbd5e1;
+          border-radius: 9999px;
+          padding: 7px 14px;
+          font-size: 0.8125rem;
+          color: #1e293b;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.16s ease;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-header-level-pill:hover {
+          background: #f8fafc;
+          border-color: #94a3b8;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+          transform: translateY(-1px);
+        }
+
+        .level-pill-icon {
+          font-size: 0.95rem;
+          line-height: 1;
+        }
+
+        .level-pill-label {
+          white-space: nowrap;
+        }
+
+        .level-pill-prefix {
+          color: #64748b;
+          font-weight: 600;
+          margin-right: 2px;
+        }
+
+        .level-chevron {
+          color: #94a3b8;
+          transition: transform 0.2s ease;
+        }
+
+        .level-chevron.is-open {
+          transform: rotate(180deg);
+        }
+
+        /* Menu Déroulant Popover du Niveau */
+        .header-level-popover {
+          position: absolute;
+          top: calc(100% + 8px);
+          right: 0;
+          width: 310px;
+          max-width: calc(100vw - 32px);
+          background: #ffffff;
+          border-radius: 14px;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 14px 34px -6px rgba(15, 23, 42, 0.22);
+          z-index: 999;
+          overflow: hidden;
+          animation: popoverFadeIn 0.15s ease-out;
+        }
+
+        @keyframes popoverFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-6px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .level-popover-header {
+          padding: 10px 14px 8px;
+          background: #f8fafc;
+          border-bottom: 1px solid #e2e8f0;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .level-popover-title {
+          font-size: 0.8125rem;
+          font-weight: 800;
+          color: #0f172a;
+        }
+
+        .level-popover-sub {
+          font-size: 0.6875rem;
+          color: #64748b;
+        }
+
+        .level-popover-list {
+          padding: 6px;
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+          max-height: 380px;
+          overflow-y: auto;
+        }
+
+        .level-popover-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 8px 10px;
+          border-radius: 10px;
+          border: 1px solid transparent;
+          background: transparent;
+          text-align: left;
+          cursor: pointer;
+          width: 100%;
+          transition: all 0.14s ease;
+        }
+
+        .level-popover-item:hover {
+          background: #f8fafc;
+          border-color: #e2e8f0;
+        }
+
+        .level-popover-item.is-selected {
+          background: #eff6ff;
+          border-color: #bfdbfe;
+        }
+
+        .level-item-icon {
+          font-size: 1.1rem;
+          flex-shrink: 0;
+        }
+
+        .level-item-text {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+        }
+
+        .level-item-title {
+          font-size: 0.8125rem;
+          font-weight: 700;
+          color: #1e293b;
+        }
+
+        .level-popover-item.is-selected .level-item-title {
+          color: #1d4ed8;
+          font-weight: 800;
+        }
+
+        .level-item-desc {
+          font-size: 0.6875rem;
+          color: #64748b;
+          line-height: 1.35;
+        }
+
+        .level-item-check {
+          color: #2563eb;
+          flex-shrink: 0;
         }
 
         .workspace-container {
@@ -2111,11 +2436,28 @@ export default function ExercicesPage() {
 
         @media (max-width: 640px) {
           .page-header-compact {
-            padding: 10px 0 2px;
+            padding: 10px 0 4px;
+          }
+          .header-container-flex {
+            padding: 0 10px;
+            gap: 8px;
           }
           .header-simple-title {
-            font-size: 1.45rem;
+            font-size: 1.35rem;
             font-weight: 800;
+          }
+          .btn-header-level-pill {
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            gap: 5px;
+          }
+          .level-pill-prefix {
+            display: none;
+          }
+          .header-level-popover {
+            width: 285px;
+            right: 0;
+            top: calc(100% + 6px);
           }
           .workspace-container {
             padding: 4px 10px 85px;
