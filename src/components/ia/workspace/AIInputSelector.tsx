@@ -248,32 +248,30 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
               </div>
             ) : (
               <div className="selected-document-card">
-                <div className="doc-left-info">
+                <div className="doc-center-preview">
                   <div className="doc-icon-badge">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                       <polyline points="14 2 14 8 20 8"></polyline>
                       <line x1="16" y1="13" x2="8" y2="13"></line>
                       <line x1="16" y1="17" x2="8" y2="17"></line>
                     </svg>
                   </div>
-                  <div className="doc-meta-text">
-                    <div className="status-row">
-                      <span className="badge-ok">Document prêt</span>
-                      <span className="doc-type-pill">{selectedFile.name.split('.').pop()?.toUpperCase()}</span>
-                    </div>
-                    <h5 className="doc-filename">{selectedFile.name}</h5>
-                    <span className="doc-size-info">{formatFileSize(selectedFile.size)}</span>
+                  <div className="status-row">
+                    <span className="badge-ok">✓ Document prêt</span>
+                    <span className="doc-type-pill">{selectedFile.name.split('.').pop()?.toUpperCase()}</span>
                   </div>
+                  <h5 className="doc-filename" title={selectedFile.name}>{selectedFile.name}</h5>
+                  <span className="doc-size-info">{formatFileSize(selectedFile.size)}</span>
                 </div>
 
-                <div className="doc-right-actions">
+                <div className="card-actions-row">
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     className="btn-change-doc"
                   >
-                    Remplacer
+                    Remplacer le document
                   </button>
                   <button
                     type="button"
@@ -281,13 +279,9 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
                       setSelectedFile(null);
                       if (onContentChange) onContentChange({ type: 'file', file: undefined });
                     }}
-                    className="btn-remove-doc"
-                    title="Retirer"
+                    className="btn-remove-doc-text"
                   >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
+                    Retirer
                   </button>
                 </div>
               </div>
@@ -328,32 +322,30 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
               </div>
             ) : (
               <div className="selected-library-card">
-                <div className="lib-card-left">
+                <div className="lib-center-preview">
                   <div className="lib-res-cover">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                       <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                       <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                     </svg>
                   </div>
-                  <div className="lib-res-details">
-                    <div className="badges-row">
-                      <span className="badge-lib-origin">Bibliothèque Sunubiblio</span>
-                      {selectedLibraryResource.subject && (
-                        <span className="badge-subject">{selectedLibraryResource.subject}</span>
-                      )}
-                    </div>
-                    <h5 className="lib-res-title">{selectedLibraryResource.name}</h5>
-                    <span className="lib-res-meta">{selectedLibraryResource.size || 'Cours certifié'}</span>
+                  <div className="badges-row">
+                    <span className="badge-lib-origin">Bibliothèque Sunubiblio</span>
+                    {selectedLibraryResource.subject && (
+                      <span className="badge-subject">{selectedLibraryResource.subject}</span>
+                    )}
                   </div>
+                  <h5 className="lib-res-title" title={selectedLibraryResource.name}>{selectedLibraryResource.name}</h5>
+                  <span className="lib-res-meta">{selectedLibraryResource.size || 'Cours certifié'}</span>
                 </div>
 
-                <div className="lib-card-right">
+                <div className="card-actions-row">
                   <button
                     type="button"
                     onClick={() => setIsLibraryModalOpen(true)}
                     className="btn-change-doc"
                   >
-                    Changer
+                    Changer de ressource
                   </button>
                   <button
                     type="button"
@@ -361,13 +353,9 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
                       setSelectedLibraryResource(null);
                       if (onContentChange) onContentChange({ type: 'library', libraryResource: undefined });
                     }}
-                    className="btn-remove-doc"
-                    title="Retirer"
+                    className="btn-remove-doc-text"
                   >
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
+                    Retirer
                   </button>
                 </div>
               </div>
@@ -622,90 +610,95 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
           padding-left: 4px;
         }
 
-        /* --- Selected Document & Library Cards --- */
+        /* --- Selected Document & Library Cards Adaptées --- */
         .selected-document-card,
         .selected-library-card {
-          background: #f8faff;
-          border: 1.5px solid rgba(99, 102, 241, 0.25);
+          background: #f8fafc;
+          border: 1.5px solid #cbd5e1;
           border-radius: 18px;
-          padding: 16px 20px;
+          padding: 24px 20px;
           display: flex;
+          flex-direction: column;
           align-items: center;
-          justify-content: space-between;
-          gap: 16px;
-          animation: cardPop 0.2s ease;
+          justify-content: center;
+          text-align: center;
+          flex: 1;
+          height: 100%;
+          min-height: 290px;
+          box-sizing: border-box;
+          gap: 14px;
+          animation: cardPop 0.18s ease;
         }
 
-        .doc-left-info,
-        .lib-card-left {
+        .doc-center-preview,
+        .lib-center-preview {
           display: flex;
+          flex-direction: column;
           align-items: center;
-          gap: 14px;
-          min-width: 0;
+          text-align: center;
+          max-width: 100%;
         }
 
         .doc-icon-badge,
         .lib-res-cover {
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
-          background: #eef2ff;
-          color: #4f46e5;
+          width: 50px;
+          height: 50px;
+          border-radius: 14px;
+          background: #eff6ff;
+          color: #2563eb;
           display: flex;
           align-items: center;
           justify-content: center;
-          flex-shrink: 0;
+          margin-bottom: 8px;
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
         }
 
         .lib-res-cover {
-          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+          background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
           color: #ffffff;
-        }
-
-        .doc-meta-text,
-        .lib-res-details {
-          display: flex;
-          flex-direction: column;
-          min-width: 0;
         }
 
         .status-row,
         .badges-row {
-          display: flex;
+          display: inline-flex;
           align-items: center;
           gap: 6px;
-          margin-bottom: 2px;
+          margin-bottom: 6px;
         }
 
         .badge-ok,
         .badge-lib-origin {
-          font-size: 10px;
+          font-size: 11px;
           font-weight: 800;
           text-transform: uppercase;
           background: #dcfce7;
           color: #166534;
-          padding: 2px 6px;
-          border-radius: 4px;
+          padding: 3px 8px;
+          border-radius: 9999px;
         }
 
         .badge-lib-origin {
-          background: #f5f3ff;
-          color: #7c3aed;
+          background: #eff6ff;
+          color: #1d4ed8;
         }
 
         .doc-type-pill,
         .badge-subject {
-          font-size: 10px;
+          font-size: 11px;
           font-weight: 700;
-          color: #64748b;
+          color: #475569;
+          background: #e2e8f0;
+          padding: 3px 8px;
+          border-radius: 9999px;
         }
 
         .doc-filename,
         .lib-res-title {
-          font-size: 14.5px;
+          font-size: 15px;
           font-weight: 800;
           color: #0f172a;
-          margin: 0;
+          margin: 0 0 4px 0;
+          max-width: 450px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -713,53 +706,48 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
 
         .doc-size-info,
         .lib-res-meta {
-          font-size: 12px;
+          font-size: 12.5px;
           color: #64748b;
+          font-weight: 500;
         }
 
-        .doc-right-actions,
-        .lib-card-right {
+        .card-actions-row {
           display: flex;
           align-items: center;
-          gap: 8px;
-          flex-shrink: 0;
+          gap: 10px;
         }
 
         .btn-change-doc {
-          font-size: 12px;
+          font-size: 12.5px;
           font-weight: 700;
           background: #ffffff;
-          border: 1px solid #e2e8f0;
-          color: #4f46e5;
-          padding: 6px 12px;
-          border-radius: 8px;
+          border: 1.5px solid #cbd5e1;
+          color: #1e3a8a;
+          padding: 7px 16px;
+          border-radius: 9999px;
           cursor: pointer;
           transition: all 0.15s ease;
         }
 
         .btn-change-doc:hover {
-          background: #f8faff;
-          border-color: #6366f1;
+          background: #eff6ff;
+          border-color: #2563eb;
         }
 
-        .btn-remove-doc {
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          color: #64748b;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        .btn-remove-doc-text {
+          font-size: 12px;
+          font-weight: 700;
+          background: transparent;
+          border: none;
+          color: #dc2626;
+          padding: 6px 12px;
           cursor: pointer;
+          border-radius: 9999px;
           transition: all 0.15s ease;
         }
 
-        .btn-remove-doc:hover {
+        .btn-remove-doc-text:hover {
           background: #fee2e2;
-          color: #ef4444;
-          border-color: #fecaca;
         }
 
         /* --- Library Empty Invitation Statique --- */
@@ -931,13 +919,38 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
           }
           .selected-document-card,
           .selected-library-card {
-            flex-direction: column;
-            align-items: flex-start;
-            padding: 12px;
+            min-height: 195px;
+            height: 195px;
+            padding: 12px 10px;
+            border-radius: 14px;
+            gap: 8px;
           }
-          .doc-right-actions,
-          .lib-card-right {
-            align-self: flex-end;
+          .doc-icon-badge,
+          .lib-res-cover {
+            width: 38px;
+            height: 38px;
+            margin-bottom: 4px;
+            border-radius: 10px;
+          }
+          .doc-filename,
+          .lib-res-title {
+            font-size: 13px;
+            max-width: 250px;
+          }
+          .doc-size-info,
+          .lib-res-meta {
+            font-size: 11px;
+          }
+          .card-actions-row {
+            gap: 8px;
+          }
+          .btn-change-doc {
+            padding: 5px 12px;
+            font-size: 11.5px;
+          }
+          .btn-remove-doc-text {
+            font-size: 11px;
+            padding: 5px 8px;
           }
         }
 
