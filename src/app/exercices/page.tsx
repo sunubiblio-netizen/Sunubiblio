@@ -105,6 +105,9 @@ export default function ExercicesPage() {
   const [generatedExercises, setGeneratedExercises] = useState<ExerciseItem[]>([]);
   const [generatedQCM, setGeneratedQCM] = useState<QCMItem[]>([]);
   const [selectedQCMAnswers, setSelectedQCMAnswers] = useState<Record<number, number>>({});
+  const [isQCMSubmitted, setIsQCMSubmitted] = useState(false);
+  const [studentAnswers, setStudentAnswers] = useState<Record<number, string>>({});
+  const [validatedExercises, setValidatedExercises] = useState<Record<number, boolean>>({});
   const [correctionReport, setCorrectionReport] = useState<{
     grade: string;
     strengths: string[];
@@ -133,6 +136,9 @@ export default function ExercicesPage() {
     setIsSessionActive(true);
     setChatMessages([]);
     setSelectedQCMAnswers({});
+    setIsQCMSubmitted(false);
+    setStudentAnswers({});
+    setValidatedExercises({});
 
     // Simulation de génération IA
     setTimeout(() => {
@@ -222,6 +228,13 @@ export default function ExercicesPage() {
     }, 1100);
   };
 
+  const handleValidateExercise = (exId: number) => {
+    setValidatedExercises((prev) => ({ ...prev, [exId]: true }));
+    setGeneratedExercises((prev) =>
+      prev.map((e) => (e.id === exId ? { ...e, isSolutionVisible: true } : e))
+    );
+  };
+
   const handleToggleSolution = (exId: number) => {
     setGeneratedExercises((prev) =>
       prev.map((e) => (e.id === exId ? { ...e, isSolutionVisible: !e.isSolutionVisible } : e))
@@ -229,10 +242,15 @@ export default function ExercicesPage() {
   };
 
   const handleSelectOption = (questionId: number, optionIndex: number) => {
+    if (isQCMSubmitted) return;
     setSelectedQCMAnswers((prev) => ({
       ...prev,
       [questionId]: optionIndex,
     }));
+  };
+
+  const handleSubmitQCM = () => {
+    setIsQCMSubmitted(true);
   };
 
   const handleSendFollowup = (textToSend?: string) => {
@@ -253,6 +271,8 @@ export default function ExercicesPage() {
         aiContent = `💡 **Indice pédagogique :** Observez attentivement la relation entre les variables principales. Une factorisation ou un changement de variable simplifie immédiatement l'analyse !`;
       } else if (text.toLowerCase().includes('difficile') || text.toLowerCase().includes('variante')) {
         aiContent = `🔥 **Variante niveau Concours :** Que se passerait-il si les conditions initiales variaient de façon non linéaire ? Essayez d'intégrer une contrainte supplémentaire de temps !`;
+      } else if (text.toLowerCase().includes('étape 2') || text.toLowerCase().includes('etape 2')) {
+        aiContent = `📖 **Éclaircissement sur l'étape 2 :** Nous appliquons le principe de conservation car le système est supposé à l'état stationnaire. Si le régime était transitoire, il faudrait ajouter le terme dérivé temporel !`;
       }
       setChatMessages((prev) => [
         ...prev,
@@ -271,6 +291,9 @@ export default function ExercicesPage() {
     setGeneratedExercises([]);
     setGeneratedQCM([]);
     setSelectedQCMAnswers({});
+    setIsQCMSubmitted(false);
+    setStudentAnswers({});
+    setValidatedExercises({});
     setCorrectionReport(null);
     setChatMessages([]);
   };
@@ -418,44 +441,103 @@ export default function ExercicesPage() {
                   </div>
                 ) : (
                   <>
-                    {/* MODE 1 : EXERCICES GÉNÉRÉS SUR PLACE */}
+                    {/* MODE 1 : EXERCICES D'ENTRAÎNEMENT INTERACTIFS */}
                     {activeMode === 'exercices' && (
                       <div className="generated-exercises-list">
-                        {generatedExercises.map((ex) => (
-                          <div key={ex.id} className="exercise-interactive-card">
-                            <div className="card-head-row">
-                              <h3 className="card-ex-title">{ex.title}</h3>
-                              <span className="card-ex-duration">⏱️ {ex.duration}</span>
-                            </div>
+                        {generatedExercises.map((ex) => {
+                          const isValidated = !!validatedExercises[ex.id];
+                          const answer = studentAnswers[ex.id] || '';
 
-                            <p className="card-ex-statement">{ex.statement}</p>
-
-                            <div className="card-ex-action-row">
-                              <button
-                                type="button"
-                                className="btn-toggle-solution"
-                                onClick={() => handleToggleSolution(ex.id)}
-                              >
-                                {ex.isSolutionVisible ? 'Masquer la solution' : 'Afficher la méthode & le corrigé'}
-                              </button>
-                            </div>
-
-                            {ex.isSolutionVisible && (
-                              <div className="card-ex-solution-box">
-                                <h4 className="solution-heading">Correction détaillée & Méthode :</h4>
-                                <pre className="solution-text">{ex.solution}</pre>
+                          return (
+                            <div key={ex.id} className="exercise-interactive-card">
+                              <div className="card-head-row">
+                                <div className="card-title-badge-group">
+                                  <span className="ex-number-badge">Exercice #{ex.id}</span>
+                                  <h3 className="card-ex-title">{ex.title}</h3>
+                                </div>
+                                <span className="card-ex-duration">⏱️ {ex.duration}</span>
                               </div>
-                            )}
-                          </div>
-                        ))}
+
+                              <div className="statement-box">
+                                <span className="statement-tag">Énoncé de travail</span>
+                                <p className="card-ex-statement">{ex.statement}</p>
+                              </div>
+
+                              {!isValidated ? (
+                                <div className="student-workspace-block">
+                                  <label className="student-input-label">
+                                    <span>Votre réponse ou démarche d'entraînement :</span>
+                                    <span className="hint-optional">(faites votre essai avant de débloquer la solution)</span>
+                                  </label>
+                                  <textarea
+                                    className="student-answer-textarea"
+                                    placeholder="Rédigez ici votre réponse, vos calculs ou votre raisonnement..."
+                                    rows={3}
+                                    value={answer}
+                                    onChange={(e) => setStudentAnswers((prev) => ({ ...prev, [ex.id]: e.target.value }))}
+                                  />
+                                  <div className="card-ex-action-row">
+                                    <button
+                                      type="button"
+                                      className="btn-validate-step"
+                                      onClick={() => handleValidateExercise(ex.id)}
+                                    >
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <polyline points="20 6 9 17 4 12" />
+                                      </svg>
+                                      <span>Valider & Débloquer le corrigé détaillé</span>
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="solution-unlocked-section">
+                                  {answer.trim() && (
+                                    <div className="student-submitted-box">
+                                      <span className="submitted-tag">Votre proposition enregistrée :</span>
+                                      <p className="submitted-content">{answer}</p>
+                                    </div>
+                                  )}
+
+                                  <div className="card-ex-solution-box">
+                                    <div className="solution-header-bar">
+                                      <span className="solution-badge-ok">✓ Corrigé & Méthode officielle</span>
+                                      <button
+                                        type="button"
+                                        className="btn-ask-about-this"
+                                        onClick={() => handleSendFollowup(`Peux-tu m'expliquer plus en détail la méthode de l'exercice ${ex.id} ?`)}
+                                      >
+                                        💬 Poser une question sur cette correction
+                                      </button>
+                                    </div>
+                                    <pre className="solution-text">{ex.solution}</pre>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
 
-                    {/* MODE 2 : QCM INTERACTIF SUR PLACE */}
+                    {/* MODE 2 : QCM INTERACTIF AVEC VALIDATION EN PREMIER */}
                     {activeMode === 'qcm' && (
                       <div className="generated-qcm-list">
+                        {isQCMSubmitted && (
+                          <div className="qcm-score-banner">
+                            <div className="score-circle">
+                              {generatedQCM.filter((q) => selectedQCMAnswers[q.id] === q.correctIndex).length} / {generatedQCM.length}
+                            </div>
+                            <div className="score-meta">
+                              <h4>
+                                {generatedQCM.filter((q) => selectedQCMAnswers[q.id] === q.correctIndex).length === generatedQCM.length
+                                  ? '🎉 Excellent ! Score parfait sur ce QCM'
+                                  : 'Correction débloquée — Consultez vos résultats ci-dessous'}
+                              </h4>
+                              <p>Lisez les explications officielles et posez vos questions au tuteur IA ci-dessous.</p>
+                            </div>
+                          </div>
+                        )}
                         {generatedQCM.map((q) => {
-                          const hasAnswered = selectedQCMAnswers[q.id] !== undefined;
                           const selectedIdx = selectedQCMAnswers[q.id];
                           const isCorrect = selectedIdx === q.correctIndex;
 
@@ -468,20 +550,22 @@ export default function ExercicesPage() {
                               <div className="qcm-options-stack">
                                 {q.options.map((opt, optIdx) => {
                                   let optionStateClass = '';
-                                  if (hasAnswered) {
+                                  if (isQCMSubmitted) {
                                     if (optIdx === q.correctIndex) {
                                       optionStateClass = 'option-correct';
                                     } else if (optIdx === selectedIdx) {
                                       optionStateClass = 'option-wrong';
                                     }
+                                  } else if (selectedIdx === optIdx) {
+                                    optionStateClass = 'is-selected';
                                   }
 
                                   return (
                                     <button
                                       key={optIdx}
                                       type="button"
-                                      disabled={hasAnswered}
-                                      className={`qcm-option-btn ${optionStateClass} ${selectedIdx === optIdx ? 'is-selected' : ''}`}
+                                      disabled={isQCMSubmitted}
+                                      className={`qcm-option-btn ${optionStateClass}`}
                                       onClick={() => handleSelectOption(q.id, optIdx)}
                                     >
                                       <span className="option-letter">
@@ -493,7 +577,7 @@ export default function ExercicesPage() {
                                 })}
                               </div>
 
-                              {hasAnswered && (
+                              {isQCMSubmitted && (
                                 <div className={`qcm-feedback-banner ${isCorrect ? 'is-success' : 'is-error'}`}>
                                   <span className="feedback-icon">{isCorrect ? '✅' : '❌'}</span>
                                   <div className="feedback-text">
@@ -505,6 +589,26 @@ export default function ExercicesPage() {
                             </div>
                           );
                         })}
+
+                        {!isQCMSubmitted && (
+                          <div className="qcm-submit-container">
+                            <button
+                              type="button"
+                              className="btn-submit-qcm-all"
+                              onClick={handleSubmitQCM}
+                              disabled={Object.keys(selectedQCMAnswers).length === 0}
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                              <span>
+                                {Object.keys(selectedQCMAnswers).length === 0
+                                  ? 'Cochez au moins une réponse pour valider'
+                                  : `Valider mes réponses (${Object.keys(selectedQCMAnswers).length}/${generatedQCM.length}) & voir le corrigé`}
+                              </span>
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -1007,21 +1111,40 @@ export default function ExercicesPage() {
         .generated-exercises-list {
           display: flex;
           flex-direction: column;
-          gap: 14px;
+          gap: 16px;
         }
 
         .exercise-interactive-card {
           border: 1px solid #e2e8f0;
-          border-radius: 14px;
-          padding: 16px;
-          background: #fbfcfe;
+          border-radius: 16px;
+          padding: 18px;
+          background: #ffffff;
+          box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.04);
         }
 
         .card-head-row {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 10px;
+          margin-bottom: 12px;
+          gap: 10px;
+        }
+
+        .card-title-badge-group {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .ex-number-badge {
+          font-size: 0.6875rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          background: #eff6ff;
+          color: #2563eb;
+          padding: 3px 8px;
+          border-radius: 6px;
         }
 
         .card-ex-title {
@@ -1038,55 +1161,260 @@ export default function ExercicesPage() {
           background: #f1f5f9;
           padding: 3px 8px;
           border-radius: 6px;
+          white-space: nowrap;
+        }
+
+        .statement-box {
+          background: #f8fafc;
+          border-left: 3px solid #2563eb;
+          border-radius: 0 10px 10px 0;
+          padding: 12px 14px;
+          margin-bottom: 14px;
+        }
+
+        .statement-tag {
+          font-size: 0.6875rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          color: #64748b;
+          letter-spacing: 0.04em;
+          display: block;
+          margin-bottom: 4px;
         }
 
         .card-ex-statement {
-          font-size: 0.84rem;
-          color: #334155;
+          font-size: 0.875rem;
+          color: #1e293b;
           line-height: 1.6;
-          margin: 0 0 12px;
+          margin: 0;
         }
 
-        .btn-toggle-solution {
+        /* Espace de travail élève */
+        .student-workspace-block {
+          background: #fafafa;
+          border: 1.5px dashed #cbd5e1;
+          border-radius: 12px;
+          padding: 12px 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .student-input-label {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
           font-size: 0.7813rem;
           font-weight: 700;
-          color: #2563eb;
-          background: #eff6ff;
-          border: 1px solid #dbeafe;
-          padding: 5px 12px;
-          border-radius: 8px;
+          color: #334155;
+          flex-wrap: wrap;
+          gap: 4px;
+        }
+
+        .hint-optional {
+          font-size: 0.6875rem;
+          color: #94a3b8;
+          font-weight: 500;
+        }
+
+        .student-answer-textarea {
+          width: 100%;
+          border: 1px solid #cbd5e1;
+          border-radius: 10px;
+          background: #ffffff;
+          padding: 10px 12px;
+          font-size: 0.84rem;
+          font-family: inherit;
+          color: #0f172a;
+          line-height: 1.5;
+          resize: vertical;
+          min-height: 70px;
+        }
+
+        .student-answer-textarea:focus {
+          outline: none;
+          border-color: #2563eb;
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-validate-step {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 9px 16px;
+          border-radius: 9999px;
+          background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+          color: #ffffff;
+          font-size: 0.8125rem;
+          font-weight: 800;
+          border: none;
           cursor: pointer;
+          align-self: flex-start;
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
+          box-shadow: 0 3px 10px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-validate-step:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 5px 14px rgba(37, 99, 235, 0.28);
+        }
+
+        /* Corrigé débloqué */
+        .solution-unlocked-section {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          animation: cardPop 0.2s ease;
+        }
+
+        .student-submitted-box {
+          background: #f1f5f9;
+          border-radius: 10px;
+          padding: 10px 12px;
+          border-left: 3px solid #64748b;
+        }
+
+        .submitted-tag {
+          font-size: 0.6875rem;
+          font-weight: 800;
+          color: #64748b;
+          text-transform: uppercase;
+          display: block;
+          margin-bottom: 3px;
+        }
+
+        .submitted-content {
+          font-size: 0.8125rem;
+          color: #1e293b;
+          margin: 0;
+          font-style: italic;
         }
 
         .card-ex-solution-box {
-          margin-top: 12px;
-          background: #ffffff;
-          border: 1px solid #bfdbfe;
-          border-radius: 10px;
-          padding: 12px;
+          background: #f0fdf4;
+          border: 1px solid #bbf7d0;
+          border-radius: 12px;
+          padding: 14px;
         }
 
-        .solution-heading {
+        .solution-header-bar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+          flex-wrap: wrap;
+          gap: 6px;
+        }
+
+        .solution-badge-ok {
           font-size: 0.7813rem;
           font-weight: 800;
-          color: #1e3a8a;
-          margin: 0 0 6px;
+          color: #15803d;
+        }
+
+        .btn-ask-about-this {
+          font-size: 0.7188rem;
+          font-weight: 700;
+          color: #2563eb;
+          background: #ffffff;
+          border: 1px solid #bfdbfe;
+          border-radius: 9999px;
+          padding: 4px 10px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .btn-ask-about-this:hover {
+          background: #eff6ff;
+          border-color: #2563eb;
         }
 
         .solution-text {
-          font-size: 0.7813rem;
-          color: #334155;
+          font-size: 0.8125rem;
+          color: #166534;
           margin: 0;
           white-space: pre-line;
           font-family: inherit;
-          line-height: 1.5;
+          line-height: 1.6;
         }
 
-        /* QCM */
+        /* QCM avec bannière de score et validation par lot */
         .generated-qcm-list {
           display: flex;
           flex-direction: column;
-          gap: 14px;
+          gap: 16px;
+        }
+
+        .qcm-score-banner {
+          background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+          color: #ffffff;
+          border-radius: 16px;
+          padding: 16px 20px;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+          animation: cardPop 0.2s ease;
+        }
+
+        .score-circle {
+          width: 52px;
+          height: 52px;
+          border-radius: 50%;
+          background: #ffffff;
+          color: #1e3a8a;
+          font-size: 1.15rem;
+          font-weight: 900;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        }
+
+        .score-meta h4 {
+          font-size: 0.9375rem;
+          font-weight: 800;
+          margin: 0 0 4px;
+        }
+
+        .score-meta p {
+          font-size: 0.7813rem;
+          opacity: 0.9;
+          margin: 0;
+        }
+
+        .qcm-submit-container {
+          display: flex;
+          justify-content: center;
+          padding: 8px 0;
+        }
+
+        .btn-submit-qcm-all {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 24px;
+          border-radius: 9999px;
+          background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+          color: #ffffff;
+          font-size: 0.875rem;
+          font-weight: 800;
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 4px 14px rgba(22, 163, 74, 0.28);
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .btn-submit-qcm-all:hover:not(:disabled) {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 18px rgba(22, 163, 74, 0.35);
+        }
+
+        .btn-submit-qcm-all:disabled {
+          opacity: 0.45;
+          cursor: not-allowed;
+          box-shadow: none;
         }
 
         .qcm-interactive-card {
@@ -1461,6 +1789,51 @@ export default function ExercicesPage() {
           }
           .correction-points-grid {
             grid-template-columns: 1fr;
+          }
+          .exercise-interactive-card {
+            padding: 14px 12px;
+            border-radius: 14px;
+          }
+          .card-ex-statement {
+            font-size: 0.8125rem;
+          }
+          .btn-validate-step {
+            width: 100%;
+            justify-content: center;
+            font-size: 0.7813rem;
+            padding: 10px 14px;
+          }
+          .solution-header-bar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+          }
+          .btn-ask-about-this {
+            width: 100%;
+            text-align: center;
+          }
+          .qcm-score-banner {
+            padding: 12px 14px;
+            gap: 12px;
+            border-radius: 14px;
+          }
+          .score-circle {
+            width: 44px;
+            height: 44px;
+            font-size: 1rem;
+          }
+          .btn-submit-qcm-all {
+            width: 100%;
+            justify-content: center;
+            font-size: 0.8125rem;
+            padding: 11px 14px;
+          }
+          .quick-action-chips {
+            gap: 4px;
+          }
+          .chip-btn {
+            font-size: 0.6875rem;
+            padding: 3px 8px;
           }
           .interactive-chat-workspace {
             margin-bottom: 90px;
