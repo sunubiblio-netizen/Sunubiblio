@@ -11,6 +11,108 @@
  * Fournit de véritables corrigés académiques détaillés et rigoureux.
  */
 
+export type TopicKind = 'calcul' | 'redaction' | 'document' | 'rapport';
+
+export interface TopicKindInfo {
+  kind: TopicKind;
+  label: string;
+  badgeIcon: string;
+  minWords: number;
+  instructionHint: string;
+}
+
+export function detectTopicKind(topicName: string, levelId: string): TopicKindInfo {
+  const lower = (topicName || '').toLowerCase();
+
+  // 1. Détection Calcul & Sciences (Maths, Physique, Chimie, Comptabilité, Finance, Algèbre)
+  const isCalcul =
+    /(calcul|math|maths|équation|equation|intégral|integral|dérivé|derivee|fraction|algèbre|algebre|arithmétique|arithmetique|géométrie|geometrie|trigonométrie|trigonometrie|statistique|probabilité|probabilite|matrice|vecteur|fonction|polynôme|polynome|physique|chimie|mécanique|mecanique|vitesse|accélération|force|énergie|puissance|cinématique|thermodynamique|électricité|electricite|comptabilité|comptabilite|finance|taux|amortissement|bilan comptable|compte de résultat|chiffre|somme|produit|division|multiplication)/i.test(lower);
+
+  // 2. Détection Document / Fichier importé / Annales
+  const isDocument =
+    /(\.pdf|\.docx|\.doc|\.txt|document|annale|sujet officiel|texte à étudier|extrait|dossier documentaire|texte intégral)/i.test(lower);
+
+  // 3. Détection Rapport / Gestion / Stratégie / Cas Pratique
+  const isRapport =
+    /(rapport|audit|projet|stratégie|strategie|management|marketing|compte-rendu|gouvernance|plan d'action|étude de cas|etude de cas|ressources humaines|diagnostic|consulting)/i.test(lower) || levelId === 'autres';
+
+  let kind: TopicKind = 'redaction';
+  if (isCalcul) {
+    kind = 'calcul';
+  } else if (isDocument) {
+    kind = 'document';
+  } else if (isRapport) {
+    kind = 'rapport';
+  } else {
+    kind = 'redaction';
+  }
+
+  // Quotas de mots minimaux selon le type et le niveau scolaire
+  let minWords = 25;
+  if (kind === 'calcul') {
+    switch (levelId) {
+      case 'primaire': minWords = 4; break;
+      case 'college': minWords = 8; break;
+      case 'lycee': minWords = 12; break;
+      case 'superieur': minWords = 15; break;
+      case 'concours': minWords = 18; break;
+      case 'autres': minWords = 10; break;
+      default: minWords = 10;
+    }
+  } else if (kind === 'rapport') {
+    switch (levelId) {
+      case 'primaire': minWords = 8; break;
+      case 'college': minWords = 18; break;
+      case 'lycee': minWords = 30; break;
+      case 'superieur': minWords = 45; break;
+      case 'concours': minWords = 50; break;
+      case 'autres': minWords = 35; break;
+      default: minWords = 35;
+    }
+  } else if (kind === 'document') {
+    switch (levelId) {
+      case 'primaire': minWords = 8; break;
+      case 'college': minWords = 20; break;
+      case 'lycee': minWords = 35; break;
+      case 'superieur': minWords = 50; break;
+      case 'concours': minWords = 55; break;
+      case 'autres': minWords = 40; break;
+      default: minWords = 35;
+    }
+  } else {
+    // Rédaction / Sujet littéraire / Réflexion
+    switch (levelId) {
+      case 'primaire': minWords = 8; break;
+      case 'college': minWords = 20; break;
+      case 'lycee': minWords = 35; break;
+      case 'superieur': minWords = 50; break;
+      case 'concours': minWords = 60; break;
+      case 'autres': minWords = 40; break;
+      default: minWords = 35;
+    }
+  }
+
+  let label = 'Sujet de Rédaction & Réflexion';
+  let badgeIcon = '✍️';
+  let instructionHint = 'Rédigez un raisonnement construit avec vos propres arguments pour débloquer le corrigé.';
+
+  if (kind === 'calcul') {
+    label = 'Exercice de Calcul & Sciences';
+    badgeIcon = '🔢';
+    instructionHint = 'Posez votre formule, détaillez vos étapes de calcul et indiquez votre résultat pour débloquer le corrigé.';
+  } else if (kind === 'document') {
+    label = 'Analyse de Document';
+    badgeIcon = '📄';
+    instructionHint = 'Analysez les éléments clés du document et formulez votre synthèse pour débloquer le corrigé.';
+  } else if (kind === 'rapport') {
+    label = 'Étude de Cas & Rapport';
+    badgeIcon = '💼';
+    instructionHint = 'Structurez votre diagnostic et vos recommandations d’action pour débloquer le corrigé.';
+  }
+
+  return { kind, label, badgeIcon, minWords, instructionHint };
+}
+
 export interface GeneratedExercise {
   id: number;
   title: string;
@@ -18,6 +120,11 @@ export interface GeneratedExercise {
   statement: string;
   solution: string;
   isSolutionVisible?: boolean;
+  topicKind?: TopicKind;
+  minWordsRequired?: number;
+  kindLabel?: string;
+  badgeIcon?: string;
+  instructionHint?: string;
 }
 
 export interface GeneratedQCM {
@@ -37,12 +144,21 @@ export interface CorrectionReportData {
 
 export const exerciseGeneratorService = {
   /**
+   * Analyse le sujet pour en déduire les métadonnées pédagogiques
+   */
+  classifyTopic(topicName: string, levelId: string): TopicKindInfo {
+    return detectTopicKind(topicName, levelId);
+  },
+
+  /**
    * Génère les exercices selon le sujet et le niveau scolaire / académique
    */
   generateExercises(topicName: string, levelId: string): GeneratedExercise[] {
     const cleanTopic = topicName.trim() || 'Sujet d’entraînement';
+    const kindInfo = detectTopicKind(cleanTopic, levelId);
 
-    switch (levelId) {
+    const rawList: GeneratedExercise[] = (() => {
+      switch (levelId) {
       case 'primaire':
         return [
           {
@@ -460,7 +576,31 @@ Prestation convaincante démontrant une véritable hauteur de vue.`,
             isSolutionVisible: false,
           },
         ];
-    }
+      }
+    })();
+
+    return rawList.map((ex) => {
+      let contextualizedStatement = ex.statement;
+      if (kindInfo.kind === 'calcul') {
+        contextualizedStatement += `\n\n🔢 Consigne méthodologique : Posez la formule, détaillez vos étapes de calcul et écrivez votre résultat.`;
+      } else if (kindInfo.kind === 'document') {
+        contextualizedStatement += `\n\n📄 Consigne méthodologique : Identifiez les données du document, citez les passages clés et formulez votre synthèse.`;
+      } else if (kindInfo.kind === 'rapport') {
+        contextualizedStatement += `\n\n💼 Consigne méthodologique : Formulez un diagnostic précis et proposez des solutions opérationnelles applicables.`;
+      } else {
+        contextualizedStatement += `\n\n✍️ Consigne méthodologique : Structurez votre réflexion avec une argumentation étayée d'exemples.`;
+      }
+
+      return {
+        ...ex,
+        statement: contextualizedStatement,
+        topicKind: kindInfo.kind,
+        minWordsRequired: kindInfo.minWords,
+        kindLabel: kindInfo.label,
+        badgeIcon: kindInfo.badgeIcon,
+        instructionHint: kindInfo.instructionHint,
+      };
+    });
   },
 
   /**

@@ -7,7 +7,7 @@ import { Footer } from '@/components/layout/Footer';
 import { AuthModal } from '@/components/ui/AuthModal';
 import { AIInputSelector, AIInputType } from '@/components/ia/workspace/AIInputSelector';
 import { AIAttachment } from '@/types/ai';
-import { exerciseGeneratorService } from '@/services/exerciseGeneratorService';
+import { exerciseGeneratorService, GeneratedExercise, TopicKind } from '@/services/exerciseGeneratorService';
 
 type ExerciseMode = 'exercices' | 'qcm' | 'corriger';
 
@@ -19,14 +19,7 @@ interface QCMItem {
   explanation: string;
 }
 
-interface ExerciseItem {
-  id: number;
-  title: string;
-  duration: string;
-  statement: string;
-  solution: string;
-  isSolutionVisible?: boolean;
-}
+type ExerciseItem = GeneratedExercise;
 
 interface ChatReply {
   id: string;
@@ -583,33 +576,103 @@ export default function ExercicesPage() {
                               <p className="card-ex-statement">{ex.statement}</p>
                             </div>
 
-                            {!isValidated ? (
-                              <div className="student-workspace-block">
-                                <label className="student-input-label">
-                                  <span>Votre réponse ou démarche d'entraînement :</span>
-                                  <span className="hint-optional">(faites votre essai avant de débloquer la solution)</span>
-                                </label>
-                                <textarea
-                                  className="student-answer-textarea"
-                                  placeholder="Rédigez ici votre réponse, vos calculs ou votre raisonnement..."
-                                  rows={3}
-                                  value={answer}
-                                  onChange={(e) => setStudentAnswers((prev) => ({ ...prev, [ex.id]: e.target.value }))}
-                                />
-                                <div className="card-ex-action-row">
-                                  <button
-                                    type="button"
-                                    className="btn-validate-step"
-                                    onClick={() => handleValidateExercise(ex.id)}
-                                  >
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                      <polyline points="20 6 9 17 4 12" />
-                                    </svg>
-                                    <span>Valider & Débloquer le corrigé détaillé</span>
-                                  </button>
+                            {!isValidated ? (() => {
+                              const cleanAnswer = (answer || '').trim();
+                              const wordsList = cleanAnswer ? cleanAnswer.split(/\s+/).filter(Boolean) : [];
+                              const currentWordsCount = wordsList.length;
+                              const minWords = ex.minWordsRequired || (ex.topicKind === 'calcul' ? 6 : 25);
+                              const isThresholdReached = currentWordsCount >= minWords;
+                              const wordsRemaining = Math.max(0, minWords - currentWordsCount);
+                              const progressPercent = Math.min(100, Math.round((currentWordsCount / minWords) * 100));
+
+                              return (
+                                <div className="student-workspace-block">
+                                  <div className="student-workspace-header">
+                                    <label className="student-input-label">
+                                      <span>Votre réponse ou démarche d'entraînement :</span>
+                                      <span className="hint-optional">
+                                        {ex.instructionHint || (ex.topicKind === 'calcul' ? 'Posez vos calculs et le résultat' : 'Rédigez votre réponse argumentée')}
+                                      </span>
+                                    </label>
+                                    {ex.kindLabel && (
+                                      <div className={`topic-kind-pill kind-${ex.topicKind || 'redaction'}`}>
+                                        <span className="pill-icon">{ex.badgeIcon || '✍️'}</span>
+                                        <span className="pill-text">{ex.kindLabel}</span>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  <textarea
+                                    className="student-answer-textarea"
+                                    placeholder={
+                                      ex.topicKind === 'calcul'
+                                        ? "Posez ici vos formules, vos calculs intermédiaires et votre résultat numérique final..."
+                                        : ex.topicKind === 'document'
+                                        ? "Rédigez ici votre analyse des données du document, vos observations et votre synthèse..."
+                                        : ex.topicKind === 'rapport'
+                                        ? "Rédigez ici votre diagnostic de situation, vos arguments et vos recommandations d'action..."
+                                        : "Rédigez ici votre réflexion argumentée, vos définitions, votre raisonnement et vos exemples..."
+                                    }
+                                    rows={4}
+                                    value={answer}
+                                    onChange={(e) => setStudentAnswers((prev) => ({ ...prev, [ex.id]: e.target.value }))}
+                                  />
+
+                                  {/* Barre de progression & Compteur de mots en temps réel */}
+                                  <div className="word-count-progress-wrap">
+                                    <div className="word-count-info-row">
+                                      <span className={`word-count-badge ${isThresholdReached ? 'is-valid' : 'is-pending'}`}>
+                                        {isThresholdReached ? (
+                                          <>✓ Seuil validé ({currentWordsCount} / {minWords} mots)</>
+                                        ) : (
+                                          <>✏️ {currentWordsCount} / {minWords} mots requis</>
+                                        )}
+                                      </span>
+                                      <span className="words-remaining-hint">
+                                        {!isThresholdReached ? (
+                                          <>Encore <strong>{wordsRemaining} mot{wordsRemaining > 1 ? 's' : ''}</strong> pour débloquer</>
+                                        ) : (
+                                          <span className="text-unlocked-ready">🎉 Corrigé débloquable !</span>
+                                        )}
+                                      </span>
+                                    </div>
+                                    <div className="progress-bar-track">
+                                      <div
+                                        className={`progress-bar-fill ${isThresholdReached ? 'is-full' : ''}`}
+                                        style={{ width: `${progressPercent}%` }}
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div className="card-ex-action-row">
+                                    <button
+                                      type="button"
+                                      className={`btn-validate-step ${!isThresholdReached ? 'is-disabled-lock' : 'is-ready'}`}
+                                      onClick={() => isThresholdReached && handleValidateExercise(ex.id)}
+                                      disabled={!isThresholdReached}
+                                      title={!isThresholdReached ? `Rédigez encore ${wordsRemaining} mot(s) pour débloquer le corrigé` : 'Voir la correction officielle'}
+                                    >
+                                      {!isThresholdReached ? (
+                                        <>
+                                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                          </svg>
+                                          <span>Rédigez encore {wordsRemaining} mot{wordsRemaining > 1 ? 's' : ''} pour débloquer le corrigé</span>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                            <polyline points="20 6 9 17 4 12" />
+                                          </svg>
+                                          <span>Valider & Débloquer le corrigé détaillé</span>
+                                        </>
+                                      )}
+                                    </button>
+                                  </div>
                                 </div>
-                              </div>
-                            ) : (
+                              );
+                            })() : (
                               <div className="solution-unlocked-section">
                                 {answer.trim() && (
                                   <div className="student-submitted-box">
@@ -1624,74 +1687,209 @@ export default function ExercicesPage() {
           margin: 0;
         }
 
-        /* Espace de travail élève */
+        /* Espace de travail élève & Contrôle pédagogique de rédaction */
         .student-workspace-block {
           background: #fafafa;
-          border: 1.5px dashed #cbd5e1;
-          border-radius: 12px;
-          padding: 12px 14px;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 14px;
+          padding: 14px 16px;
           display: flex;
           flex-direction: column;
+          gap: 12px;
+          transition: border-color 0.2s ease;
+        }
+
+        .student-workspace-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
           gap: 10px;
+          flex-wrap: wrap;
         }
 
         .student-input-label {
           display: flex;
-          justify-content: space-between;
-          align-items: center;
-          font-size: 0.7813rem;
-          font-weight: 700;
-          color: #334155;
-          flex-wrap: wrap;
-          gap: 4px;
+          flex-direction: column;
+          gap: 3px;
+          font-size: 0.8125rem;
+          font-weight: 800;
+          color: #1e293b;
+          flex: 1;
+          min-width: 0;
         }
 
         .hint-optional {
-          font-size: 0.6875rem;
-          color: #94a3b8;
+          font-size: 0.7188rem;
+          color: #64748b;
           font-weight: 500;
+          line-height: 1.35;
+        }
+
+        .topic-kind-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 0.6875rem;
+          font-weight: 800;
+          padding: 3px 10px;
+          border-radius: 9999px;
+          white-space: nowrap;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
+        }
+
+        .topic-kind-pill.kind-calcul {
+          background: #eff6ff;
+          color: #1d4ed8;
+          border: 1px solid #bfdbfe;
+        }
+
+        .topic-kind-pill.kind-redaction {
+          background: #fdf4ff;
+          color: #86198f;
+          border: 1px solid #f0abfc;
+        }
+
+        .topic-kind-pill.kind-document {
+          background: #f0fdf4;
+          color: #166534;
+          border: 1px solid #bbf7d0;
+        }
+
+        .topic-kind-pill.kind-rapport {
+          background: #fffbeb;
+          color: #92400e;
+          border: 1px solid #fde68a;
         }
 
         .student-answer-textarea {
           width: 100%;
-          border: 1px solid #cbd5e1;
-          border-radius: 10px;
+          border: 1.5px solid #cbd5e1;
+          border-radius: 12px;
           background: #ffffff;
-          padding: 10px 12px;
-          font-size: 0.84rem;
+          padding: 12px 14px;
+          font-size: 0.875rem;
           font-family: inherit;
           color: #0f172a;
-          line-height: 1.5;
+          line-height: 1.6;
           resize: vertical;
-          min-height: 70px;
+          min-height: 95px;
+          transition: border-color 0.2s ease, box-shadow 0.2s ease;
+          box-sizing: border-box;
         }
 
         .student-answer-textarea:focus {
           outline: none;
           border-color: #2563eb;
-          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        /* Jauge & Compteur de mots pédagogique */
+        .word-count-progress-wrap {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          background: #ffffff;
+          padding: 10px 12px;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+        }
+
+        .word-count-info-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .word-count-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 0.75rem;
+          font-weight: 800;
+          padding: 3px 10px;
+          border-radius: 6px;
+        }
+
+        .word-count-badge.is-pending {
+          background: #fff7ed;
+          color: #c2410c;
+          border: 1px solid #ffedd5;
+        }
+
+        .word-count-badge.is-valid {
+          background: #ecfdf5;
+          color: #065f46;
+          border: 1px solid #a7f3d0;
+        }
+
+        .words-remaining-hint {
+          font-size: 0.75rem;
+          color: #64748b;
+          font-weight: 600;
+        }
+
+        .text-unlocked-ready {
+          color: #059669;
+          font-weight: 800;
+        }
+
+        .progress-bar-track {
+          width: 100%;
+          height: 6px;
+          background: #e2e8f0;
+          border-radius: 9999px;
+          overflow: hidden;
+        }
+
+        .progress-bar-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #f97316 0%, #eab308 100%);
+          border-radius: 9999px;
+          transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s ease;
+        }
+
+        .progress-bar-fill.is-full {
+          background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+        }
+
+        .card-ex-action-row {
+          margin-top: 4px;
         }
 
         .btn-validate-step {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          padding: 9px 16px;
+          gap: 8px;
+          padding: 10px 20px;
           border-radius: 9999px;
-          background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-          color: #ffffff;
-          font-size: 0.8125rem;
+          font-size: 0.84rem;
           font-weight: 800;
           border: none;
           cursor: pointer;
-          align-self: flex-start;
-          transition: transform 0.15s ease, box-shadow 0.15s ease;
-          box-shadow: 0 3px 10px rgba(37, 99, 235, 0.2);
+          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .btn-validate-step:hover {
+        .btn-validate-step.is-ready {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          color: #ffffff;
+          box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-validate-step.is-ready:hover {
           transform: translateY(-1px);
-          box-shadow: 0 5px 14px rgba(37, 99, 235, 0.28);
+          box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-validate-step.is-disabled-lock {
+          background: #f1f5f9;
+          color: #94a3b8;
+          border: 1px solid #cbd5e1;
+          cursor: not-allowed;
+          box-shadow: none;
+          opacity: 0.85;
         }
 
         /* Corrigé débloqué */
@@ -2714,6 +2912,20 @@ export default function ExercicesPage() {
             justify-content: center;
             font-size: 0.7813rem;
             padding: 10px 14px;
+            text-align: center;
+          }
+          .student-workspace-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+          }
+          .topic-kind-pill {
+            align-self: flex-start;
+          }
+          .word-count-info-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
           }
           .solution-header-bar {
             flex-direction: column;
