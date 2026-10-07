@@ -94,25 +94,13 @@ const CONTEXT_CONFIGS: ContextConfig[] = [
       { id: 'invitations', label: 'Invitations & Historique', href: '/visio#historique' },
     ],
   },
-  // 8. Exercices
-  {
-    rootPath: '/exercices',
-    badge: 'Moteur d’Examen',
-    title: 'Centre d’Entraînement',
-    tabs: [
-      { id: 'tous', label: 'Tous les tests', href: '/exercices' },
-      { id: 'concours-exos', label: 'Prépa Concours', href: '/exercices?category=concours' },
-      { id: 'livres-exos', label: 'Manuels & Séries', href: '/exercices#manuels' },
-      { id: 'simulations', label: 'Simulations d’examens', href: '/exercices#simulations' },
-    ],
-  },
 ];
 
 export const ContextualNavigation: React.FC = () => {
   const pathname = usePathname() || '/';
 
-  // Ne pas afficher la navigation contextuelle pendant le player d'exercice (/exercices/[id])
-  if (pathname.startsWith('/exercices/') && pathname !== '/exercices') {
+  // Ne pas afficher la navigation contextuelle sur /exercices
+  if (pathname.startsWith('/exercices')) {
     return null;
   }
 

@@ -647,22 +647,26 @@ export default function ExercicesPage() {
         }
 
         .page-header-compact {
-          padding: 16px 0 6px;
+          padding: 18px 0 8px;
           text-align: center;
           background: transparent;
         }
 
         .header-simple-title {
-          font-size: clamp(1.5rem, 3.5vw, 2rem);
-          font-weight: 900;
-          color: #0f172a;
+          font-size: clamp(1.6rem, 3.2vw, 2rem);
+          font-weight: 800;
+          background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #4f46e5 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: #1e3a8a;
           margin: 0;
           letter-spacing: -0.025em;
+          display: inline-block;
         }
 
         .workspace-container {
           max-width: 840px;
-          padding: 16px 16px 40px;
+          padding: 12px 16px 50px;
           flex: 1;
         }
 
@@ -1391,16 +1395,17 @@ export default function ExercicesPage() {
 
         @media (max-width: 640px) {
           .page-header-compact {
-            padding: 8px 0 2px;
+            padding: 12px 0 4px;
           }
           .header-simple-title {
             font-size: 1.5rem;
+            font-weight: 800;
           }
           .workspace-container {
-            padding: 6px 12px 100px;
+            padding: 6px 12px 110px;
           }
           .card-workspace-input {
-            padding: 12px;
+            padding: 14px 12px;
             border-radius: 16px;
             gap: 12px;
           }
