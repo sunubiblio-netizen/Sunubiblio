@@ -50,7 +50,7 @@ const ACTION_MODES_CONFIG = [
   },
   {
     id: 'qcm' as ExerciseMode,
-    title: '1. Générer des QCM',
+    title: 'Générer des QCM',
     subtitle: 'Questionnaires interactifs avec correction immédiate',
     badge: 'QCM',
     icon: (
@@ -64,7 +64,7 @@ const ACTION_MODES_CONFIG = [
   },
   {
     id: 'corriger' as ExerciseMode,
-    title: '2. Corriger',
+    title: 'Corriger',
     subtitle: 'Analyse méthodique de devoirs et remarques',
     badge: 'Correction',
     icon: (
@@ -302,18 +302,17 @@ export default function ExercicesPage() {
                 />
               </div>
 
-              {/* Étape 2 : Barre d'action intelligente façon Chat avec bouton [+] */}
+              {/* Étape 2 : Barre d'action unifiée style Chat (Sélecteur 3 actions + Bouton flèche d'envoi) */}
               <div className="chat-action-bar-wrap">
                 <div className="action-selector-relative">
-                  {/* Bouton de déclenchement style Chat (+) */}
+                  {/* Bouton sélecteur des 3 actions */}
                   <button
                     type="button"
                     className="btn-chat-mode-pill"
                     onClick={() => setIsModeMenuOpen(!isModeMenuOpen)}
                     aria-expanded={isModeMenuOpen}
-                    title="Changer d'action"
+                    title="Changer d'action (Exercices, QCM, Corriger)"
                   >
-                    <span className="btn-plus-icon">+</span>
                     <span className="mode-current-icon" style={{ color: currentModeConfig.color }}>
                       {currentModeConfig.icon}
                     </span>
@@ -323,7 +322,7 @@ export default function ExercicesPage() {
                     </svg>
                   </button>
 
-                  {/* Menu Popover Flottant Moderne (comme sur un Chat) */}
+                  {/* Menu Popover Flottant des 3 choix */}
                   {isModeMenuOpen && (
                     <>
                       <div className="menu-backdrop" onClick={() => setIsModeMenuOpen(false)} />
@@ -357,20 +356,23 @@ export default function ExercicesPage() {
                   )}
                 </div>
 
-                {/* Bouton Principal de Lancement Intégré */}
+                {/* Bouton d'envoi circulaire avec flèche style Chat */}
                 <button
                   type="button"
-                  className="btn-launch-generation"
+                  className="btn-chat-send-submit"
                   onClick={handleStartGeneration}
+                  disabled={isLoading}
+                  aria-label={`Lancer : ${currentModeConfig.title}`}
+                  title={`Lancer : ${currentModeConfig.title}`}
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <polygon points="5 3 19 12 5 21 5 3" />
-                  </svg>
-                  <span>
-                    {activeMode === 'exercices' && 'Générer des exercices'}
-                    {activeMode === 'qcm' && 'Générer les QCM'}
-                    {activeMode === 'corriger' && 'Corriger le devoir'}
-                  </span>
+                  {isLoading ? (
+                    <span className="spinner-send-bullet" />
+                  ) : (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="12" y1="19" x2="12" y2="5" />
+                      <polyline points="5 12 12 5 19 12" />
+                    </svg>
+                  )}
                 </button>
               </div>
             </div>
@@ -701,7 +703,7 @@ export default function ExercicesPage() {
           position: relative;
         }
 
-        /* Bouton Pilule Style Chat (+) */
+        /* Bouton Pilule Style Chat Sélecteur d'action */
         .btn-chat-mode-pill {
           display: inline-flex;
           align-items: center;
@@ -721,25 +723,6 @@ export default function ExercicesPage() {
           background: #f1f5f9;
           border-color: #94a3b8;
           transform: translateY(-1px);
-        }
-
-        .btn-plus-icon {
-          width: 22px;
-          height: 22px;
-          border-radius: 50%;
-          background: #e2e8f0;
-          color: #1e293b;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 1.1rem;
-          font-weight: 800;
-          line-height: 1;
-        }
-
-        .btn-chat-mode-pill:hover .btn-plus-icon {
-          background: #2563eb;
-          color: #ffffff;
         }
 
         .mode-current-icon {
@@ -877,27 +860,49 @@ export default function ExercicesPage() {
           font-size: 1rem;
         }
 
-        /* Bouton Lancement */
-        .btn-launch-generation {
-          padding: 10px 22px;
-          border-radius: 9999px;
+        /* Bouton d'envoi circulaire style Chat (Flèche) */
+        .btn-chat-send-submit {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
           background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
           color: #ffffff;
-          font-size: 0.875rem;
-          font-weight: 800;
           border: none;
           cursor: pointer;
           display: flex;
           align-items: center;
-          gap: 8px;
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
-          transition: transform 0.15s ease, box-shadow 0.15s ease;
-          white-space: nowrap;
+          justify-content: center;
+          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+          flex-shrink: 0;
         }
 
-        .btn-launch-generation:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3);
+        .btn-chat-send-submit:hover:not(:disabled) {
+          transform: scale(1.06);
+          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-chat-send-submit:active:not(:disabled) {
+          transform: scale(0.95);
+        }
+
+        .btn-chat-send-submit:disabled {
+          opacity: 0.45;
+          cursor: not-allowed;
+          box-shadow: none;
+        }
+
+        .spinner-send-bullet {
+          width: 18px;
+          height: 18px;
+          border: 2.5px solid rgba(255, 255, 255, 0.3);
+          border-top-color: #ffffff;
+          border-radius: 50%;
+          animation: spinSend 0.8s linear infinite;
+        }
+
+        @keyframes spinSend {
+          to { transform: rotate(360deg); }
         }
 
         /* 2. Espace Interactif Type Chat (In-place & Mobile First) */
@@ -1410,29 +1415,37 @@ export default function ExercicesPage() {
             gap: 12px;
           }
           .chat-action-bar-wrap {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 8px;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
             padding-top: 10px;
           }
           .action-selector-relative {
-            width: 100%;
+            flex: 1;
+            min-width: 0;
           }
           .btn-chat-mode-pill {
-            width: 100%;
-            justify-content: space-between;
-            padding: 8px 14px;
-            font-size: 0.8125rem;
+            width: auto;
+            max-width: 100%;
+            justify-content: flex-start;
+            padding: 7px 12px;
+            font-size: 0.8rem;
+            gap: 6px;
+          }
+          .mode-current-label {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
           .chat-mode-popover {
-            width: 100%;
+            width: min(320px, calc(100vw - 48px));
             bottom: calc(100% + 8px);
           }
-          .btn-launch-generation {
-            width: 100%;
-            justify-content: center;
-            padding: 11px 16px;
-            font-size: 0.875rem;
+          .btn-chat-send-submit {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
           }
           .correction-points-grid {
             grid-template-columns: 1fr;

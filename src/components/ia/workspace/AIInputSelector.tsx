@@ -455,7 +455,7 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
           line-height: 1.6;
           font-family: inherit;
           resize: vertical;
-          min-height: 200px;
+          min-height: 240px;
           transition: all 0.2s ease;
         }
 
@@ -825,7 +825,7 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
             flex-shrink: 0;
           }
           .ai-textarea-pro {
-            min-height: 130px;
+            min-height: 170px;
             padding: 12px;
             font-size: 13.5px;
             border-radius: 14px;
