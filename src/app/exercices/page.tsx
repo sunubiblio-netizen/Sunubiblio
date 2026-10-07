@@ -548,16 +548,9 @@ export default function ExercicesPage() {
                                 )}
 
                                 <div className="card-ex-solution-box">
-                                  <div className="solution-header-bar">
-                                    <span className="solution-badge-ok">✓ Corrigé & Méthode officielle</span>
-                                    <button
-                                      type="button"
-                                      className="btn-ask-about-this"
-                                      onClick={() => handleSendFollowup(`Peux-tu m'expliquer plus en détail la méthode de l'exercice ${ex.id} ?`)}
-                                    >
-                                      💬 Poser une question sur cette correction
-                                    </button>
-                                  </div>
+                                    <div className="solution-header-bar">
+                                      <span className="solution-badge-ok">✓ Corrigé & Méthode officielle</span>
+                                    </div>
                                   <pre className="solution-text">{ex.solution}</pre>
                                 </div>
 
@@ -886,62 +879,6 @@ export default function ExercicesPage() {
                   </>
                 )}
               </div>
-
-              {/* Barre de Chat Interactive Inférieure */}
-              {!isLoading && (
-                <div className="interactive-chat-bottom-bar">
-                  <div className="quick-action-chips">
-                    <button
-                      type="button"
-                      className="chip-btn"
-                      onClick={() => handleSendFollowup('Donne-moi un indice méthodologique pour cet exercice')}
-                    >
-                      💡 Un indice ?
-                    </button>
-                    <button
-                      type="button"
-                      className="chip-btn"
-                      onClick={() => handleSendFollowup('Génère une variante un peu plus difficile')}
-                    >
-                      🔥 Variante plus difficile
-                    </button>
-                    <button
-                      type="button"
-                      className="chip-btn"
-                      onClick={() => handleSendFollowup('Explique la démarche étape par étape')}
-                    >
-                      📖 Explique la démarche
-                    </button>
-                  </div>
-
-                  <div className="chat-input-row">
-                    <input
-                      type="text"
-                      className="chat-prompt-input"
-                      placeholder="Posez une question sur cet exercice..."
-                      value={followupText}
-                      onChange={(e) => setFollowupText(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          handleSendFollowup();
-                        }
-                      }}
-                    />
-                    <button
-                      type="button"
-                      className="btn-send-chat"
-                      onClick={() => handleSendFollowup()}
-                      disabled={!followupText.trim()}
-                      aria-label="Envoyer"
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
-                        <line x1="22" y1="2" x2="11" y2="13" />
-                        <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -2158,85 +2095,7 @@ export default function ExercicesPage() {
           opacity: 0.8;
         }
 
-        /* Barre inférieure type chat intégrée naturellement au bas de la session */
-        .interactive-chat-bottom-bar {
-          padding: 12px 16px 14px;
-          background: #f8fafc;
-          border-top: 1px solid #e2e8f0;
-          border-bottom-left-radius: 16px;
-          border-bottom-right-radius: 16px;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          margin-top: 14px;
-        }
-
-        .quick-action-chips {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 6px;
-        }
-
-        .chip-btn {
-          font-size: 0.7188rem;
-          font-weight: 600;
-          padding: 4px 10px;
-          border-radius: 9999px;
-          border: 1px solid #cbd5e1;
-          background: #ffffff;
-          color: #475569;
-          cursor: pointer;
-          transition: all 0.15s ease;
-        }
-
-        .chip-btn:hover {
-          background: #eff6ff;
-          border-color: #bfdbfe;
-          color: #1d4ed8;
-        }
-
-        .chat-input-row {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background: #ffffff;
-          border: 1.5px solid #cbd5e1;
-          border-radius: 12px;
-          padding: 6px 8px 6px 12px;
-        }
-
-        .chat-prompt-input {
-          flex: 1;
-          border: none;
-          background: transparent;
-          outline: none;
-          font-size: 0.8125rem;
-          color: #0f172a;
-        }
-
-        .btn-send-chat {
-          width: 32px;
-          height: 32px;
-          border-radius: 8px;
-          background: #2563eb;
-          color: #ffffff;
-          border: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: background 0.15s ease;
-          flex-shrink: 0;
-        }
-
-        .btn-send-chat:hover:not(:disabled) {
-          background: #1d4ed8;
-        }
-
-        .btn-send-chat:disabled {
-          opacity: 0.4;
-          cursor: not-allowed;
-        }
+        /* Vue interactive épurée */
 
         @media (max-width: 640px) {
           .page-header-compact {
@@ -2359,36 +2218,6 @@ export default function ExercicesPage() {
           .interactive-chat-workspace {
             margin-bottom: 12px;
             border-radius: 16px;
-          }
-          .interactive-chat-bottom-bar {
-            position: static;
-            background: #f8fafc;
-            border: none;
-            border-top: 1px solid #e2e8f0;
-            border-radius: 0 0 14px 14px;
-            box-shadow: none;
-            padding: 10px 8px 12px;
-            margin: 12px 0 0;
-          }
-          .quick-action-chips {
-            display: flex;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            gap: 5px;
-            padding-bottom: 3px;
-            -webkit-overflow-scrolling: touch;
-          }
-          .quick-action-chips::-webkit-scrollbar {
-            display: none;
-          }
-          .chip-btn {
-            white-space: nowrap;
-            flex-shrink: 0;
-            font-size: 0.6875rem;
-            padding: 3px 8px;
-          }
-          .chat-input-row {
-            height: 40px;
           }
         }
       `}</style>
