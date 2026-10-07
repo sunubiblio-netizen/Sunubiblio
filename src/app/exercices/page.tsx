@@ -327,9 +327,6 @@ export default function ExercicesPage() {
                     <>
                       <div className="menu-backdrop" onClick={() => setIsModeMenuOpen(false)} />
                       <div className="chat-mode-popover" role="menu">
-                        <div className="popover-header">
-                          <span className="popover-title">Que souhaitez-vous faire ?</span>
-                        </div>
                         <div className="popover-items-list">
                           {ACTION_MODES_CONFIG.map((m) => (
                             <button
@@ -779,20 +776,6 @@ export default function ExercicesPage() {
             opacity: 1;
             transform: translateY(0);
           }
-        }
-
-        .popover-header {
-          padding: 8px 12px;
-          background: #f8fafc;
-          border-bottom: 1px solid #f1f5f9;
-        }
-
-        .popover-title {
-          font-size: 0.6875rem;
-          font-weight: 800;
-          text-transform: uppercase;
-          color: #64748b;
-          letter-spacing: 0.05em;
         }
 
         .popover-items-list {
@@ -1450,9 +1433,6 @@ export default function ExercicesPage() {
             max-width: calc(100vw - 32px);
             bottom: calc(100% + 6px);
             border-radius: 12px;
-          }
-          .popover-header {
-            padding: 6px 10px;
           }
           .popover-items-list {
             padding: 4px;
