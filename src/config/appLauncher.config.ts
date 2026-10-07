@@ -1,14 +1,20 @@
 /**
  * Sunubiblio — Configuration Centralisée du App Launcher (Menu Applications)
  * 
- * Organisé rigoureusement selon les exigences de l'écosystème :
- * 1. APPLICATIONS PRINCIPALES (Ordre strict des 16 applications)
- * 2. COMMERCE (Marketplace & gestion marchande)
- * 3. MON COMPTE & SERVICES (Formules & Tarifs)
+ * Organisé rigoureusement selon les 6 sections thématiques validées :
+ * 1. APPLICATIONS PRINCIPALES (Bibliothèque, Éducation, Concours, Documents, Professeurs, Établissements)
+ * 2. ENTRAÎNEMENT & IA (Exercice, Assistant IA, Antiplagiat)
+ * 3. COURS & RENDEZ-VOUS (Cours, Visio, Agenda)
+ * 4. RESSOURCES & DOCUMENTS (Ressources, Mes documents, Religion, Notes)
+ * 5. COMMERCE (Marketplace, Vendre un livre, Mes ventes, Mes achats)
+ * 6. MON COMPTE & SERVICES (Formules & Tarifs)
  */
 
 export type AppCategoryKey = 
   | 'principales'
+  | 'entrainement_ia'
+  | 'cours_rdv'
+  | 'ressources_doc'
   | 'commerce'
   | 'services';
 
@@ -37,8 +43,23 @@ export interface AppCategoryData {
 export const APP_LAUNCHER_CATEGORIES: AppCategoryData[] = [
   {
     key: 'principales',
-    title: 'APPLICATIONS',
-    description: 'Bibliothèque, formation, exercices et assistance IA',
+    title: 'APPLICATIONS PRINCIPALES',
+    description: 'Bibliothèque numérique, cycles scolaires, concours officiels et établissements',
+  },
+  {
+    key: 'entrainement_ia',
+    title: 'ENTRAÎNEMENT & IA',
+    description: 'Génération d’exercices, QCM, corrections, tuteur intelligent et antiplagiat',
+  },
+  {
+    key: 'cours_rdv',
+    title: 'COURS & RENDEZ-VOUS',
+    description: 'Modules d’apprentissage, salons d’étude en direct et gestion du planning',
+  },
+  {
+    key: 'ressources_doc',
+    title: 'RESSOURCES & ESPACE PERSONNEL',
+    description: 'Archives académiques, documents enregistrés, textes de tradition et notes',
   },
   {
     key: 'commerce',
@@ -54,7 +75,7 @@ export const APP_LAUNCHER_CATEGORIES: AppCategoryData[] = [
 
 export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
   // ==========================================
-  // 1. APPLICATIONS PRINCIPALES (Ordre strict)
+  // 1. APPLICATIONS PRINCIPALES
   // ==========================================
   {
     id: 'bibliotheque',
@@ -125,14 +146,18 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     enabled: true,
     available: true,
   },
+
+  // ==========================================
+  // 2. ENTRAÎNEMENT & IA
+  // ==========================================
   {
     id: 'exercices',
     name: 'Exercice',
     shortDescription: 'QCM, devoirs & corrections',
     href: '/exercices',
     iconId: 'exercices',
-    category: 'principales',
-    order: 7,
+    category: 'entrainement_ia',
+    order: 1,
     enabled: true,
     available: true,
   },
@@ -142,8 +167,8 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     shortDescription: 'Résumer, expliquer & tuteur',
     href: '/ia',
     iconId: 'assistant_ia',
-    category: 'principales',
-    order: 8,
+    category: 'entrainement_ia',
+    order: 2,
     badge: { text: 'IA', variant: 'ai' },
     enabled: true,
     available: true,
@@ -154,20 +179,24 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     shortDescription: 'Similarité & intégrité',
     href: '/ia/antiplagiat',
     iconId: 'antiplagiat',
-    category: 'principales',
-    order: 9,
+    category: 'entrainement_ia',
+    order: 3,
     badge: { text: 'Pro', variant: 'pro' },
     enabled: true,
     available: true,
   },
+
+  // ==========================================
+  // 3. COURS & RENDEZ-VOUS (3 seulement)
+  // ==========================================
   {
     id: 'cours',
     name: 'Cours',
     shortDescription: 'Modules structurés',
     href: '/education',
     iconId: 'cours',
-    category: 'principales',
-    order: 10,
+    category: 'cours_rdv',
+    order: 1,
     enabled: true,
     available: true,
   },
@@ -177,8 +206,8 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     shortDescription: 'Salons d’étude live',
     href: '/visio',
     iconId: 'visio',
-    category: 'principales',
-    order: 11,
+    category: 'cours_rdv',
+    order: 2,
     enabled: true,
     available: true,
   },
@@ -188,19 +217,23 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     shortDescription: 'Planning & rendez-vous',
     href: '/agenda',
     iconId: 'agenda',
-    category: 'principales',
-    order: 12,
+    category: 'cours_rdv',
+    order: 3,
     enabled: true,
     available: true,
   },
+
+  // ==========================================
+  // 4. RESSOURCES & ESPACE PERSONNEL
+  // ==========================================
   {
     id: 'ressources',
     name: 'Ressources',
     shortDescription: 'Supports d’archives',
     href: '/bibliotheque',
     iconId: 'ressources',
-    category: 'principales',
-    order: 13,
+    category: 'ressources_doc',
+    order: 1,
     enabled: true,
     available: true,
   },
@@ -210,8 +243,8 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     shortDescription: 'Fichiers enregistrés',
     href: '/documents',
     iconId: 'mes_documents',
-    category: 'principales',
-    order: 14,
+    category: 'ressources_doc',
+    order: 2,
     enabled: true,
     available: true,
   },
@@ -221,8 +254,8 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     shortDescription: 'Textes et traditions',
     href: '/religion',
     iconId: 'religion',
-    category: 'principales',
-    order: 15,
+    category: 'ressources_doc',
+    order: 3,
     enabled: true,
     available: true,
   },
@@ -232,14 +265,14 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     shortDescription: 'Bloc-notes personnel',
     href: '/documents',
     iconId: 'notes',
-    category: 'principales',
-    order: 16,
+    category: 'ressources_doc',
+    order: 4,
     enabled: true,
     available: true,
   },
 
   // ==========================================
-  // 2. COMMERCE
+  // 5. COMMERCE
   // ==========================================
   {
     id: 'marketplace',
@@ -287,7 +320,7 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
   },
 
   // ==========================================
-  // 3. MON COMPTE & SERVICES
+  // 6. MON COMPTE & SERVICES
   // ==========================================
   {
     id: 'tarifs',

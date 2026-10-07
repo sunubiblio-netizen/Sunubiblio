@@ -13933,8 +13933,8 @@ input {
   position: absolute;
   top: calc(100% + 12px);
   right: 0;
-  width: 410px;
-  max-height: 600px;
+  width: 420px;
+  max-height: 620px;
   background: #ffffff;
   border-radius: 20px;
   border: 1px solid rgba(226, 232, 240, 0.95);
@@ -14016,12 +14016,12 @@ input {
 
 /* Corps Défilable du Lanceur */
 .launcher-body-scroll {
-  padding: 16px 14px 18px;
+  padding: 16px 16px 20px;
   overflow-y: auto;
-  max-height: 490px;
+  max-height: 510px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
   scroll-behavior: smooth;
   outline: none;
 }
@@ -14047,17 +14047,17 @@ input {
 .app-launcher-category-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .category-header-wrap {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2px;
-  padding: 0 4px 6px;
+  gap: 3px;
+  padding: 0 4px 8px;
   border-bottom: 1px solid #f1f5f9;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 .category-title {
@@ -14065,22 +14065,22 @@ input {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #475569;
+  color: #334155;
   margin: 0;
 }
 
 .category-desc {
-  font-size: 0.6875rem;
-  color: #94a3b8;
+  font-size: 0.7188rem;
+  color: #64748b;
   margin: 0;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 /* Grille d'applications : 3 colonnes desktop */
 .category-apps-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px 4px;
+  gap: 8px 6px;
 }
 
 /* Tuile d'application inspirée de Google Apps avec identité Sunubiblio */
