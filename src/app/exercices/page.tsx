@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/Footer';
 import { AuthModal } from '@/components/ui/AuthModal';
 import { AIInputSelector, AIInputType } from '@/components/ia/workspace/AIInputSelector';
 import { AIAttachment } from '@/types/ai';
+import { exerciseGeneratorService } from '@/services/exerciseGeneratorService';
 
 type ExerciseMode = 'exercices' | 'qcm' | 'corriger';
 
@@ -229,84 +230,15 @@ export default function ExercicesPage() {
         ? inputContent.libraryResource.name
         : 'Sujet d’entraînement';
 
-      const levelSuffix = selectedLevel.id !== 'auto' ? ` (${selectedLevel.shortLabel})` : '';
-
       if (activeMode === 'exercices') {
-        setGeneratedExercises([
-          {
-            id: 1,
-            title: `Exercice 1 : Application directe — ${topicName}${levelSuffix}`,
-            duration: selectedLevel.id === 'primaire' ? '10 min' : '15 min',
-            statement: selectedLevel.id === 'primaire'
-              ? `À partir de la leçon, réponds aux questions simples, effectue les calculs de base et vérifie attentivement ton écriture.`
-              : `À partir des notions fondamentales du cours, définir rigoureusement les concepts clés et déterminer les conditions de validité. Calculer les grandeurs caractéristiques et vérifier la cohérence des unités.`,
-            solution: `Étape 1 : Poser les hypothèses de travail.\nÉtape 2 : Appliquer la formule standard adaptée au niveau choisi.\nÉtape 3 : Conclusion numérique et interprétation pédagogique validée.`,
-            isSolutionVisible: false,
-          },
-          {
-            id: 2,
-            title: `Exercice 2 : Problème d'approfondissement${levelSuffix}`,
-            duration: selectedLevel.id === 'primaire' ? '15 min' : '30 min',
-            statement: selectedLevel.id === 'primaire'
-              ? `Résous ce petit problème pas à pas en justifiant ton résultat avec une phrase claire.`
-              : `Mise en situation complète reliant plusieurs aspects du programme. Analyser les données fournies, modéliser le problème et proposer une démarche de résolution argumentée.`,
-            solution: `1. Identification des variables interdépendantes.\n2. Résolution du système d'équations / construction du plan de dissertation.\n3. Analyse critique du résultat obtenu.`,
-            isSolutionVisible: false,
-          },
-        ]);
+        const exercises = exerciseGeneratorService.generateExercises(topicName, selectedLevel.id);
+        setGeneratedExercises(exercises);
       } else if (activeMode === 'qcm') {
-        setGeneratedQCM([
-          {
-            id: 1,
-            question: `Dans le cadre du thème « ${topicName} »${levelSuffix}, quelle est la réponse ou la formule exacte à appliquer en priorité ?`,
-            options: [
-              `Le théorème de proportionnalité sans restriction`,
-              `Le principe de conservation et d'équilibre en régime stable`,
-              `L'hypothèse empirique sans justification théorique`,
-              `La méthode de déduction approximative`,
-            ],
-            correctIndex: 1,
-            explanation: `Le principe de conservation en régime stable constitue la base rigoureuse du programme officiel.`,
-          },
-          {
-            id: 2,
-            question: `Quelle condition préalable est indispensable avant d'effectuer les calculs ou l'analyse ?`,
-            options: [
-              `Vérifier le domaine de définition et la compatibilité des grandeurs`,
-              `Passer immédiatement à l'application numérique`,
-              `Supposer que toutes les variables sont négligeables`,
-              `Utiliser une formule simplifiée non démontrée`,
-            ],
-            correctIndex: 0,
-            explanation: `Il est impératif de valider le domaine de définition et l'homogénéité dimensionnelle.`,
-          },
-          {
-            id: 3,
-            question: `En situation d'examen officiel, quelle démarche garantit le maximum de points au barème ?`,
-            options: [
-              `Donner uniquement le résultat final souligné`,
-              `Énoncer le théorème, détailler le calcul intermédiaire et encadrer le résultat`,
-              `Écrire une justification vague`,
-              `Utiliser des abréviations non conventionnelles`,
-            ],
-            correctIndex: 1,
-            explanation: `Le barème académique valorise la rigueur de la démonstration et le respect des étapes méthodologiques.`,
-          },
-        ]);
+        const qcm = exerciseGeneratorService.generateQCM(topicName, selectedLevel.id);
+        setGeneratedQCM(qcm);
       } else if (activeMode === 'corriger') {
-        setCorrectionReport({
-          grade: '16 / 20',
-          strengths: [
-            'Raisonnement global solide et logique bien structurée.',
-            'Bonne compréhension des concepts fondamentaux.',
-            'Présentation propre et étapes de calcul bien aérées.',
-          ],
-          improvements: [
-            'Préciser systématiquement les unités et le domaine de validité.',
-            'Prendre le temps de justifier le choix du théorème avant de l\'appliquer.',
-          ],
-          summary: `Excellent travail sur « ${topicName} ». En renforçant la précision méthodologique, vous atteindrez facilement l'excellence aux concours et examens.`,
-        });
+        const report = exerciseGeneratorService.generateCorrectionReport(topicName, selectedLevel.id);
+        setCorrectionReport(report);
       }
 
       setIsLoading(false);
