@@ -902,7 +902,7 @@ export default function ExercicesPage() {
                     <input
                       type="text"
                       className="chat-prompt-input"
-                      placeholder="Posez une question sur cet exercice ou demandez une précision..."
+                      placeholder="Posez une question sur cet exercice..."
                       value={followupText}
                       onChange={(e) => setFollowupText(e.target.value)}
                       onKeyDown={(e) => {
@@ -2128,17 +2128,17 @@ export default function ExercicesPage() {
           opacity: 0.8;
         }
 
-        /* Barre inférieure type chat */
+        /* Barre inférieure type chat intégrée naturellement au bas de la session */
         .interactive-chat-bottom-bar {
-          padding: 10px 16px 14px;
-          background: #ffffff;
-          border-top: 1px solid #f1f5f9;
+          padding: 12px 16px 14px;
+          background: #f8fafc;
+          border-top: 1px solid #e2e8f0;
+          border-bottom-left-radius: 16px;
+          border-bottom-right-radius: 16px;
           display: flex;
           flex-direction: column;
           gap: 8px;
-          position: sticky;
-          bottom: 0;
-          z-index: 30;
+          margin-top: 14px;
         }
 
         .quick-action-chips {
@@ -2152,8 +2152,8 @@ export default function ExercicesPage() {
           font-weight: 600;
           padding: 4px 10px;
           border-radius: 9999px;
-          border: 1px solid #e2e8f0;
-          background: #f8fafc;
+          border: 1px solid #cbd5e1;
+          background: #ffffff;
           color: #475569;
           cursor: pointer;
           transition: all 0.15s ease;
@@ -2169,8 +2169,8 @@ export default function ExercicesPage() {
           display: flex;
           align-items: center;
           gap: 8px;
-          background: #f8fafc;
-          border: 1px solid #cbd5e1;
+          background: #ffffff;
+          border: 1.5px solid #cbd5e1;
           border-radius: 12px;
           padding: 6px 8px 6px 12px;
         }
@@ -2217,7 +2217,7 @@ export default function ExercicesPage() {
             font-weight: 800;
           }
           .workspace-container {
-            padding: 4px 10px 135px;
+            padding: 4px 10px 85px;
           }
           .card-workspace-input {
             padding: 12px 10px;
@@ -2327,20 +2327,18 @@ export default function ExercicesPage() {
             font-size: 1rem;
           }
           .interactive-chat-workspace {
-            margin-bottom: 25px;
+            margin-bottom: 12px;
             border-radius: 16px;
-            position: relative;
           }
           .interactive-chat-bottom-bar {
-            position: sticky;
-            bottom: 74px; /* Reste 100% visible et flottant au-dessus de la barre mobile de navigation */
-            z-index: 950;
-            background: #ffffff;
-            border: 1.5px solid #bfdbfe;
-            border-radius: 16px;
-            box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.12);
-            padding: 8px 10px 10px;
-            margin: 10px 0 0;
+            position: static;
+            background: #f8fafc;
+            border: none;
+            border-top: 1px solid #e2e8f0;
+            border-radius: 0 0 14px 14px;
+            box-shadow: none;
+            padding: 10px 8px 12px;
+            margin: 12px 0 0;
           }
           .quick-action-chips {
             display: flex;
@@ -2360,7 +2358,7 @@ export default function ExercicesPage() {
             padding: 3px 8px;
           }
           .chat-input-row {
-            height: 42px;
+            height: 40px;
           }
         }
       `}</style>
