@@ -475,17 +475,25 @@ export default function ExercicesPage() {
                                 Exercice {currentExerciseIndex + 1} / {generatedExercises.length}
                               </span>
                               <div className="stepper-dots">
-                                {generatedExercises.map((item, idx) => (
-                                  <button
-                                    key={item.id}
-                                    type="button"
-                                    className={`step-dot ${idx === currentExerciseIndex ? 'is-active' : ''} ${validatedExercises[item.id] ? 'is-done' : ''}`}
-                                    onClick={() => setCurrentExerciseIndex(idx)}
-                                    title={`Aller directement à l'exercice ${idx + 1}`}
-                                  >
-                                    {idx + 1}
-                                  </button>
-                                ))}
+                                {generatedExercises.map((item, idx) => {
+                                  const isUnlocked = idx === 0 || !!validatedExercises[generatedExercises[idx - 1]?.id];
+                                  return (
+                                    <button
+                                      key={item.id}
+                                      type="button"
+                                      disabled={!isUnlocked}
+                                      className={`step-dot ${idx === currentExerciseIndex ? 'is-active' : ''} ${validatedExercises[item.id] ? 'is-done' : ''} ${!isUnlocked ? 'is-locked' : ''}`}
+                                      onClick={() => {
+                                        if (isUnlocked) {
+                                          setCurrentExerciseIndex(idx);
+                                        }
+                                      }}
+                                      title={isUnlocked ? `Aller à l'exercice ${idx + 1}` : `Validez d'abord l'exercice ${idx} pour débloquer`}
+                                    >
+                                      {isUnlocked ? idx + 1 : '🔒'}
+                                    </button>
+                                  );
+                                })}
                               </div>
                             </div>
                             <span className="card-ex-duration">⏱️ {ex.duration}</span>
@@ -682,15 +690,21 @@ export default function ExercicesPage() {
                                 {generatedQCM.map((item, idx) => {
                                   const isItemValidated = !!validatedQCMQuestions[item.id];
                                   const isItemCorrect = selectedQCMAnswers[item.id] === item.correctIndex;
+                                  const isUnlocked = idx === 0 || !!validatedQCMQuestions[generatedQCM[idx - 1]?.id];
                                   return (
                                     <button
                                       key={item.id}
                                       type="button"
-                                      className={`step-dot ${idx === currentQCMIndex ? 'is-active' : ''} ${isItemValidated ? (isItemCorrect ? 'is-good' : 'is-wrong') : ''}`}
-                                      onClick={() => setCurrentQCMIndex(idx)}
-                                      title={`Aller à la question ${idx + 1}`}
+                                      disabled={!isUnlocked}
+                                      className={`step-dot ${idx === currentQCMIndex ? 'is-active' : ''} ${!isUnlocked ? 'is-locked' : ''} ${isItemValidated ? (isItemCorrect ? 'is-good' : 'is-wrong') : ''}`}
+                                      onClick={() => {
+                                        if (isUnlocked) {
+                                          setCurrentQCMIndex(idx);
+                                        }
+                                      }}
+                                      title={isUnlocked ? `Aller à la question ${idx + 1}` : `Validez d'abord la question ${idx} pour débloquer`}
                                     >
-                                      {idx + 1}
+                                      {isUnlocked ? idx + 1 : '🔒'}
                                     </button>
                                   );
                                 })}
@@ -783,10 +797,10 @@ export default function ExercicesPage() {
                                 </button>
                               ) : <div />}
 
-                              {currentQCMIndex < generatedQCM.length - 1 ? (
+                              {currentQCMIndex < generatedQCM.length - 1 && isQuestionValidated && (
                                 <button
                                   type="button"
-                                  className={`btn-qcm-arrow-nav btn-qcm-next ${!isQuestionValidated ? 'is-subtle' : ''}`}
+                                  className="btn-qcm-arrow-nav btn-qcm-next"
                                   onClick={() => setCurrentQCMIndex((prev) => Math.min(generatedQCM.length - 1, prev + 1))}
                                   title="Passer à la question suivante"
                                 >
@@ -796,7 +810,9 @@ export default function ExercicesPage() {
                                     <polyline points="12 5 19 12 12 19" />
                                   </svg>
                                 </button>
-                              ) : (
+                              )}
+
+                              {currentQCMIndex === generatedQCM.length - 1 && isQuestionValidated && (
                                 <button
                                   type="button"
                                   className="btn-qcm-arrow-nav btn-qcm-finish"
@@ -1633,6 +1649,20 @@ export default function ExercicesPage() {
           background: #ef4444;
           color: #ffffff;
           box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
+        }
+
+        .step-dot.is-locked {
+          opacity: 0.55;
+          background: #f1f5f9;
+          border-color: #e2e8f0;
+          color: #94a3b8;
+          cursor: not-allowed;
+          font-size: 0.6875rem;
+        }
+
+        .step-dot.is-locked:hover {
+          border-color: #e2e8f0;
+          color: #94a3b8;
         }
 
         /* Barres de navigation séquentielle (Flèches Suivant / Retour) */
