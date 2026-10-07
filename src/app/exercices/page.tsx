@@ -326,7 +326,7 @@ export default function ExercicesPage() {
   };
 
   return (
-    <div className="exercices-page-root">
+    <div className={`exercices-page-root ${!isSessionActive ? 'is-static-view' : 'is-session-view'}`}>
       <Navbar onOpenAuth={handleOpenAuth} />
 
       <main className="exercices-main-container">
@@ -903,7 +903,11 @@ export default function ExercicesPage() {
         </div>
       </main>
 
-      {!isSessionActive && <Footer />}
+      {!isSessionActive && (
+        <div className="exercices-footer-wrapper desktop-only-footer">
+          <Footer />
+        </div>
+      )}
 
       <AuthModal
         isOpen={authOpen}
@@ -914,15 +918,31 @@ export default function ExercicesPage() {
       <style jsx>{`
         .exercices-page-root {
           min-height: 100vh;
+          min-height: 100dvh;
           display: flex;
           flex-direction: column;
           background: #f8fafc;
+        }
+
+        .exercices-page-root.is-static-view {
+          height: 100dvh;
+          overflow: hidden;
         }
 
         .exercices-main-container {
           flex: 1;
           display: flex;
           flex-direction: column;
+          min-height: 0;
+        }
+
+        .exercices-page-root.is-static-view .exercices-main-container {
+          overflow: hidden;
+        }
+
+        .exercices-footer-wrapper {
+          margin-top: auto;
+          flex-shrink: 0;
         }
 
         .page-header-compact {
@@ -1099,8 +1119,18 @@ export default function ExercicesPage() {
 
         .workspace-container {
           max-width: 840px;
-          padding: 12px 16px 50px;
+          margin: 0 auto;
+          width: 100%;
+          box-sizing: border-box;
+          padding: 12px 16px 24px;
           flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+        }
+
+        .exercices-page-root.is-static-view .workspace-container {
+          overflow: hidden;
         }
 
         /* 1. Carte de Saisie Initiale Ultra-Moderne */
@@ -1108,14 +1138,40 @@ export default function ExercicesPage() {
           background: #ffffff;
           border: 1px solid #e2e8f0;
           border-radius: 20px;
-          padding: 22px;
+          padding: 20px 22px;
           box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.05);
           display: flex;
           flex-direction: column;
-          gap: 18px;
+          gap: 14px;
+          flex: 1;
+          min-height: 0;
         }
 
         .section-block {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          min-height: 0;
+        }
+
+        .section-block :global(.ai-input-selector-root) {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          min-height: 0;
+          height: 100%;
+        }
+
+        .section-block :global(.input-content-panel) {
+          flex: 1;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .section-block :global(.text-editor-wrap) {
+          flex: 1;
+          min-height: 0;
           display: flex;
           flex-direction: column;
         }
@@ -2328,45 +2384,111 @@ export default function ExercicesPage() {
         /* Vue interactive épurée */
 
         @media (max-width: 640px) {
-          .page-header-compact {
-            padding: 10px 0 4px;
+          .desktop-only-footer {
+            display: none !important;
           }
+
+          /* Mode Statique Mobile (Fit-Screen 100dvh : zéro scroll parasite, zéro espace vide) */
+          .exercices-page-root.is-static-view {
+            height: 100dvh;
+            max-height: 100dvh;
+            overflow: hidden;
+          }
+
+          .exercices-page-root.is-static-view .page-header-compact {
+            padding: 6px 0 2px;
+            flex-shrink: 0;
+          }
+
           .header-container-flex {
             padding: 0 10px;
             gap: 8px;
           }
+
           .header-simple-title {
-            font-size: 1.35rem;
+            font-size: 1.3rem;
             font-weight: 800;
           }
+
           .btn-header-level-pill {
             padding: 5px 10px;
             font-size: 0.75rem;
             gap: 5px;
           }
+
           .level-pill-prefix {
             display: none;
           }
+
           .header-level-popover {
             width: 200px;
             max-width: calc(100vw - 20px);
             right: 0;
             top: calc(100% + 6px);
           }
-          .workspace-container {
-            padding: 4px 10px 85px;
+
+          /* Vue statique : aucun espace blanc géant, padding exact au-dessus de la MobileBottomNav */
+          .exercices-page-root.is-static-view .workspace-container {
+            padding: 2px 10px calc(66px + env(safe-area-inset-bottom, 10px));
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
           }
-          .card-workspace-input {
-            padding: 12px 10px;
-            border-radius: 14px;
-            gap: 10px;
+
+          /* Carte d'insertion occupant élégamment la zone utile */
+          .exercices-page-root.is-static-view .card-workspace-input {
+            flex: 1;
+            min-height: 0;
+            padding: 12px 10px 10px;
+            border-radius: 16px;
+            gap: 8px;
+            box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
           }
+
+          /* Textarea responsive qui s'adapte sans déborder */
+          .exercices-page-root.is-static-view .section-block :global(.ai-textarea-pro) {
+            min-height: 85px !important;
+            max-height: none !important;
+            flex: 1 !important;
+          }
+
+          .exercices-page-root.is-static-view .section-block :global(.input-content-panel) {
+            min-height: 0 !important;
+            height: auto !important;
+            flex: 1 !important;
+          }
+
+          .exercices-page-root.is-static-view .section-block :global(.text-editor-wrap) {
+            min-height: 0 !important;
+            height: auto !important;
+            flex: 1 !important;
+          }
+
+          /* Barre d'action tout en bas de la carte, collée proprement sans vide */
           .chat-action-bar-wrap {
             flex-direction: row;
             align-items: center;
             justify-content: space-between;
             gap: 8px;
-            padding-top: 8px;
+            padding-top: 6px;
+            flex-shrink: 0;
+            margin-top: auto;
+          }
+
+          /* Mode Session Active : Défilement vertical naturel réactivé pour le contenu */
+          .exercices-page-root.is-session-view {
+            height: auto;
+            min-height: 100vh;
+            overflow-y: auto;
+          }
+
+          .exercices-page-root.is-session-view .workspace-container {
+            padding: 4px 10px calc(85px + env(safe-area-inset-bottom, 10px));
+            overflow-y: visible;
           }
           .action-selector-relative {
             flex: 1;
