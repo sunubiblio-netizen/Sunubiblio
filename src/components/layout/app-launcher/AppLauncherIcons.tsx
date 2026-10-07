@@ -627,51 +627,130 @@ export const IconProfesseurs: React.FC<IconProps> = ({ size = 32, className = ''
   </svg>
 );
 
+/** Établissements : Façade académique & institutionnelle moderne avec dôme et colonnade dorée/azur */
+export const IconEtablissements: React.FC<IconProps> = ({ size = 32, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 36 36" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="sb-etab-ped" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#1E3A8A" />
+        <stop offset="50%" stopColor="#2563EB" />
+        <stop offset="100%" stopColor="#38BDF8" />
+      </linearGradient>
+      <linearGradient id="sb-etab-dome" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#3B82F6" />
+        <stop offset="100%" stopColor="#1D4ED8" />
+      </linearGradient>
+      <linearGradient id="sb-etab-star" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#F59E0B" />
+        <stop offset="100%" stopColor="#FBBF24" />
+      </linearGradient>
+    </defs>
+    <path d="M18 4C14.5 4 12 7.2 12 10.5H24C24 7.2 21.5 4 18 4Z" fill="url(#sb-etab-dome)" />
+    <path d="M4 12L18 6L32 12H4Z" fill="url(#sb-etab-ped)" />
+    <circle cx="18" cy="10" r="1.5" fill="url(#sb-etab-star)" />
+    <rect x="5" y="12" width="26" height="2" rx="0.5" fill="#DBEAFE" />
+    <rect x="7" y="14" width="3" height="11" rx="1" fill="#2563EB" />
+    <rect x="13.5" y="14" width="3" height="11" rx="1" fill="#3B82F6" />
+    <rect x="19.5" y="14" width="3" height="11" rx="1" fill="#3B82F6" />
+    <rect x="26" y="14" width="3" height="11" rx="1" fill="#2563EB" />
+    <path d="M16 25V20C16 18.9 16.9 18 18 18C19.1 18 20 18.9 20 20V25H16Z" fill="#1E3A8A" />
+    <rect x="4" y="25" width="28" height="2.5" rx="1" fill="#1E293B" />
+    <rect x="2" y="27.5" width="32" height="3" rx="1.5" fill="url(#sb-etab-ped)" />
+  </svg>
+);
+
+/** Assistant IA : Étincelle d'intelligence artificielle multi-branches aux reflets violet, rose et cyan */
+export const IconAssistantIA: React.FC<IconProps> = ({ size = 32, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 36 36" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="sb-aia-main" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#6366F1" />
+        <stop offset="50%" stopColor="#8B5CF6" />
+        <stop offset="100%" stopColor="#D946EF" />
+      </linearGradient>
+      <linearGradient id="sb-aia-sat" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#06B6D4" />
+        <stop offset="100%" stopColor="#38BDF8" />
+      </linearGradient>
+    </defs>
+    <path d="M18 3C18 10.2 23.8 16 31 16C23.8 16 18 21.8 18 29C18 21.8 12.2 16 5 16C12.2 16 18 10.2 18 3Z" fill="url(#sb-aia-main)" />
+    <path d="M28 4C28 6.5 30 8.5 32.5 8.5C30 8.5 28 10.5 28 13C28 10.5 26 8.5 23.5 8.5C26 8.5 28 6.5 28 4Z" fill="url(#sb-aia-sat)" />
+    <circle cx="8" cy="27" r="2.5" fill="#38BDF8" />
+    <circle cx="18" cy="16" r="3" fill="#FFFFFF" fillOpacity="0.95" />
+  </svg>
+);
+
+/** Antiplagiat : Bouclier d'intégrité académique avec balayage spectral de similarité */
+export const IconAntiplagiat: React.FC<IconProps> = ({ size = 32, className = '' }) => (
+  <svg width={size} height={size} viewBox="0 0 36 36" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="sb-anti-shd" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#4F46E5" />
+        <stop offset="100%" stopColor="#2563EB" />
+      </linearGradient>
+      <linearGradient id="sb-anti-beam" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stopColor="#10B981" />
+        <stop offset="100%" stopColor="#34D399" />
+      </linearGradient>
+    </defs>
+    <path d="M18 4L31 8V17C31 24.5 25.5 30 18 32C10.5 30 5 24.5 5 17V8L18 4Z" fill="url(#sb-anti-shd)" />
+    <rect x="11" y="10" width="14" height="15" rx="2" fill="#FFFFFF" fillOpacity="0.95" />
+    <rect x="13.5" y="13" width="9" height="1.6" rx="0.8" fill="#94A3B8" />
+    <rect x="13.5" y="16.5" width="7" height="1.6" rx="0.8" fill="#94A3B8" />
+    <rect x="13.5" y="20" width="8" height="1.6" rx="0.8" fill="#94A3B8" />
+    <rect x="9" y="17.5" width="18" height="2" rx="1" fill="url(#sb-anti-beam)" />
+    <circle cx="24" cy="23" r="5" fill="#10B981" />
+    <path d="M22 23L23.5 24.5L26 21.5" stroke="#FFFFFF" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 // ============================================================================
 // REGISTRE DES ICÔNES SUNUBIBLIO
 // ============================================================================
 
 export const AppLauncherIconRegistry: Record<string, React.FC<IconProps>> = {
-  // 1. Apprendre
+  // Applications Principales
   book: IconBibliotheque,
   education: IconEducation,
   concours: IconConcours,
-  exercices: IconExercices,
-  professeurs: IconProfesseurs,
-  // 2. Savoirs
-  cours: IconCours,
-  ressources: IconRessources,
   documents: IconDocuments,
+  professeurs: IconProfesseurs,
+  etablissements: IconEtablissements,
+  exercices: IconExercices,
+  assistant_ia: IconAssistantIA,
+  antiplagiat: IconAntiplagiat,
+  cours: IconCours,
+  visio: IconVisio,
+  agenda: IconCalendrier,
+  ressources: IconRessources,
+  mes_documents: IconMesDocuments,
   religion: IconReligion,
-  // 3. Communauté
+  notes: IconNotes,
+
+  // Savoirs & Utilitaires complémentaires
+  rendez_vous: IconMesRendezVous,
+  calendrier: IconCalendrier,
+  emploi_du_temps: IconEmploiDuTemps,
+  telechargements: IconTelechargements,
+  favoris: IconFavoris,
+  historique: IconHistorique,
   communaute: IconCommunaute,
   profil: IconProfil,
   publications: IconPublications,
   groupes: IconGroupes,
   discussions: IconDiscussions,
-  // 4. Visio & Rendez-vous
-  visio: IconVisio,
-  agenda: IconCalendrier,
-  rendez_vous: IconMesRendezVous,
-  calendrier: IconCalendrier,
-  emploi_du_temps: IconEmploiDuTemps,
-  // 5. Outils & Productivité
-  mes_documents: IconMesDocuments,
-  telechargements: IconTelechargements,
-  favoris: IconFavoris,
-  historique: IconHistorique,
-  notes: IconNotes,
-  // 6. Assistants & Utilitaires
-  sunubiblio_ai: IconSunubiblioAI,
+  sunubiblio_ai: IconAssistantIA,
   recherche: IconRecherche,
   assistant: IconAssistant,
   outils_doc: IconOutilsDoc,
-  // 7. Commerce
+
+  // Commerce
   marketplace: IconMarketplace,
   vendre_livre: IconVendreLivre,
   mes_ventes: IconMesVentes,
   mes_achats: IconMesAchats,
-  // 8. Mon Compte & Services
+
+  // Mon Compte & Services
   tarifs: IconFormulesTarifs,
 };
 

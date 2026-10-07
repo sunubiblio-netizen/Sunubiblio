@@ -1,23 +1,14 @@
 /**
  * Sunubiblio — Configuration Centralisée du App Launcher (Menu Applications)
  * 
- * Organisé rigoureusement selon les 7 grandes catégories de l'écosystème :
- * 1. APPRENDRE
- * 2. SAVOIRS & FORMATIONS
- * 3. COMMUNAUTÉ
- * 4. VISIO & RENDEZ-VOUS
- * 5. OUTILS & PRODUCTIVITÉ
- * 6. ASSISTANTS & UTILITAIRES
- * 7. COMMERCE
+ * Organisé rigoureusement selon les exigences de l'écosystème :
+ * 1. APPLICATIONS PRINCIPALES (Ordre strict des 16 applications)
+ * 2. COMMERCE (Marketplace & gestion marchande)
+ * 3. MON COMPTE & SERVICES (Formules & Tarifs)
  */
 
 export type AppCategoryKey = 
-  | 'apprendre'
-  | 'savoirs'
-  | 'communaute'
-  | 'visio_rdv'
-  | 'outils'
-  | 'assistants'
+  | 'principales'
   | 'commerce'
   | 'services';
 
@@ -45,29 +36,9 @@ export interface AppCategoryData {
 
 export const APP_LAUNCHER_CATEGORIES: AppCategoryData[] = [
   {
-    key: 'apprendre',
-    title: 'APPRENDRE',
-    description: 'Bibliothèque, parcours scolaires, concours et entraînement',
-  },
-  {
-    key: 'savoirs',
-    title: 'SAVOIRS & FORMATIONS',
-    description: 'Cours approfondis, ressources académiques et traditions',
-  },
-  {
-    key: 'visio_rdv',
-    title: 'VISIO & RENDEZ-VOUS',
-    description: 'Salons d’étude en direct, tutorat et planning',
-  },
-  {
-    key: 'outils',
-    title: 'OUTILS & PRODUCTIVITÉ',
-    description: 'Espace personnel, documents, téléchargements et notes',
-  },
-  {
-    key: 'assistants',
-    title: 'ASSISTANTS & UTILITAIRES',
-    description: 'Intelligence artificielle Sunubiblio, recherche et outils documentaires',
+    key: 'principales',
+    title: 'APPLICATIONS',
+    description: 'Bibliothèque, formation, exercices et assistance IA',
   },
   {
     key: 'commerce',
@@ -83,7 +54,7 @@ export const APP_LAUNCHER_CATEGORIES: AppCategoryData[] = [
 
 export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
   // ==========================================
-  // 1. APPRENDRE
+  // 1. APPLICATIONS PRINCIPALES (Ordre strict)
   // ==========================================
   {
     id: 'bibliotheque',
@@ -91,7 +62,7 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     shortDescription: 'Livres et thèses',
     href: '/bibliotheque',
     iconId: 'book',
-    category: 'apprendre',
+    category: 'principales',
     order: 1,
     enabled: true,
     available: true,
@@ -102,7 +73,7 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     shortDescription: 'Du primaire au doctorat',
     href: '/education',
     iconId: 'education',
-    category: 'apprendre',
+    category: 'principales',
     order: 2,
     enabled: true,
     available: true,
@@ -113,19 +84,19 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     shortDescription: 'Annales officielles',
     href: '/concours',
     iconId: 'concours',
-    category: 'apprendre',
+    category: 'principales',
     order: 3,
     badge: { text: 'Populaire', variant: 'popular' },
     enabled: true,
     available: true,
   },
   {
-    id: 'exercices',
-    name: 'Exercices',
-    shortDescription: 'QCM et évaluations',
-    href: '/exercices',
-    iconId: 'exercices',
-    category: 'apprendre',
+    id: 'documents',
+    name: 'Documents',
+    shortDescription: 'Documents certifiés',
+    href: '/documents',
+    iconId: 'documents',
+    category: 'principales',
     order: 4,
     enabled: true,
     available: true,
@@ -136,24 +107,89 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     shortDescription: 'Enseignants & tuteurs',
     href: '/professeurs',
     iconId: 'professeurs',
-    category: 'apprendre',
+    category: 'principales',
     order: 5,
     badge: { text: 'Nouveau', variant: 'new' },
     enabled: true,
     available: true,
   },
-
-  // ==========================================
-  // 2. SAVOIRS & FORMATIONS
-  // ==========================================
+  {
+    id: 'etablissements',
+    name: 'Établissements',
+    shortDescription: 'Écoles, universités & bourses',
+    href: '/etablissements',
+    iconId: 'etablissements',
+    category: 'principales',
+    order: 6,
+    badge: { text: 'Nouveau', variant: 'new' },
+    enabled: true,
+    available: true,
+  },
+  {
+    id: 'exercices',
+    name: 'Exercice',
+    shortDescription: 'QCM, devoirs & corrections',
+    href: '/exercices',
+    iconId: 'exercices',
+    category: 'principales',
+    order: 7,
+    enabled: true,
+    available: true,
+  },
+  {
+    id: 'assistant-ia',
+    name: 'Assistant IA',
+    shortDescription: 'Résumer, expliquer & tuteur',
+    href: '/ia',
+    iconId: 'assistant_ia',
+    category: 'principales',
+    order: 8,
+    badge: { text: 'IA', variant: 'ai' },
+    enabled: true,
+    available: true,
+  },
+  {
+    id: 'antiplagiat',
+    name: 'Antiplagiat',
+    shortDescription: 'Similarité & intégrité',
+    href: '/ia/antiplagiat',
+    iconId: 'antiplagiat',
+    category: 'principales',
+    order: 9,
+    badge: { text: 'Pro', variant: 'pro' },
+    enabled: true,
+    available: true,
+  },
   {
     id: 'cours',
     name: 'Cours',
     shortDescription: 'Modules structurés',
     href: '/education',
     iconId: 'cours',
-    category: 'savoirs',
-    order: 1,
+    category: 'principales',
+    order: 10,
+    enabled: true,
+    available: true,
+  },
+  {
+    id: 'visio',
+    name: 'Visio',
+    shortDescription: 'Salons d’étude live',
+    href: '/visio',
+    iconId: 'visio',
+    category: 'principales',
+    order: 11,
+    enabled: true,
+    available: true,
+  },
+  {
+    id: 'agenda',
+    name: 'Agenda',
+    shortDescription: 'Planning & rendez-vous',
+    href: '/agenda',
+    iconId: 'agenda',
+    category: 'principales',
+    order: 12,
     enabled: true,
     available: true,
   },
@@ -163,19 +199,19 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     shortDescription: 'Supports d’archives',
     href: '/bibliotheque',
     iconId: 'ressources',
-    category: 'savoirs',
-    order: 2,
+    category: 'principales',
+    order: 13,
     enabled: true,
     available: true,
   },
   {
-    id: 'documents',
-    name: 'Documents',
-    shortDescription: 'Documents certifiés',
+    id: 'mes-documents',
+    name: 'Mes documents',
+    shortDescription: 'Fichiers enregistrés',
     href: '/documents',
-    iconId: 'documents',
-    category: 'savoirs',
-    order: 3,
+    iconId: 'mes_documents',
+    category: 'principales',
+    order: 14,
     enabled: true,
     available: true,
   },
@@ -185,84 +221,8 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     shortDescription: 'Textes et traditions',
     href: '/religion',
     iconId: 'religion',
-    category: 'savoirs',
-    order: 4,
-    enabled: true,
-    available: true,
-  },
-
-  // ==========================================
-  // 3. VISIO & RENDEZ-VOUS
-  // ==========================================
-  {
-    id: 'visio',
-    name: 'Visio',
-    shortDescription: 'Salons d’étude live',
-    href: '/visio',
-    iconId: 'visio',
-    category: 'visio_rdv',
-    order: 1,
-    badge: { text: 'Nouveau', variant: 'new' },
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'agenda',
-    name: 'Agenda',
-    shortDescription: 'Rendez-vous, cours & planning',
-    href: '/agenda',
-    iconId: 'agenda',
-    category: 'visio_rdv',
-    order: 2,
-    badge: { text: 'Nouveau', variant: 'new' },
-    enabled: true,
-    available: true,
-  },
-
-  // ==========================================
-  // 5. OUTILS & PRODUCTIVITÉ
-  // ==========================================
-  {
-    id: 'mes-documents',
-    name: 'Mes documents',
-    shortDescription: 'Fichiers enregistrés',
-    href: '/documents',
-    iconId: 'mes_documents',
-    category: 'outils',
-    order: 1,
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'telechargements',
-    name: 'Téléchargements',
-    shortDescription: 'Fichiers hors-ligne',
-    href: '/documents',
-    iconId: 'telechargements',
-    category: 'outils',
-    order: 2,
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'favoris',
-    name: 'Favoris',
-    shortDescription: 'Ressources sauvegardées',
-    href: '/favoris',
-    iconId: 'favoris',
-    category: 'outils',
-    order: 3,
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'historique',
-    name: 'Historique',
-    shortDescription: 'Dernières lectures',
-    href: '/profil',
-    iconId: 'historique',
-    category: 'outils',
-    order: 4,
+    category: 'principales',
+    order: 15,
     enabled: true,
     available: true,
   },
@@ -272,63 +232,14 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     shortDescription: 'Bloc-notes personnel',
     href: '/documents',
     iconId: 'notes',
-    category: 'outils',
-    order: 5,
+    category: 'principales',
+    order: 16,
     enabled: true,
     available: true,
   },
 
   // ==========================================
-  // 6. ASSISTANTS & UTILITAIRES
-  // ==========================================
-  {
-    id: 'sunubiblio-ai',
-    name: 'Sunubiblio AI',
-    shortDescription: 'Assistant intelligent',
-    href: '/ia',
-    iconId: 'sunubiblio_ai',
-    category: 'assistants',
-    order: 1,
-    badge: { text: 'Populaire', variant: 'popular' },
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'recherche',
-    name: 'Recherche',
-    shortDescription: 'Catalogue unifié',
-    href: '/bibliotheque',
-    iconId: 'recherche',
-    category: 'assistants',
-    order: 2,
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'assistant',
-    name: 'Assistant',
-    shortDescription: 'Tuteur pas-à-pas',
-    href: '/ia',
-    iconId: 'assistant',
-    category: 'assistants',
-    order: 3,
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'outils-documentaires',
-    name: 'Outils doc.',
-    shortDescription: 'PDF & conversions',
-    href: '/documents',
-    iconId: 'outils_doc',
-    category: 'assistants',
-    order: 4,
-    enabled: true,
-    available: true,
-  },
-
-  // ==========================================
-  // 7. COMMERCE
+  // 2. COMMERCE
   // ==========================================
   {
     id: 'marketplace',
@@ -376,7 +287,7 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
   },
 
   // ==========================================
-  // 8. MON COMPTE & SERVICES
+  // 3. MON COMPTE & SERVICES
   // ==========================================
   {
     id: 'tarifs',
