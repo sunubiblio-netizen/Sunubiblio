@@ -757,23 +757,23 @@ export default function ExercicesPage() {
 
         .chat-mode-popover {
           position: absolute;
-          bottom: calc(100% + 10px);
+          bottom: calc(100% + 8px);
           left: 0;
-          width: 340px;
-          max-width: 90vw;
+          width: 280px;
+          max-width: 88vw;
           background: #ffffff;
-          border-radius: 18px;
+          border-radius: 14px;
           border: 1px solid rgba(226, 232, 240, 0.95);
-          box-shadow: 0 16px 36px -8px rgba(15, 23, 42, 0.18);
+          box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.16);
           z-index: 101;
           overflow: hidden;
-          animation: popoverFade 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+          animation: popoverFade 0.16s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         @keyframes popoverFade {
           from {
             opacity: 0;
-            transform: translateY(6px);
+            transform: translateY(4px);
           }
           to {
             opacity: 1;
@@ -782,38 +782,38 @@ export default function ExercicesPage() {
         }
 
         .popover-header {
-          padding: 10px 16px;
+          padding: 8px 12px;
           background: #f8fafc;
           border-bottom: 1px solid #f1f5f9;
         }
 
         .popover-title {
-          font-size: 0.75rem;
+          font-size: 0.6875rem;
           font-weight: 800;
           text-transform: uppercase;
           color: #64748b;
-          letter-spacing: 0.04em;
+          letter-spacing: 0.05em;
         }
 
         .popover-items-list {
-          padding: 8px;
+          padding: 6px;
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: 2px;
         }
 
         .popover-item-btn {
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 10px 12px;
-          border-radius: 12px;
+          gap: 10px;
+          padding: 8px 10px;
+          border-radius: 10px;
           border: 1px solid transparent;
           background: transparent;
           text-align: left;
           cursor: pointer;
           width: 100%;
-          transition: all 0.15s ease;
+          transition: all 0.14s ease;
         }
 
         .popover-item-btn:hover {
@@ -827,9 +827,9 @@ export default function ExercicesPage() {
         }
 
         .item-icon-box {
-          width: 36px;
-          height: 36px;
-          border-radius: 10px;
+          width: 30px;
+          height: 30px;
+          border-radius: 8px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -840,18 +840,25 @@ export default function ExercicesPage() {
           flex: 1;
           display: flex;
           flex-direction: column;
+          min-width: 0;
         }
 
         .item-title {
-          font-size: 0.84rem;
-          font-weight: 800;
+          font-size: 0.8125rem;
+          font-weight: 700;
           color: #0f172a;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .item-subtitle {
-          font-size: 0.7188rem;
+          font-size: 0.6875rem;
           color: #64748b;
-          line-height: 1.3;
+          line-height: 1.25;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .item-check-badge {
@@ -1400,26 +1407,26 @@ export default function ExercicesPage() {
 
         @media (max-width: 640px) {
           .page-header-compact {
-            padding: 12px 0 4px;
+            padding: 10px 0 2px;
           }
           .header-simple-title {
-            font-size: 1.5rem;
+            font-size: 1.45rem;
             font-weight: 800;
           }
           .workspace-container {
-            padding: 6px 12px 110px;
+            padding: 4px 10px 85px;
           }
           .card-workspace-input {
-            padding: 14px 12px;
-            border-radius: 16px;
-            gap: 12px;
+            padding: 12px 10px;
+            border-radius: 14px;
+            gap: 10px;
           }
           .chat-action-bar-wrap {
             flex-direction: row;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
-            padding-top: 10px;
+            gap: 8px;
+            padding-top: 8px;
           }
           .action-selector-relative {
             flex: 1;
@@ -1429,8 +1436,8 @@ export default function ExercicesPage() {
             width: auto;
             max-width: 100%;
             justify-content: flex-start;
-            padding: 7px 12px;
-            font-size: 0.8rem;
+            padding: 6px 11px;
+            font-size: 0.7813rem;
             gap: 6px;
           }
           .mode-current-label {
@@ -1439,12 +1446,37 @@ export default function ExercicesPage() {
             white-space: nowrap;
           }
           .chat-mode-popover {
-            width: min(320px, calc(100vw - 48px));
-            bottom: calc(100% + 8px);
+            width: 250px;
+            max-width: calc(100vw - 32px);
+            bottom: calc(100% + 6px);
+            border-radius: 12px;
+          }
+          .popover-header {
+            padding: 6px 10px;
+          }
+          .popover-items-list {
+            padding: 4px;
+            gap: 2px;
+          }
+          .popover-item-btn {
+            padding: 6px 8px;
+            gap: 8px;
+            border-radius: 8px;
+          }
+          .item-icon-box {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+          }
+          .item-title {
+            font-size: 0.7813rem;
+          }
+          .item-subtitle {
+            display: none;
           }
           .btn-chat-send-submit {
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             flex-shrink: 0;
           }
           .correction-points-grid {
