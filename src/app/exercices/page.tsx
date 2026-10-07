@@ -33,12 +33,60 @@ interface ChatReply {
   content: string;
 }
 
+const ACTION_MODES_CONFIG = [
+  {
+    id: 'exercices' as ExerciseMode,
+    title: 'Générer des exercices',
+    subtitle: 'Exercices adaptés au niveau et à la matière',
+    badge: 'Exercices',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+        <polyline points="22 4 12 14.01 9 11.01" />
+      </svg>
+    ),
+    color: '#2563eb',
+    bgColor: '#eff6ff',
+  },
+  {
+    id: 'qcm' as ExerciseMode,
+    title: '1. Générer des QCM',
+    subtitle: 'Questionnaires interactifs avec correction immédiate',
+    badge: 'QCM',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+        <polyline points="9 11 12 14 22 4" />
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+      </svg>
+    ),
+    color: '#16a34a',
+    bgColor: '#f0fdf4',
+  },
+  {
+    id: 'corriger' as ExerciseMode,
+    title: '2. Corriger',
+    subtitle: 'Analyse méthodique de devoirs et remarques',
+    badge: 'Correction',
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+        <path d="M12 20h9" />
+        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+      </svg>
+    ),
+    color: '#dc2626',
+    bgColor: '#fef2f2',
+  },
+];
+
 export default function ExercicesPage() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
-  // État du formulaire
+  // Mode actif & Menu popover type Chat
   const [activeMode, setActiveMode] = useState<ExerciseMode>('exercices');
+  const [isModeMenuOpen, setIsModeMenuOpen] = useState(false);
+
+  // Contenu sélectionné
   const [inputContent, setInputContent] = useState<{
     type: AIInputType;
     text?: string;
@@ -48,12 +96,6 @@ export default function ExercicesPage() {
     type: 'text',
     text: '',
   });
-
-  // Options secondaires
-  const [selectedLevel, setSelectedLevel] = useState('lycee');
-  const [selectedType, setSelectedType] = useState('synthese');
-  const [qcmCount, setQcmCount] = useState(3);
-  const [correctionDetail, setCorrectionDetail] = useState('detaillee');
 
   // État de la session interactive (Chat / Résultat in-place)
   const [isSessionActive, setIsSessionActive] = useState(false);
@@ -74,9 +116,16 @@ export default function ExercicesPage() {
   const [chatMessages, setChatMessages] = useState<ChatReply[]>([]);
   const [followupText, setFollowupText] = useState('');
 
+  const currentModeConfig = ACTION_MODES_CONFIG.find((m) => m.id === activeMode) || ACTION_MODES_CONFIG[0];
+
   const handleOpenAuth = (mode: 'login' | 'register') => {
     setAuthMode(mode);
     setAuthOpen(true);
+  };
+
+  const handleSelectMode = (mode: ExerciseMode) => {
+    setActiveMode(mode);
+    setIsModeMenuOpen(false);
   };
 
   const handleStartGeneration = () => {
@@ -170,7 +219,7 @@ export default function ExercicesPage() {
       }
 
       setIsLoading(false);
-    }, 1200);
+    }, 1100);
   };
 
   const handleToggleSolution = (exId: number) => {
@@ -213,7 +262,7 @@ export default function ExercicesPage() {
           content: aiContent,
         },
       ]);
-    }, 800);
+    }, 700);
   };
 
   const handleReset = () => {
@@ -231,7 +280,7 @@ export default function ExercicesPage() {
       <Navbar onOpenAuth={handleOpenAuth} />
 
       <main className="exercices-main-container">
-        {/* En-tête Compact */}
+        {/* En-tête Compact et Moderne */}
         <header className="page-header-compact">
           <div className="container">
             <div className="header-meta-box">
@@ -243,7 +292,7 @@ export default function ExercicesPage() {
                 Génération & <span className="header-gradient-text">Entraînement IA</span>
               </h1>
               <p className="header-subtitle">
-                Générez des exercices sur mesure, testez-vous avec des QCM interactifs ou faites corriger vos devoirs directement sur cette page.
+                Générez des exercices, testez-vous avec des QCM ou faites corriger vos devoirs directement sur cette page.
               </p>
             </div>
           </div>
@@ -252,186 +301,105 @@ export default function ExercicesPage() {
         <div className="container workspace-container">
           {!isSessionActive ? (
             /* ============================================================== */
-            /* 1. ÉCRAN DE SAISIE INITIALE : SIMPLE, ORGANISÉ & VISIBLE       */
+            /* 1. ÉCRAN DE SAISIE INITIALE : ULTRA-MODERNE, STYLE CHAT       */
             /* ============================================================== */
             <div className="card-workspace-input">
-              {/* Étape 1 : Support / Contenu avec les 3 onglets */}
+              {/* Étape 1 : Support / Contenu avec les 3 onglets (Exactement la capture) */}
               <div className="section-block">
                 <AIInputSelector
-                  label="1. Sur quelle leçon ou thème voulez-vous travailler ?"
+                  label="Sur quelle leçon ou thème voulez-vous des exercices ?"
                   placeholder="Entrez un thème précis (ex: Équations différentielles, Droit des obligations, Génétique...) ou collez votre cours..."
                   onContentChange={setInputContent}
                 />
               </div>
 
-              {/* Étape 2 : Choix de l'action sur la même page */}
-              <div className="section-block action-choice-block">
-                <label className="section-label">
-                  2. Que souhaitez-vous faire avec ce support ?
-                </label>
-
-                <div className="action-modes-grid">
+              {/* Étape 2 : Barre d'action intelligente façon Chat avec bouton [+] */}
+              <div className="chat-action-bar-wrap">
+                <div className="action-selector-relative">
+                  {/* Bouton de déclenchement style Chat (+) */}
                   <button
                     type="button"
-                    className={`mode-choice-card ${activeMode === 'exercices' ? 'is-active' : ''}`}
-                    onClick={() => setActiveMode('exercices')}
+                    className="btn-chat-mode-pill"
+                    onClick={() => setIsModeMenuOpen(!isModeMenuOpen)}
+                    aria-expanded={isModeMenuOpen}
+                    title="Changer d'action"
                   >
-                    <div className="mode-card-icon icon-exo">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                        <polyline points="22 4 12 14.01 9 11.01" />
-                      </svg>
-                    </div>
-                    <div className="mode-card-text">
-                      <h2 className="mode-title">Générer des exercices</h2>
-                      <p className="mode-desc">Exercices adaptés au niveau et à la matière</p>
-                    </div>
-                    <div className="mode-radio-dot" />
+                    <span className="btn-plus-icon">+</span>
+                    <span className="mode-current-icon" style={{ color: currentModeConfig.color }}>
+                      {currentModeConfig.icon}
+                    </span>
+                    <span className="mode-current-label">{currentModeConfig.title}</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={`chevron-indicator ${isModeMenuOpen ? 'is-open' : ''}`}>
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
                   </button>
 
-                  <button
-                    type="button"
-                    className={`mode-choice-card ${activeMode === 'qcm' ? 'is-active' : ''}`}
-                    onClick={() => setActiveMode('qcm')}
-                  >
-                    <div className="mode-card-icon icon-qcm">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                        <polyline points="9 11 12 14 22 4" />
-                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-                      </svg>
-                    </div>
-                    <div className="mode-card-text">
-                      <h2 className="mode-title">1. Générer des QCM</h2>
-                      <p className="mode-desc">Questionnaires interactifs avec correction immédiate</p>
-                    </div>
-                    <div className="mode-radio-dot" />
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`mode-choice-card ${activeMode === 'corriger' ? 'is-active' : ''}`}
-                    onClick={() => setActiveMode('corriger')}
-                  >
-                    <div className="mode-card-icon icon-corriger">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                        <path d="M12 20h9" />
-                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                      </svg>
-                    </div>
-                    <div className="mode-card-text">
-                      <h2 className="mode-title">2. Corriger</h2>
-                      <p className="mode-desc">Analyse détaillée, barème et conseils méthodologiques</p>
-                    </div>
-                    <div className="mode-radio-dot" />
-                  </button>
+                  {/* Menu Popover Flottant Moderne (comme sur un Chat) */}
+                  {isModeMenuOpen && (
+                    <>
+                      <div className="menu-backdrop" onClick={() => setIsModeMenuOpen(false)} />
+                      <div className="chat-mode-popover" role="menu">
+                        <div className="popover-header">
+                          <span className="popover-title">Que souhaitez-vous faire ?</span>
+                        </div>
+                        <div className="popover-items-list">
+                          {ACTION_MODES_CONFIG.map((m) => (
+                            <button
+                              key={m.id}
+                              type="button"
+                              className={`popover-item-btn ${activeMode === m.id ? 'is-selected' : ''}`}
+                              onClick={() => handleSelectMode(m.id)}
+                            >
+                              <div className="item-icon-box" style={{ background: m.bgColor, color: m.color }}>
+                                {m.icon}
+                              </div>
+                              <div className="item-text-box">
+                                <span className="item-title">{m.title}</span>
+                                <span className="item-subtitle">{m.subtitle}</span>
+                              </div>
+                              {activeMode === m.id && (
+                                <span className="item-check-badge">✓</span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
 
-                {/* Micro-options selon le mode choisi */}
-                <div className="mode-sub-options-bar">
-                  {activeMode === 'exercices' && (
-                    <div className="options-inline-row">
-                      <div className="sub-opt-group">
-                        <span className="sub-opt-label">Niveau :</span>
-                        <select
-                          value={selectedLevel}
-                          onChange={(e) => setSelectedLevel(e.target.value)}
-                          className="sub-opt-select"
-                        >
-                          <option value="college">Collège</option>
-                          <option value="lycee">Lycée</option>
-                          <option value="universite">Université / Licence</option>
-                          <option value="concours">Prépa / Concours</option>
-                        </select>
-                      </div>
-
-                      <div className="sub-opt-group">
-                        <span className="sub-opt-label">Type :</span>
-                        <select
-                          value={selectedType}
-                          onChange={(e) => setSelectedType(e.target.value)}
-                          className="sub-opt-select"
-                        >
-                          <option value="application">Application directe</option>
-                          <option value="synthese">Problème de synthèse</option>
-                          <option value="annales">Sujet type Concours</option>
-                        </select>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeMode === 'qcm' && (
-                    <div className="options-inline-row">
-                      <span className="sub-opt-label">Nombre de questions :</span>
-                      {[3, 5, 10].map((num) => (
-                        <button
-                          key={num}
-                          type="button"
-                          className={`count-pill-btn ${qcmCount === num ? 'is-active' : ''}`}
-                          onClick={() => setQcmCount(num)}
-                        >
-                          {num} questions
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {activeMode === 'corriger' && (
-                    <div className="options-inline-row">
-                      <span className="sub-opt-label">Niveau d'analyse :</span>
-                      <button
-                        type="button"
-                        className={`count-pill-btn ${correctionDetail === 'detaillee' ? 'is-active' : ''}`}
-                        onClick={() => setCorrectionDetail('detaillee')}
-                      >
-                        Complète avec barème
-                      </button>
-                      <button
-                        type="button"
-                        className={`count-pill-btn ${correctionDetail === 'guidance' ? 'is-active' : ''}`}
-                        onClick={() => setCorrectionDetail('guidance')}
-                      >
-                        Indices & Pédagogie
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Bouton Principal de Lancement */}
-              <div className="launch-cta-wrap">
+                {/* Bouton Principal de Lancement Intégré */}
                 <button
                   type="button"
                   className="btn-launch-generation"
                   onClick={handleStartGeneration}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <polygon points="5 3 19 12 5 21 5 3" />
                   </svg>
                   <span>
-                    {activeMode === 'exercices' && 'Générer les exercices adaptés'}
-                    {activeMode === 'qcm' && 'Générer le QCM interactif'}
-                    {activeMode === 'corriger' && 'Lancer la correction détaillée'}
+                    {activeMode === 'exercices' && 'Générer des exercices'}
+                    {activeMode === 'qcm' && 'Générer les QCM'}
+                    {activeMode === 'corriger' && 'Corriger le devoir'}
                   </span>
                 </button>
               </div>
             </div>
           ) : (
             /* ============================================================== */
-            /* 2. ÉCRAN INTERACTIF TYPE CHAT : SUR PLACE, ZÉRO SCROLL FORCÉ   */
+            /* 2. ÉCRAN INTERACTIF TYPE CHAT : SUR PLACE, SANS SCROLL FORCÉ   */
             /* ============================================================== */
             <div className="interactive-chat-workspace">
               {/* Barre supérieure de session */}
               <div className="session-top-bar">
                 <div className="session-meta">
-                  <span className="session-badge">
-                    {activeMode === 'exercices' && '✍️ Série d\'exercices'}
-                    {activeMode === 'qcm' && '🎯 QCM Interactif'}
-                    {activeMode === 'corriger' && '🔍 Rapport de correction'}
+                  <span className="session-badge" style={{ color: currentModeConfig.color, background: currentModeConfig.bgColor }}>
+                    {currentModeConfig.title}
                   </span>
                   <span className="session-topic-tag">
                     {inputContent.text?.trim()
-                      ? inputContent.text.slice(0, 35) + '...'
-                      : inputContent.file?.name || 'Session personnalisée'}
+                      ? inputContent.text.slice(0, 30) + '...'
+                      : inputContent.file?.name || 'Session active'}
                   </span>
                 </div>
 
@@ -455,14 +423,14 @@ export default function ExercicesPage() {
                     <div className="spinner-sparkle" />
                     <p className="loading-title">L’intelligence pédagogique analyse votre demande...</p>
                     <p className="loading-sub">
-                      {activeMode === 'exercices' && 'Élaboration d\'exercices progressifs et adaptés au niveau.'}
-                      {activeMode === 'qcm' && 'Formulation des propositions et calibration des corrigés.'}
-                      {activeMode === 'corriger' && 'Évaluation rigoureuse selon les critères officiels.'}
+                      {activeMode === 'exercices' && 'Élaboration d\'exercices progressifs adaptés.'}
+                      {activeMode === 'qcm' && 'Formulation des questions et calibration des réponses.'}
+                      {activeMode === 'corriger' && 'Évaluation rigoureuse et barème officiel.'}
                     </p>
                   </div>
                 ) : (
                   <>
-                    {/* MODE 1 : EXERCICES GÉNÉRÉS AVEC CORRIGÉ DÉPLIABLE SUR PLACE */}
+                    {/* MODE 1 : EXERCICES GÉNÉRÉS SUR PLACE */}
                     {activeMode === 'exercices' && (
                       <div className="generated-exercises-list">
                         {generatedExercises.map((ex) => (
@@ -495,7 +463,7 @@ export default function ExercicesPage() {
                       </div>
                     )}
 
-                    {/* MODE 2 : QCM INTERACTIF JOUABLE DIRECTEMENT SUR L'ÉCRAN */}
+                    {/* MODE 2 : QCM INTERACTIF SUR PLACE */}
                     {activeMode === 'qcm' && (
                       <div className="generated-qcm-list">
                         {generatedQCM.map((q) => {
@@ -552,7 +520,7 @@ export default function ExercicesPage() {
                       </div>
                     )}
 
-                    {/* MODE 3 : RAPPORT DE CORRECTION IMMÉDIAT */}
+                    {/* MODE 3 : RAPPORT DE CORRECTION SUR PLACE */}
                     {activeMode === 'corriger' && correctionReport && (
                       <div className="generated-correction-card">
                         <div className="correction-header-row">
@@ -607,10 +575,9 @@ export default function ExercicesPage() {
                 )}
               </div>
 
-              {/* Barre de Chat Interactive Inférieure (Pour relancer sans scroller) */}
+              {/* Barre de Chat Interactive Inférieure */}
               {!isLoading && (
                 <div className="interactive-chat-bottom-bar">
-                  {/* Puces de suggestion rapide */}
                   <div className="quick-action-chips">
                     <button
                       type="button"
@@ -622,20 +589,19 @@ export default function ExercicesPage() {
                     <button
                       type="button"
                       className="chip-btn"
-                      onClick={() => handleSendFollowup('Génère une variante un peu plus difficile de cet exercice')}
+                      onClick={() => handleSendFollowup('Génère une variante un peu plus difficile')}
                     >
                       🔥 Variante plus difficile
                     </button>
                     <button
                       type="button"
                       className="chip-btn"
-                      onClick={() => handleSendFollowup('Explique la méthode pas-à-pas')}
+                      onClick={() => handleSendFollowup('Explique la démarche étape par étape')}
                     >
                       📖 Explique la démarche
                     </button>
                   </div>
 
-                  {/* Champ de saisie instantané */}
                   <div className="chat-input-row">
                     <input
                       type="text"
@@ -692,7 +658,7 @@ export default function ExercicesPage() {
         }
 
         .page-header-compact {
-          padding: 32px 0 16px;
+          padding: 28px 0 14px;
           text-align: center;
           background: linear-gradient(180deg, #eff6ff 0%, #f8fafc 100%);
           border-bottom: 1px solid #e2e8f0;
@@ -727,10 +693,10 @@ export default function ExercicesPage() {
         }
 
         .header-title {
-          font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+          font-size: clamp(1.65rem, 3.2vw, 2.15rem);
           font-weight: 900;
           color: #0f172a;
-          margin: 0 0 8px;
+          margin: 0 0 6px;
           letter-spacing: -0.02em;
         }
 
@@ -741,206 +707,246 @@ export default function ExercicesPage() {
         }
 
         .header-subtitle {
-          font-size: 0.9375rem;
+          font-size: 0.9rem;
           color: #64748b;
           margin: 0;
           line-height: 1.5;
         }
 
         .workspace-container {
-          max-width: 860px;
-          padding: 24px 16px 48px;
+          max-width: 840px;
+          padding: 20px 16px 40px;
           flex: 1;
         }
 
-        /* 1. Carte de Saisie Initiale */
+        /* 1. Carte de Saisie Initiale Ultra-Moderne */
         .card-workspace-input {
           background: #ffffff;
           border: 1px solid #e2e8f0;
           border-radius: 20px;
-          padding: 24px;
-          box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.06);
+          padding: 22px;
+          box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.05);
           display: flex;
           flex-direction: column;
-          gap: 22px;
+          gap: 18px;
         }
 
         .section-block {
           display: flex;
           flex-direction: column;
-          gap: 12px;
         }
 
-        .section-label {
-          font-size: 0.9375rem;
-          font-weight: 800;
-          color: #0f172a;
-        }
-
-        .action-modes-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 12px;
-        }
-
-        .mode-choice-card {
-          border: 1.5px solid #e2e8f0;
-          border-radius: 14px;
-          background: #f8fafc;
-          padding: 14px;
-          text-align: left;
-          cursor: pointer;
+        /* Barre d'action intelligente façon Chat */
+        .chat-action-bar-wrap {
           display: flex;
-          flex-direction: column;
-          gap: 8px;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          padding-top: 14px;
+          border-top: 1px solid #f1f5f9;
+        }
+
+        .action-selector-relative {
           position: relative;
+        }
+
+        /* Bouton Pilule Style Chat (+) */
+        .btn-chat-mode-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 16px;
+          border-radius: 9999px;
+          background: #f8fafc;
+          border: 1.5px solid #cbd5e1;
+          color: #0f172a;
+          cursor: pointer;
+          font-size: 0.84rem;
+          font-weight: 700;
           transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .mode-choice-card:hover {
+        .btn-chat-mode-pill:hover {
           background: #f1f5f9;
-          border-color: #cbd5e1;
+          border-color: #94a3b8;
+          transform: translateY(-1px);
         }
 
-        .mode-choice-card.is-active {
-          border-color: #2563eb;
-          background: #ffffff;
-          box-shadow: 0 4px 16px -2px rgba(37, 99, 235, 0.15);
+        .btn-plus-icon {
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          background: #e2e8f0;
+          color: #1e293b;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.1rem;
+          font-weight: 800;
+          line-height: 1;
         }
 
-        .mode-card-icon {
-          width: 38px;
-          height: 38px;
-          border-radius: 10px;
+        .btn-chat-mode-pill:hover .btn-plus-icon {
+          background: #2563eb;
+          color: #ffffff;
+        }
+
+        .mode-current-icon {
           display: flex;
           align-items: center;
           justify-content: center;
         }
 
-        .icon-exo {
-          background: #eff6ff;
-          color: #2563eb;
+        .mode-current-label {
+          font-weight: 700;
+          color: #1e293b;
         }
 
-        .icon-qcm {
-          background: #f0fdf4;
-          color: #16a34a;
+        .chevron-indicator {
+          color: #94a3b8;
+          transition: transform 0.2s ease;
         }
 
-        .icon-corriger {
-          background: #fef2f2;
-          color: #dc2626;
+        .chevron-indicator.is-open {
+          transform: rotate(180deg);
         }
 
-        .mode-title {
-          font-size: 0.875rem;
-          font-weight: 800;
-          color: #0f172a;
-          margin: 0;
+        /* Menu Popover Flottant */
+        .menu-backdrop {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 100;
         }
 
-        .mode-desc {
-          font-size: 0.75rem;
-          color: #64748b;
-          margin: 0;
-          line-height: 1.35;
-        }
-
-        .mode-radio-dot {
+        .chat-mode-popover {
           position: absolute;
-          top: 12px;
-          right: 12px;
-          width: 14px;
-          height: 14px;
-          border-radius: 50%;
-          border: 2px solid #cbd5e1;
+          bottom: calc(100% + 10px);
+          left: 0;
+          width: 340px;
+          max-width: 90vw;
+          background: #ffffff;
+          border-radius: 18px;
+          border: 1px solid rgba(226, 232, 240, 0.95);
+          box-shadow: 0 16px 36px -8px rgba(15, 23, 42, 0.18);
+          z-index: 101;
+          overflow: hidden;
+          animation: popoverFade 0.18s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .mode-choice-card.is-active .mode-radio-dot {
-          border-color: #2563eb;
-          background: #2563eb;
-          box-shadow: inset 0 0 0 2px #ffffff;
+        @keyframes popoverFade {
+          from {
+            opacity: 0;
+            transform: translateY(6px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
-        .mode-sub-options-bar {
+        .popover-header {
+          padding: 10px 16px;
           background: #f8fafc;
-          border-radius: 12px;
-          padding: 10px 14px;
-          border: 1px solid #f1f5f9;
+          border-bottom: 1px solid #f1f5f9;
         }
 
-        .options-inline-row {
+        .popover-title {
+          font-size: 0.75rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          color: #64748b;
+          letter-spacing: 0.04em;
+        }
+
+        .popover-items-list {
+          padding: 8px;
           display: flex;
-          flex-wrap: wrap;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .popover-item-btn {
+          display: flex;
           align-items: center;
           gap: 12px;
-        }
-
-        .sub-opt-group {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .sub-opt-label {
-          font-size: 0.8125rem;
-          font-weight: 700;
-          color: #475569;
-        }
-
-        .sub-opt-select {
-          padding: 6px 12px;
-          border-radius: 8px;
-          border: 1px solid #cbd5e1;
-          background: #ffffff;
-          font-size: 0.8125rem;
-          color: #0f172a;
-          outline: none;
-        }
-
-        .count-pill-btn {
-          padding: 5px 12px;
-          border-radius: 9999px;
-          font-size: 0.7813rem;
-          font-weight: 700;
-          border: 1px solid #cbd5e1;
-          background: #ffffff;
-          color: #475569;
+          padding: 10px 12px;
+          border-radius: 12px;
+          border: 1px solid transparent;
+          background: transparent;
+          text-align: left;
           cursor: pointer;
+          width: 100%;
           transition: all 0.15s ease;
         }
 
-        .count-pill-btn.is-active {
-          background: #1e3a8a;
-          color: #ffffff;
-          border-color: #1e3a8a;
+        .popover-item-btn:hover {
+          background: #f8fafc;
+          border-color: #e2e8f0;
         }
 
-        .launch-cta-wrap {
-          margin-top: 6px;
+        .popover-item-btn.is-selected {
+          background: #eff6ff;
+          border-color: #bfdbfe;
         }
 
+        .item-icon-box {
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .item-text-box {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .item-title {
+          font-size: 0.84rem;
+          font-weight: 800;
+          color: #0f172a;
+        }
+
+        .item-subtitle {
+          font-size: 0.7188rem;
+          color: #64748b;
+          line-height: 1.3;
+        }
+
+        .item-check-badge {
+          color: #2563eb;
+          font-weight: 900;
+          font-size: 1rem;
+        }
+
+        /* Bouton Lancement */
         .btn-launch-generation {
-          width: 100%;
-          padding: 14px 24px;
-          border-radius: 12px;
+          padding: 10px 22px;
+          border-radius: 9999px;
           background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
           color: #ffffff;
-          font-size: 1rem;
+          font-size: 0.875rem;
           font-weight: 800;
           border: none;
           cursor: pointer;
           display: flex;
           align-items: center;
-          justify-content: center;
-          gap: 10px;
-          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+          gap: 8px;
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
           transition: transform 0.15s ease, box-shadow 0.15s ease;
+          white-space: nowrap;
         }
 
         .btn-launch-generation:hover {
           transform: translateY(-1px);
-          box-shadow: 0 8px 22px rgba(37, 99, 235, 0.32);
+          box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3);
         }
 
         /* 2. Espace Interactif Type Chat (In-place & Mobile First) */
@@ -952,7 +958,7 @@ export default function ExercicesPage() {
           box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.08);
           display: flex;
           flex-direction: column;
-          min-height: 520px;
+          min-height: 500px;
         }
 
         .session-top-bar {
@@ -973,8 +979,6 @@ export default function ExercicesPage() {
         .session-badge {
           font-size: 0.7813rem;
           font-weight: 800;
-          color: #1e3a8a;
-          background: #eff6ff;
           padding: 4px 10px;
           border-radius: 6px;
         }
@@ -1008,7 +1012,7 @@ export default function ExercicesPage() {
         }
 
         .interactive-viewport {
-          padding: 20px;
+          padding: 18px;
           flex: 1;
           display: flex;
           flex-direction: column;
@@ -1023,17 +1027,17 @@ export default function ExercicesPage() {
           align-items: center;
           justify-content: center;
           text-align: center;
-          padding: 48px 16px;
+          padding: 44px 16px;
         }
 
         .spinner-sparkle {
-          width: 38px;
-          height: 38px;
+          width: 36px;
+          height: 36px;
           border: 3px solid #e2e8f0;
           border-top-color: #2563eb;
           border-radius: 50%;
           animation: spin 0.8s linear infinite;
-          margin-bottom: 16px;
+          margin-bottom: 14px;
         }
 
         @keyframes spin {
@@ -1041,14 +1045,14 @@ export default function ExercicesPage() {
         }
 
         .loading-title {
-          font-size: 1rem;
+          font-size: 0.9375rem;
           font-weight: 800;
           color: #0f172a;
-          margin: 0 0 6px;
+          margin: 0 0 4px;
         }
 
         .loading-sub {
-          font-size: 0.8125rem;
+          font-size: 0.7813rem;
           color: #64748b;
           margin: 0;
         }
@@ -1057,13 +1061,13 @@ export default function ExercicesPage() {
         .generated-exercises-list {
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 14px;
         }
 
         .exercise-interactive-card {
           border: 1px solid #e2e8f0;
           border-radius: 14px;
-          padding: 18px;
+          padding: 16px;
           background: #fbfcfe;
         }
 
@@ -1091,40 +1095,40 @@ export default function ExercicesPage() {
         }
 
         .card-ex-statement {
-          font-size: 0.875rem;
+          font-size: 0.84rem;
           color: #334155;
           line-height: 1.6;
-          margin: 0 0 14px;
+          margin: 0 0 12px;
         }
 
         .btn-toggle-solution {
-          font-size: 0.8125rem;
+          font-size: 0.7813rem;
           font-weight: 700;
           color: #2563eb;
           background: #eff6ff;
           border: 1px solid #dbeafe;
-          padding: 6px 14px;
+          padding: 5px 12px;
           border-radius: 8px;
           cursor: pointer;
         }
 
         .card-ex-solution-box {
-          margin-top: 14px;
+          margin-top: 12px;
           background: #ffffff;
           border: 1px solid #bfdbfe;
           border-radius: 10px;
-          padding: 14px;
+          padding: 12px;
         }
 
         .solution-heading {
-          font-size: 0.8125rem;
+          font-size: 0.7813rem;
           font-weight: 800;
           color: #1e3a8a;
           margin: 0 0 6px;
         }
 
         .solution-text {
-          font-size: 0.8125rem;
+          font-size: 0.7813rem;
           color: #334155;
           margin: 0;
           white-space: pre-line;
@@ -1136,21 +1140,21 @@ export default function ExercicesPage() {
         .generated-qcm-list {
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 14px;
         }
 
         .qcm-interactive-card {
           border: 1px solid #e2e8f0;
           border-radius: 14px;
-          padding: 18px;
+          padding: 16px;
           background: #fbfcfe;
         }
 
         .qcm-question-title {
-          font-size: 0.9375rem;
+          font-size: 0.9rem;
           font-weight: 800;
           color: #0f172a;
-          margin: 0 0 14px;
+          margin: 0 0 12px;
           line-height: 1.45;
         }
 
@@ -1164,13 +1168,13 @@ export default function ExercicesPage() {
           display: flex;
           align-items: center;
           gap: 12px;
-          padding: 10px 14px;
+          padding: 9px 12px;
           border-radius: 10px;
           border: 1.5px solid #e2e8f0;
           background: #ffffff;
           text-align: left;
           cursor: pointer;
-          font-size: 0.875rem;
+          font-size: 0.84rem;
           color: #1e293b;
           transition: all 0.15s ease;
         }
@@ -1181,12 +1185,12 @@ export default function ExercicesPage() {
         }
 
         .option-letter {
-          width: 26px;
-          height: 26px;
+          width: 24px;
+          height: 24px;
           border-radius: 6px;
           background: #f1f5f9;
           font-weight: 800;
-          font-size: 0.75rem;
+          font-size: 0.7188rem;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1217,13 +1221,13 @@ export default function ExercicesPage() {
         }
 
         .qcm-feedback-banner {
-          margin-top: 12px;
+          margin-top: 10px;
           border-radius: 10px;
-          padding: 10px 14px;
+          padding: 8px 12px;
           display: flex;
           align-items: flex-start;
-          gap: 10px;
-          font-size: 0.8125rem;
+          gap: 8px;
+          font-size: 0.7813rem;
         }
 
         .qcm-feedback-banner.is-success {
@@ -1242,7 +1246,7 @@ export default function ExercicesPage() {
         .generated-correction-card {
           border: 1px solid #e2e8f0;
           border-radius: 14px;
-          padding: 20px;
+          padding: 18px;
           background: #ffffff;
         }
 
@@ -1250,7 +1254,7 @@ export default function ExercicesPage() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 12px;
+          margin-bottom: 10px;
         }
 
         .correction-sub-tag {
@@ -1261,38 +1265,38 @@ export default function ExercicesPage() {
         }
 
         .correction-title {
-          font-size: 1.125rem;
+          font-size: 1.0625rem;
           font-weight: 800;
           color: #0f172a;
           margin: 2px 0 0;
         }
 
         .grade-badge {
-          font-size: 1.125rem;
+          font-size: 1.0625rem;
           font-weight: 900;
           color: #ffffff;
           background: linear-gradient(135deg, #10b981, #059669);
-          padding: 6px 14px;
+          padding: 5px 12px;
           border-radius: 10px;
         }
 
         .correction-summary {
-          font-size: 0.875rem;
+          font-size: 0.84rem;
           color: #475569;
-          line-height: 1.6;
-          margin: 0 0 16px;
+          line-height: 1.5;
+          margin: 0 0 14px;
         }
 
         .correction-points-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 14px;
+          gap: 12px;
         }
 
         .points-box {
           border-radius: 10px;
-          padding: 14px;
-          font-size: 0.8125rem;
+          padding: 12px;
+          font-size: 0.7813rem;
         }
 
         .strengths-box {
@@ -1306,9 +1310,9 @@ export default function ExercicesPage() {
         }
 
         .points-title {
-          font-size: 0.8125rem;
+          font-size: 0.7813rem;
           font-weight: 800;
-          margin: 0 0 8px;
+          margin: 0 0 6px;
         }
 
         .strengths-box .points-title { color: #166534; }
@@ -1316,10 +1320,10 @@ export default function ExercicesPage() {
 
         .points-box ul {
           margin: 0;
-          padding-left: 18px;
+          padding-left: 16px;
           display: flex;
           flex-direction: column;
-          gap: 6px;
+          gap: 4px;
           color: #334155;
         }
 
@@ -1333,9 +1337,9 @@ export default function ExercicesPage() {
 
         .chat-bubble {
           max-width: 85%;
-          padding: 12px 16px;
+          padding: 10px 14px;
           border-radius: 14px;
-          font-size: 0.8438rem;
+          font-size: 0.8125rem;
           line-height: 1.5;
         }
 
@@ -1357,30 +1361,30 @@ export default function ExercicesPage() {
           display: block;
           font-size: 0.6875rem;
           font-weight: 700;
-          margin-bottom: 4px;
+          margin-bottom: 2px;
           opacity: 0.8;
         }
 
         /* Barre inférieure type chat */
         .interactive-chat-bottom-bar {
-          padding: 12px 18px 16px;
+          padding: 10px 16px 14px;
           background: #ffffff;
           border-top: 1px solid #f1f5f9;
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: 8px;
         }
 
         .quick-action-chips {
           display: flex;
           flex-wrap: wrap;
-          gap: 8px;
+          gap: 6px;
         }
 
         .chip-btn {
-          font-size: 0.75rem;
+          font-size: 0.7188rem;
           font-weight: 600;
-          padding: 5px 12px;
+          padding: 4px 10px;
           border-radius: 9999px;
           border: 1px solid #e2e8f0;
           background: #f8fafc;
@@ -1402,7 +1406,7 @@ export default function ExercicesPage() {
           background: #f8fafc;
           border: 1px solid #cbd5e1;
           border-radius: 12px;
-          padding: 6px 8px 6px 14px;
+          padding: 6px 8px 6px 12px;
         }
 
         .chat-prompt-input {
@@ -1410,13 +1414,13 @@ export default function ExercicesPage() {
           border: none;
           background: transparent;
           outline: none;
-          font-size: 0.875rem;
+          font-size: 0.8125rem;
           color: #0f172a;
         }
 
         .btn-send-chat {
-          width: 34px;
-          height: 34px;
+          width: 32px;
+          height: 32px;
           border-radius: 8px;
           background: #2563eb;
           color: #ffffff;
@@ -1438,15 +1442,31 @@ export default function ExercicesPage() {
           cursor: not-allowed;
         }
 
-        @media (max-width: 768px) {
-          .action-modes-grid {
-            grid-template-columns: 1fr;
+        @media (max-width: 640px) {
+          .chat-action-bar-wrap {
+            flex-direction: column;
+            align-items: stretch;
+          }
+          .action-selector-relative {
+            width: 100%;
+          }
+          .btn-chat-mode-pill {
+            width: 100%;
+            justify-content: space-between;
+          }
+          .chat-mode-popover {
+            width: 100%;
+            bottom: calc(100% + 8px);
+          }
+          .btn-launch-generation {
+            width: 100%;
+            justify-content: center;
           }
           .correction-points-grid {
             grid-template-columns: 1fr;
           }
           .card-workspace-input {
-            padding: 16px;
+            padding: 14px;
           }
         }
       `}</style>
