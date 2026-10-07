@@ -12,6 +12,8 @@
  * questions sur le contenu et les concepts réels sans répéter "document.pdf".
  */
 
+import { isGarbageText } from './documentExtractorService';
+
 export type TopicKind = 'calcul' | 'redaction' | 'document' | 'rapport';
 
 export interface TopicKindInfo {
@@ -150,6 +152,9 @@ export function sanitizeSubjectTitle(raw: string): string {
   if (!raw) return 'Notions clés';
   let clean = raw.replace(/\.(pdf|docx|doc|txt|md|rtf|csv|json)$/i, '');
   clean = clean.replace(/[_-]+/g, ' ').trim();
+  if (isGarbageText(clean)) {
+    return 'Document d’étude';
+  }
   if (clean.length > 50) {
     clean = clean.slice(0, 45).trim() + '...';
   }
@@ -195,16 +200,17 @@ export const exerciseGeneratorService = {
     extractedText?: string,
     keyConcepts: string[] = []
   ): GeneratedExercise[] {
-    const hasDocText = (extractedText && extractedText.trim().length > 40);
-    const concepts = (keyConcepts && keyConcepts.length > 0)
-      ? keyConcepts
-      : ['Principes fondamentaux', 'Méthodologie', 'Application pratique'];
-    const concept1 = concepts[0] || 'notion principale';
+    const hasDocText = (extractedText && extractedText.trim().length > 40 && !isGarbageText(extractedText));
+    const cleanSubject = sanitizeSubjectTitle(topicName);
+    const validConcepts = keyConcepts.filter(c => c && c.length >= 3 && !isGarbageText(c));
+    const concepts = (validConcepts.length > 0)
+      ? validConcepts
+      : [`Principes clés de ${cleanSubject}`, 'Méthodologie d’analyse', 'Application pratique'];
+    const concept1 = concepts[0] || `notion clé de ${cleanSubject}`;
     const concept2 = concepts[1] || 'démarche d\'analyse';
     const concept3 = concepts[2] || 'synthèse critique';
 
     const kindInfo = detectTopicKind(topicName, levelId);
-    const cleanSubject = sanitizeSubjectTitle(topicName);
 
     // Si on a le texte réel du document, créons des exercices d'analyse directe du texte
     if (hasDocText) {
@@ -212,9 +218,9 @@ export const exerciseGeneratorService = {
       return [
         {
           id: 1,
-          title: `Exercice 1 : Compréhension & Analyse textuelle approfondie`,
+          title: `Exercice 1 : Compréhension & Analyse — « ${cleanSubject} »`,
           duration: '15 min',
-          statement: `À partir de la lecture attentive du document transmis :
+          statement: `À partir de la lecture attentive du document transmis (${cleanSubject}) :
 Extrait à analyser :
 « ${textPreview}... »
 
@@ -500,12 +506,14 @@ Réfutation posée, démonstration de la résilience du modèle et ouverture sur
     extractedText?: string,
     keyConcepts: string[] = []
   ): GeneratedQCM[] {
-    const hasDocText = (extractedText && extractedText.trim().length > 40);
-    const concepts = (keyConcepts && keyConcepts.length > 0)
-      ? keyConcepts
-      : ['Notion fondamentale', 'Principe d\'analyse', 'Règle d\'application'];
+    const hasDocText = (extractedText && extractedText.trim().length > 40 && !isGarbageText(extractedText));
+    const cleanSubject = sanitizeSubjectTitle(topicName);
+    const validConcepts = keyConcepts.filter(c => c && c.length >= 3 && !isGarbageText(c));
+    const concepts = (validConcepts.length > 0)
+      ? validConcepts
+      : [`Notion clé de ${cleanSubject}`, 'Principe d\'analyse', 'Règle d\'application', 'Synthèse'];
 
-    const c1 = concepts[0] || 'notion principale';
+    const c1 = concepts[0] || `notion principale de ${cleanSubject}`;
     const c2 = concepts[1] || 'démarche d\'analyse';
     const c3 = concepts[2] || 'critère de validation';
     const c4 = concepts[3] || 'synthèse des faits';
@@ -895,11 +903,13 @@ Réfutation posée, démonstration de la résilience du modèle et ouverture sur
     extractedText?: string,
     keyConcepts: string[] = []
   ): CorrectionReportData {
-    const hasDocText = (extractedText && extractedText.trim().length > 40);
-    const concepts = (keyConcepts && keyConcepts.length > 0)
-      ? keyConcepts
-      : ['Notion centrale', 'Méthode d\'analyse'];
-    const c1 = concepts[0] || 'notion principale';
+    const hasDocText = (extractedText && extractedText.trim().length > 40 && !isGarbageText(extractedText));
+    const cleanSubject = sanitizeSubjectTitle(topicName);
+    const validConcepts = keyConcepts.filter(c => c && c.length >= 3 && !isGarbageText(c));
+    const concepts = (validConcepts.length > 0)
+      ? validConcepts
+      : [`Notion centrale de ${cleanSubject}`, 'Méthode d\'analyse'];
+    const c1 = concepts[0] || `notion principale de ${cleanSubject}`;
 
     if (hasDocText) {
       return {

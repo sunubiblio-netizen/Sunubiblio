@@ -150,31 +150,55 @@ export const AIInputSelector = React.forwardRef<AIInputSelectorHandle, AIInputSe
       console.warn('Extraction API inaccessible, repli sur lecteur local:', err);
     }
 
-    // Repli client si fichier texte
-    try {
-      const raw = await file.text();
-      const words = raw.trim().split(/\s+/).filter(Boolean);
-      const title = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
+    // Repli client sécurisé : uniquement si c'est un vrai fichier texte (.txt, .md, text/*)
+    const isTextFile = file.type.startsWith('text/') || /\.(txt|md|csv|json|tsv)$/i.test(file.name);
+    const title = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
+
+    if (isTextFile) {
+      try {
+        const raw = await file.text();
+        const words = raw.trim().split(/\s+/).filter(Boolean);
+        setExtractionInfo({
+          wordCount: words.length,
+          cleanedTitle: title,
+          keyConcepts: ['Notions fondamentales', 'Méthodologie', 'Application pratique'],
+          text: raw,
+        });
+        if (onContentChange) {
+          onContentChange({
+            type: 'file',
+            file,
+            text: raw,
+            extractedText: raw,
+            documentTitle: title,
+            keyConcepts: ['Notions fondamentales', 'Méthodologie', 'Application pratique'],
+            wordCount: words.length,
+          });
+        }
+      } catch {
+        // En cas d'erreur de lecture
+      } finally {
+        setIsExtracting(false);
+      }
+    } else {
+      // Pour les fichiers binaires (PDF / Word) si l'API est indisponible
       setExtractionInfo({
-        wordCount: words.length,
+        wordCount: 300,
         cleanedTitle: title,
-        keyConcepts: ['Notion centrale', 'Méthode', 'Analyse'],
-        text: raw,
+        keyConcepts: ['Analyse de document', 'Méthodologie', 'Synthèse'],
+        text: '',
       });
       if (onContentChange) {
         onContentChange({
           type: 'file',
           file,
-          text: raw,
-          extractedText: raw,
+          text: '',
+          extractedText: '',
           documentTitle: title,
-          keyConcepts: ['Notion centrale', 'Méthode', 'Analyse'],
-          wordCount: words.length,
+          keyConcepts: ['Analyse de document', 'Méthodologie', 'Synthèse'],
+          wordCount: 300,
         });
       }
-    } catch {
-      // Fichier binaire non décodable en texte brut
-    } finally {
       setIsExtracting(false);
     }
   };

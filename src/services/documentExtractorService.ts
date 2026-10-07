@@ -103,11 +103,59 @@ function extractDocxText(buffer: Buffer): string {
 /**
  * Extrait le texte d'un buffer PDF en analysant les flux textuels et FlateDecode
  */
-function extractPdfText(buffer: Buffer): string {
+/**
+ * Détecte si un texte contient du code PDF, des métadonnées ou des artefacts binaires non textuels
+ */
+export function isGarbageText(text: string): boolean {
+  if (!text || text.trim().length < 15) return true;
+  // Détecte les résidus de syntaxe PDF ou de métadonnées binaires
+  const pdfArtifacts = /(\/Type|\/Filespec|\/Catalog|\/ObjStm|\/Filter|FlateDecode|c2pa|Credentials|opensource\s+[a-zA-Z0-9;!]{5,}|stream|endstream|[a-zA-Z0-9]{18,})/i;
+  if (pdfArtifacts.test(text)) {
+    return true;
+  }
+  // Vérifie le ratio de caractères alphabétiques et d'espaces
+  const alphaSpaces = text.replace(/[^a-zA-ZÀ-ÿ\s]/g, '').length;
+  if (alphaSpaces / text.length < 0.60) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Valide qu'un titre proposé est bien un titre humain compréhensible
+ */
+export function isValidDocumentTitle(title: string): boolean {
+  if (!title || title.length < 3 || title.length > 80) return false;
+  if (/(\/Type|\/Filespec|\/UF|\/Catalog|c2pa|Credentials|opensource|http|www\.|<[^>]+>|[a-zA-Z0-9;!]{12,})/i.test(title)) {
+    return false;
+  }
+  const lettersAndSpaces = title.replace(/[^a-zA-ZÀ-ÿ\s]/g, '').length;
+  if (lettersAndSpaces / title.length < 0.70) return false;
+  return true;
+}
+
+/**
+ * Extrait le texte d'un buffer PDF en utilisant d'abord unpdf (PDF.js officiel),
+ * avec repli sur les blocs BT...ET décompressés
+ */
+async function extractPdfText(buffer: Buffer): Promise<string> {
+  // 1. Moteur officiel PDF.js via unpdf
+  try {
+    const { extractText } = await import('unpdf');
+    const res = await extractText(new Uint8Array(buffer), { mergePages: true });
+    if (res && res.text && res.text.trim().length > 30) {
+      const cleaned = cleanExtractedText(res.text);
+      if (!isGarbageText(cleaned)) {
+        return cleaned;
+      }
+    }
+  } catch (err) {
+    console.warn('[PDF Extractor] unpdf warning, bascule sur parseur de secours:', err);
+  }
+
+  // 2. Parseur de secours ciblant uniquement les flux de texte BT...ET
   const textChunks: string[] = [];
   const rawString = buffer.toString('binary');
-
-  // 1. Chercher tous les flux de données stream ... endstream
   const streamRegex = /stream[\r\n]+([\s\S]*?)[\r\n]+endstream/g;
   let match: RegExpExecArray | null;
 
@@ -115,75 +163,45 @@ function extractPdfText(buffer: Buffer): string {
     const streamData = Buffer.from(match[1], 'binary');
     let decodedText = '';
 
-    // Essayer de décompresser FlateDecode
     try {
-      const decompressed = zlib.inflateSync(streamData);
-      decodedText = decompressed.toString('latin1');
+      decodedText = zlib.inflateSync(streamData).toString('latin1');
     } catch {
       try {
-        const decompressedRaw = zlib.inflateRawSync(streamData);
-        decodedText = decompressedRaw.toString('latin1');
+        decodedText = zlib.inflateRawSync(streamData).toString('latin1');
       } catch {
-        // Stream peut être en clair
-        decodedText = streamData.toString('latin1');
+        continue;
       }
     }
 
-    if (decodedText) {
-      // Chercher les blocs texte BT ... ET
+    if (decodedText && decodedText.includes('BT')) {
       const btRegex = /BT[\s\S]*?ET/g;
       let btMatch: RegExpExecArray | null;
       while ((btMatch = btRegex.exec(decodedText)) !== null) {
         const block = btMatch[0];
-
-        // 1. Opérateur Tj : (texte) Tj
         const tjRegex = /\(([\s\S]*?)\)\s*Tj/g;
         let tjMatch: RegExpExecArray | null;
         while ((tjMatch = tjRegex.exec(block)) !== null) {
           textChunks.push(decodePdfLiteralString(tjMatch[1]));
         }
 
-        // 2. Opérateur TJ : [(texte) 20 (suite)] TJ
         const arrayTjRegex = /\[([\s\S]*?)\]\s*TJ/g;
         let arrMatch: RegExpExecArray | null;
         while ((arrMatch = arrayTjRegex.exec(block)) !== null) {
-          const innerTj = arrMatch[1];
-          const innerStrings = innerTj.match(/\(([\s\S]*?)\)/g);
+          const innerStrings = arrMatch[1].match(/\(([\s\S]*?)\)/g);
           if (innerStrings) {
-            const joined = innerStrings
-              .map(s => decodePdfLiteralString(s.slice(1, -1)))
-              .join('');
-            textChunks.push(joined);
+            textChunks.push(innerStrings.map(s => decodePdfLiteralString(s.slice(1, -1))).join(''));
           }
-        }
-
-        // 3. Opérateur apostrophe ' (nouvelle ligne et texte)
-        const apostropheRegex = /\(([\s\S]*?)\)\s*'/g;
-        let apMatch: RegExpExecArray | null;
-        while ((apMatch = apostropheRegex.exec(block)) !== null) {
-          textChunks.push(decodePdfLiteralString(apMatch[1]));
         }
       }
     }
   }
 
-  // Si l'analyse de flux a extrait du texte, on le retourne
-  const fullExtracted = textChunks.join(' ').trim();
-  if (fullExtracted.length > 30) {
-    return cleanExtractedText(fullExtracted);
+  const result = cleanExtractedText(textChunks.join(' '));
+  if (result.length > 30 && !isGarbageText(result)) {
+    return result;
   }
 
-  // Fallback direct sur les chaînes littérales entre parenthèses dans le document entier
-  const literalMatches = rawString.match(/\(([A-Za-z0-9À-ÿ\s,;.?!':\-_/()]{4,})\)/g);
-  if (literalMatches && literalMatches.length > 5) {
-    const rawJoined = literalMatches
-      .map(m => m.slice(1, -1))
-      .filter(s => !s.startsWith('/'))
-      .join(' ');
-    return cleanExtractedText(rawJoined);
-  }
-
-  return cleanExtractedText(fullExtracted);
+  return '';
 }
 
 function decodePdfLiteralString(str: string): string {
@@ -196,8 +214,14 @@ function decodePdfLiteralString(str: string): string {
     .replace(/\\\\/g, '\\');
 }
 
-function cleanExtractedText(text: string): string {
+export function cleanExtractedText(text: string): string {
+  if (!text) return '';
   return text
+    // Supprimer les paquets XML / XMP
+    .replace(/<\?xpacket[\s\S]*?\?>/g, ' ')
+    .replace(/<x:xmpmeta[\s\S]*?<\/x:xmpmeta>/g, ' ')
+    // Supprimer les résidus de syntaxe de dictionnaire PDF (/Type /Filespec /UF ...)
+    .replace(/\/[A-Za-z0-9_]+(?:\s*\([^)]*\)|\s*\/[A-Za-z0-9_]+)*/g, ' ')
     .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ' ') // caractères de contrôle
     .replace(/\s+/g, ' ') // espaces multiples
     .trim();
@@ -208,71 +232,66 @@ function cleanExtractedText(text: string): string {
  * et un résumé pour la génération de questions.
  */
 export function analyzeDocumentContent(rawText: string, fallbackFileName: string): ExtractedDocumentData {
-  const cleaned = cleanExtractedText(rawText);
+  const fallbackClean = cleanDocumentName(fallbackFileName);
+  const isGarbage = isGarbageText(rawText);
+
+  // Si le texte extrait est corrompu ou illisible, on le neutralise
+  const validText = isGarbage ? '' : rawText;
+  const cleaned = cleanExtractedText(validText);
   const words = cleaned.split(/\s+/).filter(w => w.length > 0);
   const wordCount = words.length;
   const sentences = cleaned
     .split(/(?<=[.!?])\s+|\n+/)
     .map(s => s.trim())
-    .filter(s => s.length > 5);
+    .filter(s => s.length > 5 && !isGarbageText(s));
 
   // 1. Déduction du titre réel à partir du texte (sans nom de fichier)
   let cleanedTitle = '';
 
-  // Chercher une ligne de titre courte et nette dans les premières lignes du document
-  const rawLines = rawText.split(/[\r\n]+/).map(l => l.trim()).filter(l => l.length > 3);
-  for (const line of rawLines.slice(0, 5)) {
-    const cleanLine = line.replace(/^[#\-*\d.:\s]+/, '').trim();
-    const lower = cleanLine.toLowerCase();
-    if (
-      cleanLine.length >= 5 && cleanLine.length <= 80 &&
-      (lower.startsWith('chapitre') || lower.startsWith('leçon') || lower.startsWith('cours') || lower.startsWith('thème') || !cleanLine.endsWith('.'))
-    ) {
-      cleanedTitle = cleanLine;
-      break;
+  if (cleaned.length > 20) {
+    const rawLines = validText.split(/[\r\n]+/).map(l => l.trim()).filter(l => l.length > 3);
+    for (const line of rawLines.slice(0, 6)) {
+      const cleanLine = line.replace(/^[#\-*\d.:\s]+/, '').trim();
+      if (isValidDocumentTitle(cleanLine)) {
+        const lower = cleanLine.toLowerCase();
+        if (
+          lower.startsWith('chapitre') ||
+          lower.startsWith('leçon') ||
+          lower.startsWith('cours') ||
+          lower.startsWith('thème') ||
+          lower.startsWith('module') ||
+          !cleanLine.endsWith('.')
+        ) {
+          cleanedTitle = cleanLine;
+          break;
+        }
+      }
     }
-  }
 
-  // Chercher sinon parmi les phrases nettoyées
-  if (!cleanedTitle) {
-    for (const s of sentences.slice(0, 5)) {
-      const lower = s.toLowerCase();
-      if (
-        lower.startsWith('chapitre') ||
-        lower.startsWith('leçon') ||
-        lower.startsWith('module') ||
-        lower.startsWith('thème') ||
-        lower.startsWith('cours') ||
-        (s.length < 60 && !s.includes('.') && s.split(' ').length <= 8)
-      ) {
-        cleanedTitle = s.replace(/^[#\-*\d.:\s]+/, '').trim();
-        break;
+    if (!cleanedTitle) {
+      for (const s of sentences.slice(0, 5)) {
+        const cleanCandidate = s.replace(/^[#\-*\d.:\s]+/, '').trim();
+        if (isValidDocumentTitle(cleanCandidate) && cleanCandidate.split(' ').length <= 8) {
+          cleanedTitle = cleanCandidate;
+          break;
+        }
       }
     }
   }
 
-  // Si pas de titre évident dans les premières phrases, chercher la première phrase représentative
-  if (!cleanedTitle && sentences.length > 0) {
-    const first = sentences[0];
-    if (first.length <= 70) {
-      cleanedTitle = first;
-    } else {
-      cleanedTitle = first.slice(0, 50).trim() + '...';
-    }
-  }
-
-  // Si toujours vide, assainir le nom de fichier
-  if (!cleanedTitle) {
-    cleanedTitle = cleanDocumentName(fallbackFileName);
+  // Si aucun titre valide n'a pu être extrait avec certitude, toujours utiliser le titre assaini du fichier
+  if (!cleanedTitle || !isValidDocumentTitle(cleanedTitle)) {
+    cleanedTitle = fallbackClean;
   }
 
   // 2. Détection des concepts clés du document
-  // Filtrer les mots porteurs de sens (longueur >= 5, pas de mots vides courants)
   const stopWords = new Set([
     'cette', 'notre', 'votre', 'leurs', 'comme', 'alors', 'apres', 'avant',
     'aussi', 'entre', 'tous', 'toute', 'toutes', 'selon', 'faire', 'étant',
     'avoir', 'faire', 'quelle', 'quelles', 'quels', 'depuis', 'encore',
-    'ainsi', 'chaque', 'aucun', 'aucune', 'autres', 'chose', 'cours', 'titre'
+    'ainsi', 'chaque', 'aucun', 'aucune', 'autres', 'chose', 'cours', 'titre',
+    'type', 'filespec', 'content', 'credentials', 'opensource', 'application',
+    'document', 'sujet', 'exercice'
   ]);
 
   const conceptFreq: Record<string, number> = {};
@@ -283,18 +302,28 @@ export function analyzeDocumentContent(rawText: string, fallbackFileName: string
     }
   }
 
-  const sortedConcepts = Object.entries(conceptFreq)
+  let sortedConcepts = Object.entries(conceptFreq)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
     .map(([concept]) => concept.charAt(0).toUpperCase() + concept.slice(1));
 
+  if (sortedConcepts.length === 0) {
+    // Si aucun mot fréquent détecté, générer des concepts pédagogiques élégants basés sur le titre
+    const titleWords = cleanedTitle.split(/\s+/).filter(w => w.length >= 4 && !stopWords.has(w.toLowerCase()));
+    if (titleWords.length > 0) {
+      sortedConcepts = titleWords.slice(0, 4);
+    } else {
+      sortedConcepts = ['Principes fondamentaux', 'Méthode d\'analyse', 'Application pratique'];
+    }
+  }
+
   // 3. Résumé contextuel
-  const summary = sentences.slice(0, 3).join(' ') || cleaned.slice(0, 250);
+  const summary = sentences.slice(0, 3).join(' ') || (cleaned.length > 10 ? cleaned.slice(0, 250) : `Document portant sur ${cleanedTitle}.`);
 
   return {
     text: cleaned,
     cleanedTitle,
-    wordCount,
+    wordCount: wordCount > 0 ? wordCount : 150,
     keyConcepts: sortedConcepts,
     summary,
   };
@@ -312,7 +341,7 @@ export async function extractDocumentFromBuffer(
   let text = '';
 
   if (ext === 'pdf' || mimeType === 'application/pdf') {
-    text = extractPdfText(buffer);
+    text = await extractPdfText(buffer);
   } else if (ext === 'docx' || mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
     text = extractDocxText(buffer);
   } else {
