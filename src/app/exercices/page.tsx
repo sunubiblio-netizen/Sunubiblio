@@ -848,11 +848,30 @@ export default function ExercicesPage() {
                     {activeMode === 'corriger' && correctionReport && (
                       <div className="generated-correction-card">
                         <div className="correction-header-row">
-                          <div>
+                          <div className="correction-title-group">
                             <span className="correction-sub-tag">Évaluation formative</span>
                             <h3 className="correction-title">Note & Diagnostic Pédagogique</h3>
                           </div>
-                          <div className="grade-badge">{correctionReport.grade}</div>
+                          {(() => {
+                            const gradeText = correctionReport.grade || '';
+                            const match = gradeText.match(/^(.*?)(?:\s*\((.*?)\))?$/);
+                            const score = match ? match[1].trim() : gradeText;
+                            const mention = match && match[2] ? match[2].trim() : null;
+
+                            return (
+                              <div className="grade-badge-card">
+                                <div className="grade-score-pill">
+                                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="20 6 9 17 4 12" />
+                                  </svg>
+                                  <span className="grade-num">{score}</span>
+                                </div>
+                                {mention && (
+                                  <span className="grade-mention-pill">{mention}</span>
+                                )}
+                              </div>
+                            );
+                          })()}
                         </div>
 
                         <p className="correction-summary">{correctionReport.summary}</p>
@@ -2270,7 +2289,16 @@ export default function ExercicesPage() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 10px;
+          margin-bottom: 12px;
+          gap: 14px;
+          flex-wrap: wrap;
+        }
+
+        .correction-title-group {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          min-width: 0;
         }
 
         .correction-sub-tag {
@@ -2278,22 +2306,48 @@ export default function ExercicesPage() {
           font-weight: 700;
           color: #2563eb;
           text-transform: uppercase;
+          letter-spacing: 0.04em;
         }
 
         .correction-title {
           font-size: 1.0625rem;
           font-weight: 800;
           color: #0f172a;
-          margin: 2px 0 0;
+          margin: 0;
         }
 
-        .grade-badge {
-          font-size: 1.0625rem;
+        .grade-badge-card {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .grade-score-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.9375rem;
           font-weight: 900;
           color: #ffffff;
-          background: linear-gradient(135deg, #10b981, #059669);
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          padding: 6px 14px;
+          border-radius: 9999px;
+          box-shadow: 0 2px 8px rgba(16, 185, 129, 0.28);
+          white-space: nowrap;
+        }
+
+        .grade-mention-pill {
+          display: inline-flex;
+          align-items: center;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #065f46;
+          background: #ecfdf5;
+          border: 1px solid #a7f3d0;
           padding: 5px 12px;
-          border-radius: 10px;
+          border-radius: 9999px;
+          white-space: nowrap;
         }
 
         .correction-summary {
@@ -2537,6 +2591,38 @@ export default function ExercicesPage() {
             width: 38px;
             height: 38px;
             flex-shrink: 0;
+          }
+          .correction-header-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+          }
+          .correction-title-group {
+            width: 100%;
+          }
+          .correction-title {
+            font-size: 0.95rem;
+            line-height: 1.35;
+          }
+          .grade-badge-card {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            width: 100%;
+          }
+          .grade-score-pill {
+            font-size: 0.84rem;
+            padding: 5px 12px;
+            gap: 5px;
+          }
+          .grade-mention-pill {
+            font-size: 0.7188rem;
+            padding: 4px 10px;
+            white-space: normal;
+            word-break: normal;
+            line-height: 1.3;
           }
           .correction-points-grid {
             grid-template-columns: 1fr;
