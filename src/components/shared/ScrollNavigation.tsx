@@ -1,15 +1,39 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
 export const ScrollNavigation: React.FC = () => {
   const pathname = usePathname() || '';
   const [canScrollUp, setCanScrollUp] = useState(false);
-  const [canScrollDown, setCanScrollDown] = useState(true);
+  const [canScrollDown, setCanScrollDown] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const hideTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isHoveredRef = useRef(false);
 
-  // Écouteur de scroll hautement optimisé avec requestAnimationFrame
+  // 1. Pages où la navigation par scroll est formellement exclue (outils, IA, chats, exercices)
+  const isExcludedPage =
+    pathname.startsWith('/exercices') ||
+    pathname.startsWith('/ia') ||
+    pathname.startsWith('/sunuai') ||
+    pathname.startsWith('/discussions');
+
+  // Gestion du timer d'auto-masquage
+  const scheduleHide = useCallback(() => {
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current);
+    }
+    hideTimerRef.current = setTimeout(() => {
+      if (!isHoveredRef.current) {
+        setIsVisible(false);
+      }
+    }, 2400);
+  }, []);
+
+  // Écouteur de scroll hautement optimisé
   useEffect(() => {
+    if (isExcludedPage) return;
+
     let ticking = false;
 
     const handleScroll = () => {
@@ -19,12 +43,20 @@ export const ScrollNavigation: React.FC = () => {
           const windowHeight = window.innerHeight;
           const fullHeight = document.documentElement.scrollHeight;
 
-          // Seuil haut : afficher le bouton "Haut" après 280px de défilement
-          setCanScrollUp(scrollY > 280);
-
-          // Seuil bas : masquer le bouton "Bas" quand on est à moins de 250px du bas réel
+          // Seuil d'éligibilité : la page doit être assez longue (> 1.4x la hauteur d'écran)
+          const isPageLongEnough = fullHeight > windowHeight * 1.4;
+          const hasScrolledDownEnough = scrollY > 320;
           const distanceToBottom = fullHeight - (scrollY + windowHeight);
-          setCanScrollDown(distanceToBottom > 250);
+
+          setCanScrollUp(scrollY > 200);
+          setCanScrollDown(distanceToBottom > 200);
+
+          if (isPageLongEnough && hasScrolledDownEnough) {
+            setIsVisible(true);
+            scheduleHide();
+          } else {
+            setIsVisible(false);
+          }
 
           ticking = false;
         });
@@ -33,18 +65,24 @@ export const ScrollNavigation: React.FC = () => {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    setTimeout(handleScroll, 100); 
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
     };
-  }, []);
+  }, [isExcludedPage, scheduleHide]);
 
   const handleScrollToTop = useCallback(() => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth',
     });
+    // Disparaît dès qu'on arrive en haut
+    setTimeout(() => {
+      setIsVisible(false);
+    }, 450);
   }, []);
 
   const handleScrollToBottom = useCallback(() => {
@@ -52,7 +90,8 @@ export const ScrollNavigation: React.FC = () => {
       top: document.documentElement.scrollHeight,
       behavior: 'smooth',
     });
-  }, []);
+    scheduleHide();
+  }, [scheduleHide]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -78,15 +117,32 @@ export const ScrollNavigation: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Masquer le bouton de défilement pendant un test de révision, sur la page discussions (messagerie intégrée), si aucun défilement possible, ou si une modale est ouverte
-  const isExercisePlayer = pathname.startsWith('/exercices/') && pathname !== '/exercices';
-  const isDiscussions = pathname.startsWith('/discussions');
-  if (isExercisePlayer || isDiscussions || (!canScrollUp && !canScrollDown) || isModalOpen) {
+  // Ne pas monter le composant si page exclue ou modale ouverte
+  if (isExcludedPage || isModalOpen) {
     return null;
   }
 
   return (
-    <aside aria-label="Navigation rapide haut et bas" className="scroll-navigation-global">
+    <aside
+      aria-label="Navigation rapide haut et bas"
+      className={`scroll-navigation-global ${isVisible ? 'is-visible' : ''}`}
+      onMouseEnter={() => {
+        isHoveredRef.current = true;
+        if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+      }}
+      onMouseLeave={() => {
+        isHoveredRef.current = false;
+        scheduleHide();
+      }}
+      onTouchStart={() => {
+        isHoveredRef.current = true;
+        if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+      }}
+      onTouchEnd={() => {
+        isHoveredRef.current = false;
+        scheduleHide();
+      }}
+    >
       <div className="scroll-nav-card">
         {/* Bouton Revenir en haut */}
         <button
@@ -134,23 +190,34 @@ export const ScrollNavigation: React.FC = () => {
 
         .scroll-navigation-global {
           position: fixed;
-          right: 28px;
-          bottom: 40px;
+          right: 24px;
+          bottom: 36px;
           z-index: 9999;
-          animation: fade-in-float 0.25s ease-out;
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          transform: scale(0.85) translateY(10px);
+          transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s;
+        }
+
+        .scroll-navigation-global.is-visible {
+          opacity: 1;
+          visibility: visible;
+          pointer-events: auto;
+          transform: scale(1) translateY(0);
         }
 
         .scroll-nav-card {
           display: flex;
           flex-direction: column;
           align-items: center;
-          background: rgba(255, 255, 255, 0.9);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
           border: 1px solid rgba(226, 232, 240, 0.9);
           border-radius: 9999px;
           padding: 4px;
-          box-shadow: 0 12px 32px -4px rgba(15, 23, 42, 0.16), 0 4px 10px rgba(0, 0, 0, 0.04);
+          box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.16), 0 4px 10px rgba(0, 0, 0, 0.04);
           transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
@@ -160,8 +227,8 @@ export const ScrollNavigation: React.FC = () => {
         }
 
         .scroll-nav-btn {
-          width: 42px;
-          height: 42px;
+          width: 38px;
+          height: 38px;
           border-radius: 50%;
           background: transparent;
           border: none;
@@ -175,13 +242,13 @@ export const ScrollNavigation: React.FC = () => {
         }
 
         .scroll-nav-btn:hover:not(:disabled) {
-          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #9333ea 100%);
+          background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
           color: #ffffff;
-          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
         }
 
         .scroll-nav-btn:focus-visible {
-          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35);
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
         }
 
         .scroll-nav-btn.is-disabled {
@@ -191,7 +258,7 @@ export const ScrollNavigation: React.FC = () => {
         }
 
         .nav-divider {
-          width: 22px;
+          width: 20px;
           height: 1px;
           background: rgba(226, 232, 240, 0.85);
           margin: 1px 0;
@@ -209,31 +276,20 @@ export const ScrollNavigation: React.FC = () => {
           border: 0;
         }
 
-        @keyframes fade-in-float {
-          from {
-            opacity: 0;
-            transform: scale(0.9) translateY(8px);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-          }
-        }
-
-        /* Responsive Mobile : compact & positionné discrètement AU-DESSUS de la nav mobile globale */
+        /* Responsive Mobile : compact & positionné avec élégance sans gêner */
         @media (max-width: 768px) {
           .scroll-navigation-global {
             right: 12px;
-            bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+            bottom: calc(78px + env(safe-area-inset-bottom, 8px));
           }
 
           .scroll-nav-card {
             padding: 3px;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-color: rgba(226, 232, 240, 0.85);
-            box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-color: rgba(226, 232, 240, 0.9);
+            box-shadow: 0 6px 18px -2px rgba(15, 23, 42, 0.14), 0 2px 6px rgba(0, 0, 0, 0.05);
           }
 
           .scroll-nav-btn {
