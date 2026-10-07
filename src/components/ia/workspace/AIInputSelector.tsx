@@ -114,12 +114,15 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
           className={`tab-pill ${activeType === 'text' ? 'active' : ''}`}
           onClick={() => setActiveType('text')}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="4 7 4 4 20 4 20 7"></polyline>
             <line x1="9" y1="20" x2="15" y2="20"></line>
             <line x1="12" y1="4" x2="12" y2="20"></line>
           </svg>
-          <span>Coller du texte</span>
+          <span className="tab-label-text">
+            <span className="label-desktop">Coller du texte</span>
+            <span className="label-mobile">Texte</span>
+          </span>
         </button>
 
         <button 
@@ -129,11 +132,14 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
           className={`tab-pill ${activeType === 'file' ? 'active' : ''}`}
           onClick={() => setActiveType('file')}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
           </svg>
-          <span>Importer un document</span>
+          <span className="tab-label-text">
+            <span className="label-desktop">Importer un document</span>
+            <span className="label-mobile">Document</span>
+          </span>
         </button>
 
         <button 
@@ -143,11 +149,14 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
           className={`tab-pill ${activeType === 'library' ? 'active' : ''}`}
           onClick={() => setActiveType('library')}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
           </svg>
-          <span>Bibliothèque Sunubiblio</span>
+          <span className="tab-label-text">
+            <span className="label-desktop">Bibliothèque Sunubiblio</span>
+            <span className="label-mobile">Bibliothèque</span>
+          </span>
         </button>
       </div>
 
@@ -421,6 +430,14 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
           white-space: nowrap;
           user-select: none;
+        }
+
+        .label-mobile {
+          display: none;
+        }
+
+        .label-desktop {
+          display: inline;
         }
 
         .tab-pill:hover {
@@ -805,23 +822,32 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
           .source-hint {
             font-size: 11px;
           }
+          .label-desktop {
+            display: none;
+          }
+          .label-mobile {
+            display: inline;
+          }
           .input-tabs-capsule {
-            flex-direction: row;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            display: flex;
+            width: 100%;
+            overflow-x: visible;
             border-radius: 9999px;
             padding: 3px;
             gap: 2px;
-            scrollbar-width: none;
-          }
-          .input-tabs-capsule::-webkit-scrollbar {
-            display: none;
           }
           .tab-pill {
-            padding: 6px 10px;
-            font-size: 12px;
-            gap: 6px;
+            flex: 1;
+            min-width: 0;
+            padding: 7px 4px;
+            font-size: 11.5px;
+            gap: 4px;
+            justify-content: center;
             white-space: nowrap;
+          }
+          .tab-pill svg {
+            width: 13px;
+            height: 13px;
             flex-shrink: 0;
           }
           .ai-textarea-pro {
