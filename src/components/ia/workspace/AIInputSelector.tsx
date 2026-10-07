@@ -172,33 +172,8 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
               className="ai-textarea-pro"
               rows={8}
             />
-            <div className="text-editor-footer">
-              <div className="quick-fill-prompts">
-                <button
-                  type="button"
-                  className="btn-sample-fill"
-                  onClick={() => {
-                    const sample = "Soit f(x) = (2x + 1) / (x - 3). Déterminer l'ensemble de définition Df, puis calculer les limites aux bornes de Df et interpréter graphiquement les résultats.";
-                    setTextContent(sample);
-                    if (onContentChange) onContentChange({ type: 'text', text: sample });
-                  }}
-                >
-                  Exemple d'exercice
-                </button>
-                <button
-                  type="button"
-                  className="btn-sample-fill"
-                  onClick={() => {
-                    const sample = "La révolution industrielle en Europe au XIXe siècle a profondément transformé les structures économiques, démographiques et sociales, entraînant l'essor du capitalisme et la naissance de la classe ouvrière.";
-                    setTextContent(sample);
-                    if (onContentChange) onContentChange({ type: 'text', text: sample });
-                  }}
-                >
-                  Exemple de cours
-                </button>
-              </div>
-
-              {textContent.length > 0 && (
+            {textContent.length > 0 && (
+              <div className="text-editor-footer">
                 <button
                   type="button"
                   onClick={() => {
@@ -209,8 +184,8 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
                 >
                   Effacer
                 </button>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -487,35 +462,9 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
 
         .text-editor-footer {
           display: flex;
-          justify-content: space-between;
+          justify-content: flex-end;
           align-items: center;
-          flex-wrap: wrap;
-          gap: 8px;
           padding-top: 8px;
-        }
-
-        .quick-fill-prompts {
-          display: flex;
-          gap: 8px;
-          align-items: center;
-        }
-
-        .btn-sample-fill {
-          font-size: 12px;
-          font-weight: 600;
-          background: #f1f5f9;
-          border: 1px solid #e2e8f0;
-          color: #475569;
-          padding: 4px 10px;
-          border-radius: 9999px;
-          cursor: pointer;
-          transition: all 0.15s ease;
-        }
-
-        .btn-sample-fill:hover {
-          background: #eef2ff;
-          color: #4f46e5;
-          border-color: #6366f1;
         }
 
         .btn-clear-text {
