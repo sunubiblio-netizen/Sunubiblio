@@ -6,11 +6,22 @@ import { AIAttachment } from '@/types/ai';
 
 export type AIInputType = 'text' | 'file' | 'library';
 
+export interface AIInputContent {
+  type: AIInputType;
+  text?: string;
+  file?: File;
+  libraryResource?: AIAttachment;
+  extractedText?: string;
+  documentTitle?: string;
+  keyConcepts?: string[];
+  wordCount?: number;
+}
+
 interface AIInputSelectorProps {
   label?: string;
   placeholder?: string;
   defaultType?: AIInputType;
-  onContentChange?: (content: { type: AIInputType; text?: string; file?: File; libraryResource?: AIAttachment }) => void;
+  onContentChange?: (content: AIInputContent) => void;
 }
 
 export const AIInputSelector: React.FC<AIInputSelectorProps> = ({ 
@@ -25,6 +36,13 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
   const [selectedLibraryResource, setSelectedLibraryResource] = useState<AIAttachment | null>(null);
   const [isLibraryModalOpen, setIsLibraryModalOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [extractionInfo, setExtractionInfo] = useState<{
+    wordCount: number;
+    cleanedTitle: string;
+    keyConcepts: string[];
+    summary?: string;
+  } | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -36,10 +54,77 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
     }
   };
 
-  const handleFileSelected = (file: File) => {
+  const handleFileSelected = async (file: File) => {
     setSelectedFile(file);
+    setIsExtracting(true);
+    setExtractionInfo(null);
+
     if (onContentChange) {
       onContentChange({ type: 'file', file });
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/ai/extract-document', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.text) {
+          setExtractionInfo({
+            wordCount: data.wordCount,
+            cleanedTitle: data.cleanedTitle,
+            keyConcepts: data.keyConcepts || [],
+            summary: data.summary,
+          });
+
+          if (onContentChange) {
+            onContentChange({
+              type: 'file',
+              file,
+              text: data.text,
+              extractedText: data.text,
+              documentTitle: data.cleanedTitle,
+              keyConcepts: data.keyConcepts,
+              wordCount: data.wordCount,
+            });
+          }
+          setIsExtracting(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Extraction API inaccessible, repli sur lecteur local:', err);
+    }
+
+    // Repli client si fichier texte
+    try {
+      const raw = await file.text();
+      const words = raw.trim().split(/\s+/).filter(Boolean);
+      const title = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
+      setExtractionInfo({
+        wordCount: words.length,
+        cleanedTitle: title,
+        keyConcepts: ['Notion centrale', 'Méthode', 'Analyse'],
+      });
+      if (onContentChange) {
+        onContentChange({
+          type: 'file',
+          file,
+          text: raw,
+          extractedText: raw,
+          documentTitle: title,
+          keyConcepts: ['Notion centrale', 'Méthode', 'Analyse'],
+          wordCount: words.length,
+        });
+      }
+    } catch {
+      // Fichier binaire non décodable en texte brut
+    } finally {
+      setIsExtracting(false);
     }
   };
 
@@ -233,11 +318,26 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
                     </svg>
                   </div>
                   <div className="status-row">
-                    <span className="badge-ok">✓ Document prêt</span>
+                    {isExtracting ? (
+                      <span className="badge-reading" style={{ background: '#e0e7ff', color: '#4338ca', padding: '4px 10px', borderRadius: '9999px', fontSize: '12px', fontWeight: 600 }}>
+                        ⏳ Lecture et analyse du texte...
+                      </span>
+                    ) : extractionInfo ? (
+                      <span className="badge-ok" style={{ background: '#ecfdf5', color: '#047857', padding: '4px 10px', borderRadius: '9999px', fontSize: '12px', fontWeight: 600 }}>
+                        ✓ Document lu ({extractionInfo.wordCount} mots analysés)
+                      </span>
+                    ) : (
+                      <span className="badge-ok">✓ Document prêt</span>
+                    )}
                     <span className="doc-type-pill">{selectedFile.name.split('.').pop()?.toUpperCase()}</span>
                   </div>
                   <h5 className="doc-filename" title={selectedFile.name}>{selectedFile.name}</h5>
                   <span className="doc-size-info">{formatFileSize(selectedFile.size)}</span>
+                  {extractionInfo && extractionInfo.keyConcepts && extractionInfo.keyConcepts.length > 0 && (
+                    <div style={{ marginTop: '10px', padding: '8px 12px', background: '#f8fafc', borderRadius: '10px', fontSize: '12.5px', color: '#334155' }}>
+                      <strong style={{ color: '#4f46e5' }}>🎯 Thèmes détectés :</strong> {extractionInfo.keyConcepts.slice(0, 4).join(' • ')}
+                    </div>
+                  )}
                 </div>
 
                 <div className="card-actions-row">

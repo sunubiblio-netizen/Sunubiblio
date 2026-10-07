@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { AuthModal } from '@/components/ui/AuthModal';
-import { AIInputSelector, AIInputType } from '@/components/ia/workspace/AIInputSelector';
+import { AIInputSelector, AIInputType, AIInputContent } from '@/components/ia/workspace/AIInputSelector';
 import { AIAttachment } from '@/types/ai';
 import { exerciseGeneratorService, GeneratedExercise, TopicKind } from '@/services/exerciseGeneratorService';
 
@@ -150,12 +150,7 @@ export default function ExercicesPage() {
   const [isModeMenuOpen, setIsModeMenuOpen] = useState(false);
 
   // Contenu sélectionné
-  const [inputContent, setInputContent] = useState<{
-    type: AIInputType;
-    text?: string;
-    file?: File;
-    libraryResource?: AIAttachment;
-  }>({
+  const [inputContent, setInputContent] = useState<AIInputContent>({
     type: 'text',
     text: '',
   });
@@ -199,7 +194,7 @@ export default function ExercicesPage() {
     setIsModeMenuOpen(false);
   };
 
-  const handleStartGeneration = () => {
+  const handleStartGeneration = async () => {
     setIsLoading(true);
     setIsSessionActive(true);
     setChatMessages([]);
@@ -212,29 +207,93 @@ export default function ExercicesPage() {
     setCurrentExerciseIndex(0);
     setCurrentQCMIndex(0);
 
-    // Simulation de génération IA
-    setTimeout(() => {
-      const topicName = inputContent.text?.trim()
+    const topicName =
+      inputContent.documentTitle ||
+      (inputContent.text?.trim()
         ? inputContent.text
-        : inputContent.file
-        ? inputContent.file.name
         : inputContent.libraryResource
         ? inputContent.libraryResource.name
-        : 'Sujet d’entraînement';
+        : inputContent.file
+        ? inputContent.file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ')
+        : 'Sujet d’entraînement');
 
+    const extractedText = inputContent.extractedText || inputContent.text || '';
+    const keyConcepts = inputContent.keyConcepts || [];
+
+    try {
+      const res = await fetch('/api/ai/generate-exercises', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topicName,
+          extractedText,
+          keyConcepts,
+          levelId: selectedLevel.id,
+          mode: activeMode,
+        }),
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) {
+          if (activeMode === 'exercices') {
+            const list = json.data.exercises || json.data;
+            if (Array.isArray(list) && list.length > 0) {
+              setGeneratedExercises(list);
+              setIsLoading(false);
+              return;
+            }
+          } else if (activeMode === 'qcm') {
+            const list = json.data.qcm || json.data;
+            if (Array.isArray(list) && list.length > 0) {
+              setGeneratedQCM(list);
+              setIsLoading(false);
+              return;
+            }
+          } else if (activeMode === 'corriger') {
+            const report = json.data.report || json.data;
+            if (report) {
+              setCorrectionReport(report);
+              setIsLoading(false);
+              return;
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Génération API indisponible, bascule sur moteur local:', err);
+    }
+
+    // Repli moteur local Sunubiblio
+    setTimeout(() => {
       if (activeMode === 'exercices') {
-        const exercises = exerciseGeneratorService.generateExercises(topicName, selectedLevel.id);
+        const exercises = exerciseGeneratorService.generateExercises(
+          topicName,
+          selectedLevel.id,
+          extractedText,
+          keyConcepts
+        );
         setGeneratedExercises(exercises);
       } else if (activeMode === 'qcm') {
-        const qcm = exerciseGeneratorService.generateQCM(topicName, selectedLevel.id);
+        const qcm = exerciseGeneratorService.generateQCM(
+          topicName,
+          selectedLevel.id,
+          extractedText,
+          keyConcepts
+        );
         setGeneratedQCM(qcm);
       } else if (activeMode === 'corriger') {
-        const report = exerciseGeneratorService.generateCorrectionReport(topicName, selectedLevel.id);
+        const report = exerciseGeneratorService.generateCorrectionReport(
+          topicName,
+          selectedLevel.id,
+          extractedText,
+          keyConcepts
+        );
         setCorrectionReport(report);
       }
 
       setIsLoading(false);
-    }, 1100);
+    }, 600);
   };
 
   const handleValidateExercise = (exId: number) => {
@@ -503,9 +562,14 @@ export default function ExercicesPage() {
                     {inputContent.file ? '📄' : inputContent.libraryResource ? '📖' : '📝'}
                   </span>
                   <span className="session-topic-full-text">
-                    {inputContent.text?.trim()
-                      ? inputContent.text
-                      : inputContent.file?.name || (inputContent.libraryResource?.name ? inputContent.libraryResource.name : 'Session active')}
+                    {inputContent.documentTitle ||
+                      (inputContent.text?.trim()
+                        ? inputContent.text
+                        : inputContent.libraryResource?.name
+                        ? inputContent.libraryResource.name
+                        : inputContent.file
+                        ? inputContent.file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ')
+                        : 'Session active')}
                   </span>
                 </div>
               </div>
