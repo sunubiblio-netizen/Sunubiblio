@@ -452,13 +452,26 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
 
         .input-content-panel {
           width: 100%;
-        }
-
-        /* --- Textarea Editor --- */
-        .text-editor-wrap {
+          min-height: 290px;
           display: flex;
           flex-direction: column;
-          gap: 10px;
+        }
+
+        /* --- Texteditor Wrapper & Dropzone Wrappers fixes --- */
+        .text-editor-wrap,
+        .file-uploader-wrap,
+        .library-picker-wrap {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          width: 100%;
+          min-height: 290px;
+          justify-content: space-between;
+        }
+
+        .file-uploader-wrap,
+        .library-picker-wrap {
+          justify-content: center;
         }
 
         .ai-textarea-pro {
@@ -471,8 +484,9 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
           color: #0f172a;
           line-height: 1.6;
           font-family: inherit;
-          resize: vertical;
-          min-height: 240px;
+          resize: none;
+          min-height: 235px;
+          flex: 1;
           transition: all 0.2s ease;
         }
 
@@ -489,6 +503,7 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
           align-items: center;
           flex-wrap: wrap;
           gap: 8px;
+          padding-top: 8px;
         }
 
         .quick-fill-prompts {
@@ -529,17 +544,21 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
           color: #ef4444;
         }
 
-        /* --- Modern Dropzone --- */
+        /* --- Modern Dropzone Statique --- */
         .modern-dropzone {
           border: 2px dashed rgba(99, 102, 241, 0.35);
           border-radius: 20px;
           background: #fbfbfe;
-          padding: 36px 20px;
+          padding: 24px 20px;
           display: flex;
           flex-direction: column;
           align-items: center;
+          justify-content: center;
           text-align: center;
           cursor: pointer;
+          flex: 1;
+          min-height: 290px;
+          box-sizing: border-box;
           transition: all 0.2s ease;
         }
 
@@ -743,17 +762,21 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
           border-color: #fecaca;
         }
 
-        /* --- Library Empty Invitation --- */
+        /* --- Library Empty Invitation Statique --- */
         .library-empty-invitation {
           border: 2px dashed rgba(124, 58, 237, 0.3);
           border-radius: 20px;
           background: #faf8ff;
-          padding: 36px 20px;
+          padding: 24px 20px;
           display: flex;
           flex-direction: column;
           align-items: center;
+          justify-content: center;
           text-align: center;
           cursor: pointer;
+          flex: 1;
+          min-height: 290px;
+          box-sizing: border-box;
           transition: all 0.2s ease;
         }
 
@@ -850,11 +873,61 @@ export const AIInputSelector: React.FC<AIInputSelectorProps> = ({
             height: 13px;
             flex-shrink: 0;
           }
+          .input-content-panel {
+            min-height: 195px;
+            height: 195px;
+          }
+          .text-editor-wrap,
+          .file-uploader-wrap,
+          .library-picker-wrap {
+            min-height: 195px;
+            height: 100%;
+          }
           .ai-textarea-pro {
             min-height: 140px;
-            padding: 12px;
+            padding: 10px 12px;
             font-size: 13.5px;
             border-radius: 14px;
+          }
+          .modern-dropzone {
+            min-height: 195px;
+            padding: 12px 10px;
+            border-radius: 14px;
+          }
+          .dropzone-icon-box {
+            width: 38px;
+            height: 38px;
+            margin-bottom: 6px;
+          }
+          .dropzone-main-text {
+            font-size: 12.5px;
+            margin-bottom: 2px;
+          }
+          .dropzone-sub-text {
+            font-size: 11px;
+            margin-bottom: 6px;
+          }
+          .library-empty-invitation {
+            min-height: 195px;
+            padding: 12px 10px;
+            border-radius: 14px;
+          }
+          .lib-icon-halo {
+            width: 38px;
+            height: 38px;
+            margin-bottom: 6px;
+          }
+          .lib-invite-title {
+            font-size: 12.5px;
+            margin-bottom: 2px;
+          }
+          .lib-invite-desc {
+            font-size: 11px;
+            margin-bottom: 8px;
+          }
+          .btn-open-library-pro {
+            padding: 6px 12px;
+            font-size: 11.5px;
           }
           .selected-document-card,
           .selected-library-card {
