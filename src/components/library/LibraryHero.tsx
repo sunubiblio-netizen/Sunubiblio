@@ -5,22 +5,11 @@ import React, { useState } from 'react';
 interface LibraryHeroProps {
   initialSearch?: string;
   onSearch: (query: string) => void;
-  onSelectPopularTag: (tag: string) => void;
 }
-
-const POPULAR_SEARCHES = [
-  'Mathématiques',
-  'Annales',
-  'Baccalauréat',
-  'Informatique',
-  'Sciences',
-  'Français',
-];
 
 export const LibraryHero: React.FC<LibraryHeroProps> = ({
   initialSearch = '',
   onSearch,
-  onSelectPopularTag,
 }) => {
   const [query, setQuery] = useState(initialSearch);
 
@@ -40,20 +29,12 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
       </div>
 
       <div className="container lib-hero-container">
-        {/* Compact Breadcrumb / Pill */}
-        <div className="badge-pill lib-badge">
-          <span className="badge-dot" />
-          <span>Bibliothèque Universelle & Savoirs</span>
-        </div>
-
-        {/* Title & Subtitle */}
+        {/* Single catchy phrase */}
         <h1 className="lib-hero-title">
-          Explorez la bibliothèque <span className="gradient-hero-text">Sunubiblio</span>
+          Des milliers de livres, cours, annales, exercices et documents pour{' '}
+          <span className="gradient-hero-text">apprendre, réviser et progresser</span>{' '}
+          à votre propre rythme.
         </h1>
-        <p className="lib-hero-subtitle">
-          Des milliers de livres, cours, annales, exercices et documents pour apprendre,
-          réviser et progresser à votre propre rythme.
-        </p>
 
         {/* Big Search Bar Capsule */}
         <form onSubmit={handleSubmit} className="lib-search-capsule">
@@ -95,26 +76,6 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
             </svg>
           </button>
         </form>
-
-        {/* Popular Searches Row */}
-        <div className="popular-row">
-          <span className="popular-title">Recherches populaires :</span>
-          <div className="popular-tags-list">
-            {POPULAR_SEARCHES.map((tag) => (
-              <button
-                key={tag}
-                type="button"
-                className="popular-tag-btn"
-                onClick={() => {
-                  setQuery(tag);
-                  onSelectPopularTag(tag);
-                }}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
       <style jsx>{`
@@ -180,25 +141,14 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
           max-width: 920px;
         }
 
-        .lib-badge {
-          margin-bottom: 16px;
-        }
-
         .lib-hero-title {
-          font-size: clamp(28px, 4vw, 42px);
-          font-weight: 800;
+          font-size: clamp(19px, 2.6vw, 28px);
+          font-weight: 700;
           color: #0f172a;
-          line-height: 1.18;
-          letter-spacing: -0.03em;
-          margin-bottom: 14px;
-        }
-
-        .lib-hero-subtitle {
-          font-size: clamp(15px, 2vw, 17px);
-          color: #64748b;
-          line-height: 1.55;
-          max-width: 680px;
-          margin-bottom: 28px;
+          line-height: 1.4;
+          letter-spacing: -0.02em;
+          max-width: 720px;
+          margin-bottom: 22px;
         }
 
         /* Search Capsule */
@@ -265,50 +215,6 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
           font-size: 14px;
         }
 
-        /* Popular searches */
-        .popular-row {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          margin-top: 20px;
-          flex-wrap: wrap;
-          justify-content: center;
-        }
-
-        .popular-title {
-          font-size: 13px;
-          font-weight: 600;
-          color: #64748b;
-        }
-
-        .popular-tags-list {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          flex-wrap: wrap;
-          justify-content: center;
-        }
-
-        .popular-tag-btn {
-          font-size: 12.5px;
-          font-weight: 600;
-          color: #475569;
-          background: rgba(255, 255, 255, 0.85);
-          border: 1px solid rgba(226, 232, 240, 0.85);
-          padding: 5px 13px;
-          border-radius: var(--radius-full);
-          transition: all 0.2s ease;
-          box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
-        }
-
-        .popular-tag-btn:hover {
-          color: #4f46e5;
-          border-color: rgba(99, 102, 241, 0.4);
-          background: #ffffff;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 10px rgba(79, 70, 229, 0.08);
-        }
-
         @media (max-width: 640px) {
           .lib-hero-wrapper {
             padding: 28px 0 24px 0;
@@ -330,11 +236,6 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
           .lib-search-btn {
             padding: 9px 12px;
             border-radius: 50%;
-          }
-
-          .popular-row {
-            margin-top: 16px;
-            gap: 8px;
           }
         }
       `}</style>
