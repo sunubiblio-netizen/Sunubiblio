@@ -8,10 +8,12 @@ import { LibraryHero } from '@/components/library/LibraryHero';
 import { QuickCategories } from '@/components/library/QuickCategories';
 import { FilterSidebar } from '@/components/library/FilterSidebar';
 import { MobileFilterDrawer } from '@/components/library/MobileFilterDrawer';
+import { EducationExplorer } from '@/components/library/EducationExplorer';
+import { CompetitionPills } from '@/components/library/CompetitionPills';
 import { ResourceGrid } from '@/components/library/ResourceGrid';
 import { ResourceDetailModal } from '@/components/library/ResourceDetailModal';
 import { MOCK_RESOURCES } from '@/data/mockLibrary';
-import { FilterState, Resource } from '@/types/library';
+import { FilterState, Resource, EducationCycle } from '@/types/library';
 
 const INITIAL_FILTERS: FilterState = {
   searchQuery: '',
@@ -188,6 +190,7 @@ export default function LibraryPage() {
         <LibraryHero
           initialSearch={filters.searchQuery}
           onSearch={(query) => handleFilterChange({ searchQuery: query })}
+          onSelectPopularTag={(tag) => handleFilterChange({ searchQuery: tag })}
         />
 
         {/* Quick horizontal categories pills */}
@@ -209,6 +212,24 @@ export default function LibraryPage() {
 
             {/* Right Main Column */}
             <div className="library-right-col">
+              {/* Hierarchical Education Explorer */}
+              <EducationExplorer
+                selectedCycle={filters.cycle}
+                selectedGrade={filters.grade}
+                onSelectGrade={(cycle: EducationCycle | 'all', gradeName?: string) => {
+                  handleFilterChange({
+                    cycle: cycle === 'all' ? 'all' : cycle,
+                    grade: gradeName,
+                  });
+                }}
+              />
+
+              {/* Quick National Competitions Filter Bar */}
+              <CompetitionPills
+                selectedCompetition={filters.competition}
+                onSelectCompetition={(comp) => handleFilterChange({ competition: comp })}
+              />
+
               {/* Main Results Grid */}
               <ResourceGrid
                 resources={paginatedResources}
