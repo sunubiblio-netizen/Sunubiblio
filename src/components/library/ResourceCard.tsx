@@ -76,17 +76,27 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         <div className="book-cover-stage">
           <div
             className="book-3d-spine"
-            style={{ background: resource.coverGradient }}
+            style={{
+              background: resource.coverImage
+                ? `url(${resource.coverImage}) center / cover no-repeat`
+                : resource.coverGradient,
+            }}
           >
             <div className="book-spine-crease" />
-            <div className="book-texture-dots" />
             <div className="book-pages-edge" />
-            <div className="book-emblem-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.95)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-              </svg>
-            </div>
+            {!resource.coverImage ? (
+              <>
+                <div className="book-texture-dots" />
+                <div className="book-emblem-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.95)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  </svg>
+                </div>
+              </>
+            ) : (
+              <div className="book-real-gloss" />
+            )}
           </div>
         </div>
 
@@ -281,6 +291,20 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           inset: 0;
           background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px);
           background-size: 11px 11px;
+          border-radius: 3px 7px 7px 3px;
+          pointer-events: none;
+        }
+
+        .book-real-gloss {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            115deg,
+            rgba(255, 255, 255, 0.28) 0%,
+            rgba(255, 255, 255, 0.08) 22%,
+            transparent 48%,
+            rgba(0, 0, 0, 0.12) 100%
+          );
           border-radius: 3px 7px 7px 3px;
           pointer-events: none;
         }

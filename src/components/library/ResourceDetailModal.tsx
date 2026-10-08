@@ -65,7 +65,14 @@ export const ResourceDetailModal: React.FC<ResourceDetailModalProps> = ({
         )}
 
         {/* Modal Top Decorative Banner */}
-        <div className="modal-cover" style={{ background: resource.coverGradient }}>
+        <div
+          className="modal-cover"
+          style={{
+            background: resource.coverImage
+              ? `linear-gradient(180deg, rgba(15, 23, 42, 0.72) 0%, rgba(15, 23, 42, 0.9) 100%), url(${resource.coverImage}) center / cover no-repeat`
+              : resource.coverGradient,
+          }}
+        >
           <div className="modal-cover-pattern" />
 
           <button

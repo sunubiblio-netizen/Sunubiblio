@@ -34,6 +34,7 @@ export interface Resource {
   featured?: boolean;
   coverGradient: string; // CSS linear gradient for artistic abstract cover
   coverBadgeColor?: string;
+  coverImage?: string; // Optional real book cover image URL
   description: string;
   downloadsCount?: number;
   isFavorite?: boolean;

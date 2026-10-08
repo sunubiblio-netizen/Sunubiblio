@@ -119,6 +119,79 @@ export const RELIGION_SUB_OPTIONS = [
 
 export const MOCK_RESOURCES: Resource[] = [
   {
+    id: 'res-une-si-longue-lettre',
+    slug: 'une-si-longue-lettre-mariama-ba',
+    title: 'Une si longue lettre',
+    subtitle: 'Roman épistolaire — Éditions Motifs',
+    author: 'Mariama Bâ',
+    institution: 'Littérature Sénégalaise',
+    category: 'livres',
+    level: { cycle: 'lycee', grade: 'Terminale L' },
+    subject: 'francais',
+    resourceType: 'livre',
+    pagesCount: 168,
+    rating: 5.0,
+    reviewsCount: 680,
+    year: 1979,
+    accessLevel: 'free',
+    featured: true,
+    coverGradient: 'linear-gradient(135deg, #3f4c2c 0%, #606c38 50%, #283618 100%)',
+    coverImage: '/images/books/une-si-longue-lettre.jpg',
+    description: 'Chef-d’œuvre absolu de la littérature africaine. À travers les lettres de Ramatoulaye à son amie intime Aïssatou, le roman explore avec une émotion intense la condition féminine, la polygamie, les tiraillements entre coutume et modernité, et le combat pour la dignité.',
+    downloadsCount: 18900,
+    keyConcepts: ['Condition féminine', 'Polygamie et traditions', 'Émancipation et éducation', 'Amitié et résilience', 'Sénégal post-indépendance'],
+    extractedText: `UNE SI LONGUE LETTRE — MARIAMA BÂ
+
+CHAPITRE 1 : LA DISPARITION DE MODOU FALL
+Aïssatou,
+J'ai reçu ton mot. En guise de réponse, j'ouvre ce cahier, point d'appui dans mon désarroi : notre longue pratique m'a enseigné que la confidence noie la douleur.
+Modou est mort. Comment te raconter ? On ne prend pas de rendez-vous avec le destin. Le destin empoigne qui il veut, quand il veut. Dans le sens de vos désirs, il vous comble. En sens inverse, il vous démolit.
+
+CHAPITRE 2 : LES JOURS DE DEUIL ET LE MIRASSE
+La présence à mes côtés de ma coépouse m'énerve. On l'a installée dans ma maison, selon la coutume.
+Pendant que l'on lave le corps de Modou, les femmes se rassemblent. Les gestes rituels se succèdent.
+Puis vient le mirasse : dépouiller un défunt de ses secrets les plus intimes, faire l'inventaire de ce qu'il laisse derrière lui.
+Modou n'avait plus rien à mon nom. Tout appartenait déjà à la jeune Binetou et à sa mère.
+
+CHAPITRE 3 : NOTRE JEUNESSE ET L'ÉCOLE DES BLANCHES
+Te souviens-tu des pionnières que nous fûmes ? Nous étions de véritables sœurs unies par la soif de savoir.
+L'école nouvelle nous ouvrait des horizons infinis. Nous voulions être utiles à notre pays, bâtir un Sénégal moderne tout en préservant nos racines.`,
+  },
+  {
+    id: 'res-les-soleils-des-independances',
+    slug: 'les-soleils-des-independances-ahmadou-kourouma',
+    title: 'Les soleils des Indépendances',
+    subtitle: 'Roman — Éditions Points / Seuil',
+    author: 'Ahmadou Kourouma',
+    institution: 'Littérature Africaine',
+    category: 'livres',
+    level: { cycle: 'lycee', grade: 'Terminale L' },
+    subject: 'francais',
+    resourceType: 'livre',
+    pagesCount: 208,
+    rating: 4.9,
+    reviewsCount: 520,
+    year: 1968,
+    accessLevel: 'free',
+    featured: true,
+    coverGradient: 'linear-gradient(135deg, #1c1917 0%, #44403c 50%, #78350f 100%)',
+    coverImage: '/images/books/les-soleils-des-independances.jpg',
+    description: 'Classique incontournable des lettres africaines. Fama Doumbouya, prince malinké déchu et dernier descendant légitime du Horodougou, affronte l’ère désenchantée des soleils des Indépendances avec fierté, tragédie et ironie.',
+    downloadsCount: 15400,
+    keyConcepts: ['Désillusions post-coloniales', 'Tradition vs Modernité', 'Le prince déchu Fama', 'Langage malinké francisé', 'Identité africaine'],
+    extractedText: `LES SOLEILS DES INDÉPENDANCES — AHMADOU KOUROUMA
+
+PREMIÈRE PARTIE : LES FUNÉRAILLES D'IBAHIMA KONE
+Il y avait une semaine qu'avait fini dans la capitale Ibrahima Koné, un grand homme de la race malinké.
+Le défunt n'était rien de moins qu'un prince de sang, mais dans cette capitale bâtarde des Indépendances, il était mort comme un chien sans collier.
+Fama Doumbouya, le dernier prince légitime du Horodougou, marchait dans les rues poudreuses.
+Fama était né dans l'or, le manger gras et les louanges des griots. Et voilà que les soleils des Indépendances l'avaient réduit à courir les funérailles pour une poignée de riz et quelques pièces de monnaie !
+
+DEUXIÈME PARTIE : SALIMATA ET LE SORT
+Salimata, la femme de Fama, se battait chaque jour au marché. Femme digne, meurtrie par la stérilité, elle consultait marabouts et féticheurs dans l'espoir d'offrir un héritier au grand nom des Doumbouya.
+Mais les temps nouveaux étaient impitoyables. Le Horodougou n'était plus qu'un lointain souvenir, et les cartes d'identité avaient remplacé la gloire des ancêtres.`,
+  },
+  {
     id: 'res-1',
     slug: 'mathematiques-terminale-s-cours-exercices',
     title: 'Mathématiques — Cours complet & 300 Exercices résolus',
