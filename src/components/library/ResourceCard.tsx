@@ -68,15 +68,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       className="resource-card"
       onClick={() => onOpenResource && onOpenResource(resource)}
     >
-      {/* Visual Cover Top Banner */}
-      <div
-        className="cover-banner"
-        style={{ background: resource.coverGradient }}
-      >
-        {/* Subtle geometric pattern overlay */}
-        <div className="cover-grid-pattern" />
-
-        {/* Floating Category Pill */}
+      {/* Visual Cover Top Banner with Upright Book Silhouette */}
+      <div className="cover-banner">
+        {/* Top Controls Row */}
         <div className="cover-top-row">
           <span className="cover-category-badge">
             {resource.category.toUpperCase()}
@@ -90,11 +84,11 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             aria-label={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
           >
             <svg
-              width="16"
-              height="16"
+              width="15"
+              height="15"
               viewBox="0 0 24 24"
               fill={isFavorite ? '#ec4899' : 'none'}
-              stroke={isFavorite ? '#ec4899' : '#ffffff'}
+              stroke={isFavorite ? '#ec4899' : 'rgba(100, 116, 139, 0.85)'}
               strokeWidth="2.2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -104,22 +98,29 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           </button>
         </div>
 
-        {/* Abstract Book / Document Silhouette Emblem */}
-        <div className="cover-center-emblem">
-          <div className="emblem-inner">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-            </svg>
+        {/* Upright Book 3D Cover */}
+        <div className="book-cover-stage">
+          <div
+            className="book-3d-spine"
+            style={{ background: resource.coverGradient }}
+          >
+            <div className="book-spine-crease" />
+            <div className="book-texture-dots" />
+            <div className="book-emblem-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.95)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+              </svg>
+            </div>
+            <span className="book-spine-grade">{resource.level.grade}</span>
           </div>
-          <span className="cover-level-text">{resource.level.grade}</span>
         </div>
 
         {/* Hover Action Overlay */}
         <div className="cover-hover-action">
           <button type="button" className="btn-primary hover-view-btn">
-            <span>Voir le document</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <span>Lire</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
@@ -127,9 +128,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         </div>
       </div>
 
-      {/* Card Content */}
+      {/* Card Content & Precise Details */}
       <div className="card-body">
-        {/* Meta tags: Level & Access */}
+        {/* Meta tags: Level & Access Status */}
         <div className="card-meta-header">
           <span className="grade-badge">{resource.level.grade}</span>
           {getAccessBadge()}
@@ -140,23 +141,38 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           {resource.title}
         </h3>
 
-        {/* Author & Institution */}
-        <p className="card-author">
+        {/* Author */}
+        <p className="card-author" title={`${resource.author}${resource.institution ? ` · ${resource.institution}` : ''}`}>
           <span className="author-name">{resource.author}</span>
           {resource.institution && (
             <span className="author-institution"> · {resource.institution}</span>
           )}
         </p>
 
+        {/* Subtle Divider */}
+        <div className="card-divider" />
+
         {/* Card Footer: format, pages count, year, rating */}
         <div className="card-footer">
           <div className="format-info">
-            <span className="format-type">
-              {getFormatIcon(resource.resourceType)}
-              <span className="format-name">{resource.resourceType.toUpperCase()}</span>
+            <svg
+              className="format-doc-icon"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+            <span className="format-text">
+              {resource.resourceType.toUpperCase()} · {resource.pagesCount} p.
+              {resource.year ? ` · ${resource.year}` : ' · 2024'}
             </span>
-            <span className="pages-count">· {resource.pagesCount} p.</span>
-            {resource.year && <span className="year-text">· {resource.year}</span>}
           </div>
 
           <div className="rating-info">
@@ -171,13 +187,13 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       <style jsx>{`
         .resource-card {
           background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.85);
-          border-radius: var(--radius-lg);
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          border-radius: 16px;
           overflow: hidden;
           display: flex;
           flex-direction: column;
-          box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.03);
-          transition: all var(--transition-normal);
+          box-shadow: 0 2px 10px -2px rgba(15, 23, 42, 0.04);
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
           cursor: pointer;
           position: relative;
         }
@@ -185,26 +201,20 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         .resource-card:hover {
           transform: translateY(-4px);
           border-color: rgba(99, 102, 241, 0.35);
-          box-shadow: 0 16px 36px -6px rgba(79, 70, 229, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+          box-shadow: 0 14px 30px -6px rgba(79, 70, 229, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
         }
 
-        /* Cover */
+        /* Cover Area */
         .cover-banner {
           position: relative;
-          height: 148px;
-          padding: 12px 14px;
+          background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+          border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+          padding: 10px 10px 12px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
           overflow: hidden;
-        }
-
-        .cover-grid-pattern {
-          position: absolute;
-          inset: 0;
-          background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
-          background-size: 16px 16px;
-          pointer-events: none;
+          height: 148px;
         }
 
         .cover-top-row {
@@ -213,25 +223,28 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           display: flex;
           align-items: center;
           justify-content: space-between;
+          width: 100%;
         }
 
         .cover-category-badge {
-          font-size: 10px;
+          font-size: 9.5px;
           font-weight: 800;
-          letter-spacing: 0.05em;
-          background: rgba(0, 0, 0, 0.4);
-          color: #ffffff;
-          backdrop-filter: blur(8px);
-          padding: 3px 8px;
+          letter-spacing: 0.04em;
+          background: rgba(255, 255, 255, 0.9);
+          color: #475569;
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+          padding: 2px 7px;
           border-radius: var(--radius-full);
         }
 
         .fav-btn {
-          width: 28px;
-          height: 28px;
+          width: 26px;
+          height: 26px;
           border-radius: 50%;
-          background: rgba(0, 0, 0, 0.3);
-          backdrop-filter: blur(8px);
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.85);
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -239,49 +252,102 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         }
 
         .fav-btn:hover {
-          background: rgba(0, 0, 0, 0.5);
+          background: #ffffff;
           transform: scale(1.1);
+          border-color: rgba(236, 72, 153, 0.3);
         }
 
         .fav-btn.active {
           background: #ffffff;
-          box-shadow: 0 2px 8px rgba(236, 72, 153, 0.4);
+          border-color: #fbcfe8;
+          box-shadow: 0 2px 8px rgba(236, 72, 153, 0.25);
         }
 
-        .cover-center-emblem {
+        /* 3D Book Silhouette Stage */
+        .book-cover-stage {
           position: relative;
           z-index: 2;
           display: flex;
-          flex-direction: column;
           align-items: center;
-          gap: 4px;
-          margin-top: 4px;
+          justify-content: center;
+          flex: 1;
+          margin-top: 2px;
         }
 
-        .emblem-inner {
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
-          background: rgba(255, 255, 255, 0.12);
-          backdrop-filter: blur(6px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+        .book-3d-spine {
+          width: 74px;
+          height: 98px;
+          border-radius: 3px 6px 6px 3px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          padding: 6px;
+          box-shadow:
+            -2px 0 3px rgba(0, 0, 0, 0.12),
+            4px 8px 18px -2px rgba(15, 23, 42, 0.24);
+          transition: transform 0.25s ease;
+        }
+
+        .resource-card:hover .book-3d-spine {
+          transform: scale(1.05) rotate(-1deg);
+        }
+
+        .book-spine-crease {
+          position: absolute;
+          left: 5px;
+          top: 0;
+          bottom: 0;
+          width: 1.5px;
+          background: rgba(255, 255, 255, 0.3);
+          box-shadow: 1px 0 2px rgba(0, 0, 0, 0.15);
+        }
+
+        .book-texture-dots {
+          position: absolute;
+          inset: 0;
+          background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+          background-size: 10px 10px;
+          border-radius: 3px 6px 6px 3px;
+          pointer-events: none;
+        }
+
+        .book-emblem-icon {
+          position: relative;
+          z-index: 2;
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          background: rgba(255, 255, 255, 0.16);
+          backdrop-filter: blur(4px);
+          border: 1px solid rgba(255, 255, 255, 0.25);
           display: flex;
           align-items: center;
           justify-content: center;
         }
 
-        .cover-level-text {
-          font-size: 11px;
-          font-weight: 700;
-          color: rgba(255, 255, 255, 0.9);
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        .book-spine-grade {
+          position: relative;
+          z-index: 2;
+          font-size: 9.5px;
+          font-weight: 800;
+          color: #ffffff;
+          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+          max-width: 90%;
+          text-align: center;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
+        /* Hover Overlay */
         .cover-hover-action {
           position: absolute;
           inset: 0;
-          background: rgba(15, 23, 42, 0.45);
-          backdrop-filter: blur(3px);
+          background: rgba(15, 23, 42, 0.35);
+          backdrop-filter: blur(2px);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -295,14 +361,16 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         }
 
         .hover-view-btn {
-          padding: 8px 16px;
-          font-size: 13px;
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+          padding: 6px 14px;
+          font-size: 12px;
+          font-weight: 700;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+          border-radius: var(--radius-full);
         }
 
-        /* Body */
+        /* Body Area */
         .card-body {
-          padding: 14px 16px;
+          padding: 10px 12px 12px;
           display: flex;
           flex-direction: column;
           flex: 1;
@@ -312,25 +380,28 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 8px;
+          margin-bottom: 6px;
+          gap: 6px;
         }
 
         .grade-badge {
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 700;
           color: #4f46e5;
           background: #eef2ff;
-          padding: 2px 7px;
-          border-radius: 6px;
+          padding: 2px 6px;
+          border-radius: 5px;
+          white-space: nowrap;
         }
 
         .access-badge {
-          font-size: 10px;
+          font-size: 9.5px;
           font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-          padding: 2px 7px;
-          border-radius: var(--radius-full);
+          text-transform: capitalize;
+          letter-spacing: 0.02em;
+          padding: 2px 6px;
+          border-radius: 5px;
+          white-space: nowrap;
         }
 
         .access-badge.free {
@@ -344,28 +415,27 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         }
 
         .access-badge.premium {
-          color: #7c2d12;
+          color: #b45309;
           background: #fef3c7;
-          border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
         .card-title {
-          font-size: 14.5px;
+          font-size: 13px;
           font-weight: 700;
           color: #0f172a;
-          line-height: 1.35;
-          margin-bottom: 6px;
+          line-height: 1.32;
+          margin-bottom: 3px;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
-          min-height: 39px;
+          min-height: 35px;
         }
 
         .card-author {
-          font-size: 12px;
+          font-size: 11px;
           color: #64748b;
-          margin-bottom: 14px;
+          margin-bottom: 8px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -380,27 +450,30 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           color: #64748b;
         }
 
+        /* Footer */
         .card-footer {
           margin-top: auto;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding-top: 10px;
-          border-top: 1px solid rgba(226, 232, 240, 0.65);
+          padding-top: 8px;
+          border-top: 1px solid rgba(226, 232, 240, 0.7);
+          gap: 4px;
         }
 
         .format-info {
           display: flex;
           align-items: center;
-          gap: 5px;
-          font-size: 11.5px;
+          gap: 4px;
+          font-size: 11px;
           color: #64748b;
+          white-space: nowrap;
         }
 
         .format-type {
           display: inline-flex;
           align-items: center;
-          gap: 3px;
+          gap: 2.5px;
           font-weight: 600;
           color: #334155;
         }
@@ -408,13 +481,48 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         .rating-info {
           display: flex;
           align-items: center;
-          gap: 4px;
+          gap: 3px;
         }
 
         .rating-num {
-          font-size: 12px;
+          font-size: 11.5px;
           font-weight: 700;
           color: #1e293b;
+        }
+
+        /* Desktop Adjustments */
+        @media (min-width: 768px) {
+          .cover-banner {
+            height: 160px;
+            padding: 12px 14px;
+          }
+
+          .book-3d-spine {
+            width: 82px;
+            height: 110px;
+          }
+
+          .card-body {
+            padding: 12px 14px 14px;
+          }
+
+          .card-title {
+            font-size: 14px;
+            min-height: 37px;
+          }
+
+          .card-author {
+            font-size: 11.5px;
+            margin-bottom: 10px;
+          }
+
+          .grade-badge {
+            font-size: 11px;
+          }
+
+          .access-badge {
+            font-size: 10px;
+          }
         }
       `}</style>
     </article>

@@ -440,12 +440,14 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
         @media (min-width: 1400px) {
           .cards-container.grid {
             grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 20px;
           }
         }
 
         @media (max-width: 1200px) {
           .cards-container.grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
           }
         }
 
@@ -455,17 +457,33 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           }
 
           .cards-container.grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+          }
+        }
+
+        @media (max-width: 820px) {
+          .cards-container.grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
           }
         }
 
         @media (max-width: 640px) {
           .cards-container.grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
           }
 
           .sort-label {
             display: none;
+          }
+        }
+
+        @media (max-width: 360px) {
+          .cards-container.grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
           }
         }
       `}</style>
