@@ -93,8 +93,9 @@ export default function HomePage() {
           flex: 1;
           display: flex;
           flex-direction: column;
-          justify-content: center;
+          justify-content: space-between;
           align-items: center;
+          padding: 12px 0 20px;
           min-height: 0;
           width: 100%;
           position: relative;

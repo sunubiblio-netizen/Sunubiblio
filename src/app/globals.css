@@ -354,10 +354,11 @@ input {
   left: 0 !important;
   right: 0 !important;
   z-index: 1000 !important;
-  background: rgba(250, 248, 255, 0.95);
+  background: rgba(250, 248, 255, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  border-bottom: none !important;
+  box-shadow: none !important;
   transition: all 0.2s ease;
   width: 100%;
   flex-shrink: 0;
@@ -1134,36 +1135,15 @@ input {
 }
 
 /* ==========================================================================
-   CATEGORIES SECTION
+   CATEGORIES SECTION — MODERN SQUIRCLE APP LAUNCHER (4x2)
    ========================================================================== */
 .categories-section {
   position: relative;
-  padding: 0 0 10px 0;
   width: 100%;
   display: flex;
   justify-content: center;
-}
-
-/* Fluid atmospheric ambient halo underneath so cards transparency shines */
-.categories-section::before {
-  content: '';
-  position: absolute;
-  top: 5%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 85%;
-  max-width: 860px;
-  height: 200px;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(99, 102, 241, 0.08) 0%,
-    rgba(168, 85, 247, 0.05) 45%,
-    rgba(56, 189, 248, 0.03) 70%,
-    transparent 100%
-  );
-  filter: blur(50px);
-  pointer-events: none;
-  z-index: 0;
+  padding: 0 0 12px 0;
+  margin-top: auto;
 }
 
 .categories-container {
@@ -1172,142 +1152,108 @@ input {
   width: 100%;
 }
 
-.categories-grid {
-  position: relative;
-  z-index: 1;
+.categories-squircle-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px 14px;
+  gap: 16px 28px;
+  max-width: 640px;
   width: 100%;
-  max-width: 780px;
   margin: 0 auto;
 }
 
-.category-card {
-  position: relative;
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.75);
-  border-radius: 14px;
-  padding: 12px 10px 11px;
+.category-squircle-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  text-align: center;
-  cursor: pointer;
+  gap: 7px;
   text-decoration: none;
-  color: inherit;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 
-    0 4px 16px -2px rgba(79, 70, 229, 0.04),
-    0 1px 2px rgba(15, 23, 42, 0.02),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
-  overflow: hidden;
-  min-height: 72px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Glass specular highlight layer for fluid light diffusion */
-.category-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.5) 0%,
-    rgba(255, 255, 255, 0.1) 40%,
-    transparent 100%
-  );
-  pointer-events: none;
-  transition: opacity 0.3s ease, background 0.3s ease;
-  opacity: 0.8;
-}
-
-.category-card:hover {
-  transform: translateY(-3px) scale(1.02);
-  background: rgba(255, 255, 255, 0.8);
-  border-color: rgba(99, 102, 241, 0.35);
-  box-shadow: 
-    0 14px 28px -4px rgba(79, 70, 229, 0.12),
-    0 0 18px -2px rgba(99, 102, 241, 0.1),
-    inset 0 1px 2px 0 rgba(255, 255, 255, 1);
-}
-
-.category-card:hover::before {
-  opacity: 1;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.75) 0%,
-    rgba(255, 255, 255, 0.25) 40%,
-    rgba(99, 102, 241, 0.08) 100%
-  );
-}
-
-.category-card:active {
-  transform: translateY(-1px) scale(0.99);
-  transition-duration: 0.1s;
-}
-
-.category-icon-wrapper {
+.category-squircle-box {
   position: relative;
-  z-index: 1;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+  width: 58px;
+  height: 58px;
+  border-radius: 17px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  cursor: pointer;
 }
 
-.category-card:hover .category-icon-wrapper {
-  transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+/* 3D Glossy Specular Light Layer like Apple / VisionOS squircle icons */
+.squircle-glass-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.08) 75%,
+    transparent 100%
+  );
+  border-radius: 17px 17px 0 0;
+  pointer-events: none;
 }
 
-.category-title {
+.squircle-icon-wrap {
   position: relative;
   z-index: 1;
-  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.category-squircle-item:hover .category-squircle-box {
+  transform: translateY(-5px) scale(1.08);
+  filter: brightness(1.06);
+}
+
+.category-squircle-item:hover .squircle-icon-wrap {
+  transform: scale(1.06);
+}
+
+.category-squircle-item:active .category-squircle-box {
+  transform: translateY(-1px) scale(0.97);
+  transition-duration: 0.1s;
+}
+
+.category-squircle-label {
+  font-size: 12.5px;
   font-weight: 700;
-  color: #0f172a;
-  margin: 0;
+  color: #1e293b;
+  letter-spacing: -0.01em;
+  text-align: center;
   line-height: 1.2;
-  transition: color 0.2s ease;
+  transition: color 0.25s ease;
   white-space: nowrap;
 }
 
-.category-card:hover .category-title {
+.category-squircle-item:hover .category-squircle-label {
   color: #4f46e5;
 }
 
-@media (max-width: 680px) {
-  .categories-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+@media (max-width: 640px) {
+  .categories-squircle-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px 14px;
     max-width: 360px;
   }
 
-  .category-card {
-    padding: 10px 8px;
-    border-radius: 12px;
-    min-height: 64px;
+  .category-squircle-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
   }
 
-  .category-icon-wrapper {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-  }
-
-  .category-title {
-    font-size: 12px;
+  .category-squircle-label {
+    font-size: 11px;
   }
 }
 
@@ -1411,11 +1357,9 @@ input {
    FOOTER SECTION (Ultra-minimaliste - Une seule section propre & responsive)
    ========================================================================== */
 .footer-root {
-  background: rgba(250, 248, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(226, 232, 240, 0.85);
-  padding: 10px 0;
+  background: transparent;
+  border-top: none !important;
+  padding: 12px 0 16px;
   position: relative;
   z-index: 2;
   width: 100%;

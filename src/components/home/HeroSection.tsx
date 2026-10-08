@@ -136,9 +136,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           inset: 0;
           background: linear-gradient(
             180deg,
-            rgba(255, 255, 255, 0.65) 0%,
-            rgba(255, 255, 255, 0.1) 40%,
-            rgba(255, 255, 255, 0.8) 100%
+            rgba(250, 248, 255, 0.3) 0%,
+            transparent 50%,
+            transparent 100%
           );
         }
 
