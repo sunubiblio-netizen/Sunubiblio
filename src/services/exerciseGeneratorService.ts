@@ -308,9 +308,106 @@ L'accord entre le modèle théorique et la situation pratique valide la méthode
   }
 
   // Si matière littéraire, juridique, philosophique, historique
-  const def1 = defs[0] || { term: c1, definition: `le concept central autour duquel s'organise l'analyse du cours` };
-  const def2 = defs[1] || { term: c2, definition: `le mécanisme ou la règle essentielle exposée dans le document` };
-  const thm1 = theorems[0] || `le principe méthodique exposé dans le document`;
+  const events = analysis.historicalEvents || [];
+  const figures = analysis.keyFigures || [];
+  const ev1 = events[0];
+  const ev2 = events[1] || events[0];
+  const fig1 = figures[0];
+  const fig2 = figures[1] || figures[0];
+
+  const def1 = defs[0] || { term: fig1 ? fig1.name : c1, definition: fig1 ? fig1.role : `le concept central autour duquel s'organise l'analyse du cours` };
+  const def2 = defs[1] || { term: fig2 ? fig2.name : c2, definition: fig2 ? fig2.role : `le mécanisme ou la règle essentielle exposée dans le document` };
+  const thm1 = theorems[0] || (ev1 ? `${ev1.period} (${ev1.event})` : `le principe méthodique exposé dans le document`);
+
+  if (events.length > 0 || figures.length > 0) {
+    return [
+      {
+        id: 1,
+        title: `Exercice 1 : Compréhension factuelle & Acteurs clés — « ${cleanSubject} »`,
+        duration: '15 min',
+        statement: `À partir de l'étude attentive du document :
+
+1. Précisez le rôle ou les faits marquants associés à « ${fig1?.name || c1} » selon le texte.
+2. Quel événement majeur s'est produit en « ${ev1?.period || 'période de référence'} » et quelles en ont été les conséquences directes ?
+3. Citez un autre repère historique ou institutionnel mentionné dans le document (par exemple : ${fig2?.name || ev2?.period || c2}) et expliquez sa signification.`,
+        solution: `📌 1. RÔLE DE « ${fig1?.name || c1} » :
+D'après le document, ${fig1 ? `${fig1.name} est identifié(e) comme : ${fig1.role}.` : `cette notion structure les fondements de la leçon.`}
+
+✍️ 2. ÉVÉNEMENT DE « ${ev1?.period || 'RÉFÉRENCE'} » :
+${ev1 ? `En ${ev1.period}, le texte relate : « ${ev1.event} ». Cet événement marque un tournant structurant dans la chronologie.` : `L'événement clé permet d'établir les bases de la réflexion.`}
+
+🎯 3. AUTRE REPÈRE ET SYNTHÈSE :
+${fig2 ? `Le document met également en avant ${fig2.name} (${fig2.role}), confirmant la richesse des faits rapportés.` : `La mise en perspective des faits éclaire l'évolution globale de la période.`}`,
+        isSolutionVisible: false,
+        topicKind: 'document',
+        minWordsRequired: 20,
+        kindLabel: 'Analyse de Faits & Acteurs',
+        badgeIcon: '📖',
+        instructionHint: 'Rédigez une réponse construite en vous appuyant sur les faits du document.',
+      },
+      {
+        id: 2,
+        title: `Exercice 2 : Analyse critique & Étude des ruptures historiques`,
+        duration: '25 min',
+        statement: `En vous référant aux développements du document :
+
+1. Analysez les causes et les conséquences de la période charnière marquée par « ${ev2 ? `${ev2.period} : ${ev2.event}` : thm1} ».
+2. Quels acteurs ou dynamiques se sont opposés ou associés durant ce moment clé ?
+3. En quoi cet épisode a-t-il façonné la suite des événements ou les institutions actuelles ?`,
+        solution: `📌 1. ANALYSE DE LA RUPTURE :
+${ev2 ? `L'événement survenu en ${ev2.period} (« ${ev2.event} ») illustre les tensions et mutations profondes décrites par l'auteur.` : `Le texte démontre comment les équilibres antérieurs ont été profondément remis en question.`}
+
+✍️ 2. ACTEURS ET FORCES EN PRÉSENCE :
+Le document met en évidence la confrontation ou l'articulation entre les pouvoirs en place, les figures de résistance et les dynamiques populaires.
+
+🎯 3. PORTÉE HISTORIQUE OU INSTITUTIONNELLE :
+Cet épisode confirme que les mutations observées sont le fruit d'une longue maturation institutionnelle et mémorielle.`,
+        isSolutionVisible: false,
+        topicKind: 'redaction',
+        minWordsRequired: 30,
+        kindLabel: 'Analyse Critique & Évolution',
+        badgeIcon: '✍️',
+        instructionHint: 'Structurez votre argumentation avec connecteurs logiques.',
+      },
+      {
+        id: 3,
+        title: `Exercice 3 : Synthèse académique d'examen — Problématique générale`,
+        duration: '35 min',
+        statement: `Sujet de dissertation / synthèse d'examen :
+« Dans quelle mesure l'étude de « ${cleanSubject} » révèle-t-elle la continuité et les grandes alternances qui ont forgé la société contemporaine ? »
+
+Consignes :
+- Élaborez une introduction rigoureuse (Accroche, Définitions des termes, Problématique, Annonce du plan).
+- Développez deux axes complémentaires équilibrés (I. Les fondements et héritages majeurs / II. Les ruptures, résistances et modernisations).
+- Rédigez une conclusion ouvrant sur les perspectives contemporaines.`,
+        solution: `📌 PLAN MODÈLE DÉTAILLÉ :
+
+INTRODUCTION :
+• Accroche : Contextualisation de l'histoire et du patrimoine abordés dans le document.
+• Définition des termes : Présentation de ${cleanSubject} et de ses jalons fondateurs.
+• Problématique : Comment la mémoire et les faits historiques articulent-ils traditions, résistances et institutions modernes ?
+• Annonce du plan : (I) Des origines aux grands ensembles traditionnels ; (II) Des épreuves de la colonisation aux conquêtes démocratiques contemporaines.
+
+DÉVELOPPEMENT :
+I. HÉRITAGES FONDATEURS ET STRUCTURATION ANCIENNE :
+A. L'enracinement précolonial et la solidité des structures coutumières.
+B. Les carrefours culturels, spirituels et commerciaux.
+
+II. RÉSISTANCES, INDÉPENDANCE ET MATURITÉ POLITIQUE :
+A. Les figures de lutte (armées et spirituelles) face à la domination extérieure.
+B. Les alternances démocratiques pacifiques et la consolidation de l'État de droit.
+
+CONCLUSION :
+Bilan synthétique rappelant l'exception institutionnelle et ouverture sur les défis contemporains.`,
+        isSolutionVisible: false,
+        topicKind: 'redaction',
+        minWordsRequired: 40,
+        kindLabel: 'Synthèse d’Examen',
+        badgeIcon: '🎓',
+        instructionHint: 'Développez un plan bipartite avec arguments précis.',
+      },
+    ];
+  }
 
   return [
     {
@@ -416,8 +513,55 @@ function buildQCMFromAnalysis(
   const qcmList: GeneratedQCM[] = [];
   let id = 1;
 
-  // 1. Questions tirées des définitions explicites
+  // 1. Questions tirées des repères historiques réels (si présents)
+  const events = analysis.historicalEvents || [];
+  for (let i = 0; i < Math.min(events.length, 3); i++) {
+    const ev = events[i];
+    const otherEvents = events.filter((_, idx) => idx !== i);
+    const dist1 = otherEvents[0]?.event || `Un traité de paix signé entre les royaumes voisins`;
+    const dist2 = otherEvents[1]?.event || `L'édification des premiers comptoirs commerciaux`;
+    const dist3 = otherEvents[2]?.event || `La convocation des états généraux`;
+
+    qcmList.push({
+      id: id++,
+      question: `Selon le document, quel événement historique majeur correspond à la date ou période « ${ev.period} » ?`,
+      options: [
+        ev.event,
+        dist1,
+        dist2,
+        dist3,
+      ],
+      correctIndex: 0,
+      explanation: `✅ Exact ! Le texte mentionne explicitement qu'en ${ev.period} s'est déroulé : « ${ev.event} ».`,
+    });
+  }
+
+  // 2. Questions tirées des personnalités et figures majeures (si présentes)
+  const figures = analysis.keyFigures || [];
+  for (let i = 0; i < Math.min(figures.length, 3); i++) {
+    const fig = figures[i];
+    const otherFigs = figures.filter((_, idx) => idx !== i);
+    const distRole1 = otherFigs[0]?.role ? `${otherFigs[0].name} (${otherFigs[0].role})` : `Un explorateur n'ayant laissé aucune trace écrite`;
+    const distRole2 = otherFigs[1]?.role ? `${otherFigs[1].name} (${otherFigs[1].role})` : `Le signataire d'un pacte commercial secondaire`;
+    const distRole3 = `Un voyageur étranger sans lien direct avec les événements`;
+
+    qcmList.push({
+      id: id++,
+      question: `D'après le texte, quel rôle ou fait marquant caractérise « ${fig.name} » ?`,
+      options: [
+        fig.role,
+        distRole1,
+        distRole2,
+        distRole3,
+      ],
+      correctIndex: 0,
+      explanation: `✅ Conforme au document : ${fig.name} est précisément décrit(e) comme : ${fig.role}.`,
+    });
+  }
+
+  // 3. Questions tirées des définitions explicites
   for (const def of analysis.definitions.slice(0, 3)) {
+    if (qcmList.length >= 6) break;
     qcmList.push({
       id: id++,
       question: `Selon le document étudié, quelle est la définition exacte de « ${def.term} » ?`,
@@ -432,8 +576,9 @@ function buildQCMFromAnalysis(
     });
   }
 
-  // 2. Questions tirées des formules réelles (si scientifiques)
+  // 4. Questions tirées des formules réelles (si scientifiques)
   for (const form of analysis.formulas.slice(0, 3)) {
+    if (qcmList.length >= 6) break;
     const parts = form.formula.split('=');
     const left = parts[0]?.trim() || 'X';
     const right = parts[1]?.trim() || 'Y * Z';
@@ -452,8 +597,9 @@ function buildQCMFromAnalysis(
     });
   }
 
-  // 3. Questions tirées des théorèmes et règles
+  // 5. Questions tirées des théorèmes et règles
   for (const thm of analysis.keyRulesOrTheorems.slice(0, 2)) {
+    if (qcmList.length >= 6) break;
     qcmList.push({
       id: id++,
       question: `Concernant la règle ou le principe « ${thm.slice(0, 50)}... », quelle proposition est vraie ?`,

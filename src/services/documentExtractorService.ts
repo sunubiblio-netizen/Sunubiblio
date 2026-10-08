@@ -33,6 +33,8 @@ export interface ExtractedDocumentData {
   definitions: { term: string; definition: string }[];
   formulas: { name: string; formula: string; explanation?: string }[];
   keyRulesOrTheorems: string[];
+  historicalEvents?: { period: string; event: string }[];
+  keyFigures?: { name: string; role: string }[];
 }
 
 /**
@@ -494,6 +496,72 @@ function extractRulesAndTheorems(text: string): string[] {
 }
 
 /**
+ * Extrait les repères chronologiques et événements historiques du texte
+ */
+function extractHistoricalEvents(text: string): { period: string; event: string }[] {
+  const events: { period: string; event: string }[] = [];
+  const lines = text.split(/[\r\n]+/).map(l => l.trim()).filter(l => l.length > 8);
+
+  // 1. Lignes chronologiques explicites : "1549 : bataille de Danki..." ou "Ier millénaire : édification..."
+  const chronoLineRegex = /^[-*•]?\s*([Ier\d]+(?:\s*(?:millénaire|siècle|er\s+décembre|août|juin|mars|avril|octobre|février))?|\b\d{4}\b|vers\s+\d{3,4}|dès\s+le\s+[IVXLCDM]+e\s+siècle)\s*[:–-]\s*([^.\n;]{10,140})/i;
+
+  for (const line of lines) {
+    const match = line.match(chronoLineRegex);
+    if (match && match[1] && match[2]) {
+      const period = match[1].trim();
+      const event = match[2].trim();
+      if (!events.some(e => e.period === period || e.event === event)) {
+        events.push({ period, event });
+        if (events.length >= 10) return events;
+      }
+    }
+  }
+
+  // 2. Événements dans le corps de texte : "En 1549, ...", "Le 20 août 1960, ..."
+  const narrativeRegex = /(?:en\s+(\d{4})|le\s+(\d{1,2}(?:er)?\s+[a-zA-Zà-ÿ]+\s+\d{4}))\s*,\s*([^.\n]{15,120}[.!?])/gi;
+  let m: RegExpExecArray | null;
+  while ((m = narrativeRegex.exec(text)) !== null) {
+    const period = (m[1] || m[2])?.trim();
+    const event = m[3]?.trim();
+    if (period && event && !events.some(e => e.period === period)) {
+      events.push({ period, event });
+      if (events.length >= 12) break;
+    }
+  }
+
+  return events;
+}
+
+/**
+ * Extrait les personnalités et acteurs majeurs du texte
+ */
+function extractKeyFigures(text: string): { name: string; role: string }[] {
+  const figures: { name: string; role: string }[] = [];
+  const lines = text.split(/[\r\n]+/).map(l => l.trim()).filter(l => l.length > 20);
+
+  const figurePatterns = [
+    /(?:le roi|le damel|le bourba|le président|le gouverneur|le député|l'opposant|fondateur\s+d'un|poète\s+et)\s+([A-ZÀ-ÿ][a-zà-ÿA-Z\s'-]{3,30})[,\s]+([^.\n]{15,120})/i,
+    /([A-ZÀ-ÿ][a-zà-ÿA-Z\s'-]{3,28})\s*,\s*(fondateur|damel|bourba|gouverneur|président|premier ministre|écrivain|poète|figure\s+de\s+la)\s+([^.\n]{15,100})/i,
+  ];
+
+  for (const line of lines) {
+    for (const pat of figurePatterns) {
+      const match = line.match(pat);
+      if (match && match[1] && (match[2] || match[3])) {
+        const name = match[1].trim();
+        const role = (match[3] ? `${match[2]} ${match[3]}` : match[2]).trim();
+        if (name.length >= 4 && !figures.some(f => f.name.toLowerCase() === name.toLowerCase())) {
+          figures.push({ name, role });
+          if (figures.length >= 8) return figures;
+        }
+      }
+    }
+  }
+
+  return figures;
+}
+
+/**
  * Analyse le texte extrait pour en dégager les points clés, le vrai titre,
  * la matière, le niveau, les chapitres, formules et définitions réelles.
  */
@@ -592,6 +660,8 @@ export function analyzeDocumentContent(rawText: string, fallbackFileName: string
   const definitions = extractDefinitions(cleaned);
   const formulas = extractFormulas(cleaned);
   const keyRulesOrTheorems = extractRulesAndTheorems(cleaned);
+  const historicalEvents = extractHistoricalEvents(cleaned);
+  const keyFigures = extractKeyFigures(cleaned);
 
   // 6. Résumé contextuel
   const summary = sentences.slice(0, 3).join(' ') || (cleaned.length > 10 ? cleaned.slice(0, 250) : `Document portant sur ${cleanedTitle}.`);
@@ -610,6 +680,8 @@ export function analyzeDocumentContent(rawText: string, fallbackFileName: string
     definitions,
     formulas,
     keyRulesOrTheorems,
+    historicalEvents,
+    keyFigures,
   };
 }
 
