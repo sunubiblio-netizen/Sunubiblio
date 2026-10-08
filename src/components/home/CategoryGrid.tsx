@@ -92,26 +92,8 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelectCategory }) 
 
   return (
     <section className="categories-section" id="bibliotheque">
-      <div className="container">
-        {/* Section Header */}
-        <div className="section-header">
-          <div className="header-left">
-            <div className="section-icon-box">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="7" height="7" rx="2" />
-                <rect x="14" y="3" width="7" height="7" rx="2" />
-                <rect x="14" y="14" width="7" height="7" rx="2" />
-                <rect x="3" y="14" width="7" height="7" rx="2" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="section-title">Explorez par catégorie</h2>
-              <p className="section-subtitle">Trouvez facilement ce dont vous avez besoin</p>
-            </div>
-          </div>
-        </div>
-
-        {/* 8 Cards Grid */}
+      <div className="container categories-container">
+        {/* 8 Cards Grid (4 en haut, 4 en bas) */}
         <div className="categories-grid">
           {CATEGORIES.map((cat) => (
             <Link
@@ -119,6 +101,7 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelectCategory }) 
               href={cat.href}
               onClick={() => onSelectCategory && onSelectCategory(cat)}
               className="category-card"
+              title={`${cat.title} — ${cat.subtitle}`}
             >
               <div
                 className="category-icon-wrapper"
@@ -126,8 +109,7 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelectCategory }) 
               >
                 {renderIcon(cat.icon, cat.iconColor)}
               </div>
-              <h3 className="category-title">{cat.title}</h3>
-              <p className="category-subtitle">{cat.subtitle}</p>
+              <span className="category-title">{cat.title}</span>
             </Link>
           ))}
         </div>

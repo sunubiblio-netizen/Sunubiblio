@@ -71,12 +71,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
       <style jsx>{`
         .hero-aurora-section {
           position: relative;
-          padding: 72px 0 64px;
+          padding: 18px 0 14px;
           overflow: hidden;
           display: flex;
           align-items: center;
           justify-content: center;
-          min-height: 380px;
+          width: 100%;
         }
 
         /* Ambient Mesh / Aurora Gradient */
@@ -176,11 +176,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
         }
 
         .hero-aurora-subtitle {
-          font-size: clamp(13px, 1.8vw, 15.5px);
+          font-size: clamp(13px, 1.6vw, 15px);
           font-weight: 500;
           color: #475569;
           line-height: 1.4;
-          margin: 0 0 28px 0;
+          margin: 0 0 20px 0;
           white-space: nowrap;
         }
 

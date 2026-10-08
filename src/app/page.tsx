@@ -81,14 +81,32 @@ export default function HomePage() {
 
       <style jsx>{`
         .page-wrapper {
-          min-height: 100vh;
+          height: 100vh;
+          height: 100dvh;
           display: flex;
           flex-direction: column;
           position: relative;
+          overflow: hidden;
         }
 
         main {
           flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          min-height: 0;
+          width: 100%;
+          position: relative;
+          z-index: 1;
+        }
+
+        @media (max-height: 680px), (max-width: 640px) {
+          .page-wrapper {
+            height: auto;
+            min-height: 100vh;
+            overflow-y: auto;
+          }
         }
 
         .feedback-container {
