@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { HeroSection } from '@/components/home/HeroSection';
 import { CategoryGrid } from '@/components/home/CategoryGrid';
-import { FeaturesBar } from '@/components/home/FeaturesBar';
 import { Footer } from '@/components/layout/Footer';
 import { AuthModal } from '@/components/ui/AuthModal';
 import { CategoryItem } from '@/data/categories';
@@ -68,9 +67,6 @@ export default function HomePage() {
 
         {/* 8 Categories Grid matching reference */}
         <CategoryGrid onSelectCategory={handleSelectCategory} />
-
-        {/* 4 Pillars Reassurance Bar matching reference */}
-        <FeaturesBar />
       </main>
 
       {/* Complete institutional footer */}

@@ -1,15 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { FloatCard } from './FloatCard';
-import { POPULAR_TAGS } from '@/data/categories';
 
 interface HeroSectionProps {
   onSearch?: (query: string) => void;
   onTagClick?: (tag: string) => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -20,226 +18,273 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }
   };
 
   return (
-    <section className="hero-section">
-      <div className="container hero-container">
-        {/* Left Column: Messaging & Universal Search */}
-        <div className="hero-content">
-          {/* Pill Badge */}
-          <div className="badge-pill hero-badge">
-            <span className="badge-dot" />
-            <span>Votre réussite, notre priorité</span>
-          </div>
+    <section className="hero-aurora-section">
+      {/* Background Aurora / Mesh Gradient matching user reference */}
+      <div className="hero-aurora-backdrop" aria-hidden="true">
+        <div className="aurora-orb orb-blue" />
+        <div className="aurora-orb orb-violet" />
+        <div className="aurora-orb orb-magenta" />
+        <div className="aurora-orb orb-cyan" />
+        <div className="aurora-overlay" />
+      </div>
 
-          {/* Monumental Headline with Vibrant Gradient Accent */}
-          <h1 className="hero-title">
-            La bibliothèque numérique{' '}
-            <span className="hero-title-accent">
-              pour tous vos objectifs
-            </span>
-          </h1>
+      <div className="container hero-center-container">
+        {/* Title — Single line, crisp and appealing */}
+        <h1 className="hero-aurora-title">
+          Êtes-vous prêt à explorer le savoir ?
+        </h1>
 
-          {/* Subtitle */}
-          <p className="hero-description">
-            Accédez à des milliers de ressources éducatives, de concours,
-            d'exercices et de documents pour réussir vos études et atteindre
-            vos objectifs professionnels.
-          </p>
+        {/* Subtitle — Single line, concise and appealing */}
+        <p className="hero-aurora-subtitle">
+          Des milliers d’ouvrages, cours et annales pour réussir à votre rythme.
+        </p>
 
-          {/* Universal Search Capsule Form */}
-          <form onSubmit={handleSubmit} className="hero-search-capsule">
-            <div className="search-icon-wrap">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-            </div>
-            <input
-              type="text"
-              className="hero-search-input"
-              placeholder="Rechercher un livre, un cours, une annale..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="hero-search-submit"
-              aria-label="Lancer la recherche"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
-            </button>
-          </form>
-
-          {/* Popular Tags Row */}
-          <div className="popular-tags-row">
-            <span className="popular-label">Populaires :</span>
-            <div className="tags-scroller">
-              {POPULAR_TAGS.slice(0, 5).map((tag) => (
-                <button
-                  key={tag}
-                  type="button"
-                  onClick={() => {
-                    setSearchQuery(tag);
-                    if (onTagClick) onTagClick(tag);
-                  }}
-                  className="popular-tag-chip"
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column: Signature 3D Petal Composition with Ambient Glow and Floating Badges */}
-        <div className="hero-visual-col">
-          {/* Ambient Glow Orbs */}
-          <div className="visual-glow-backdrop" />
-          <div className="visual-glow-secondary" />
-
-          {/* Desktop Floating Cards */}
-          <div className="float-wrapper top-right float-anim-slow">
-            <FloatCard
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-              }
-              title="Des ressources pour tous les niveaux"
-              subtitle="Du primaire au doctorat"
-              accentColor="#4f46e5"
-            />
-          </div>
-
-          <div className="float-wrapper center-left float-anim-mid">
-            <FloatCard
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                  <path d="M6 12v5c3 3 9 3 12 0v-5" />
-                </svg>
-              }
-              title="Préparez vos concours"
-              subtitle="Sénégal et International"
-              accentColor="#7c3aed"
-            />
-          </div>
-
-          <div className="float-wrapper bottom-right float-anim-fast">
-            <FloatCard
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ec4899" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-5.04z" />
-                  <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-5.04z" />
-                </svg>
-              }
-              title="IA intégrée"
-              subtitle="Des outils pour mieux apprendre"
-              accentColor="#ec4899"
-            />
-          </div>
-
-          {/* The Geometric 4-Petal Signature Graphic */}
-          <div className="petal-composition">
-            <svg
-              className="petal-svg"
-              viewBox="0 0 400 400"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <linearGradient id="petalTop" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#38BDF8" />
-                  <stop offset="40%" stopColor="#3B82F6" />
-                  <stop offset="100%" stopColor="#6366F1" />
-                </linearGradient>
-
-                <linearGradient id="petalRight" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#EC4899" />
-                  <stop offset="60%" stopColor="#D946EF" />
-                  <stop offset="100%" stopColor="#A855F7" />
-                </linearGradient>
-
-                <linearGradient id="petalBottom" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#6366F1" />
-                  <stop offset="50%" stopColor="#4338CA" />
-                  <stop offset="100%" stopColor="#1E1B4B" />
-                </linearGradient>
-
-                <linearGradient id="petalLeft" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#C084FC" />
-                  <stop offset="50%" stopColor="#818CF8" />
-                  <stop offset="100%" stopColor="#3B82F6" />
-                </linearGradient>
-
-                <filter id="petalShadow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feDropShadow dx="0" dy="16" stdDeviation="16" floodColor="#4f46e5" floodOpacity="0.22" />
-                </filter>
-              </defs>
-
-              <g filter="url(#petalShadow)" transform="translate(200, 200)">
-                <path
-                  d="M 0,-16 C 50,-120 120,-150 150,-120 C 180,-90 150,-20 60,0 Z"
-                  fill="url(#petalTop)"
-                />
-                <path
-                  d="M 16,0 C 120,50 150,120 120,150 C 90,180 20,150 0,60 Z"
-                  fill="url(#petalRight)"
-                />
-                <path
-                  d="M 0,16 C -50,120 -120,150 -150,120 C -180,90 -150,20 -60,0 Z"
-                  fill="url(#petalBottom)"
-                />
-                <path
-                  d="M -16,0 C -120,-50 -150,-120 -120,-150 C -90,-180 -20,-150 0,-60 Z"
-                  fill="url(#petalLeft)"
-                />
-              </g>
+        {/* Exact Universal Search Capsule from user reference */}
+        <form onSubmit={handleSubmit} className="hero-search-capsule">
+          <div className="search-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
           </div>
-
-          {/* Mobile Showcase Cards (displayed on mobile below the visual) */}
-          <div className="mobile-showcase-grid mobile-only">
-            <div className="mobile-showcase-pill">
-              <div className="mini-icon-box" style={{ color: '#4f46e5' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                  <path d="M6 12v5c3 3 9 3 12 0v-5" />
-                </svg>
-              </div>
-              <div className="mini-texts">
-                <span className="mini-title">Tous niveaux</span>
-                <span className="mini-desc">Primaire au doctorat</span>
-              </div>
-            </div>
-            <div className="mobile-showcase-pill">
-              <div className="mini-icon-box" style={{ color: '#9333ea' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                </svg>
-              </div>
-              <div className="mini-texts">
-                <span className="mini-title">Préparation concours</span>
-                <span className="mini-desc">Sénégal & International</span>
-              </div>
-            </div>
-            <div className="mobile-showcase-pill">
-              <div className="mini-icon-box" style={{ color: '#ec4899' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                  <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-5.04z" />
-                </svg>
-              </div>
-              <div className="mini-texts">
-                <span className="mini-title">Tuteur IA</span>
-                <span className="mini-desc">Outils & exercices</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
+          <input
+            type="text"
+            className="hero-search-input"
+            placeholder="Rechercher un livre, un cours, une annale..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label="Rechercher un livre, un cours, une annale"
+          />
+          <button
+            type="submit"
+            className="hero-search-submit"
+            aria-label="Lancer la recherche"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
+        </form>
       </div>
+
+      <style jsx>{`
+        .hero-aurora-section {
+          position: relative;
+          padding: 72px 0 64px;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 380px;
+        }
+
+        /* Ambient Mesh / Aurora Gradient */
+        .hero-aurora-backdrop {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .aurora-orb {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(80px);
+          opacity: 0.65;
+          animation: orb-pulse 8s ease-in-out infinite alternate;
+        }
+
+        .orb-blue {
+          width: 500px;
+          height: 360px;
+          top: -60px;
+          left: 10%;
+          background: radial-gradient(circle, rgba(59, 130, 246, 0.55) 0%, rgba(99, 102, 241, 0.25) 70%, transparent 100%);
+        }
+
+        .orb-violet {
+          width: 480px;
+          height: 380px;
+          top: 10px;
+          right: 15%;
+          background: radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(139, 92, 246, 0.2) 70%, transparent 100%);
+          animation-delay: -2s;
+        }
+
+        .orb-magenta {
+          width: 520px;
+          height: 340px;
+          bottom: -40px;
+          right: 25%;
+          background: radial-gradient(circle, rgba(236, 72, 153, 0.5) 0%, rgba(217, 70, 239, 0.2) 70%, transparent 100%);
+          animation-delay: -4s;
+        }
+
+        .orb-cyan {
+          width: 380px;
+          height: 300px;
+          bottom: -20px;
+          left: 20%;
+          background: radial-gradient(circle, rgba(56, 189, 248, 0.45) 0%, transparent 70%);
+          animation-delay: -3s;
+        }
+
+        .aurora-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.65) 0%,
+            rgba(255, 255, 255, 0.1) 40%,
+            rgba(255, 255, 255, 0.8) 100%
+          );
+        }
+
+        @keyframes orb-pulse {
+          0% {
+            transform: scale(1) translate(0, 0);
+          }
+          50% {
+            transform: scale(1.08) translate(15px, -10px);
+          }
+          100% {
+            transform: scale(0.96) translate(-10px, 12px);
+          }
+        }
+
+        .hero-center-container {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          max-width: 820px;
+          padding: 0 16px;
+        }
+
+        .hero-aurora-title {
+          font-size: clamp(22px, 3.2vw, 34px);
+          font-weight: 800;
+          color: #0f172a;
+          line-height: 1.25;
+          letter-spacing: -0.025em;
+          margin: 0 0 10px 0;
+          white-space: nowrap;
+        }
+
+        .hero-aurora-subtitle {
+          font-size: clamp(13px, 1.8vw, 15.5px);
+          font-weight: 500;
+          color: #475569;
+          line-height: 1.4;
+          margin: 0 0 28px 0;
+          white-space: nowrap;
+        }
+
+        /* Search Capsule */
+        .hero-search-capsule {
+          width: 100%;
+          max-width: 640px;
+          display: flex;
+          align-items: center;
+          background: #ffffff;
+          padding: 7px 8px 7px 20px;
+          border-radius: var(--radius-full);
+          border: 1.5px solid rgba(226, 232, 240, 0.9);
+          box-shadow:
+            0 16px 40px -10px rgba(79, 70, 229, 0.15),
+            0 4px 14px -2px rgba(15, 23, 42, 0.05);
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .hero-search-capsule:focus-within {
+          border-color: #6366f1;
+          box-shadow:
+            0 20px 48px -10px rgba(99, 102, 241, 0.25),
+            0 0 0 3px rgba(99, 102, 241, 0.12);
+          transform: translateY(-2px);
+        }
+
+        .search-icon-wrap {
+          color: #94a3b8;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-right: 12px;
+          flex-shrink: 0;
+        }
+
+        .hero-search-input {
+          flex: 1;
+          border: none;
+          background: transparent;
+          font-size: 15px;
+          font-weight: 500;
+          color: #0f172a;
+          outline: none;
+          min-width: 0;
+        }
+
+        .hero-search-input::placeholder {
+          color: #94a3b8;
+          font-weight: 400;
+        }
+
+        .hero-search-submit {
+          width: 42px;
+          height: 42px;
+          border-radius: 50%;
+          border: none;
+          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          flex-shrink: 0;
+          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+        }
+
+        .hero-search-submit:hover {
+          transform: scale(1.06);
+          box-shadow: 0 6px 16px rgba(99, 102, 241, 0.45);
+        }
+
+        @media (max-width: 640px) {
+          .hero-aurora-section {
+            padding: 44px 0 36px;
+            min-height: auto;
+          }
+
+          .hero-aurora-title {
+            font-size: 20px;
+            white-space: nowrap;
+            letter-spacing: -0.02em;
+          }
+
+          .hero-aurora-subtitle {
+            font-size: 12.5px;
+            white-space: nowrap;
+            margin-bottom: 22px;
+          }
+
+          .hero-search-capsule {
+            padding: 5px 6px 5px 14px;
+          }
+
+          .hero-search-input {
+            font-size: 13.5px;
+          }
+
+          .hero-search-submit {
+            width: 38px;
+            height: 38px;
+          }
+        }
+      `}</style>
     </section>
   );
 };
