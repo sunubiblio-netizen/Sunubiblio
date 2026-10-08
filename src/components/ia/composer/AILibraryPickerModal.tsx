@@ -68,9 +68,8 @@ export const AILibraryPickerModal: React.FC<AILibraryPickerModalProps> = ({
       level: res.level?.grade || 'Tous niveaux',
       size: `${res.pagesCount || 120} pages`,
       status: 'ready',
-      description: res.description,
-      extractedText: `${res.title}.\n${res.subtitle || ''}\n${res.description || ''}\nDiscipline: ${res.subject || 'Général'}\nNiveau officiel: ${res.level?.grade || 'Tous niveaux'}\nÉtablissement référent: ${res.institution || 'Sunubiblio'}`,
-      keyConcepts: rawConcepts,
+      extractedText: res.extractedText || `${res.title}.\n${res.subtitle || ''}\n${res.description || ''}\nDiscipline: ${res.subject || 'Général'}\nNiveau officiel: ${res.level?.grade || 'Tous niveaux'}\nÉtablissement référent: ${res.institution || 'Sunubiblio'}`,
+      keyConcepts: (res.keyConcepts && res.keyConcepts.length > 0) ? res.keyConcepts : rawConcepts,
       pagesCount: res.pagesCount || 120,
     };
     onSelectResource(attachment);

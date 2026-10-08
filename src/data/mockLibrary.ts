@@ -139,6 +139,37 @@ export const MOCK_RESOURCES: Resource[] = [
     coverBadgeColor: '#3b82f6',
     description: 'Manuel de référence couvrant l’analyse réelle, les nombres complexes, les probabilités et la géométrie dans l’espace pour le Bac S1/S2.',
     downloadsCount: 14200,
+    keyConcepts: ['Fonctions logarithme et exponentielle', 'Nombres complexes', 'Calcul intégral', 'Probabilités conditionnelles', 'Suites numériques'],
+    extractedText: `PROGRAMME OFFICIEL DE MATHÉMATIQUES — TERMINALE S1 & S2
+
+CHAPITRE 1 : FONCTIONS LOGARITHME NÉPÉRIEN ET EXPONENTIELLE
+Définition : La fonction logarithme népérien, notée ln, est l'unique primitive sur ]0 ; +∞[ de la fonction x ↦ 1/x qui s'annule en 1.
+Propriétés fondamentales :
+Pour tous réels a > 0 et b > 0 :
+ln(a * b) = ln(a) + ln(b)
+ln(a / b) = ln(a) - ln(b)
+ln(a^n) = n * ln(a)
+Dérivée : Pour toute fonction dérivable u strictement positive, la dérivée de ln(u) est u'/u.
+Limites remarquables :
+lim (x→+∞) ln(x) = +∞
+lim (x→0+) ln(x) = -∞
+Croissances comparées : lim (x→+∞) ln(x)/x = 0 et lim (x→0+) x*ln(x) = 0.
+
+CHAPITRE 2 : NOMBRES COMPLEXES ET GÉOMÉTRIE DU PLAN
+Forme algébrique : Tout nombre complexe z s'écrit de manière unique z = a + ib, avec a = Re(z) et b = Im(z).
+Module et argument : Le module est défini par |z| = sqrt(a² + b²).
+Formule d'Euler : Pour tout réel θ, e^(iθ) = cos(θ) + i*sin(θ).
+Formule de Moivre : (cos θ + i sin θ)^n = cos(nθ) + i sin(nθ).
+Théorème fondamental de l'algèbre : Tout polynôme non constant à coefficients complexes admet au moins une racine dans C.
+
+CHAPITRE 3 : CALCUL INTÉGRAL ET PRIMITIVES
+Définition : Soit f une fonction continue sur [a, b]. L'intégrale de f de a à b est notée ∫[a,b] f(t)dt = F(b) - F(a), où F est une primitive de f.
+Intégration par parties : ∫[a,b] u'(t)*v(t)dt = [u(t)*v(t)][a,b] - ∫[a,b] u(t)*v'(t)dt.
+
+CHAPITRE 4 : PROBABILITÉS CONDITIONNELLES
+Formule des probabilités totales : Si (A_i) forme une partition de l'univers Ω, pour tout événement B :
+P(B) = Σ P(B ∩ A_i) = Σ P(A_i) * P(B | A_i).
+Formule de Bayes : P(A|B) = (P(A) * P(B|A)) / P(B).`,
   },
   {
     id: 'res-2',
@@ -184,6 +215,27 @@ export const MOCK_RESOURCES: Resource[] = [
     coverBadgeColor: '#a855f7',
     description: 'Guide d’excellence pour les cycles A et B : institutions du Sénégal, politiques publiques, finances et épreuves corrigées.',
     downloadsCount: 8900,
+    keyConcepts: ['Organisation constitutionnelle', 'Décentralisation au Sénégal (Acte III)', 'Finances publiques et LOLF', 'Dissertation administrative', 'Actes administratifs unilatéraux'],
+    extractedText: `MANUEL DE PRÉPARATION AUX CONCOURS DE L'ENA DU SÉNÉGAL — DROIT PUBLIC ET POLITIQUES PUBLIQUES
+
+TITRE 1 : LE CADRE CONSTITUTIONNEL ET INSTITUTIONNEL SÉNÉGALAIS
+Principe républicain : La Constitution sénégalaise consacre la séparation équilibrée des pouvoirs (exécutif, législatif, judiciaire) et l'État de droit.
+Le Président de la République est la clé de voûte des institutions, garant du respect de la Constitution et du fonctionnement régulier des pouvoirs publics.
+L'Administration sénégalaise est soumise au principe de légalité : tout acte administratif doit être conforme aux normes juridiques supérieures (bloc de constitutionnalité, traités ratifiés, lois et règlements).
+
+TITRE 2 : LA DÉCENTRALISATION ET L'ACTE III DE LA DÉCENTRALISATION
+Définition : La décentralisation est le transfert de compétences et de moyens de décision de l'État central vers des collectivités territoriales autonomes dotées de la personnalité juridique.
+L'Acte III de la décentralisation au Sénégal (Loi n° 2013-10 du 28 décembre 2013 portant Code général des Collectivités territoriales) a érigé le département en collectivité territoriale de plein exercice et généralisé la communalisation intégrale.
+Objectif stratégique : Construire des territoires viables, compétitifs et porteurs de développement durable d'ici 2035.
+
+TITRE 3 : LES FINANCES PUBLIQUES ET LA DIRECTIVE DE L'UEMOA (LOLF)
+La Loi Organique relative aux Lois de Finances (LOLF) consacre le passage d'une gestion budgétaire de moyens à un budget par programmes axé sur la performance et les résultats.
+Principes budgétaires fondamentaux : Annualité, Unité, Universalité, Spécialité et Sincérité budgétaire.
+
+MÉTHODOLOGIE OFFICIELLE DE LA DISSERTATION ADMINISTRATIVE :
+1. Introduction en 4 étapes obligatoires : Accroche contextuelle, Définition rigoureuse des termes du sujet, Problématique administrative, Annonce précise du plan bipartite (I. et II.).
+2. Corps du devoir structuré en deux parties équilibrées (I. A, B et II. A, B) avec transitions et chapeaux.
+3. Neutralité républicaine, rigueur juridique et clarté de la syntaxe.`,
   },
   {
     id: 'res-4',
@@ -206,6 +258,24 @@ export const MOCK_RESOURCES: Resource[] = [
     coverBadgeColor: '#ec4899',
     description: 'Guide méthodique complet : analyse des sujets récurrents au Bac, plans détaillés, citations clés et lexique philosophique.',
     downloadsCount: 11200,
+    keyConcepts: ['Conscience et Inconscient', 'La Liberté et le Déterminisme', 'La Morale et le Devoir', 'Pensée africaine et universelle', 'L’État et la Justice'],
+    extractedText: `PROGRAMME NATIONAL DE PHILOSOPHIE — TERMINALE L & S
+
+CHAPITRE 1 : LA CONSCIENCE ET L'INCONSCIENT
+Définition : La conscience (du latin cum scientia, avec savoir) est la faculté mentale par laquelle le sujet prend connaissance de ses états intérieurs et du monde extérieur.
+Descartes affirme le primat du sujet pensant : « Cogito ergo sum » (Je pense, donc je suis). La conscience est pour lui transparence absolue et certitude première de l'existence.
+Critique freudienne : Sigmund Freud introduit l'hypothèse de l'inconscient psychique. Le psychisme est structuré en trois instances : le Ça (pulsions refoulées), le Moi (instance régulatrice confrontée au principe de réalité) et le Surmoi (intériorisation des interdits moraux et parentaux).
+Conséquence philosophique : « Le Moi n'est pas maître dans sa propre maison ».
+
+CHAPITRE 2 : LA LIBERTÉ ET LE DÉTERMINISME
+Définition : La liberté désigne la capacité de se déterminer soi-même à agir, sans contrainte externe.
+Le déterminisme soutient au contraire que chaque événement ou action humaine est rigoureusement conditionné par une chaîne de causes antérieures (biologiques, psychologiques, sociales).
+Selon Spinoza, l'illusion du libre arbitre provient du fait que « les hommes sont conscients de leurs désirs mais ignorants des causes qui les déterminent ».
+Jean-Paul Sartre réfute le déterminisme absolu : « L'homme est condamné à être libre » car son existence précède son essence ; l'homme est responsable de l'ensemble de ses choix.
+
+CHAPITRE 3 : L'ÉTAT ET LA JUSTICE
+Théorie du contrat social : Thomas Hobbes, John Locke et Jean-Jacques Rousseau conceptualisent le passage de l'état de nature à l'état civil.
+Pour Rousseau (Du Contrat Social) : L'obéissance à la loi que l'on s'est prescrite est liberté. La volonté générale vise l'intérêt commun et fonde la justice distributive et corrective.`,
   },
   {
     id: 'res-5',
@@ -228,6 +298,33 @@ export const MOCK_RESOURCES: Resource[] = [
     coverBadgeColor: '#10b981',
     description: 'Fiches de révision ultra-visuelles, rappels de cours essentiels et 150 exercices gradués pour décrocher la mention au BFEM.',
     downloadsCount: 16500,
+    keyConcepts: ['Poids et Masse (P = m * g)', 'Loi d’Ohm (U = R * I)', 'Puissance et Énergie électrique', 'Solutions acides et basiques', 'Réaction acido-basique'],
+    extractedText: `PROGRAMME OFFICIEL DE PHYSIQUE - CHIMIE — CLASSE DE TROISIÈME (BFEM SÉNÉGAL)
+
+MODULE 1 : MÉCANIQUE — POIDS ET MASSE D'UN CORPS
+Définition : La masse m est la quantité de matière contenue dans un corps, invariable et mesurée en kilogrammes (kg).
+Le poids P est l'action attractive exercée par la Terre sur ce corps, mesuré en Newtons (N) à l'aide d'un dynamomètre.
+Relation fondamentale : P = m * g
+où P est le poids en N, m est la masse en kg, et g est l'intensité de la pesanteur (sur Terre, g = 9,8 N/kg ou 10 N/kg).
+Masse volumique : ρ = m / V (en kg/m³ ou g/cm³).
+
+MODULE 2 : ÉLECTRICITÉ — LOI D'OHM ET ÉNERGIE ÉLECTRIQUE
+Définition : Un conducteur ohmique est caractérisé par sa résistance électrique R, exprimée en Ohms (Ω).
+Loi d'Ohm : La tension U aux bornes d'un dipôle ohmique est proportionnelle à l'intensité I du courant qui le traverse :
+U = R * I
+où U est en Volts (V), R en Ohms (Ω), et I en Ampères (A).
+Puissance électrique : P = U * I (en Watts, W).
+Énergie électrique : E = P * t (en Joules, J, ou en Watt-heures, Wh, avec 1 Wh = 3600 J).
+Effet Joule : W = R * I² * t.
+
+MODULE 3 : CHIMIE — SOLUTIONS ACIDES, BASIQUES ET PH
+Définition : Le pH (potentiel Hydrogène) mesure la concentration en ions hydrogène H+ dans une solution aqueuse.
+Échelle de pH à 25°C (entre 0 et 14) :
+- Solution acide : pH < 7 (présence majoritaire d'ions H+ ou H3O+).
+- Solution neutre : pH = 7 (eau pure).
+- Solution basique : pH > 7 (présence majoritaire d'ions hydroxyde OH-).
+Réaction acido-basique : Neutralisation selon l'équation H+ + OH- -> H2O avec dégagement de chaleur.
+Test d'identification : L'acide chlorhydrique réagit avec le fer en produisant un dégagement de dihydrogène (H2) qui détonne à la flamme.`,
   },
   {
     id: 'res-6',

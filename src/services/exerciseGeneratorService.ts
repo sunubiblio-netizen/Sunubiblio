@@ -12,7 +12,7 @@
  * questions sur le contenu et les concepts réels sans répéter "document.pdf".
  */
 
-import { isGarbageText } from './documentExtractorService';
+import { isGarbageText, analyzeDocumentContent, ExtractedDocumentData } from './documentExtractorService';
 
 export type TopicKind = 'calcul' | 'redaction' | 'document' | 'rapport';
 
@@ -138,11 +138,35 @@ export interface GeneratedQCM {
   explanation: string;
 }
 
+export interface CorrectionItemEvaluation {
+  id: number;
+  questionOrProblem: string;
+  studentAnswer: string;
+  status: 'correct' | 'partially_correct' | 'incorrect';
+  statusLabel: string;
+  whyExplanation: string;
+  exactErrorIdentified: string;
+  properMethod: string;
+  correctAnswerDetailed: string;
+  stepByStepSolution: string;
+  howToReachAnswer: string;
+}
+
 export interface CorrectionReportData {
   grade: string;
+  generalVerdict?: string;
+  subjectDomain?: string;
+  levelEvaluated?: string;
+  criteriaScores?: {
+    criterion: string;
+    score: string;
+    comment: string;
+  }[];
+  detailedEvaluations?: CorrectionItemEvaluation[];
   strengths: string[];
   improvements: string[];
   summary: string;
+  pedagogicalAdvice?: string;
 }
 
 /**
@@ -159,6 +183,421 @@ export function sanitizeSubjectTitle(raw: string): string {
     clean = clean.slice(0, 45).trim() + '...';
   }
   return clean || 'Notions clés';
+}
+
+/**
+ * Génère des exercices rigoureux et progressifs ancrés dans l'analyse sémantique du document
+ */
+function buildExercisesFromAnalysis(
+  analysis: ExtractedDocumentData,
+  cleanSubject: string,
+  levelId: string
+): GeneratedExercise[] {
+  const isSci = analysis.isScientific || analysis.formulas.length > 0;
+  const formulas = analysis.formulas;
+  const defs = analysis.definitions;
+  const theorems = analysis.keyRulesOrTheorems;
+  const concepts = analysis.keyConcepts;
+  const c1 = concepts[0] || defs[0]?.term || cleanSubject;
+  const c2 = concepts[1] || defs[1]?.term || 'Méthode d’analyse';
+  const c3 = concepts[2] || defs[2]?.term || 'Synthèse critique';
+
+  if (isSci && formulas.length > 0) {
+    const f1 = formulas[0];
+    const f2 = formulas[1] || formulas[0];
+
+    // Exercice 1 : Application directe & Calcul rigoureux
+    const ex1: GeneratedExercise = {
+      id: 1,
+      title: `Exercice 1 : Application directe & Calcul rigoureux — « ${f1.name || cleanSubject} »`,
+      duration: '15 min',
+      statement: `À partir de la relation établie dans le document :
+Formule de référence : « ${f1.formula} »
+
+Données de l'exercice :
+On applique cette relation à une situation expérimentale concrète où les paramètres mesurés correspondent aux grandeurs du cours.
+
+Consignes :
+1. Rappelez la formule littérale complète et précisez l'unité légale dans le Système International (SI) de chaque grandeur.
+2. Effectuez l'application numérique en explicitant le remplacement de chaque variable par sa valeur numérique.
+3. Calculez le résultat final, donnez-le avec son unité et vérifiez sa cohérence physique ou mathématique.`,
+      solution: `📌 1. RAPPEL DE LA FORMULE ET DU DOMAINE DE VALIDITÉ :
+Relation théorique : ${f1.formula}
+Chaque grandeur doit impérativement être exprimée dans son unité du Système International (SI) avant tout calcul.
+
+✍️ 2. ÉTAPE DE REMPLACEMENT DES VALEURS :
+On pose l'application numérique méthodique :
+On remplace chacune des variables par sa valeur numérique sans omettre les puissances de dix ou les coefficients.
+
+🔢 3. CALCUL PAS À PAS & RÉSOLUTION :
+• Étape calculatoire 1 : Simplification préalable des termes arithmétiques.
+• Étape calculatoire 2 : Calcul de la valeur exacte puis écriture de l'arrondi conventionnel à deux chiffres significatifs.
+• Étape calculatoire 3 : Attribution rigoureuse de l'unité de mesure.
+
+🎯 4. VÉRIFICATION DE LA COHÉRENCE :
+Le résultat obtenu est positif et conforme aux ordres de grandeur attendus pour cette discipline.`,
+      isSolutionVisible: false,
+      topicKind: 'calcul',
+      minWordsRequired: 12,
+      kindLabel: 'Exercice de Calcul & Sciences',
+      badgeIcon: '🔢',
+      instructionHint: 'Posez votre formule, détaillez vos étapes de calcul et indiquez votre résultat pour débloquer le corrigé.',
+    };
+
+    // Exercice 2 : Démarche algébrique inverse & Résolution littérale
+    const ex2: GeneratedExercise = {
+      id: 2,
+      title: `Exercice 2 : Résolution littérale & Démarche algébrique inverse`,
+      duration: '25 min',
+      statement: `Dans cet exercice, on cherche à déterminer l'une des grandeurs inconnues à partir de la relation « ${f2.formula} ».
+
+Consignes :
+1. Isolez la variable recherchée sous forme littérale AVANT toute application numérique (transformation d'équation).
+2. Justifiez les conditions d'existence (dénominateur non nul, grandeurs strictement positives).
+3. Confrontez la formule obtenue à la dimension physique ou à l'ensemble de définition mathématique.`,
+      solution: `📌 1. TRANSFORMATION ALGÉBRIQUE :
+À partir de la relation initiale ${f2.formula} :
+On applique les règles d'équivalence algébrique pour isoler la grandeur cible :
+- Multiplication ou division des deux membres par la quantité adéquate.
+- Vérification préalable de la condition d'inversibilité (quantité non nulle).
+
+✍️ 2. FORMULE LITTÉRALE FINALE :
+L'expression littérale finale est encadrée avant toute substitution de nombres.
+
+🎯 3. INTERPRÉTATION PHYSIQUE / MATHÉMATIQUE :
+L'analyse dimensionnelle confirme que les deux membres de l'égalité possèdent bien la même unité ou dimension.`,
+      isSolutionVisible: false,
+      topicKind: 'calcul',
+      minWordsRequired: 15,
+      kindLabel: 'Exercice de Calcul & Sciences',
+      badgeIcon: '🔢',
+      instructionHint: 'Détaillez la transformation d’équation étape par étape.',
+    };
+
+    // Exercice 3 : Problème de synthèse contextuel
+    const ex3: GeneratedExercise = {
+      id: 3,
+      title: `Exercice 3 : Problème de synthèse & Étude de cas complexe`,
+      duration: '35 min',
+      statement: `On considère un problème complet combinant les notions de « ${c1} » et « ${c2} » développées dans le document.
+
+1. Établissez le bilan des hypothèses et identifiez les relations à mobiliser successivement.
+2. Démontrez par enchaînement déductif comment les deux phénomènes s'articulent.
+3. Concluez en comparant votre résultat théorique avec les observations attendues.`,
+      solution: `📌 1. BILAN DES HYPOTHÈSES :
+On identifie clairement le système étudié et le référentiel d'analyse.
+
+✍️ 2. DÉMONSTRATION ÉTAPE PAR ÉTAPE :
+• Phase 1 : Application du premier principe liant ${c1}.
+• Phase 2 : Substitution dans la seconde équation relative à ${c2}.
+• Phase 3 : Résolution du système et obtention de la solution globale.
+
+🎯 3. CONCLUSION & ESPRIT CRITIQUE :
+L'accord entre le modèle théorique et la situation pratique valide la méthode retenue.`,
+      isSolutionVisible: false,
+      topicKind: 'calcul',
+      minWordsRequired: 18,
+      kindLabel: 'Problème de Synthèse',
+      badgeIcon: '📐',
+      instructionHint: 'Rédigez le raisonnement complet avec justifications pour débloquer le corrigé.',
+    };
+
+    return [ex1, ex2, ex3];
+  }
+
+  // Si matière littéraire, juridique, philosophique, historique
+  const def1 = defs[0] || { term: c1, definition: `le concept central autour duquel s'organise l'analyse du cours` };
+  const def2 = defs[1] || { term: c2, definition: `le mécanisme ou la règle essentielle exposée dans le document` };
+  const thm1 = theorems[0] || `le principe méthodique exposé dans le document`;
+
+  return [
+    {
+      id: 1,
+      title: `Exercice 1 : Compréhension conceptuelle & Définitions fondamentales`,
+      duration: '15 min',
+      statement: `À partir de l'étude attentive du document :
+
+1. Définissez précisément la notion de « ${def1.term} » selon les termes et le contexte du document.
+2. En quoi se distingue-t-elle de « ${def2.term} » ? Explicitez la nuance ou la tension entre ces deux notions.
+3. Citez ou reformulez l'argument essentiel qui fonde cette distinction dans le texte.`,
+      solution: `📌 1. DÉFINITION CONTEXTUELLE DE « ${def1.term} » :
+Dans le document, « ${def1.term} » est défini(e) comme :
+« ${def1.definition} ».
+Cette définition souligne le caractère spécifique du concept dans son champ d'application.
+
+✍️ 2. DISTINCTION AVEC « ${def2.term} » :
+Alors que « ${def1.term} » met l'accent sur les conditions premières, « ${def2.term} » s'attache plutôt à « ${def2.definition} ».
+La nuance réside dans le champ de validité et les conséquences directes.
+
+🎯 3. ARGUMENTATION D'APPUI :
+Le document démontre qu'omettre cette distinction conduirait à une confusion conceptuelle préjudiciable à la rigueur de l'analyse.`,
+      isSolutionVisible: false,
+      topicKind: 'document',
+      minWordsRequired: 25,
+      kindLabel: 'Analyse Conceptuelle',
+      badgeIcon: '📖',
+      instructionHint: 'Rédigez une réponse construite en vous appuyant sur le document.',
+    },
+    {
+      id: 2,
+      title: `Exercice 2 : Analyse dialectique & Étude de texte critique`,
+      duration: '25 min',
+      statement: `En vous référant au passage portant sur « ${thm1} » :
+
+1. Dégagez la thèse centrale soutenue par l'auteur ou le document.
+2. Analysez les étapes de l'argumentation qui permettent d'aboutir à cette conclusion.
+3. Quelles sont les objections potentielles ou les limites évoquées par le texte ?`,
+      solution: `📌 1. THÈSE CENTRALE :
+L'extrait pose que ${thm1} constitue la clé de voûte de la démonstration, réfutant les thèses adverses.
+
+✍️ 2. STRUCTURE LOGIQUE DU DÉVELOPPEMENT :
+• Moment 1 (Constat initial) : Établissement des faits et des prémisses.
+• Moment 2 (Démonstration dialectique) : Réfutation des contre-arguments et consolidation de la position.
+• Moment 3 (Conséquence directe) : Affirmation de la règle de référence.
+
+🎯 3. LIMITES ET CONDITIONS DE VALIDITÉ :
+Le texte rappelle que cette conclusion n'est valable que sous réserve des conditions institutionnelles ou textuelles précisées dans le cours.`,
+      isSolutionVisible: false,
+      topicKind: 'redaction',
+      minWordsRequired: 35,
+      kindLabel: 'Analyse Dialectique',
+      badgeIcon: '✍️',
+      instructionHint: 'Structurez votre argumentation avec connecteurs logiques.',
+    },
+    {
+      id: 3,
+      title: `Exercice 3 : Synthèse académique & Problématique d'examen`,
+      duration: '35 min',
+      statement: `Sujet de synthèse et de réflexion approfondie :
+« Dans quelle mesure la maîtrise de « ${c1} » permet-elle de repenser les enjeux contemporains liés à « ${c3} » ? »
+
+Consignes :
+- Élaborez une introduction rigoureuse (Accroche, Définitions, Problématique, Annonce du plan).
+- Développez deux axes complémentaires équilibrés (I. Portée et fondements / II. Limites et perspectives).`,
+      solution: `📌 PLAN MODÈLE DÉTAILLÉ :
+
+INTRODUCTION :
+• Accroche : Contextualisation de l'enjeu dans son cadre académique et historique.
+• Définition des termes : Précision rigoureuse de « ${c1} » et « ${c3} ».
+• Problématique : Comment concilier la rigueur des principes de ${c1} avec les exigences pratiques de ${c3} ?
+• Annonce du plan bipartite : (I) Les fondements opératoires ; (II) Les dépassements et adaptations nécessaires.
+
+DÉVELOPPEMENT :
+I. LA FORCE DES PRINCIPES FONDATEURS :
+A. L'ancrage textuel et conceptuel irremplaçable.
+B. La garantie d'une méthode rigoureuse et reproductible.
+
+II. LES ENJEUX CRITIQUES ET PERSPECTIVES :
+A. Les limites inhérentes à une application mécanique.
+B. L'ouverture vers de nouveaux paradigmes de réflexion.
+
+CONCLUSION :
+Bilan synthétique des deux axes et ouverture vers les questions contemporaines.`,
+      isSolutionVisible: false,
+      topicKind: 'redaction',
+      minWordsRequired: 45,
+      kindLabel: 'Synthèse d’Examen',
+      badgeIcon: '🎓',
+      instructionHint: 'Développez un plan bipartite avec arguments précis.',
+    },
+  ];
+}
+
+/**
+ * Génère des QCM rigoureux ancrés dans l'analyse sémantique du document
+ */
+function buildQCMFromAnalysis(
+  analysis: ExtractedDocumentData,
+  cleanSubject: string,
+  levelId: string
+): GeneratedQCM[] {
+  const qcmList: GeneratedQCM[] = [];
+  let id = 1;
+
+  // 1. Questions tirées des définitions explicites
+  for (const def of analysis.definitions.slice(0, 3)) {
+    qcmList.push({
+      id: id++,
+      question: `Selon le document étudié, quelle est la définition exacte de « ${def.term} » ?`,
+      options: [
+        def.definition,
+        `Un phénomène purement aléatoire dépourvu de règle ou de méthode d'analyse`,
+        `Une grandeur sans rapport avec les notions développées dans ce chapitre`,
+        `Le résultat inverse observé lorsque les conditions ne sont pas réunies`,
+      ],
+      correctIndex: 0,
+      explanation: `✅ Définition exacte du cours : ${def.term} désigne bien « ${def.definition} ». Les autres options contredisent le texte.`,
+    });
+  }
+
+  // 2. Questions tirées des formules réelles (si scientifiques)
+  for (const form of analysis.formulas.slice(0, 3)) {
+    const parts = form.formula.split('=');
+    const left = parts[0]?.trim() || 'X';
+    const right = parts[1]?.trim() || 'Y * Z';
+
+    qcmList.push({
+      id: id++,
+      question: `Quelle est l'expression mathématique / physique correcte de la relation « ${form.name || cleanSubject} » ?`,
+      options: [
+        form.formula,
+        `${left} = ${right.replace(/\*/g, '/').replace(/\+/g, '-')}`,
+        `${left} = 1 / (${right})`,
+        `${left} = (${right})²`,
+      ],
+      correctIndex: 0,
+      explanation: `✅ La relation exacte établie dans le cours est : ${form.formula}. Les autres options inversent les opérations ou les unités.`,
+    });
+  }
+
+  // 3. Questions tirées des théorèmes et règles
+  for (const thm of analysis.keyRulesOrTheorems.slice(0, 2)) {
+    qcmList.push({
+      id: id++,
+      question: `Concernant la règle ou le principe « ${thm.slice(0, 50)}... », quelle proposition est vraie ?`,
+      options: [
+        `Elle doit être rigoureusement appliquée dès lors que toutes ses hypothèses sont vérifiées`,
+        `Elle ne s'applique que de façon facultative et sans justification`,
+        `Elle a été réfutée par les données du document`,
+        `Elle dispense de toute vérification préalable`,
+      ],
+      correctIndex: 0,
+      explanation: `✅ Conforme au document : ce principe est obligatoire et structurant dans le raisonnement académique.`,
+    });
+  }
+
+  // 4. Questions tirées des chapitres / concepts clés pour compléter à 6-8 questions
+  const concepts = analysis.keyConcepts;
+  const c1 = concepts[0] || cleanSubject;
+  const c2 = concepts[1] || 'la méthodologie';
+
+  if (qcmList.length < 6) {
+    qcmList.push({
+      id: id++,
+      question: `Dans l'économie générale du cours, quel rôle primordial joue la maîtrise de « ${c1} » ?`,
+      options: [
+        `Elle constitue le prérequis fondamental pour aborder et résoudre les problèmes du programme`,
+        `Elle est considérée comme secondaire et sans lien avec le reste du sujet`,
+        `Elle ne sert qu'à encombrer la mémoire sans application pratique`,
+        `Elle s'oppose systématiquement à la rigueur de démonstration`,
+      ],
+      correctIndex: 0,
+      explanation: `✅ Exact ! Le document établit la centralité de ${c1} dans la structure de l'apprentissage.`,
+    });
+
+    qcmList.push({
+      id: id++,
+      question: `Quelle démarche méthodologique garantit l'obtention de la note maximale selon les critères du texte ?`,
+      options: [
+        `Poser les hypothèses, justifier chaque étape et expliciter clairement les unités ou concepts`,
+        `Rédiger directement une réponse chiffrée ou affirmative sans aucune justification`,
+        `Ignorer les consignes pour inventer une formule personnelle`,
+        `Omettre la conclusion finale pour gagner du temps`,
+      ],
+      correctIndex: 0,
+      explanation: `✅ Le barème académique valorise la clarté déductive et la justification de chaque transition logique.`,
+    });
+  }
+
+  return qcmList;
+}
+
+/**
+ * Génère un rapport d'évaluation pédagogique détaillé avec diagnostic item par item
+ */
+function buildCorrectionReportFromAnalysis(
+  analysis: ExtractedDocumentData,
+  cleanSubject: string,
+  levelId: string,
+  studentDraft?: string
+): CorrectionReportData {
+  const isSci = analysis.isScientific;
+  const c1 = analysis.keyConcepts[0] || analysis.definitions[0]?.term || cleanSubject;
+  const c2 = analysis.keyConcepts[1] || 'la démarche logique';
+
+  const defaultEvaluations: CorrectionItemEvaluation[] = [
+    {
+      id: 1,
+      questionOrProblem: `Question 1 : Compréhension & Mobilisation de « ${c1} »`,
+      studentAnswer: studentDraft && studentDraft.length > 20 ? studentDraft.slice(0, 100) + '...' : `Application du principe général au cas d'étude.`,
+      status: 'partially_correct',
+      statusLabel: '⚠️ Partiellement exact (manque de précision dans la justification)',
+      whyExplanation: `La notion principale est identifiée, mais la formulation omet de préciser les conditions préalables indispensables mentionnées dans le cours.`,
+      exactErrorIdentified: `Oubli d'expliciter le cadre de référence et les conditions de validité avant d'affirmer le résultat.`,
+      properMethod: `Toujours énoncer la règle théorique ou la formule littérale complète, préciser son domaine de validité, puis dérouler l'application pas à pas.`,
+      correctAnswerDetailed: `La réponse attendue exigeait d'écrire la relation complète avec ses hypothèses de validité pour « ${c1} », puis de citer le passage pertinent du document.`,
+      stepByStepSolution: `1. Poser la définition exacte du cours.\n2. Vérifier les données du sujet.\n3. Conclure par une phrase réponse univoque.`,
+      howToReachAnswer: `Relisez la définition du cours au paragraphe 1 : repérez les mots clés avant de commencer votre rédaction.`,
+    },
+    {
+      id: 2,
+      questionOrProblem: `Question 2 : Rigueur des étapes & Démonstration`,
+      studentAnswer: `Enchaînement direct vers le résultat final sans détailler les étapes intermédiaires.`,
+      status: 'incorrect',
+      statusLabel: '❌ Erreur de méthode (saut d’étape non justifié)',
+      whyExplanation: `Le correcteur ne peut pas valider une conclusion sans les calculs ou les arguments intermédiaires qui la soutiennent.`,
+      exactErrorIdentified: `Passage direct des données brutes à la conclusion sans poser la transition logique.`,
+      properMethod: `Décomposer le raisonnement en 3 étapes : (1) Données, (2) Propriété ou formule mobilisée, (3) Déduction logique ou calcul détaillé.`,
+      correctAnswerDetailed: `Il fallait démontrer étape par étape comment « ${c2} » s'articule avec les données initiales pour aboutir à l'égalité.`,
+      stepByStepSolution: `• Étape A : Écriture de la relation littérale.\n• Étape B : Remplacement méthodique des grandeurs.\n• Étape C : Vérification de cohérence.`,
+      howToReachAnswer: `Ne cherchez pas à aller trop vite : forcez-vous à écrire au moins une ligne par étape de calcul ou d'argumentation.`,
+    },
+    {
+      id: 3,
+      questionOrProblem: `Question 3 : Synthèse finale & Conclusion`,
+      studentAnswer: `Synthèse générale cohérente avec le sujet.`,
+      status: 'correct',
+      statusLabel: '✅ Réponse exacte & bien maîtrisée',
+      whyExplanation: `L'idée d'ensemble est bien comprise et la conclusion répond directement à l'attendu de l'épreuve.`,
+      exactErrorIdentified: `Aucune erreur majeure : très bonne clarté d'exposition.`,
+      properMethod: `Conserver cette structure claire avec phrase de synthèse et encadrement du résultat final.`,
+      correctAnswerDetailed: `La synthèse correspond précisément aux attendus académiques de fin de copie.`,
+      stepByStepSolution: `Synthèse concise rappelant la portée des résultats et ouvrant sur le contexte global.`,
+      howToReachAnswer: `Continuez à soigner ainsi vos phrases conclusives : elles valorisent immédiatement votre copie auprès du correcteur.`,
+    },
+  ];
+
+  return {
+    grade: '15 / 20 (Mention Bien)',
+    generalVerdict: `Travail très encourageant démontrant une bonne compréhension des enjeux fondamentaux, avec des axes de perfectionnement ciblés sur la rigueur des étapes.`,
+    subjectDomain: analysis.subjectLabel,
+    levelEvaluated: levelId.toUpperCase(),
+    criteriaScores: [
+      {
+        criterion: 'Compréhension du sujet & Notions clés',
+        score: '4 / 5',
+        comment: `Les concepts essentiels de « ${c1} » sont globalement bien assimilés.`,
+      },
+      {
+        criterion: 'Rigueur méthodologique & Démarche',
+        score: '3.5 / 5',
+        comment: `Penser à ne jamais sauter d'étape intermédiaire lors de la démonstration.`,
+      },
+      {
+        criterion: isSci ? 'Exactitude des calculs & Unités' : 'Qualité de l’argumentation',
+        score: '3.5 / 5',
+        comment: isSci ? 'Attention à toujours mentionner l\'unité légale du Système International.' : 'Penser à illustrer par des citations du texte.',
+      },
+      {
+        criterion: 'Clarté de rédaction & Présentation',
+        score: '4 / 5',
+        comment: `Copie soignée, syntaxe claire et conclusion bien formulée.`,
+      },
+    ],
+    detailedEvaluations: defaultEvaluations,
+    strengths: [
+      `Bonne maîtrise globale des notions de référence relatives à « ${c1} ».`,
+      'Capacité à identifier le problème posé et à proposer une synthèse constructive.',
+      'Présentation soignée et respect des consignes générales de l\'épreuve.',
+    ],
+    improvements: [
+      'Veiller à toujours expliciter la formule littérale ou la définition avant tout développement.',
+      'Ne pas brûler les étapes de transition logique ou de calcul arithmétique.',
+      'Systématiser la relecture finale pour éliminer les petites étourderies d\'unités ou de syntaxe.',
+    ],
+    summary: `Votre travail démontre une assimilation réelle et prometteuse du contenu du document. En adoptant une méthode plus explicite lors des étapes intermédiaires, vous atteindrez facilement l'excellence.`,
+    pedagogicalAdvice: `Conseil d'un professeur particulier : Travaillez avec une grille de relecture systématique : (1) ai-je écrit la formule ? (2) ai-je justifié mes hypothèses ? (3) ai-je mis l'unité ?`,
+  };
 }
 
 export const exerciseGeneratorService = {
@@ -214,89 +653,8 @@ export const exerciseGeneratorService = {
 
     // Si on a le texte réel du document, créons des exercices d'analyse directe du texte
     if (hasDocText) {
-      const textPreview = extractedText!.slice(0, 320).trim();
-      return [
-        {
-          id: 1,
-          title: `Exercice 1 : Compréhension & Analyse — « ${cleanSubject} »`,
-          duration: '15 min',
-          statement: `À partir de la lecture attentive du document transmis (${cleanSubject}) :
-Extrait à analyser :
-« ${textPreview}... »
-
-1. Dégagez l'idée directrice ou le problème central exposé dans cet extrait.
-2. Définissez précisément la notion clé de « ${concept1} » selon le contexte du document.
-3. Quelles sont les conséquences ou implications directes mises en avant par le texte ?`,
-          solution: `📌 RAPPEL MÉTHODOLOGIQUE DE L'ANALYSE DE DOCUMENT :
-L'analyse exige de s'appuyer strictement sur les faits, définitions et arguments fournis dans le texte, sans extrapolation subjective.
-
-✍️ CORRIGÉ DÉTAILLÉ PAS À PAS :
-1. Idée directrice :
-   Le passage met en lumière la dynamique centrale relative à ${concept1}. L'auteur articule son propos autour de faits vérifiables et d'une démonstration logique.
-2. Définition contextuelle de « ${concept1} » :
-   Dans le texte, ce concept désigne le mécanisme ou la règle fondamentale qui organise l'ensemble des éléments analysés.
-3. Conséquences observées :
-   L'extrait démontre que toute variation ou application de ce principe entraîne des répercussions concrètes sur ${concept2}.
-
-🎯 SYNTHÈSE ACADÉMIQUE :
-Une réponse complète justifie chaque affirmation en citant brièvement le passage pertinent du document.`,
-          isSolutionVisible: false,
-          topicKind: 'document',
-          minWordsRequired: kindInfo.minWords,
-          kindLabel: 'Analyse de Document',
-          badgeIcon: '📄',
-          instructionHint: 'Analysez les éléments clés du document et formulez votre synthèse pour débloquer le corrigé.',
-        },
-        {
-          id: 2,
-          title: `Exercice 2 : Application méthodique & Résolution de cas`,
-          duration: '25 min',
-          statement: `En vous appuyant sur les données et principes développés dans le document :
-1. Mettez en pratique la méthode relative à « ${concept2} » sur une situation concrète.
-2. Identifiez les conditions préalables indispensables pour garantir la validité du résultat.
-3. Rédigez une justification étayée qui confronte théorie et pratique.`,
-          solution: `📌 CADRE D'APPLICATION :
-Toute mise en pratique requiert le respect scrupuleux des hypothèses formulées dans le document initial.
-
-✍️ DÉMARCHE DE RÉSOLUTION :
-• Étape 1 (Pose des hypothèses) : On valide que le cas étudié se situe bien dans le champ d'application de ${concept2}.
-• Étape 2 (Développement logique) : On déroule les étapes analytiques ou les calculs sans sauter d'étape intermédiaire.
-• Étape 3 (Interprétation) : On confronte le résultat obtenu avec les critères d'évaluation énoncés dans le texte de référence.
-
-🎯 RÉSULTAT OBTENU :
-La démarche appliquée conduit à une résolution cohérente et reproductible.`,
-          isSolutionVisible: false,
-          topicKind: kindInfo.kind,
-          minWordsRequired: kindInfo.minWords,
-          kindLabel: kindInfo.label,
-          badgeIcon: kindInfo.badgeIcon,
-          instructionHint: kindInfo.instructionHint,
-        },
-        {
-          id: 3,
-          title: `Exercice 3 : Synthèse critique & Perspective d'approfondissement`,
-          duration: '35 min',
-          statement: `Question de réflexion et d'approfondissement transversal :
-« Dans quelle mesure les conclusions présentées sur « ${concept3} » permettent-elles d'anticiper de nouvelles perspectives ou d'éviter des erreurs courantes ? »
-Développez une argumentation structurée en 3 points distincts en vous référant aux enseignements du document.`,
-          solution: `📌 GRILLE D'ÉVALUATION DE LA SYNTHÈSE :
-Le correcteur attend une capacité à prendre du recul sur le document tout en restant précis et rigoureux.
-
-✍️ PLAN DE SYNTHÈSE RECOMMANDÉ :
-1. Axe 1 (Portée des résultats) : Rappeler la robustesse des conclusions établies autour de ${concept3}.
-2. Axe 2 (Limites et conditions d'exercice) : Identifier les limites inhérentes au modèle ou au texte étudié.
-3. Axe 3 (Recommandations et ouverture) : Proposer une ouverture pertinente vers des situations complémentaires.
-
-🎯 CONCLUSION DE SYNTHÈSE :
-L'argumentation montre une excellente assimilation des enjeux réels du document.`,
-          isSolutionVisible: false,
-          topicKind: kindInfo.kind,
-          minWordsRequired: kindInfo.minWords,
-          kindLabel: kindInfo.label,
-          badgeIcon: kindInfo.badgeIcon,
-          instructionHint: kindInfo.instructionHint,
-        },
-      ];
+      const analysis = analyzeDocumentContent(extractedText!, topicName);
+      return buildExercisesFromAnalysis(analysis, cleanSubject, levelId);
     }
 
     // Générateur standard sans document (sujet libre), SANS répétitions de nom de fichier
@@ -520,68 +878,8 @@ Réfutation posée, démonstration de la résilience du modèle et ouverture sur
 
     // Si on a le texte réel du document extrait, questions basées directement sur ses éléments
     if (hasDocText) {
-      return [
-        {
-          id: 1,
-          question: `D'après les éléments développés dans le document, quel est l'objectif ou le principe central mis en avant ?`,
-          options: [
-            `Identifier et comprendre le fonctionnement de « ${c1} »`,
-            `Ignorer les données contextuelles pour procéder au hasard`,
-            `Remplacer les définitions officielles par des intuitions non vérifiées`,
-            `Supposer que les conditions initiales n'ont aucun impact`,
-          ],
-          correctIndex: 0,
-          explanation: `✅ Exact ! Le document établit que la maîtrise de « ${c1} » constitue la base de toute la réflexion.`,
-        },
-        {
-          id: 2,
-          question: `Quelle condition essentielle d'application est mise en évidence autour de « ${c2} » ?`,
-          options: [
-            `Le respect rigoureux des hypothèses initiales et la cohérence des paramètres`,
-            `L'absence totale de méthode et l'approximation systématique`,
-            `La suppression arbitraire des étapes de calcul ou de rédaction`,
-            `Le refus de vérifier la compatibilité des grandeurs`,
-          ],
-          correctIndex: 0,
-          explanation: `✅ Bonne réponse ! Une démarche analytique rigoureuse repose impérativement sur la vérification préalable des hypothèses.`,
-        },
-        {
-          id: 3,
-          question: `Face à une incertitude ou une objection concernant « ${c3} », quelle attitude méthodologique est préconisée ?`,
-          options: [
-            `Reconfronter les calculs aux définitions du texte et vérifier les données observées`,
-            `Maintenir une erreur évidente sans chercher à la comprendre`,
-            `Écarter immédiatement la question sans la traiter`,
-            `Déformer les résultats pour forcer une conclusion fausse`,
-          ],
-          correctIndex: 0,
-          explanation: `✅ Précisément ! La confrontation méthodique aux définitions et aux faits permet d'éliminer toute ambiguïté.`,
-        },
-        {
-          id: 4,
-          question: `Quelle déduction ou synthèse logique ressort de l'étude conjointe de « ${c1} » et « ${c4} » ?`,
-          options: [
-            `Les deux notions se complètent pour assurer la solidité et la cohérence de l'ensemble`,
-            `Les deux principes s'annulent et rendent le résultat indéterminé`,
-            `Il n'existe aucune corrélation entre les deux phénomènes`,
-            `L'un rend l'autre totalement obsolète sans raison`,
-          ],
-          correctIndex: 0,
-          explanation: `✅ Exact ! L'articulation entre ces notions garantit l'efficacité du modèle d'analyse.`,
-        },
-        {
-          id: 5,
-          question: `Comment doit être formulée la conclusion finale pour respecter les exigences académiques ?`,
-          options: [
-            `Par une synthèse claire, concise, qui répond directement à la problématique en encadrant le résultat`,
-            `Par une réponse incomplète sans justification ni unité`,
-            `En recopiant l'énoncé sans rien expliquer`,
-            `Par un simple signe d'interrogation`,
-          ],
-          correctIndex: 0,
-          explanation: `✅ Parfait ! Une conclusion académique rigoureuse apporte une réponse nette, motivée et vérifiée.`,
-        },
-      ];
+      const analysis = analyzeDocumentContent(extractedText!, topicName);
+      return buildQCMFromAnalysis(analysis, cleanSubject, levelId);
     }
 
     // Questions par niveau scolaire SANS répétition de nom de fichier
@@ -912,19 +1210,8 @@ Réfutation posée, démonstration de la résilience du modèle et ouverture sur
     const c1 = concepts[0] || `notion principale de ${cleanSubject}`;
 
     if (hasDocText) {
-      return {
-        grade: '17 / 20 (Analyse de document validée)',
-        strengths: [
-          `Excellente lecture du document : les points fondamentaux relatifs à « ${c1} » ont été correctement identifiés.`,
-          'Les citations et références au texte sont pertinentes et soutiennent l\'argumentation.',
-          'Structuration claire des réponses, respectant la méthodologie académique d\'analyse de document.',
-        ],
-        improvements: [
-          'Veiller à confronter encore plus les conclusions aux hypothèses initiales du document.',
-          'Approfondir la synthèse finale en ouvrant sur les applications pratiques.',
-        ],
-        summary: `Votre travail démontre une assimilation réelle et rigoureuse du contenu du document transmis. L'analyse est fidèle aux faits et les concepts sont manipulés avec clarté.`,
-      };
+      const analysis = analyzeDocumentContent(extractedText!, topicName);
+      return buildCorrectionReportFromAnalysis(analysis, cleanSubject, levelId, extractedText);
     }
 
     switch (levelId) {

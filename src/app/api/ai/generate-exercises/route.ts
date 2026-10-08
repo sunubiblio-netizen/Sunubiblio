@@ -98,11 +98,12 @@ async function callGeminiEngine({
   let promptInstruction = '';
   if (mode === 'exercices') {
     promptInstruction = `
-Tu es un inspecteur pédagogique d'excellence. À partir du contenu du document fourni ci-dessous, génère 3 exercices progressifs adaptés au niveau "${levelId}".
+Tu es un inspecteur pédagogique d'excellence et professeur agrégé. À partir du contenu du document fourni ci-dessous, génère 3 exercices progressifs adaptés au niveau "${levelId}".
 RÈGLES CAPITALES :
 1. NE JAMAIS mentionner le nom de fichier ou son extension (.pdf, .docx, etc.).
-2. Pose de vraies questions précises basées sur les faits, calculs, règles et arguments du texte.
-3. Rends un JSON STRICT valide avec la forme :
+2. Pour les matières à calcul (Maths, Physique, Chimie, etc.) : utilise les vraies formules du document, donne des valeurs précises, détaille le remplacement des valeurs, effectue le calcul sans faute d'arithmétique, précise les unités et vérifie la cohérence.
+3. Pour les matières littéraires / humaines / droit : pose des questions précises sur les définitions, arguments, concepts et structure du texte.
+4. Rends un JSON STRICT valide avec la forme :
 {
   "exercises": [
     {
@@ -110,42 +111,70 @@ RÈGLES CAPITALES :
       "title": "Titre explicite de l'exercice 1",
       "duration": "15 min",
       "statement": "Énoncé complet et détaillé avec questions 1, 2, 3...",
-      "solution": "Corrigé académique rigoureux et détaillé pas à pas"
+      "solution": "Corrigé académique rigoureux et détaillé pas à pas avec formules, calculs, unités ou plan détaillé"
     }
   ]
 }
 `;
   } else if (mode === 'qcm') {
     promptInstruction = `
-Tu es un concepteur d'épreuves de QCM de référence. À partir du contenu du document fourni ci-dessous, génère une série de 5 à 10 questions de QCM pour le niveau "${levelId}".
+Tu es un concepteur d'épreuves officielles de QCM. À partir du contenu du document fourni ci-dessous, génère 6 à 8 questions de QCM pour le niveau "${levelId}".
 RÈGLES CAPITALES :
 1. NE JAMAIS répéter le nom du document ou du fichier.
-2. Chaque question doit porter sur une notion, un chiffre, une définition ou une déduction tirée du document.
-3. Rends un JSON STRICT valide avec la forme :
+2. Chaque question doit porter sur une notion, un chiffre, une formule, une règle ou une définition réelle tirée du document.
+3. Les 3 mauvaises propositions doivent être crédibles et pédagogiquement pertinentes (pièges classiques, inversion d'unités ou de causalité), sans réponses absurdes.
+4. Fournis une explication détaillée expliquant pourquoi la bonne réponse est exacte et pourquoi les autres sont fausses.
+5. Rends un JSON STRICT valide avec la forme :
 {
   "qcm": [
     {
       "id": 1,
-      "question": "Texte précis de la question posée sans répéter le nom du fichier",
+      "question": "Texte précis de la question posée",
       "options": ["Choix A", "Choix B", "Choix C", "Choix D"],
       "correctIndex": 0,
-      "explanation": "Explication pédagogique claire de la bonne réponse"
+      "explanation": "Explication pédagogique complète et détaillée"
     }
   ]
 }
 `;
   } else {
     promptInstruction = `
-Tu es un correcteur officiel d'examen. Analyse le document pour le niveau "${levelId}" et produis un rapport d'évaluation pédagogique.
+Tu es un correcteur officiel d'examen et professeur particulier bienveillant. Analyse le travail fourni en référence au document pour le niveau "${levelId}" et produis un rapport d'évaluation pédagogique ultra-précis.
 RÈGLES CAPITALES :
 1. Ne pas répéter le nom du fichier.
-2. Rends un JSON STRICT valide avec :
+2. Pour chaque réponse examinée, détermine si elle est correcte, partiellement correcte ou incorrecte, identifie l'erreur exacte, donne la bonne méthode et explique comment l'élève pouvait trouver la réponse.
+3. Rends un JSON STRICT valide avec la forme :
 {
   "report": {
-    "grade": "16/20",
-    "strengths": ["Point fort 1 tiré du contenu", "Point fort 2"],
-    "improvements": ["Axe d'amélioration 1", "Axe d'amélioration 2"],
-    "summary": "Synthèse pédagogique constructive"
+    "grade": "15.5 / 20 (Mention Bien)",
+    "generalVerdict": "Synthèse de l'évaluation globale",
+    "subjectDomain": "Discipline concernée",
+    "levelEvaluated": "${levelId}",
+    "criteriaScores": [
+      { "criterion": "Compréhension du sujet & Notions clés", "score": "4 / 5", "comment": "Remarque sur la compréhension" },
+      { "criterion": "Rigueur méthodologique & Démarche", "score": "3.5 / 5", "comment": "Remarque sur la démarche" },
+      { "criterion": "Exactitude des calculs ou argumentation", "score": "4 / 5", "comment": "Remarque sur l'exactitude" },
+      { "criterion": "Clarté de rédaction & Présentation", "score": "4 / 5", "comment": "Remarque sur la clarté" }
+    ],
+    "detailedEvaluations": [
+      {
+        "id": 1,
+        "questionOrProblem": "Question ou point évalué",
+        "studentAnswer": "Réponse observée",
+        "status": "correct",
+        "statusLabel": "✅ Réponse exacte & maîtrisée",
+        "whyExplanation": "Pourquoi cette note",
+        "exactErrorIdentified": "Erreur exacte ou Aucune erreur",
+        "properMethod": "La bonne démarche à suivre",
+        "correctAnswerDetailed": "Corrigé modèle complet",
+        "stepByStepSolution": "Étapes de résolution détaillées",
+        "howToReachAnswer": "Conseil méthodologique pour réussir"
+      }
+    ],
+    "strengths": ["Point fort 1", "Point fort 2"],
+    "improvements": ["Axe de progrès 1", "Axe de progrès 2"],
+    "summary": "Synthèse pédagogique encourageante",
+    "pedagogicalAdvice": "Conseil personnalisé du professeur"
   }
 }
 `;

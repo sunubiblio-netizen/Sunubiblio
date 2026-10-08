@@ -7,7 +7,7 @@ import { Footer } from '@/components/layout/Footer';
 import { AuthModal } from '@/components/ui/AuthModal';
 import { AIInputSelector, AIInputType, AIInputContent, AIInputSelectorHandle } from '@/components/ia/workspace/AIInputSelector';
 import { AIAttachment } from '@/types/ai';
-import { exerciseGeneratorService, GeneratedExercise, TopicKind } from '@/services/exerciseGeneratorService';
+import { exerciseGeneratorService, GeneratedExercise, TopicKind, CorrectionReportData } from '@/services/exerciseGeneratorService';
 
 type ExerciseMode = 'exercices' | 'qcm' | 'corriger';
 
@@ -171,12 +171,7 @@ export default function ExercicesPage() {
   const [isQCMFinished, setIsQCMFinished] = useState(false);
   const [studentAnswers, setStudentAnswers] = useState<Record<number, string>>({});
   const [validatedExercises, setValidatedExercises] = useState<Record<number, boolean>>({});
-  const [correctionReport, setCorrectionReport] = useState<{
-    grade: string;
-    strengths: string[];
-    improvements: string[];
-    summary: string;
-  } | null>(null);
+  const [correctionReport, setCorrectionReport] = useState<CorrectionReportData | null>(null);
 
   // Chat complémentaire
   const [chatMessages, setChatMessages] = useState<ChatReply[]>([]);
@@ -586,15 +581,16 @@ export default function ExercicesPage() {
                 </div>
 
                 <div className="session-topic-full-banner">
+                  <span className="source-label-pill">Source :</span>
                   <span className="topic-icon">
-                    {inputContent.type === 'file' ? '📄' : inputContent.type === 'library' ? '📖' : '📝'}
+                    {inputContent.type === 'file' ? '📄' : inputContent.type === 'library' ? '📚' : '✍️'}
                   </span>
                   <span className="session-topic-full-text">
                     {inputContent.type === 'library'
-                      ? inputContent.libraryResource?.name || 'Ressource de la bibliothèque'
+                      ? `Bibliothèque Sunubiblio — Livre : ${inputContent.libraryResource?.name || 'Ressource'}`
                       : inputContent.type === 'file'
-                      ? inputContent.documentTitle || (inputContent.file ? inputContent.file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ') : 'Document analysé')
-                      : inputContent.documentTitle || (inputContent.text?.trim() ? inputContent.text.trim().split('\n')[0].slice(0, 70) : 'Session active')}
+                      ? `${inputContent.documentTitle || (inputContent.file ? inputContent.file.name : 'Document importé')}`
+                      : `Texte saisi manuellement : ${inputContent.documentTitle || (inputContent.text?.trim() ? inputContent.text.trim().split('\n')[0].slice(0, 70) : 'Sujet d’entraînement')}`}
                   </span>
                 </div>
               </div>
@@ -1001,8 +997,16 @@ export default function ExercicesPage() {
                       <div className="generated-correction-card">
                         <div className="correction-header-row">
                           <div className="correction-title-group">
-                            <span className="correction-sub-tag">Évaluation formative</span>
-                            <h3 className="correction-title">Note & Diagnostic Pédagogique</h3>
+                            <div className="correction-sub-tags-wrap">
+                              <span className="correction-sub-tag">Évaluation Pédagogique Certifiée</span>
+                              {correctionReport.subjectDomain && (
+                                <span className="correction-domain-tag">{correctionReport.subjectDomain}</span>
+                              )}
+                              {correctionReport.levelEvaluated && (
+                                <span className="correction-domain-tag level-tag">{correctionReport.levelEvaluated}</span>
+                              )}
+                            </div>
+                            <h3 className="correction-title">Note & Diagnostic Pédagogique Détaillé</h3>
                           </div>
                           {(() => {
                             const gradeText = correctionReport.grade || '';
@@ -1026,7 +1030,96 @@ export default function ExercicesPage() {
                           })()}
                         </div>
 
+                        {correctionReport.generalVerdict && (
+                          <div className="correction-verdict-banner">
+                            <span className="verdict-icon">🎓</span>
+                            <p className="verdict-text">{correctionReport.generalVerdict}</p>
+                          </div>
+                        )}
+
                         <p className="correction-summary">{correctionReport.summary}</p>
+
+                        {/* Grille des critères officiels */}
+                        {correctionReport.criteriaScores && correctionReport.criteriaScores.length > 0 && (
+                          <div className="criteria-section">
+                            <h4 className="criteria-section-title">📊 Barème & Évaluation par Compétence</h4>
+                            <div className="criteria-grid">
+                              {correctionReport.criteriaScores.map((c, idx) => (
+                                <div key={idx} className="criterion-card">
+                                  <div className="criterion-header">
+                                    <span className="criterion-name">{c.criterion}</span>
+                                    <span className="criterion-score-badge">{c.score}</span>
+                                  </div>
+                                  <p className="criterion-comment">{c.comment}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Évaluations détaillées item par item */}
+                        {correctionReport.detailedEvaluations && correctionReport.detailedEvaluations.length > 0 && (
+                          <div className="detailed-evals-section">
+                            <h4 className="detailed-evals-title">🔍 Diagnostic Pédagogique Item par Item</h4>
+                            <div className="detailed-evals-list">
+                              {correctionReport.detailedEvaluations.map((item) => (
+                                <div key={item.id} className="detailed-eval-card">
+                                  <div className="eval-card-header">
+                                    <h5 className="eval-question-title">{item.questionOrProblem}</h5>
+                                    <span className={`eval-status-badge ${
+                                      item.status === 'correct' ? 'is-good' : item.status === 'partially_correct' ? 'is-partial' : 'is-wrong'
+                                    }`}>
+                                      {item.statusLabel}
+                                    </span>
+                                  </div>
+
+                                  <div className="eval-card-body">
+                                    {item.whyExplanation && (
+                                      <p className="eval-explanation-p">{item.whyExplanation}</p>
+                                    )}
+
+                                    <div className="eval-detail-rows">
+                                      <div className="eval-row is-error-row">
+                                        <span className="eval-row-icon">⚠️</span>
+                                        <div className="eval-row-content">
+                                          <strong className="eval-row-label">Erreur exacte identifiée :</strong>
+                                          <span className="eval-row-val">{item.exactErrorIdentified}</span>
+                                        </div>
+                                      </div>
+
+                                      <div className="eval-row is-method-row">
+                                        <span className="eval-row-icon">🛠️</span>
+                                        <div className="eval-row-content">
+                                          <strong className="eval-row-label">Bonne méthode à appliquer :</strong>
+                                          <span className="eval-row-val">{item.properMethod}</span>
+                                        </div>
+                                      </div>
+
+                                      <div className="eval-row is-solution-row">
+                                        <span className="eval-row-icon">✍️</span>
+                                        <div className="eval-row-content">
+                                          <strong className="eval-row-label">Corrigé modèle étape par étape :</strong>
+                                          <p className="eval-solution-val">{item.correctAnswerDetailed}</p>
+                                          {item.stepByStepSolution && item.stepByStepSolution !== item.correctAnswerDetailed && (
+                                            <div className="eval-step-steps">{item.stepByStepSolution}</div>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                      <div className="eval-row is-tips-row">
+                                        <span className="eval-row-icon">💡</span>
+                                        <div className="eval-row-content">
+                                          <strong className="eval-row-label">Conseil du professeur pour réussir :</strong>
+                                          <span className="eval-row-val">{item.howToReachAnswer}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
 
                         <div className="correction-points-grid">
                           <div className="points-box strengths-box">
@@ -1047,6 +1140,16 @@ export default function ExercicesPage() {
                             </ul>
                           </div>
                         </div>
+
+                        {correctionReport.pedagogicalAdvice && (
+                          <div className="pedagogical-advice-banner">
+                            <span className="advice-icon">📌</span>
+                            <div className="advice-content">
+                              <strong>Conseil personnalisé du professeur :</strong>
+                              <p>{correctionReport.pedagogicalAdvice}</p>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -2674,6 +2777,300 @@ export default function ExercicesPage() {
 
         .strengths-box .points-title { color: #166534; }
         .improvements-box .points-title { color: #1e40af; }
+
+        .source-label-pill {
+          font-size: 0.6875rem;
+          font-weight: 800;
+          color: #1e40af;
+          background: #eff6ff;
+          border: 1px solid #bfdbfe;
+          padding: 2px 7px;
+          border-radius: 9999px;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          flex-shrink: 0;
+        }
+
+        .correction-sub-tags-wrap {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          flex-wrap: wrap;
+        }
+
+        .correction-domain-tag {
+          font-size: 0.6875rem;
+          font-weight: 700;
+          color: #0369a1;
+          background: #f0f9ff;
+          border: 1px solid #bae6fd;
+          padding: 2px 8px;
+          border-radius: 9999px;
+        }
+
+        .correction-domain-tag.level-tag {
+          color: #7c3aed;
+          background: #f5f3ff;
+          border-color: #ddd6fe;
+        }
+
+        .correction-verdict-banner {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-left: 3px solid #3b82f6;
+          border-radius: 10px;
+          padding: 10px 14px;
+          margin-bottom: 12px;
+        }
+
+        .verdict-icon {
+          font-size: 1.25rem;
+          flex-shrink: 0;
+        }
+
+        .verdict-text {
+          font-size: 0.8125rem;
+          color: #1e293b;
+          font-weight: 600;
+          margin: 0;
+          line-height: 1.45;
+        }
+
+        /* Critères d'évaluation */
+        .criteria-section {
+          margin-bottom: 16px;
+        }
+
+        .criteria-section-title,
+        .detailed-evals-title {
+          font-size: 0.84rem;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0 0 10px;
+        }
+
+        .criteria-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          gap: 10px;
+        }
+
+        .criterion-card {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 10px;
+          padding: 10px 12px;
+        }
+
+        .criterion-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 4px;
+        }
+
+        .criterion-name {
+          font-size: 0.75rem;
+          font-weight: 800;
+          color: #1e293b;
+        }
+
+        .criterion-score-badge {
+          font-size: 0.7188rem;
+          font-weight: 800;
+          color: #2563eb;
+          background: #eff6ff;
+          border: 1px solid #bfdbfe;
+          padding: 2px 7px;
+          border-radius: 9999px;
+        }
+
+        .criterion-comment {
+          font-size: 0.7188rem;
+          color: #64748b;
+          margin: 0;
+          line-height: 1.4;
+        }
+
+        /* Items d'évaluation détaillée */
+        .detailed-evals-section {
+          margin-bottom: 16px;
+        }
+
+        .detailed-evals-list {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .detailed-eval-card {
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 14px;
+          background: #fbfcfe;
+        }
+
+        .eval-card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 8px;
+          flex-wrap: wrap;
+        }
+
+        .eval-question-title {
+          font-size: 0.84rem;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0;
+        }
+
+        .eval-status-badge {
+          font-size: 0.7188rem;
+          font-weight: 800;
+          padding: 3px 9px;
+          border-radius: 9999px;
+          white-space: nowrap;
+        }
+
+        .eval-status-badge.is-good {
+          background: #f0fdf4;
+          color: #166534;
+          border: 1px solid #bbf7d0;
+        }
+
+        .eval-status-badge.is-partial {
+          background: #fffbeb;
+          color: #b45309;
+          border: 1px solid #fde68a;
+        }
+
+        .eval-status-badge.is-wrong {
+          background: #fef2f2;
+          color: #991b1b;
+          border: 1px solid #fecaca;
+        }
+
+        .eval-explanation-p {
+          font-size: 0.7813rem;
+          color: #475569;
+          margin: 0 0 10px;
+          line-height: 1.5;
+        }
+
+        .eval-detail-rows {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .eval-row {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          font-size: 0.7813rem;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          padding: 8px 10px;
+        }
+
+        .eval-row.is-error-row {
+          border-left: 3px solid #ef4444;
+          background: #fef2f2;
+        }
+
+        .eval-row.is-method-row {
+          border-left: 3px solid #3b82f6;
+          background: #eff6ff;
+        }
+
+        .eval-row.is-solution-row {
+          border-left: 3px solid #10b981;
+          background: #f0fdf4;
+        }
+
+        .eval-row.is-tips-row {
+          border-left: 3px solid #f59e0b;
+          background: #fffbeb;
+        }
+
+        .eval-row-icon {
+          font-size: 1rem;
+          flex-shrink: 0;
+          margin-top: 1px;
+        }
+
+        .eval-row-content {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          flex: 1;
+        }
+
+        .eval-row-label {
+          font-size: 0.7188rem;
+          font-weight: 800;
+          color: #1e293b;
+        }
+
+        .eval-row-val {
+          color: #334155;
+          line-height: 1.45;
+        }
+
+        .eval-solution-val {
+          color: #166534;
+          font-weight: 600;
+          margin: 0;
+          line-height: 1.45;
+        }
+
+        .eval-step-steps {
+          margin-top: 4px;
+          font-family: inherit;
+          font-size: 0.75rem;
+          color: #166534;
+          white-space: pre-line;
+          background: #dcfce7;
+          border-radius: 6px;
+          padding: 6px 8px;
+        }
+
+        .pedagogical-advice-banner {
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+          background: #eff6ff;
+          border: 1px solid #bfdbfe;
+          border-radius: 10px;
+          padding: 12px 14px;
+          margin-top: 14px;
+        }
+
+        .advice-icon {
+          font-size: 1.25rem;
+          flex-shrink: 0;
+        }
+
+        .advice-content strong {
+          display: block;
+          font-size: 0.7813rem;
+          font-weight: 800;
+          color: #1e40af;
+          margin-bottom: 2px;
+        }
+
+        .advice-content p {
+          font-size: 0.7813rem;
+          color: #1e3a8a;
+          margin: 0;
+          line-height: 1.5;
+        }
 
         .points-box ul {
           margin: 0;

@@ -37,6 +37,8 @@ export interface Resource {
   description: string;
   downloadsCount?: number;
   isFavorite?: boolean;
+  extractedText?: string;
+  keyConcepts?: string[];
 }
 
 export interface FilterState {

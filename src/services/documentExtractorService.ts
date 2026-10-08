@@ -11,12 +11,28 @@
 
 import zlib from 'zlib';
 
+export interface DocumentChunk {
+  id: number;
+  title: string;
+  content: string;
+  summary: string;
+  keyConcepts: string[];
+}
+
 export interface ExtractedDocumentData {
   text: string;
   cleanedTitle: string;
   wordCount: number;
+  subject: string;
+  subjectLabel: string;
+  isScientific: boolean;
+  detectedLevel: string;
   keyConcepts: string[];
   summary: string;
+  chapters: DocumentChunk[];
+  definitions: { term: string; definition: string }[];
+  formulas: { name: string; formula: string; explanation?: string }[];
+  keyRulesOrTheorems: string[];
 }
 
 /**
@@ -228,8 +244,258 @@ export function cleanExtractedText(text: string): string {
 }
 
 /**
- * Analyse le texte extrait pour en dégager les points clés, le vrai titre
- * et un résumé pour la génération de questions.
+ * Détecte la discipline académique et le niveau scolaire d'un texte/titre
+ */
+export function detectSubjectAndLevel(text: string, title: string): {
+  subject: string;
+  subjectLabel: string;
+  isScientific: boolean;
+  detectedLevel: string;
+} {
+  const combined = (title + ' ' + text.slice(0, 4000)).toLowerCase();
+
+  // Niveau
+  let detectedLevel = 'lycee';
+  if (/(primaire|cm2|cm1|ce2|ce1|cp|ci)\b/i.test(combined)) {
+    detectedLevel = 'primaire';
+  } else if (/(collège|college|6e|5e|4e|3e|brevet|bfem)\b/i.test(combined)) {
+    detectedLevel = 'college';
+  } else if (/(université|universite|licence|master|doctorat|l1|l2|l3|m1|m2|faculté)\b/i.test(combined)) {
+    detectedLevel = 'superieur';
+  } else if (/(concours|ena|douane|police|fastef|cfj|crpe|recrutement)\b/i.test(combined)) {
+    detectedLevel = 'concours';
+  } else if (/(seconde|première|premiere|terminale|bac|baccalauréat|tle|1ere)\b/i.test(combined)) {
+    detectedLevel = 'lycee';
+  }
+
+  // Matière & Type scientifique
+  if (/(mathématique|mathematique|maths|algèbre|algebre|géométrie|geometrie|trigonométrie|dérivée|intégrale|polynôme|matrice|vecteur|probabilité)\b/i.test(combined)) {
+    return { subject: 'mathematiques', subjectLabel: 'Mathématiques', isScientific: true, detectedLevel };
+  }
+  if (/(physique|chimie|mécanique|cinématique|newton|vitesse|accélération|force|énergie|électricité|atome|môle|réaction|acide|base|solution)\b/i.test(combined)) {
+    return { subject: 'physique_chimie', subjectLabel: 'Physique - Chimie', isScientific: true, detectedLevel };
+  }
+  if (/(svt|biologie|cellule|adn|gène|mitose|méiose|photosynthèse|organisme|écosystème|géologie|système nerveux|immunité)\b/i.test(combined)) {
+    return { subject: 'svt', subjectLabel: 'Sciences de la Vie et de la Terre', isScientific: true, detectedLevel };
+  }
+  if (/(français|francais|littérature|litterature|poésie|roman|théâtre|dissertation|grammaire|conjugaison|figure de style|métaphore)\b/i.test(combined)) {
+    return { subject: 'francais', subjectLabel: 'Français & Littérature', isScientific: false, detectedLevel };
+  }
+  if (/(philosophie|conscience|inconscient|morale|devoir|vérité|verite|justice|liberté|liberte|kant|descartes|platon|rousseau|désir)\b/i.test(combined)) {
+    return { subject: 'philosophie', subjectLabel: 'Philosophie', isScientific: false, detectedLevel };
+  }
+  if (/(histoire|géographie|geographie|siècle|guerre|traité|décolonisation|sénégal|senegal|afrique|démographie|climat|territoire)\b/i.test(combined)) {
+    return { subject: 'histoire_geo', subjectLabel: 'Histoire - Géographie', isScientific: false, detectedLevel };
+  }
+  if (/(économie|economie|gestion|comptabilité|comptabilite|marché|offre|demande|inflation|pib|budget|investissement|entreprise)\b/i.test(combined)) {
+    return { subject: 'economie', subjectLabel: 'Économie & Gestion', isScientific: true, detectedLevel };
+  }
+  if (/(droit|juridique|loi|constitution|code civil|pénal|penal|contrat|juridiction|responsabilité|contentieux)\b/i.test(combined)) {
+    return { subject: 'droit', subjectLabel: 'Droit & Sciences Juridiques', isScientific: false, detectedLevel };
+  }
+
+  return { subject: 'general', subjectLabel: 'Enseignement Général', isScientific: false, detectedLevel };
+}
+
+/**
+ * Découpe un document en chapitres / sections thématiques (chunks de 400 à 1000 mots)
+ */
+function chunkDocument(text: string, title: string): DocumentChunk[] {
+  if (!text || text.trim().length === 0) {
+    return [
+      {
+        id: 1,
+        title: title || 'Section Principale',
+        content: text,
+        summary: `Contenu d'étude pour ${title}.`,
+        keyConcepts: ['Concepts clés', 'Méthodologie'],
+      },
+    ];
+  }
+
+  // Tenter de découper par en-têtes explicites (Chapitre, Section, Partie, Grand I, etc.)
+  const headerRegex = /(?:\n\s*(?:chapitre|partie|section|module|grand\s+[ivx\d]+|[ivx\d]+\.)\s+([^\n]{3,80}))/gi;
+  const matches = Array.from(text.matchAll(headerRegex));
+
+  if (matches.length >= 2) {
+    const chunks: DocumentChunk[] = [];
+    for (let i = 0; i < matches.length; i++) {
+      const match = matches[i];
+      const start = match.index || 0;
+      const end = i < matches.length - 1 ? (matches[i + 1].index || text.length) : text.length;
+      const content = text.slice(start, end).trim();
+      const chunkTitle = match[1]?.trim() || `Section ${i + 1}`;
+      const firstLines = content.split('\n').filter(l => l.trim().length > 10).slice(0, 3).join(' ');
+
+      chunks.push({
+        id: i + 1,
+        title: chunkTitle.charAt(0).toUpperCase() + chunkTitle.slice(1),
+        content,
+        summary: firstLines.slice(0, 200) || `Développement portant sur ${chunkTitle}.`,
+        keyConcepts: [chunkTitle.slice(0, 25)],
+      });
+    }
+    return chunks;
+  }
+
+  // Découpage automatique par paquets de paragraphes (~600 mots)
+  const paragraphs = text.split(/\n\s*\n/).map(p => p.trim()).filter(p => p.length > 20);
+  if (paragraphs.length <= 3) {
+    return [
+      {
+        id: 1,
+        title: title || 'Section Complète',
+        content: text,
+        summary: text.slice(0, 220),
+        keyConcepts: ['Fondements', 'Application'],
+      },
+    ];
+  }
+
+  const chunks: DocumentChunk[] = [];
+  let currentWords: string[] = [];
+  let chunkIndex = 1;
+
+  for (const para of paragraphs) {
+    const paraWords = para.split(/\s+/);
+    currentWords.push(...paraWords);
+
+    if (currentWords.length >= 500) {
+      const chunkContent = currentWords.join(' ');
+      chunks.push({
+        id: chunkIndex,
+        title: `Partie ${chunkIndex} — ${title}`,
+        content: chunkContent,
+        summary: chunkContent.slice(0, 220),
+        keyConcepts: [`Partie ${chunkIndex}`],
+      });
+      chunkIndex++;
+      currentWords = [];
+    }
+  }
+
+  if (currentWords.length > 0) {
+    const chunkContent = currentWords.join(' ');
+    if (chunks.length > 0 && currentWords.length < 100) {
+      // Fusionner avec le dernier si très court
+      chunks[chunks.length - 1].content += '\n\n' + chunkContent;
+    } else {
+      chunks.push({
+        id: chunkIndex,
+        title: `Partie ${chunkIndex} — ${title}`,
+        content: chunkContent,
+        summary: chunkContent.slice(0, 220),
+        keyConcepts: [`Partie ${chunkIndex}`],
+      });
+    }
+  }
+
+  return chunks.length > 0 ? chunks : [
+    {
+      id: 1,
+      title: title || 'Section Principale',
+      content: text,
+      summary: text.slice(0, 220),
+      keyConcepts: ['Notions clés'],
+    },
+  ];
+}
+
+/**
+ * Extrait les définitions explicites repérées dans le texte
+ */
+function extractDefinitions(text: string): { term: string; definition: string }[] {
+  const definitions: { term: string; definition: string }[] = [];
+  const lines = text.split(/[\r\n]+/).map(l => l.trim()).filter(l => l.length > 15);
+
+  const defPatterns = [
+    /^(?:définition\s*:?\s*)?([A-ZÀ-ÿ][a-zà-ÿA-Z\s'-]{2,30})\s*:\s*([^.\n]+[.!?]?)/i,
+    /(?:on appelle|on définit par)\s+([A-ZÀ-ÿa-zà-ÿ\s'-]{3,35})\s+([^.\n]{15,180}[.!?])/i,
+    /([A-ZÀ-ÿa-zà-ÿ\s'-]{3,30})\s+(?:désigne|est défini comme|correspond à)\s+([^.\n]{15,180}[.!?])/i,
+  ];
+
+  for (const line of lines) {
+    for (const pattern of defPatterns) {
+      const match = line.match(pattern);
+      if (match && match[1] && match[2]) {
+        const term = match[1].trim();
+        const definition = match[2].trim();
+        if (term.length >= 3 && term.length <= 40 && definition.length >= 10) {
+          if (!definitions.some(d => d.term.toLowerCase() === term.toLowerCase())) {
+            definitions.push({ term, definition });
+            if (definitions.length >= 8) return definitions;
+          }
+        }
+      }
+    }
+  }
+
+  return definitions;
+}
+
+/**
+ * Extrait les formules de calcul mathématiques / physiques réelles du texte
+ */
+function extractFormulas(text: string): { name: string; formula: string; explanation?: string }[] {
+  const formulas: { name: string; formula: string; explanation?: string }[] = [];
+  const lines = text.split(/[\r\n]+/).map(l => l.trim()).filter(l => l.length > 5);
+
+  const formulaRegex = /([A-Za-z0-9_\s'’-]{2,25})\s*:\s*([A-Za-zΔλ\w()/\s*^+-]{2,30}\s*=\s*[^;\n]{2,50})/i;
+  const standaloneEqualRegex = /([A-Za-zΔλ]\s*(?:\([a-z]\))?)\s*=\s*([a-zA-Z0-9Δλ()/\s*^+\-._]{2,40})/g;
+
+  for (const line of lines) {
+    const namedMatch = line.match(formulaRegex);
+    if (namedMatch && namedMatch[1] && namedMatch[2]) {
+      formulas.push({
+        name: namedMatch[1].trim(),
+        formula: namedMatch[2].trim(),
+      });
+      if (formulas.length >= 6) return formulas;
+      continue;
+    }
+
+    let m: RegExpExecArray | null;
+    while ((m = standaloneEqualRegex.exec(line)) !== null) {
+      const full = `${m[1].trim()} = ${m[2].trim()}`;
+      if (!formulas.some(f => f.formula === full) && full.length >= 5 && full.length <= 45) {
+        formulas.push({
+          name: 'Relation mathématique/physique',
+          formula: full,
+        });
+        if (formulas.length >= 6) return formulas;
+      }
+    }
+  }
+
+  return formulas;
+}
+
+/**
+ * Extrait les théorèmes, règles ou principes énoncés dans le cours
+ */
+function extractRulesAndTheorems(text: string): string[] {
+  const rules: string[] = [];
+  const lines = text.split(/[\r\n]+/).map(l => l.trim()).filter(l => l.length > 15);
+
+  const theoremRegex = /(?:théorème|loi|principe|propriété|règle)\s+(?:de\s+|d['’]\s*)?([^.\n:]{3,60})/i;
+
+  for (const line of lines) {
+    const match = line.match(theoremRegex);
+    if (match && match[0]) {
+      const item = line.slice(0, 150).trim();
+      if (!rules.includes(item)) {
+        rules.push(item);
+        if (rules.length >= 6) return rules;
+      }
+    }
+  }
+
+  return rules;
+}
+
+/**
+ * Analyse le texte extrait pour en dégager les points clés, le vrai titre,
+ * la matière, le niveau, les chapitres, formules et définitions réelles.
  */
 export function analyzeDocumentContent(rawText: string, fallbackFileName: string): ExtractedDocumentData {
   const fallbackClean = cleanDocumentName(fallbackFileName);
@@ -284,7 +550,10 @@ export function analyzeDocumentContent(rawText: string, fallbackFileName: string
     cleanedTitle = fallbackClean;
   }
 
-  // 2. Détection des concepts clés du document
+  // 2. Détection matière, type scientifique et niveau
+  const { subject, subjectLabel, isScientific, detectedLevel } = detectSubjectAndLevel(cleaned, cleanedTitle);
+
+  // 3. Détection des concepts clés du document
   const stopWords = new Set([
     'cette', 'notre', 'votre', 'leurs', 'comme', 'alors', 'apres', 'avant',
     'aussi', 'entre', 'tous', 'toute', 'toutes', 'selon', 'faire', 'étant',
@@ -308,7 +577,6 @@ export function analyzeDocumentContent(rawText: string, fallbackFileName: string
     .map(([concept]) => concept.charAt(0).toUpperCase() + concept.slice(1));
 
   if (sortedConcepts.length === 0) {
-    // Si aucun mot fréquent détecté, générer des concepts pédagogiques élégants basés sur le titre
     const titleWords = cleanedTitle.split(/\s+/).filter(w => w.length >= 4 && !stopWords.has(w.toLowerCase()));
     if (titleWords.length > 0) {
       sortedConcepts = titleWords.slice(0, 4);
@@ -317,15 +585,31 @@ export function analyzeDocumentContent(rawText: string, fallbackFileName: string
     }
   }
 
-  // 3. Résumé contextuel
+  // 4. Découpage en chapitres / chunks
+  const chapters = chunkDocument(cleaned, cleanedTitle);
+
+  // 5. Définitions, formules et théorèmes
+  const definitions = extractDefinitions(cleaned);
+  const formulas = extractFormulas(cleaned);
+  const keyRulesOrTheorems = extractRulesAndTheorems(cleaned);
+
+  // 6. Résumé contextuel
   const summary = sentences.slice(0, 3).join(' ') || (cleaned.length > 10 ? cleaned.slice(0, 250) : `Document portant sur ${cleanedTitle}.`);
 
   return {
     text: cleaned,
     cleanedTitle,
     wordCount: wordCount > 0 ? wordCount : 150,
+    subject,
+    subjectLabel,
+    isScientific,
+    detectedLevel,
     keyConcepts: sortedConcepts,
     summary,
+    chapters,
+    definitions,
+    formulas,
+    keyRulesOrTheorems,
   };
 }
 
