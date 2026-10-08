@@ -100,6 +100,14 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           </div>
         </div>
 
+        {/* Floating Rating Pill (Top-right of bottom cover) */}
+        <div className="cover-rating-pill">
+          <svg width="10.5" height="10.5" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="1">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg>
+          <span className="cover-rating-num">{resource.rating.toFixed(1)}</span>
+        </div>
+
         {/* Hover Action Overlay */}
         <div className="cover-hover-action">
           <button type="button" className="btn-primary hover-view-btn">
@@ -112,7 +120,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         </div>
       </div>
 
-      {/* Card Content & Essentials (Spacious & Clean) */}
+      {/* Card Content & Essentials (Compact & Clean) */}
       <div className="card-body">
         {/* Title */}
         <h3 className="card-title" title={resource.title}>
@@ -127,19 +135,10 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           )}
         </p>
 
-        {/* Essentials Footer: Level/Access + Rating */}
+        {/* Essentials Footer: Level & Access Side-by-Side */}
         <div className="card-footer">
-          <div className="essential-meta">
-            <span className="grade-pill">{resource.level.grade}</span>
-            {getAccessBadge()}
-          </div>
-
-          <div className="rating-info">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="1">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg>
-            <span className="rating-num">{resource.rating.toFixed(1)}</span>
-          </div>
+          <span className="grade-pill">{resource.level.grade}</span>
+          {getAccessBadge()}
         </div>
       </div>
 
@@ -324,6 +323,30 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           justify-content: center;
         }
 
+        /* Floating Rating Pill in Cover Banner */
+        .cover-rating-pill {
+          position: absolute;
+          right: 9px;
+          bottom: 9px;
+          z-index: 4;
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(6px);
+          padding: 2.5px 6.5px;
+          border-radius: var(--radius-full);
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+        }
+
+        .cover-rating-num {
+          font-size: 11px;
+          font-weight: 700;
+          color: #0f172a;
+          line-height: 1;
+        }
+
         /* Hover Overlay */
         .cover-hover-action {
           position: absolute;
@@ -350,33 +373,32 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           border-radius: var(--radius-full);
         }
 
-        /* Body Area — Spacious & Breathing */
+        /* Body Area — Compact, Balanced & Breathing (At Red Limit Line) */
         .card-body {
-          padding: 13px 13px 14px;
+          padding: 10px 11px 11px;
           display: flex;
           flex-direction: column;
           flex: 1;
-          justify-content: space-between;
         }
 
         .card-title {
-          font-size: 13.5px;
+          font-size: 13px;
           font-weight: 700;
           color: #0f172a;
-          line-height: 1.36;
-          margin: 0 0 4px;
+          line-height: 1.32;
+          margin: 0 0 2px;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
-          min-height: 37px;
+          min-height: 35px;
           letter-spacing: -0.01em;
         }
 
         .card-author {
-          font-size: 11.5px;
+          font-size: 11px;
           color: #64748b;
-          margin: 0 0 10px;
+          margin: 0 0 8px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -391,21 +413,14 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           color: #94a3b8;
         }
 
-        /* Essentials Footer: Level/Access + Rating */
+        /* Badges Footer: Level & Access side-by-side (Red Arrow) */
         .card-footer {
           margin-top: auto;
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          padding-top: 8px;
-          gap: 6px;
-        }
-
-        .essential-meta {
-          display: flex;
-          align-items: center;
           gap: 5px;
-          flex-wrap: wrap;
+          flex-wrap: nowrap;
+          padding-top: 2px;
         }
 
         .grade-pill {
@@ -413,44 +428,37 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           font-weight: 700;
           color: #4f46e5;
           background: #eef2ff;
-          padding: 2.5px 7px;
+          padding: 2px 6.5px;
           border-radius: 6px;
           white-space: nowrap;
+          line-height: 1.3;
         }
 
         .access-badge {
-          font-size: 9.5px;
+          font-size: 10px;
           font-weight: 700;
-          padding: 2.5px 7px;
+          padding: 2px 6.5px;
           border-radius: 6px;
           white-space: nowrap;
+          line-height: 1.3;
         }
 
         .access-badge.free {
           color: #059669;
           background: #ecfdf5;
+          border: 1px solid rgba(16, 185, 129, 0.25);
         }
 
         .access-badge.sub {
           color: #2563eb;
           background: #eff6ff;
+          border: 1px solid rgba(37, 99, 235, 0.25);
         }
 
         .access-badge.premium {
           color: #b45309;
           background: #fef3c7;
-        }
-
-        .rating-info {
-          display: flex;
-          align-items: center;
-          gap: 3.5px;
-        }
-
-        .rating-num {
-          font-size: 11.5px;
-          font-weight: 700;
-          color: #1e293b;
+          border: 1px solid rgba(245, 158, 11, 0.25);
         }
 
         /* Desktop Adjustments */
@@ -460,33 +468,39 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             padding: 14px 16px;
           }
 
+          .cover-rating-pill {
+            right: 12px;
+            bottom: 12px;
+            padding: 3px 8px;
+          }
+
           .book-3d-spine {
             width: 106px;
             height: 148px;
           }
 
           .card-body {
-            padding: 15px 16px 16px;
+            padding: 12px 14px 14px;
           }
 
           .card-title {
-            font-size: 14.5px;
-            min-height: 40px;
+            font-size: 14px;
+            min-height: 37px;
           }
 
           .card-author {
-            font-size: 12px;
-            margin-bottom: 12px;
+            font-size: 11.5px;
+            margin-bottom: 10px;
           }
 
           .grade-pill {
-            font-size: 11px;
-            padding: 3px 8px;
+            font-size: 10.5px;
+            padding: 2.5px 7px;
           }
 
           .access-badge {
             font-size: 10.5px;
-            padding: 3px 8px;
+            padding: 2.5px 7px;
           }
         }
       `}</style>
