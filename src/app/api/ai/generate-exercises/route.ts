@@ -98,11 +98,11 @@ async function callGeminiEngine({
   let promptInstruction = '';
   if (mode === 'exercices') {
     promptInstruction = `
-Tu es un inspecteur pédagogique d'excellence et professeur agrégé. À partir du contenu du document fourni ci-dessous, génère 3 exercices progressifs adaptés au niveau "${levelId}".
+Tu es un inspecteur pédagogique d'excellence et professeur agrégé. À partir du contenu du document ou de l'énoncé fourni ci-dessous, génère 3 exercices progressifs adaptés au niveau "${levelId}".
 RÈGLES CAPITALES :
 1. NE JAMAIS mentionner le nom de fichier ou son extension (.pdf, .docx, etc.).
-2. Pour les matières à calcul (Maths, Physique, Chimie, etc.) : utilise les vraies formules du document, donne des valeurs précises, détaille le remplacement des valeurs, effectue le calcul sans faute d'arithmétique, précise les unités et vérifie la cohérence.
-3. Pour les matières littéraires / humaines / droit : pose des questions précises sur les définitions, arguments, concepts et structure du texte.
+2. Si le texte est un problème ou un exercice de calcul (ex: vente, commerce, vitesse, maths, physique) : génère 3 exercices d'entraînement progressifs sur ce même type de problème (Exercice 1 : Application directe avec nouvelles valeurs, Exercice 2 : Démarche inverse type division ou recherche d'inconnue, Exercice 3 : Problème complet à deux étapes avec bénéfice ou analyse combinée).
+3. Effectue tous les calculs sans faute d'arithmétique, précise les unités et vérifie la cohérence.
 4. Rends un JSON STRICT valide avec la forme :
 {
   "exercises": [
@@ -118,10 +118,10 @@ RÈGLES CAPITALES :
 `;
   } else if (mode === 'qcm') {
     promptInstruction = `
-Tu es un concepteur d'épreuves officielles de QCM. À partir du contenu du document fourni ci-dessous, génère 6 à 8 questions de QCM pour le niveau "${levelId}".
+Tu es un concepteur d'épreuves officielles de QCM. À partir du contenu ou du problème fourni ci-dessous, génère 6 à 8 questions de QCM pour le niveau "${levelId}".
 RÈGLES CAPITALES :
 1. NE JAMAIS répéter le nom du document ou du fichier.
-2. Chaque question doit porter sur une notion, un chiffre, une formule, une règle ou une définition réelle tirée du document.
+2. Si le texte est un problème de calcul (ex: vente de pagnes, prix, vitesse, etc.) : pose des questions portant directement sur ce problème (le calcul exact, la formule utilisée, une variante avec une autre quantité, une variante avec réduction, et l'opération inverse).
 3. Les 3 mauvaises propositions doivent être crédibles et pédagogiquement pertinentes (pièges classiques, inversion d'unités ou de causalité), sans réponses absurdes.
 4. Fournis une explication détaillée expliquant pourquoi la bonne réponse est exacte et pourquoi les autres sont fausses.
 5. Rends un JSON STRICT valide avec la forme :
@@ -139,41 +139,41 @@ RÈGLES CAPITALES :
 `;
   } else {
     promptInstruction = `
-Tu es un correcteur officiel d'examen et professeur particulier bienveillant. Analyse le travail fourni en référence au document pour le niveau "${levelId}" et produis un rapport d'évaluation pédagogique ultra-précis.
+Tu es un correcteur officiel d'examen et professeur particulier bienveillant. Analyse le travail fourni pour le niveau "${levelId}" et produis un rapport d'évaluation pédagogique ultra-précis.
 RÈGLES CAPITALES :
-1. Ne pas répéter le nom du fichier.
-2. Pour chaque réponse examinée, détermine si elle est correcte, partiellement correcte ou incorrecte, identifie l'erreur exacte, donne la bonne méthode et explique comment l'élève pouvait trouver la réponse.
+1. NE JAMAIS noter un problème de maths ou d'arithmétique comme une dissertation littéraire ! Si le texte soumis est un énoncé de problème (ex: "Un marchand vend 12 pagnes à 15 000 FCFA : combien gagne-t-il en tout ?"), produis le Corrigé Officiel Modèle avec le calcul exact (12 × 15 000 = 180 000 FCFA), la formule (Total = Quantité × Prix unitaire) et la phrase réponse complète en lui attribuant "20 / 20 (Corrigé Officiel du Problème)".
+2. Pour chaque étape ou point examiné, détaille la formule, le calcul exact, l'erreur fréquente à éviter, la méthode et les conseils de calcul mental.
 3. Rends un JSON STRICT valide avec la forme :
 {
   "report": {
-    "grade": "15.5 / 20 (Mention Bien)",
-    "generalVerdict": "Synthèse de l'évaluation globale",
-    "subjectDomain": "Discipline concernée",
+    "grade": "20 / 20 (Corrigé Officiel du Problème)",
+    "generalVerdict": "Résolution complète et rigoureuse du problème",
+    "subjectDomain": "Discipline concernée (ex: Mathématiques & Arithmétique)",
     "levelEvaluated": "${levelId}",
     "criteriaScores": [
-      { "criterion": "Compréhension du sujet & Notions clés", "score": "4 / 5", "comment": "Remarque sur la compréhension" },
-      { "criterion": "Rigueur méthodologique & Démarche", "score": "3.5 / 5", "comment": "Remarque sur la démarche" },
-      { "criterion": "Exactitude des calculs ou argumentation", "score": "4 / 5", "comment": "Remarque sur l'exactitude" },
-      { "criterion": "Clarté de rédaction & Présentation", "score": "4 / 5", "comment": "Remarque sur la clarté" }
+      { "criterion": "Identification des données", "score": "5 / 5", "comment": "Toutes les données utiles sont repérées" },
+      { "criterion": "Choix de la formule & Démarche", "score": "5 / 5", "comment": "La bonne opération est appliquée" },
+      { "criterion": "Exactitude des calculs", "score": "5 / 5", "comment": "Calculs exacts et sans erreur" },
+      { "criterion": "Phrase réponse & Unités", "score": "5 / 5", "comment": "Phrase réponse complète et unité mentionnée" }
     ],
     "detailedEvaluations": [
       {
         "id": 1,
-        "questionOrProblem": "Question ou point évalué",
-        "studentAnswer": "Réponse observée",
+        "questionOrProblem": "Résolution de la question posée",
+        "studentAnswer": "Énoncé analysé",
         "status": "correct",
-        "statusLabel": "✅ Réponse exacte & maîtrisée",
-        "whyExplanation": "Pourquoi cette note",
-        "exactErrorIdentified": "Erreur exacte ou Aucune erreur",
-        "properMethod": "La bonne démarche à suivre",
-        "correctAnswerDetailed": "Corrigé modèle complet",
-        "stepByStepSolution": "Étapes de résolution détaillées",
-        "howToReachAnswer": "Conseil méthodologique pour réussir"
+        "statusLabel": "✅ Corrigé Officiel Validé",
+        "whyExplanation": "Explication du résultat",
+        "exactErrorIdentified": "Piège fréquent à éviter",
+        "properMethod": "Formule et méthode exacte",
+        "correctAnswerDetailed": "Corrigé modèle pas à pas",
+        "stepByStepSolution": "Étapes de calcul détaillées",
+        "howToReachAnswer": "Conseil méthodologique et astuce de calcul mental"
       }
     ],
     "strengths": ["Point fort 1", "Point fort 2"],
-    "improvements": ["Axe de progrès 1", "Axe de progrès 2"],
-    "summary": "Synthèse pédagogique encourageante",
+    "improvements": ["Conseil méthodologique 1", "Conseil méthodologique 2"],
+    "summary": "Synthèse de la résolution du problème",
     "pedagogicalAdvice": "Conseil personnalisé du professeur"
   }
 }

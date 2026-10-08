@@ -13,6 +13,7 @@
  */
 
 import { isGarbageText, analyzeDocumentContent, ExtractedDocumentData } from './documentExtractorService';
+import { detectAndSolveProblem, SolvedProblem } from './problemSolverService';
 
 export type TopicKind = 'calcul' | 'redaction' | 'document' | 'rapport';
 
@@ -27,9 +28,10 @@ export interface TopicKindInfo {
 export function detectTopicKind(topicName: string, levelId: string): TopicKindInfo {
   const lower = (topicName || '').toLowerCase();
 
-  // 1. Détection Calcul & Sciences (Maths, Physique, Chimie, Comptabilité, Finance, Algèbre)
+  // 1. Détection Calcul & Sciences (Maths, Arithmétique commerciale, Vente, FCFA, Physique, etc.)
   const isCalcul =
-    /(calcul|math|maths|équation|equation|intégral|integral|dérivé|derivee|fraction|algèbre|algebre|arithmétique|arithmetique|géométrie|geometrie|trigonométrie|trigonometrie|statistique|probabilité|probabilite|matrice|vecteur|fonction|polynôme|polynome|physique|chimie|mécanique|mecanique|vitesse|accélération|force|énergie|puissance|cinématique|thermodynamique|électricité|electricite|comptabilité|comptabilite|finance|taux|amortissement|bilan comptable|compte de résultat|chiffre|somme|produit|division|multiplication)/i.test(lower);
+    /(calcul|math|maths|équation|equation|intégral|integral|dérivé|derivee|fraction|algèbre|algebre|arithmétique|arithmetique|géométrie|geometrie|trigonométrie|trigonometrie|statistique|probabilité|probabilite|matrice|vecteur|fonction|polynôme|polynome|physique|chimie|mécanique|mecanique|vitesse|accélération|force|énergie|puissance|cinématique|thermodynamique|électricité|electricite|comptabilité|comptabilite|finance|taux|amortissement|bilan comptable|compte de résultat|chiffre|somme|produit|division|multiplication|fcfa|f\s*cfa|franc|francs|€|\$|prix|co[uû]t|cout|vend|vendu|vente|ach[eè]te|achat|bénéfice|remise|combien|chacun|l'un|l'unité|pièce|total|gain|dépense|payer|payé|kilo|kg|mètre|litre|km\/h|km\b)/i.test(lower) ||
+    (/\d+/.test(lower) && /(fcfa|franc|vend|ach[eè]te|chacun|combien|\*|\/|\+|x|×)/i.test(lower));
 
   // 2. Détection Document / Fichier importé / Annales
   const isDocument =
@@ -54,13 +56,13 @@ export function detectTopicKind(topicName: string, levelId: string): TopicKindIn
   let minWords = 25;
   if (kind === 'calcul') {
     switch (levelId) {
-      case 'primaire': minWords = 4; break;
-      case 'college': minWords = 8; break;
-      case 'lycee': minWords = 12; break;
-      case 'superieur': minWords = 15; break;
-      case 'concours': minWords = 18; break;
-      case 'autres': minWords = 10; break;
-      default: minWords = 10;
+      case 'primaire': minWords = 3; break;
+      case 'college': minWords = 4; break;
+      case 'lycee': minWords = 4; break;
+      case 'superieur': minWords = 5; break;
+      case 'concours': minWords = 5; break;
+      case 'autres': minWords = 4; break;
+      default: minWords = 4;
     }
   } else if (kind === 'rapport') {
     switch (levelId) {
@@ -600,6 +602,72 @@ function buildCorrectionReportFromAnalysis(
   };
 }
 
+/**
+ * Construit un rapport de correction certifié pour un problème d'exercice ou de calcul résolu
+ */
+function buildCorrectionReportFromSolvedProblem(
+  solved: SolvedProblem,
+  levelId: string
+): CorrectionReportData {
+  const stepsText = solved.calculationSteps.map(s => `• ${s}`).join('\n');
+  const itemsText = solved.dataGiven.map(d => `${d.label} : ${d.value}`).join(' | ');
+
+  const detailedItem: CorrectionItemEvaluation = {
+    id: 1,
+    questionOrProblem: `Résolution complète du problème : « ${solved.question} »`,
+    studentAnswer: `Énoncé soumis : ${solved.dataGiven.map(d => `${d.label} = ${d.value}`).join(', ')}`,
+    status: 'correct',
+    statusLabel: `✅ Corrigé Officiel Validé (${solved.finalResultFormatted})`,
+    whyExplanation: `Pour résoudre ce problème, il faut appliquer la relation arithmétique fondamentale : ${solved.formula}.`,
+    exactErrorIdentified: `Piège classique à éviter : ne pas faire d'addition arbitraire (ex: additionner la quantité au prix). Le calcul arithmétique requiert le produit de la quantité par le prix unitaire.`,
+    properMethod: `1. Isoler les données fournies (${itemsText}).\n2. Poser la formule littérale : ${solved.formula}.\n3. Effectuer l'application numérique et le calcul.\n4. Rédiger la phrase réponse avec l'unité (${solved.unit || 'légale'}).`,
+    correctAnswerDetailed: `📌 FORMULE OFFICIELLE :\n${solved.formula}\n\n🔢 DÉTAIL DES CALCULS :\n${stepsText}\n\n🎯 PHRASE RÉPONSE TYPE :\n${solved.answerSentence}`,
+    stepByStepSolution: stepsText,
+    howToReachAnswer: solved.quickMentalMathTip || `Retenez la formule ${solved.formula} et vérifiez toujours la cohérence de l'unité finale (${solved.unit}).`,
+  };
+
+  return {
+    grade: '20 / 20 (Corrigé Officiel du Problème)',
+    generalVerdict: `Résolution mathématique rigoureuse et validée. Résultat final : ${solved.finalResultFormatted}.`,
+    subjectDomain: solved.subjectLabel,
+    levelEvaluated: levelId.toUpperCase(),
+    criteriaScores: [
+      {
+        criterion: 'Identification des données de l’énoncé',
+        score: '5 / 5',
+        comment: `Toutes les données utiles sont clairement isolées (${itemsText}).`,
+      },
+      {
+        criterion: 'Choix de la formule & Démarche arithmétique',
+        score: '5 / 5',
+        comment: `La formule adéquate est appliquée : ${solved.formula}.`,
+      },
+      {
+        criterion: 'Exactitude des calculs numériques',
+        score: '5 / 5',
+        comment: `Calculs menés avec exactitude : résultat = ${solved.finalResultFormatted}.`,
+      },
+      {
+        criterion: 'Phrase réponse & Respect des unités',
+        score: '5 / 5',
+        comment: `Phrase réponse claire, univoque avec mention de l'unité légale (${solved.unit || 'appropriée'}).`,
+      },
+    ],
+    detailedEvaluations: [detailedItem],
+    strengths: [
+      `Formule arithmétique rigoureuse : ${solved.formula}.`,
+      `Calcul numérique sans aucune faute d'arithmétique : résultat = ${solved.finalResultFormatted}.`,
+      `Phrase réponse complète et explicite : « ${solved.answerSentence} ».`,
+    ],
+    improvements: [
+      'Veiller à toujours écrire la formule littérale avant de poser les calculs.',
+      'S\'entraîner au calcul mental rapide pour vérifier son résultat en quelques secondes.',
+    ],
+    summary: `Voici la correction officielle complète de votre problème. Pour trouver le résultat, on applique la formule : ${solved.formula}. Le calcul donne exactement ${solved.finalResultFormatted}. ${solved.answerSentence}`,
+    pedagogicalAdvice: solved.quickMentalMathTip || `Conseil d'un professeur particulier : Dans les problèmes commerciaux, retenez le triangle : Total = Quantité × Prix unitaire. Pour retrouver le prix unitaire, divisez le total par la quantité.`,
+  };
+}
+
 export const exerciseGeneratorService = {
   classifyTopic(topicName: string, levelId: string): TopicKindInfo {
     return detectTopicKind(topicName, levelId);
@@ -651,7 +719,54 @@ export const exerciseGeneratorService = {
 
     const kindInfo = detectTopicKind(topicName, levelId);
 
-    // Si on a le texte réel du document, créons des exercices d'analyse directe du texte
+    // 1. Détection prioritaire : est-ce un énoncé d'exercice / de problème à résoudre ?
+    const textToInspect = (extractedText && extractedText.trim().length > 0 ? extractedText : topicName) || '';
+    const solved = detectAndSolveProblem(textToInspect, topicName);
+    if (solved) {
+      return [
+        {
+          id: 1,
+          title: solved.variations.directApplication.title,
+          duration: '15 min',
+          statement: solved.variations.directApplication.statement,
+          solution: solved.variations.directApplication.solution,
+          isSolutionVisible: false,
+          topicKind: 'calcul',
+          minWordsRequired: 3,
+          kindLabel: 'Calcul & Application directe',
+          badgeIcon: '🔢',
+          instructionHint: 'Posez votre formule et votre calcul (ex: 25 × 16 000 = 400 000 FCFA)',
+        },
+        {
+          id: 2,
+          title: solved.variations.inverseProblem.title,
+          duration: '20 min',
+          statement: solved.variations.inverseProblem.statement,
+          solution: solved.variations.inverseProblem.solution,
+          isSolutionVisible: false,
+          topicKind: 'calcul',
+          minWordsRequired: 4,
+          kindLabel: 'Calcul inverse & Démarche algébrique',
+          badgeIcon: '🔄',
+          instructionHint: 'Posez l’opération inverse (division) et votre résultat',
+        },
+        {
+          id: 3,
+          title: solved.variations.twoStepSynthesis.title,
+          duration: '25 min',
+          statement: solved.variations.twoStepSynthesis.statement,
+          solution: solved.variations.twoStepSynthesis.solution,
+          isSolutionVisible: false,
+          topicKind: 'calcul',
+          minWordsRequired: 5,
+          kindLabel: 'Problème de synthèse à deux étapes',
+          badgeIcon: '💼',
+          instructionHint: 'Détaillez le calcul d’achat puis le calcul du bénéfice',
+        },
+      ];
+    }
+
+    // 2. Si on a le texte réel du document extrait, créons des exercices d'analyse directe du texte
     if (hasDocText) {
       const analysis = analyzeDocumentContent(extractedText!, topicName);
       return buildExercisesFromAnalysis(analysis, cleanSubject, levelId);
@@ -876,7 +991,20 @@ Réfutation posée, démonstration de la résilience du modèle et ouverture sur
     const c3 = concepts[2] || 'critère de validation';
     const c4 = concepts[3] || 'synthèse des faits';
 
-    // Si on a le texte réel du document extrait, questions basées directement sur ses éléments
+    // 1. Détection prioritaire : est-ce un énoncé d'exercice / problème avec calculs ?
+    const textToInspect = (extractedText && extractedText.trim().length > 0 ? extractedText : topicName) || '';
+    const solved = detectAndSolveProblem(textToInspect, topicName);
+    if (solved && solved.qcmQuestions.length > 0) {
+      return solved.qcmQuestions.map((q, idx) => ({
+        id: idx + 1,
+        question: q.question,
+        options: q.options,
+        correctIndex: q.correctIndex,
+        explanation: q.explanation,
+      }));
+    }
+
+    // 2. Si on a le texte réel du document extrait, questions basées directement sur ses éléments
     if (hasDocText) {
       const analysis = analyzeDocumentContent(extractedText!, topicName);
       return buildQCMFromAnalysis(analysis, cleanSubject, levelId);
@@ -1209,6 +1337,14 @@ Réfutation posée, démonstration de la résilience du modèle et ouverture sur
       : [`Notion centrale de ${cleanSubject}`, 'Méthode d\'analyse'];
     const c1 = concepts[0] || `notion principale de ${cleanSubject}`;
 
+    // 1. Détection prioritaire : est-ce un énoncé d'exercice / de problème à corriger et résoudre ?
+    const textToInspect = (extractedText && extractedText.trim().length > 0 ? extractedText : topicName) || '';
+    const solved = detectAndSolveProblem(textToInspect, topicName);
+    if (solved) {
+      return buildCorrectionReportFromSolvedProblem(solved, levelId);
+    }
+
+    // 2. Si on a le texte réel d'un document ou cours, analyse d'évaluation
     if (hasDocText) {
       const analysis = analyzeDocumentContent(extractedText!, topicName);
       return buildCorrectionReportFromAnalysis(analysis, cleanSubject, levelId, extractedText);
