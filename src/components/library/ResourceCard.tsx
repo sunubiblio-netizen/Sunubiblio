@@ -28,12 +28,63 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   const getAccessBadge = () => {
     switch (resource.accessLevel) {
       case 'premium':
-        return <span className="access-badge premium">Gold Premium</span>;
+        return (
+          <span
+            className="access-badge premium"
+            style={{
+              fontSize: '9.5px',
+              fontWeight: 700,
+              padding: '2px 6px',
+              borderRadius: '5px',
+              color: '#b45309',
+              background: '#fef3c7',
+              border: '1px solid rgba(245, 158, 11, 0.3)',
+              whiteSpace: 'nowrap',
+              lineHeight: 1.2,
+            }}
+          >
+            Gold
+          </span>
+        );
       case 'subscription':
-        return <span className="access-badge sub">Abonnement</span>;
+        return (
+          <span
+            className="access-badge sub"
+            style={{
+              fontSize: '9.5px',
+              fontWeight: 700,
+              padding: '2px 6px',
+              borderRadius: '5px',
+              color: '#2563eb',
+              background: '#eff6ff',
+              border: '1px solid rgba(37, 99, 235, 0.3)',
+              whiteSpace: 'nowrap',
+              lineHeight: 1.2,
+            }}
+          >
+            Abonnement
+          </span>
+        );
       case 'free':
       default:
-        return <span className="access-badge free">Gratuit</span>;
+        return (
+          <span
+            className="access-badge free"
+            style={{
+              fontSize: '9.5px',
+              fontWeight: 700,
+              padding: '2px 6px',
+              borderRadius: '5px',
+              color: '#059669',
+              background: '#ecfdf5',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              whiteSpace: 'nowrap',
+              lineHeight: 1.2,
+            }}
+          >
+            Gratuit
+          </span>
+        );
     }
   };
 
@@ -323,10 +374,10 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           justify-content: center;
         }
 
-        /* Floating Rating Pill in Cover Banner */
+        /* Floating Rating Pill in Cover Banner (Moved to the other side: left) */
         .cover-rating-pill {
           position: absolute;
-          right: 9px;
+          left: 9px;
           bottom: 9px;
           z-index: 4;
           display: inline-flex;
@@ -413,52 +464,56 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           color: #94a3b8;
         }
 
-        /* Badges Footer: Level & Access side-by-side (Red Arrow) */
+        /* Badges Footer: Level on left, Access pushed completely to the other side */
         .card-footer {
           margin-top: auto;
           display: flex;
           align-items: center;
-          gap: 5px;
-          flex-wrap: nowrap;
+          justify-content: space-between;
+          width: 100%;
+          gap: 6px;
           padding-top: 2px;
         }
 
         .grade-pill {
-          font-size: 10px;
+          font-size: 9.5px;
           font-weight: 700;
           color: #4f46e5;
           background: #eef2ff;
-          padding: 2px 6.5px;
-          border-radius: 6px;
+          padding: 2px 6px;
+          border-radius: 5px;
           white-space: nowrap;
-          line-height: 1.3;
+          line-height: 1.2;
+          flex-shrink: 0;
         }
 
         .access-badge {
-          font-size: 10px;
+          font-size: 9.5px;
           font-weight: 700;
-          padding: 2px 6.5px;
-          border-radius: 6px;
+          padding: 2px 6px;
+          border-radius: 5px;
           white-space: nowrap;
-          line-height: 1.3;
+          line-height: 1.2;
+          margin-left: auto;
+          flex-shrink: 0;
         }
 
         .access-badge.free {
           color: #059669;
           background: #ecfdf5;
-          border: 1px solid rgba(16, 185, 129, 0.25);
+          border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .access-badge.sub {
           color: #2563eb;
           background: #eff6ff;
-          border: 1px solid rgba(37, 99, 235, 0.25);
+          border: 1px solid rgba(37, 99, 235, 0.3);
         }
 
         .access-badge.premium {
           color: #b45309;
           background: #fef3c7;
-          border: 1px solid rgba(245, 158, 11, 0.25);
+          border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
         /* Desktop Adjustments */
@@ -469,7 +524,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           }
 
           .cover-rating-pill {
-            right: 12px;
+            left: 12px;
             bottom: 12px;
             padding: 3px 8px;
           }
