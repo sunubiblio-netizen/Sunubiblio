@@ -1,18 +1,16 @@
 /**
  * Sunubiblio — Configuration Centralisée du App Launcher (Menu Applications)
  * 
- * Organisé rigoureusement selon les 6 sections thématiques validées :
+ * Organisé selon les 5 sections thématiques du lanceur :
  * 1. APPLICATIONS PRINCIPALES (Bibliothèque, Éducation, Concours, Documents, Professeurs, Établissements)
- * 2. ENTRAÎNEMENT & IA (Exercice, Assistant IA, Antiplagiat)
- * 3. COURS & RENDEZ-VOUS (Cours, Visio, Agenda)
- * 4. RESSOURCES & DOCUMENTS (Ressources, Mes documents, Religion, Notes)
- * 5. COMMERCE (Marketplace, Vendre un livre, Mes ventes, Mes achats)
- * 6. MON COMPTE & SERVICES (Formules & Tarifs)
+ * 2. COURS & RENDEZ-VOUS (Cours, Visio, Agenda)
+ * 3. RESSOURCES & DOCUMENTS (Ressources, Mes documents, Religion, Notes)
+ * 4. COMMERCE (Marketplace, Vendre un livre, Mes ventes, Mes achats)
+ * 5. MON COMPTE & SERVICES (Formules & Tarifs)
  */
 
 export type AppCategoryKey = 
   | 'principales'
-  | 'entrainement_ia'
   | 'cours_rdv'
   | 'ressources_doc'
   | 'commerce'
@@ -45,11 +43,6 @@ export const APP_LAUNCHER_CATEGORIES: AppCategoryData[] = [
     key: 'principales',
     title: 'APPLICATIONS PRINCIPALES',
     description: 'Bibliothèque numérique, cycles scolaires, concours officiels et établissements',
-  },
-  {
-    key: 'entrainement_ia',
-    title: 'ENTRAÎNEMENT & IA',
-    description: 'Génération d’exercices, QCM, corrections, tuteur intelligent et antiplagiat',
   },
   {
     key: 'cours_rdv',
@@ -148,46 +141,7 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
   },
 
   // ==========================================
-  // 2. ENTRAÎNEMENT & IA
-  // ==========================================
-  {
-    id: 'exercices',
-    name: 'Exercice',
-    shortDescription: 'QCM, devoirs & corrections',
-    href: '/exercices',
-    iconId: 'exercices',
-    category: 'entrainement_ia',
-    order: 1,
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'assistant-ia',
-    name: 'Assistant IA',
-    shortDescription: 'Résumer, expliquer & tuteur',
-    href: '/ia',
-    iconId: 'assistant_ia',
-    category: 'entrainement_ia',
-    order: 2,
-    badge: { text: 'IA', variant: 'ai' },
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'antiplagiat',
-    name: 'Antiplagiat',
-    shortDescription: 'Similarité & intégrité',
-    href: '/ia/antiplagiat',
-    iconId: 'antiplagiat',
-    category: 'entrainement_ia',
-    order: 3,
-    badge: { text: 'Pro', variant: 'pro' },
-    enabled: true,
-    available: true,
-  },
-
-  // ==========================================
-  // 3. COURS & RENDEZ-VOUS (3 seulement)
+  // 2. COURS & RENDEZ-VOUS (3 seulement)
   // ==========================================
   {
     id: 'cours',
