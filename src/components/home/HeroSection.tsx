@@ -98,7 +98,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
         .orb-blue {
           width: 580px;
           height: 440px;
-          top: 15%;
+          top: 8%;
           left: 10%;
           background: radial-gradient(circle, rgba(59, 130, 246, 0.48) 0%, rgba(99, 102, 241, 0.22) 65%, transparent 100%);
         }
@@ -106,7 +106,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
         .orb-violet {
           width: 560px;
           height: 460px;
-          top: 18%;
+          top: 10%;
           right: 10%;
           background: radial-gradient(circle, rgba(168, 85, 247, 0.44) 0%, rgba(139, 92, 246, 0.2) 65%, transparent 100%);
           animation-delay: -2.5s;
