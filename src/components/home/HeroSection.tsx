@@ -17,17 +17,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSpinning, setIsSpinning] = useState(false);
   const [phraseIndex, setPhraseIndex] = useState(0);
-  const [animState, setAnimState] = useState<'entering' | 'exiting'>('entering');
+  const [waveState, setWaveState] = useState<'wave-in' | 'wave-out'>('wave-in');
 
-  // Modern pop-in & pop-out phrase transition
+  // Fluid wave-in & wave-out phrase transition
   useEffect(() => {
     const interval = setInterval(() => {
-      setAnimState('exiting');
+      setWaveState('wave-out');
       setTimeout(() => {
         setPhraseIndex((prev) => (prev + 1) % DESCRIPTION_PHRASES.length);
-        setAnimState('entering');
-      }, 340);
-    }, 3200);
+        setWaveState('wave-in');
+      }, 420);
+    }, 3400);
 
     return () => clearInterval(interval);
   }, []);
@@ -64,9 +64,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           Explorez le savoir
         </h1>
 
-        {/* Subtitle / Description (Titre 2) — Modern Pop Animation */}
+        {/* Subtitle / Description (Titre 2) — Fluid Wave Animation */}
         <p className="hero-aurora-subtitle">
-          <span className={`hero-pop-text ${animState}`}>
+          <span className={`hero-wave-text ${waveState}`}>
             {DESCRIPTION_PHRASES[phraseIndex]}
           </span>
         </p>
@@ -241,46 +241,50 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           justify-content: center;
         }
 
-        .hero-pop-text {
+        .hero-wave-text {
           display: inline-block;
           will-change: transform, opacity, filter;
         }
 
-        .hero-pop-text.entering {
-          animation: text-pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        .hero-wave-text.wave-in {
+          animation: wave-wash-in 0.58s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
-        .hero-pop-text.exiting {
-          animation: text-pop-out 0.32s cubic-bezier(0.4, 0, 1, 1) forwards;
+        .hero-wave-text.wave-out {
+          animation: wave-roll-out 0.42s cubic-bezier(0.4, 0, 0.7, 1) forwards;
         }
 
-        @keyframes text-pop-in {
+        @keyframes wave-wash-in {
           0% {
             opacity: 0;
-            transform: scale(0.86) translateY(8px);
+            transform: translateY(14px) rotate(1.8deg) skewX(1deg);
             filter: blur(4px);
           }
-          70% {
-            transform: scale(1.04) translateY(-1px);
+          65% {
+            opacity: 0.95;
+            transform: translateY(-2px) rotate(-0.6deg) skewX(-0.5deg);
             filter: blur(0px);
           }
           100% {
             opacity: 1;
-            transform: scale(1) translateY(0);
+            transform: translateY(0) rotate(0deg) skewX(0deg);
             filter: blur(0px);
           }
         }
 
-        @keyframes text-pop-out {
+        @keyframes wave-roll-out {
           0% {
             opacity: 1;
-            transform: scale(1) translateY(0);
+            transform: translateY(0) rotate(0deg) skewX(0deg);
             filter: blur(0px);
+          }
+          35% {
+            transform: translateY(-3px) rotate(0.8deg) skewX(0.5deg);
           }
           100% {
             opacity: 0;
-            transform: scale(0.92) translateY(-7px);
-            filter: blur(3px);
+            transform: translateY(-14px) rotate(-1.8deg) skewX(-1deg);
+            filter: blur(4px);
           }
         }
 
