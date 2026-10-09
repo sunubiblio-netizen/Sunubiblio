@@ -92,7 +92,15 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
   onToggleFilters,
   activeFiltersCount,
 }) => {
-  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
+  const [isCategoryBarOpen, setIsCategoryBarOpen] = useState(false);
+  const ribbonRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollRibbon = (direction: 'left' | 'right') => {
+    if (ribbonRef.current) {
+      const scrollOffset = direction === 'left' ? -220 : 220;
+      ribbonRef.current.scrollBy({ left: scrollOffset, behavior: 'smooth' });
+    }
+  };
 
   // Active filter badges
   const activePills: { key: string; label: string; remove: () => void }[] = [];
@@ -165,9 +173,10 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
 
   return (
     <section className="resource-grid-section">
-      {/* Top Header Row (Aéré, spacieux, bouton Filtres à gauche, Tri à droite) */}
+      {/* Top Header Row (Aéré, spacieux, bouton Filtres + bouton + transparent à gauche, Tri à droite) */}
       <div className="grid-header">
         <div className="grid-header-left">
+          {/* Bouton Filtres : ouvre/ferme les filtres (Image 2) */}
           <button
             type="button"
             className={`filter-toggle-pill-btn ${isFiltersOpen ? 'active' : ''}`}
@@ -184,69 +193,20 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
             )}
           </button>
 
-          {/* Bouton '+' transparent pour ouvrir les catégories (Livres, Cours, Annales...) */}
-          <div className="cat-plus-picker-wrapper">
-            <button
-              type="button"
-              className={`cat-plus-btn ${isCategoryMenuOpen ? 'active' : ''}`}
-              onClick={() => setIsCategoryMenuOpen(!isCategoryMenuOpen)}
-              aria-expanded={isCategoryMenuOpen}
-              aria-label="Choisir une catégorie"
-              title="Catégories (Livres, Cours, Annales...)"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-            </button>
-
-            {isCategoryMenuOpen && (
-              <>
-                <div
-                  className="cat-picker-backdrop"
-                  onClick={() => setIsCategoryMenuOpen(false)}
-                  aria-hidden="true"
-                />
-                <div className="cat-picker-dropdown" role="dialog" aria-label="Catégories">
-                  <div className="cat-picker-header">
-                    <span className="cat-picker-title">Catégories</span>
-                    <button
-                      type="button"
-                      className="cat-picker-close"
-                      onClick={() => setIsCategoryMenuOpen(false)}
-                      aria-label="Fermer"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                  <div className="cat-picker-list">
-                    {QUICK_CATEGORY_ITEMS.map((cat) => {
-                      const isActive = filters.category === cat.id;
-                      return (
-                        <button
-                          key={cat.id}
-                          type="button"
-                          className={`cat-picker-item ${isActive ? 'active' : ''}`}
-                          onClick={() => {
-                            onFilterChange({ category: isActive ? 'all' : cat.id, page: 1 });
-                            setIsCategoryMenuOpen(false);
-                          }}
-                        >
-                          <span className="item-dot" />
-                          <span className="item-name">{cat.label}</span>
-                          {isActive && (
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+          {/* Bouton '+' transparent placé à côté de Filtres (dans le cercle tracé par l'utilisateur) */}
+          <button
+            type="button"
+            className={`cat-plus-toggle-btn ${isCategoryBarOpen ? 'active' : ''}`}
+            onClick={() => setIsCategoryBarOpen(!isCategoryBarOpen)}
+            aria-expanded={isCategoryBarOpen}
+            aria-label={isCategoryBarOpen ? 'Masquer les catégories' : 'Afficher les catégories'}
+            title={isCategoryBarOpen ? 'Masquer les catégories' : 'Explorer les catégories (Livres, Cours, Annales...)'}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
         </div>
 
         <div className="grid-header-right">
@@ -259,6 +219,54 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           />
         </div>
       </div>
+
+      {/* Ruban horizontal fluide des catégories (ouvert au clic sur le '+', défilable avec fluidité) */}
+      {isCategoryBarOpen && (
+        <div className="cat-fluid-ribbon-wrapper">
+          <button
+            type="button"
+            className="ribbon-arrow-btn prev"
+            onClick={() => scrollRibbon('left')}
+            aria-label="Faire défiler vers la gauche"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+
+          <div className="cat-fluid-ribbon-track" ref={ribbonRef}>
+            {QUICK_CATEGORY_ITEMS.map((cat) => {
+              const isActive = filters.category === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  className={`cat-ribbon-pill ${isActive ? 'active' : ''}`}
+                  onClick={() => {
+                    onFilterChange({ category: isActive ? 'all' : cat.id, page: 1 });
+                  }}
+                >
+                  {isActive && (
+                    <span className="pill-active-dot" />
+                  )}
+                  <span>{cat.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            className="ribbon-arrow-btn next"
+            onClick={() => scrollRibbon('right')}
+            aria-label="Faire défiler vers la droite"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       {/* Active Filter Pills Row */}
       {activePills.length > 0 && (
@@ -337,63 +345,61 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           position: relative;
         }
 
-        .cat-plus-picker-wrapper {
-          position: relative;
-        }
-
-        .cat-plus-btn {
+        .cat-plus-toggle-btn {
           width: 36px;
           height: 36px;
           border-radius: var(--radius-full);
           background: transparent;
-          border: 1.5px dashed #cbd5e1;
+          border: 1.5px solid #cbd5e1;
           color: #64748b;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .cat-plus-btn:hover,
-        .cat-plus-btn.active {
+        .cat-plus-toggle-btn:hover {
           background: #fffdf5;
           border-color: #eab308;
           color: #854d0e;
-          border-style: solid;
+        }
+
+        .cat-plus-toggle-btn.active {
+          background: #fefce8;
+          border-color: #eab308;
+          color: #854d0e;
           box-shadow: 0 2px 8px rgba(234, 179, 8, 0.18);
-          transform: rotate(90deg);
         }
 
-        .cat-picker-backdrop {
-          position: fixed;
-          inset: 0;
-          z-index: 490;
-          background: rgba(15, 23, 42, 0.08);
-          backdrop-filter: blur(1px);
+        .cat-plus-toggle-btn.active svg {
+          transform: rotate(45deg);
+          transition: transform 0.22s ease;
         }
 
-        .cat-picker-dropdown {
-          position: absolute;
-          top: calc(100% + 8px);
-          left: 0;
-          width: 270px;
-          max-height: 400px;
-          background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.95);
-          border-radius: 16px;
-          box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.12), 0 2px 8px rgba(15, 23, 42, 0.04);
-          z-index: 500;
-          overflow: hidden;
+        .cat-plus-toggle-btn svg {
+          transition: transform 0.22s ease;
+        }
+
+        /* Ruban horizontal fluide des catégories */
+        .cat-fluid-ribbon-wrapper {
           display: flex;
-          flex-direction: column;
-          animation: popoverFade 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+          align-items: center;
+          gap: 6px;
+          margin-bottom: 20px;
+          padding: 8px 10px;
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.85);
+          border-radius: var(--radius-full);
+          box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+          animation: ribbonExpand 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+          position: relative;
         }
 
-        @keyframes popoverFade {
+        @keyframes ribbonExpand {
           from {
             opacity: 0;
-            transform: translateY(-6px);
+            transform: translateY(-8px);
           }
           to {
             opacity: 1;
@@ -401,89 +407,80 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           }
         }
 
-        .cat-picker-header {
+        .cat-fluid-ribbon-track {
+          flex: 1;
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          padding: 12px 16px;
-          border-bottom: 1px solid #f1f5f9;
+          gap: 8px;
+          overflow-x: auto;
+          scroll-behavior: smooth;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          padding: 2px 4px;
         }
 
-        .cat-picker-title {
+        .cat-fluid-ribbon-track::-webkit-scrollbar {
+          display: none;
+        }
+
+        .cat-ribbon-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          white-space: nowrap;
+          padding: 7px 15px;
           font-size: 13px;
-          font-weight: 700;
-          color: #0f172a;
-        }
-
-        .cat-picker-close {
-          background: transparent;
-          border: none;
-          color: #94a3b8;
-          font-size: 12px;
+          font-weight: 500;
+          color: #475569;
+          background: #f8fafc;
+          border: 1px solid rgba(226, 232, 240, 0.85);
+          border-radius: var(--radius-full);
           cursor: pointer;
-          padding: 4px;
-          border-radius: 6px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .cat-picker-close:hover {
-          color: #0f172a;
-          background: #f1f5f9;
-        }
-
-        .cat-picker-list {
-          padding: 6px;
-          overflow-y: auto;
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-        }
-
-        .cat-picker-item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 8px 12px;
-          border-radius: 10px;
-          background: transparent;
-          border: none;
-          color: #334155;
-          font-size: 13px;
-          font-weight: 600;
-          text-align: left;
-          cursor: pointer;
-          transition: all 0.15s ease;
-          width: 100%;
-        }
-
-        .cat-picker-item:hover {
-          background: #fffdf5;
-          color: #854d0e;
-        }
-
-        .cat-picker-item.active {
-          background: #fefce8;
-          color: #854d0e;
-          font-weight: 700;
-        }
-
-        .cat-picker-item .item-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: #cbd5e1;
+          transition: all 0.18s ease;
+          user-select: none;
           flex-shrink: 0;
         }
 
-        .cat-picker-item.active .item-dot {
-          background: #eab308;
-          box-shadow: 0 0 6px rgba(234, 179, 8, 0.6);
+        .cat-ribbon-pill:hover {
+          background: #fffdf5;
+          border-color: #eab308;
+          color: #854d0e;
         }
 
-        .cat-picker-item .item-name {
-          flex: 1;
+        .cat-ribbon-pill.active {
+          background: #fefce8;
+          border-color: #eab308;
+          color: #713f12;
+          font-weight: 700;
+          box-shadow: 0 2px 6px rgba(234, 179, 8, 0.15);
+        }
+
+        .pill-active-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #eab308;
+          display: inline-block;
+        }
+
+        .ribbon-arrow-btn {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background: #f1f5f9;
+          border: none;
+          color: #64748b;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          flex-shrink: 0;
+          transition: all 0.15s ease;
+        }
+
+        .ribbon-arrow-btn:hover {
+          background: #e2e8f0;
+          color: #0f172a;
         }
 
         .filter-toggle-pill-btn {

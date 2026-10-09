@@ -29,6 +29,7 @@ const INITIAL_FILTERS: FilterState = {
 export default function LibraryPage() {
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const [isDesktopFiltersOpen, setIsDesktopFiltersOpen] = useState(true);
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
@@ -191,7 +192,7 @@ export default function LibraryPage() {
         {/* Main Content Area */}
         <div className="container library-content-container">
           <div className="library-layout">
-            {/* Colonne Filtres (ouverte sur PC à gauche comme sur l'Image 2) */}
+            {/* Colonne Filtres (ouverte sur PC à gauche comme sur l'Image 2, repliable pour aérer la page) */}
             <FilterSidebar
               filters={filters}
               onFilterChange={handleFilterChange}
@@ -199,6 +200,7 @@ export default function LibraryPage() {
               activeFiltersCount={activeFiltersCount}
               isOpen={filterDrawerOpen}
               onClose={() => setFilterDrawerOpen(false)}
+              isDesktopOpen={isDesktopFiltersOpen}
             />
 
             {/* Colonne droite : Livres et contrôles dans le rectangle tracé par l'utilisateur */}
@@ -210,8 +212,8 @@ export default function LibraryPage() {
                 onFilterChange={handleFilterChange}
                 onResetFilters={handleResetFilters}
                 onOpenMobileFilters={() => setFilterDrawerOpen(true)}
-                isFiltersOpen={filterDrawerOpen}
-                onToggleFilters={() => setFilterDrawerOpen((prev) => !prev)}
+                isFiltersOpen={isDesktopFiltersOpen}
+                onToggleFilters={() => setIsDesktopFiltersOpen((prev) => !prev)}
                 activeFiltersCount={activeFiltersCount}
                 onOpenResource={(res) => setSelectedResource(res)}
               />
