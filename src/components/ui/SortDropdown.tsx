@@ -176,7 +176,7 @@ export function SortDropdown<T extends string>({
                         height="13"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke="#4f46e5"
+                        stroke="#d97706"
                         strokeWidth="3"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -232,17 +232,17 @@ export function SortDropdown<T extends string>({
         }
 
         .dropdown-trigger-btn.active {
-          border-color: #6366f1;
-          color: #4f46e5;
-          background: #ffffff;
-          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+          border-color: #f59e0b;
+          color: #854d0e;
+          background: #fffdf5;
+          box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
         }
 
         .trigger-icon-wrap {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #6366f1;
+          color: #d97706;
         }
 
         .trigger-selected-text {
@@ -258,7 +258,7 @@ export function SortDropdown<T extends string>({
 
         .trigger-chevron.rotated {
           transform: rotate(180deg);
-          color: #4f46e5;
+          color: #d97706;
         }
 
         /* Pure White Designer Card */
@@ -337,7 +337,7 @@ export function SortDropdown<T extends string>({
         }
 
         .popover-option-item.selected {
-          background: rgba(79, 70, 229, 0.06);
+          background: rgba(254, 240, 138, 0.3);
         }
 
         .option-icon-box {
@@ -347,21 +347,21 @@ export function SortDropdown<T extends string>({
           width: 28px;
           height: 28px;
           border-radius: 8px;
-          background: #f1f5f9;
-          color: #64748b;
+          background: #fefce8;
+          color: #854d0e;
           flex-shrink: 0;
           transition: all 0.15s ease;
         }
 
         .popover-option-item:hover .option-icon-box {
-          background: rgba(99, 102, 241, 0.1);
-          color: #4f46e5;
+          background: #fef08a;
+          color: #713f12;
         }
 
         .popover-option-item.selected .option-icon-box {
-          background: linear-gradient(135deg, #4f46e5 0%, #7e22ce 100%);
-          color: #ffffff;
-          box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+          background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+          color: #713f12;
+          box-shadow: 0 2px 6px rgba(234, 179, 8, 0.25);
         }
 
         .option-text-group {
@@ -381,7 +381,7 @@ export function SortDropdown<T extends string>({
 
         .popover-option-item.selected .option-main-label {
           font-weight: 700;
-          color: #4f46e5;
+          color: #854d0e;
         }
 
         .option-desc-label {
@@ -400,7 +400,7 @@ export function SortDropdown<T extends string>({
           width: 18px;
           height: 18px;
           border-radius: 50%;
-          background: rgba(79, 70, 229, 0.1);
+          background: rgba(234, 179, 8, 0.2);
           flex-shrink: 0;
         }
 

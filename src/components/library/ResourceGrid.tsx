@@ -300,7 +300,7 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
 
         .results-count {
           font-weight: 700;
-          color: #4f46e5;
+          color: #d97706;
         }
 
         .grid-controls {
@@ -316,26 +316,24 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           padding: 8px 14px;
           border-radius: var(--radius-full);
           background: #ffffff;
-          border: 1px solid rgba(99, 102, 241, 0.3);
+          border: 1px solid rgba(234, 179, 8, 0.4);
           font-size: 13.5px;
           font-weight: 700;
-          color: #4f46e5;
-          box-shadow: 0 2px 6px rgba(99, 102, 241, 0.08);
+          color: #d97706;
+          box-shadow: 0 2px 6px rgba(234, 179, 8, 0.1);
         }
 
         .mobile-badge-count {
           width: 18px;
           height: 18px;
           border-radius: 50%;
-          background: #4f46e5;
+          background: #eab308;
           color: #ffffff;
           font-size: 11px;
           display: flex;
           align-items: center;
           justify-content: center;
         }
-
-
 
         .view-toggle-wrap {
           display: flex;
@@ -359,7 +357,7 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
 
         .view-toggle-btn.active {
           background: #ffffff;
-          color: #4f46e5;
+          color: #d97706;
           box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
         }
 
@@ -371,15 +369,15 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           margin-bottom: 20px;
           flex-wrap: wrap;
           padding: 10px 14px;
-          background: rgba(238, 242, 255, 0.5);
+          background: #fffdf5;
           border-radius: var(--radius-md);
-          border: 1px solid rgba(99, 102, 241, 0.15);
+          border: 1px solid rgba(234, 179, 8, 0.25);
         }
 
         .pills-title {
           font-size: 12.5px;
           font-weight: 700;
-          color: #4338ca;
+          color: #854d0e;
         }
 
         .pills-list {
@@ -396,15 +394,15 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           padding: 3px 10px;
           border-radius: var(--radius-full);
           background: #ffffff;
-          border: 1px solid rgba(99, 102, 241, 0.3);
+          border: 1px solid rgba(234, 179, 8, 0.35);
           font-size: 12px;
           font-weight: 600;
-          color: #4f46e5;
-          box-shadow: 0 1px 3px rgba(79, 70, 229, 0.05);
+          color: #854d0e;
+          box-shadow: 0 1px 3px rgba(234, 179, 8, 0.08);
         }
 
         .pill-remove-btn {
-          color: #6366f1;
+          color: #d97706;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -414,7 +412,8 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
         }
 
         .pill-remove-btn:hover {
-          background: #e0e7ff;
+          background: #fef9c3;
+          color: #713f12;
         }
 
         .clear-all-pills-btn {

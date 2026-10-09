@@ -132,9 +132,9 @@ export const LibraryPagination: React.FC<LibraryPaginationProps> = ({
         }
 
         .page-nav-btn:hover:not(:disabled) {
-          border-color: rgba(99, 102, 241, 0.4);
-          color: #4f46e5;
-          background: #f8fafc;
+          border-color: rgba(234, 179, 8, 0.4);
+          color: #854d0e;
+          background: #fffdf5;
         }
 
         .page-nav-btn:disabled {
@@ -169,10 +169,10 @@ export const LibraryPagination: React.FC<LibraryPaginationProps> = ({
         }
 
         .page-num-btn.active {
-          background: #4f46e5;
-          color: #ffffff;
+          background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+          color: #713f12;
           font-weight: 700;
-          box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35);
+          box-shadow: 0 2px 8px rgba(234, 179, 8, 0.3);
         }
 
         .page-ellipsis {

@@ -100,9 +100,9 @@ export const QuickCategories: React.FC<QuickCategoriesProps> = ({
         }
 
         .scroll-btn:hover {
-          background: #f8fafc;
-          color: #4f46e5;
-          border-color: rgba(99, 102, 241, 0.4);
+          background: #fefce8;
+          color: #854d0e;
+          border-color: rgba(234, 179, 8, 0.45);
           transform: scale(1.05);
         }
 
@@ -135,16 +135,17 @@ export const QuickCategories: React.FC<QuickCategoriesProps> = ({
         }
 
         .cat-pill:hover {
-          color: #4f46e5;
-          background: #f1f5f9;
-          border-color: rgba(99, 102, 241, 0.3);
+          color: #854d0e;
+          background: #fefce8;
+          border-color: rgba(234, 179, 8, 0.35);
         }
 
         .cat-pill.active {
-          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #9333ea 100%);
-          color: #ffffff;
-          border-color: transparent;
-          box-shadow: 0 4px 14px -2px rgba(99, 102, 241, 0.35);
+          background: linear-gradient(135deg, #fef08a 0%, #facc15 60%, #eab308 100%);
+          color: #713f12;
+          font-weight: 700;
+          border-color: rgba(234, 179, 8, 0.6);
+          box-shadow: 0 4px 14px -2px rgba(234, 179, 8, 0.3);
         }
 
         @media (max-width: 768px) {

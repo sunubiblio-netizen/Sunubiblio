@@ -40,7 +40,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
       {/* Sidebar Header */}
       <div className="filter-sidebar-header">
         <div className="header-title-wrap">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
           </svg>
           <span className="sidebar-title">Filtres</span>
@@ -239,7 +239,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
           font-size: 11px;
           font-weight: 700;
           color: #ffffff;
-          background: #4f46e5;
+          background: #eab308;
           width: 18px;
           height: 18px;
           border-radius: 50%;
@@ -251,12 +251,12 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
         .reset-filters-btn {
           font-size: 12px;
           font-weight: 600;
-          color: #6366f1;
+          color: #d97706;
           transition: color 0.15s ease;
         }
 
         .reset-filters-btn:hover {
-          color: #4338ca;
+          color: #b45309;
           text-decoration: underline;
         }
 
@@ -310,7 +310,8 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
         }
 
         .filter-radio-label.active {
-          background: #eef2ff;
+          background: #fefce8;
+          border: 1px solid rgba(234, 179, 8, 0.25);
         }
 
         .filter-radio-input {
@@ -331,8 +332,8 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
         }
 
         .filter-radio-label.active .radio-indicator {
-          border-color: #4f46e5;
-          background: #4f46e5;
+          border-color: #eab308;
+          background: #eab308;
         }
 
         .filter-radio-label.active .radio-indicator::after {
@@ -351,7 +352,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
         }
 
         .filter-radio-label.active .filter-label-text {
-          color: #4f46e5;
+          color: #713f12;
           font-weight: 700;
         }
 

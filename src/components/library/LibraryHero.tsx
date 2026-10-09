@@ -125,6 +125,15 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
 
         .lib-badge {
           margin-bottom: 16px;
+          background: #ffffff !important;
+          border: 1.5px solid #fde047 !important;
+          color: #854d0e !important;
+          box-shadow: 0 2px 8px rgba(234, 179, 8, 0.08);
+        }
+
+        .lib-badge :global(.badge-dot) {
+          background-color: #eab308 !important;
+          box-shadow: 0 0 8px rgba(234, 179, 8, 0.6) !important;
         }
 
         .lib-hero-title {
