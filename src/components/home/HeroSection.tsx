@@ -273,7 +273,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           50%, 100% { opacity: 0; }
         }
 
-        /* Search Capsule with fine continuous animated gradient border (Marron dominant + Bleu clair, zéro vert) */
+        /* Search Capsule with fine continuous animated light-blue gradient border */
         .hero-search-capsule {
           position: relative;
           width: 100%;
@@ -285,12 +285,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           border: 1.5px solid transparent;
           background:
             linear-gradient(#ffffff, #ffffff) padding-box,
-            linear-gradient(135deg, #78350f 0%, #b45309 30%, #60a5fa 65%, #93c5fd 82%, #78350f 100%) border-box;
+            linear-gradient(135deg, #38bdf8 0%, #93c5fd 25%, #60a5fa 50%, #bae6fd 75%, #38bdf8 100%) border-box;
           background-size: 100% 100%, 300% 300%;
           animation: border-gradient-shift 7s ease-in-out infinite;
           box-shadow:
-            0 16px 40px -8px rgba(120, 53, 15, 0.12),
-            0 8px 24px -4px rgba(59, 130, 246, 0.1),
+            0 16px 40px -8px rgba(56, 189, 248, 0.18),
+            0 6px 20px -4px rgba(96, 165, 250, 0.12),
             0 2px 6px rgba(15, 23, 42, 0.04);
           transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
         }
@@ -298,9 +298,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
         .hero-search-capsule:focus-within {
           transform: translateY(-2px);
           box-shadow:
-            0 22px 50px -8px rgba(120, 53, 15, 0.18),
-            0 8px 26px -4px rgba(59, 130, 246, 0.16),
-            0 0 0 3px rgba(96, 165, 250, 0.15);
+            0 22px 50px -8px rgba(56, 189, 248, 0.25),
+            0 8px 26px -4px rgba(96, 165, 250, 0.2),
+            0 0 0 3px rgba(56, 189, 248, 0.2);
         }
 
         @keyframes border-gradient-shift {
@@ -518,11 +518,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
             border: 1.3px solid transparent;
             background:
               linear-gradient(#ffffff, #ffffff) padding-box,
-              linear-gradient(135deg, #78350f 0%, #b45309 30%, #60a5fa 65%, #93c5fd 82%, #78350f 100%) border-box;
+              linear-gradient(135deg, #38bdf8 0%, #93c5fd 25%, #60a5fa 50%, #bae6fd 75%, #38bdf8 100%) border-box;
             background-size: 100% 100%, 300% 300%;
             animation: border-gradient-shift 7s ease-in-out infinite;
             box-shadow:
-              0 10px 26px -6px rgba(120, 53, 15, 0.1),
+              0 10px 26px -6px rgba(56, 189, 248, 0.14),
               0 4px 12px rgba(15, 23, 42, 0.04);
           }
 
