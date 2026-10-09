@@ -37,31 +37,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
 }) => {
   return (
     <>
-      {/* Onglet compact visible sur Desktop quand la sidebar est fermée pour pouvoir ré-ouvrir d'un clic */}
-      {!isDesktopOpen && (
-        <button
-          type="button"
-          className="collapsed-filter-tab"
-          onClick={onToggleDesktop}
-          aria-label="Ouvrir les filtres"
-          title="Ouvrir les filtres"
-        >
-          <div className="tab-left">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-            </svg>
-            <span className="tab-title">Filtres</span>
-            {activeFiltersCount > 0 && (
-              <span className="filters-count-badge">{activeFiltersCount}</span>
-            )}
-          </div>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </button>
-      )}
-
-      {/* 1. Affichage sur Desktop (ouvert par défaut, cliquable pour fermer) */}
+      {/* 1. Affichage sur Desktop (ouvert par défaut, repliable d'un clic sur l'en-tête) */}
       <aside className={`filter-sidebar ${isOpen ? 'mobile-open' : ''} ${!isDesktopOpen ? 'desktop-closed' : ''}`}>
         {/* En-tête Filtres : cliquable pour ouvrir/fermer comme demandé */}
         <div className="filter-sidebar-header">
@@ -78,7 +54,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
             {activeFiltersCount > 0 && (
               <span className="filters-count-badge">{activeFiltersCount}</span>
             )}
-            <span className="collapse-arrow-icon" aria-hidden="true">
+            <span className="collapse-arrow-icon" aria-hidden="true" title="Fermer les filtres">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="15 18 9 12 15 6" />
               </svg>
@@ -203,45 +179,6 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </div>
 
         <style jsx>{`
-          /* Onglet compact quand fermé sur PC */
-          .collapsed-filter-tab {
-            display: inline-flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            background: #ffffff;
-            border: 1.5px solid rgba(226, 232, 240, 0.9);
-            border-radius: var(--radius-lg);
-            padding: 12px 18px;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
-            position: sticky;
-            top: 96px;
-            z-index: 20;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            flex-shrink: 0;
-          }
-
-          .collapsed-filter-tab:hover {
-            border-color: #eab308;
-            background: #fffdf5;
-            box-shadow: 0 6px 20px rgba(234, 179, 8, 0.12);
-            transform: translateY(-1px);
-          }
-
-          .tab-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-          }
-
-          .tab-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #0f172a;
-            letter-spacing: -0.01em;
-          }
-
           .filter-sidebar {
             width: 280px;
             flex-shrink: 0;

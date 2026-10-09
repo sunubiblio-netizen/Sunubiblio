@@ -176,6 +176,25 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
       {/* Top Header Row (Aéré, spacieux, bouton Filtres + bouton + transparent à gauche, Tri à droite) */}
       <div className="grid-header">
         <div className="grid-header-left">
+          {/* Bouton Filtres élégant (affiché quand la sidebar est fermée pour pouvoir la ré-ouvrir) */}
+          {!isFiltersOpen && (
+            <button
+              type="button"
+              className="open-filters-pill-btn"
+              onClick={onToggleFilters || onOpenMobileFilters}
+              aria-label="Ouvrir les filtres"
+              title="Ouvrir les filtres"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+              </svg>
+              <span>Filtres</span>
+              {activeFiltersCount !== undefined && activeFiltersCount > 0 && (
+                <span className="filter-pill-badge">{activeFiltersCount}</span>
+              )}
+            </button>
+          )}
+
           {/* Bouton '+' transparent pour ouvrir/fermer les catégories */}
           <button
             type="button"
@@ -328,24 +347,53 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           position: relative;
         }
 
-        .cat-plus-toggle-btn {
-          width: 36px;
-          height: 36px;
+        .open-filters-pill-btn {
+          height: 38px;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 0 16px;
           border-radius: var(--radius-full);
-          background: transparent;
-          border: 1.5px solid #cbd5e1;
-          color: #64748b;
-          display: flex;
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          color: #1e293b;
+          font-size: 13.5px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          white-space: nowrap;
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+        }
+
+        .open-filters-pill-btn:hover {
+          background: #fffdf5;
+          border-color: #eab308;
+          color: #854d0e;
+          box-shadow: 0 4px 12px rgba(234, 179, 8, 0.12);
+          transform: translateY(-1px);
+        }
+
+        .cat-plus-toggle-btn {
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          color: #475569;
+          display: inline-flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
           transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
         }
 
         .cat-plus-toggle-btn:hover {
           background: #fffdf5;
           border-color: #eab308;
           color: #854d0e;
+          box-shadow: 0 4px 12px rgba(234, 179, 8, 0.12);
+          transform: translateY(-1px);
         }
 
         .cat-plus-toggle-btn.active {
