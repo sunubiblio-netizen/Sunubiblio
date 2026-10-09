@@ -21,12 +21,9 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
 
   return (
     <section className="lib-hero-wrapper">
-      {/* Abstract visual background accents inspired by Sunubiblio logo */}
+      {/* Visual background accents harmonisés blanc et crème de base */}
       <div className="lib-hero-ambient" aria-hidden="true">
-        <div className="ambient-blob blob-blue" />
-        <div className="ambient-blob blob-purple" />
-        <div className="ambient-blob blob-rose" />
-        <div className="ambient-pattern" />
+        <div className="ambient-blob blob-sun" />
       </div>
 
       <div className="container lib-hero-container">
@@ -38,7 +35,7 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
 
         {/* Title & Condensed Catchy Subtitle */}
         <h1 className="lib-hero-title">
-          Explorez la bibliothèque <span className="gradient-hero-text">Sunubiblio</span>
+          Explorez la bibliothèque Sunubiblio
         </h1>
         <p className="lib-hero-subtitle">
           Des milliers de ressources pour apprendre et progresser à votre propre rythme.
@@ -91,8 +88,8 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
           position: relative;
           padding: 48px 0 32px 0;
           overflow: hidden;
-          background: linear-gradient(180deg, rgba(248, 250, 252, 0.6) 0%, rgba(250, 248, 255, 0.95) 100%);
-          border-bottom: 1px solid rgba(226, 232, 240, 0.75);
+          background: transparent;
+          border-bottom: 1px solid rgba(226, 232, 240, 0.6);
         }
 
         .lib-hero-ambient {
@@ -106,39 +103,16 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
           position: absolute;
           border-radius: 50%;
           filter: blur(60px);
-          opacity: 0.45;
+          opacity: 0.55;
         }
 
-        .blob-blue {
-          width: 380px;
-          height: 380px;
-          top: -120px;
-          left: 5%;
-          background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, transparent 70%);
-        }
-
-        .blob-purple {
-          width: 440px;
-          height: 440px;
+        .blob-sun {
+          width: 520px;
+          height: 340px;
           top: -80px;
-          right: 8%;
-          background: radial-gradient(circle, rgba(147, 51, 234, 0.2) 0%, transparent 70%);
-        }
-
-        .blob-rose {
-          width: 320px;
-          height: 320px;
-          bottom: -60px;
-          left: 45%;
-          background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, transparent 70%);
-        }
-
-        .ambient-pattern {
-          position: absolute;
-          inset: 0;
-          background-image: radial-gradient(rgba(99, 102, 241, 0.08) 1px, transparent 1px);
-          background-size: 24px 24px;
-          opacity: 0.6;
+          left: 50%;
+          transform: translateX(-50%);
+          background: radial-gradient(circle, rgba(254, 240, 138, 0.35) 0%, rgba(254, 249, 195, 0.2) 50%, transparent 75%);
         }
 
         .lib-hero-container {
@@ -180,19 +154,19 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
           background: #ffffff;
           padding: 8px 10px 8px 18px;
           border-radius: var(--radius-full);
-          border: 1.5px solid rgba(99, 102, 241, 0.25);
-          box-shadow: 0 12px 36px -6px rgba(79, 70, 229, 0.12), 0 2px 8px rgba(15, 23, 42, 0.04);
+          border: 1.5px solid rgba(226, 232, 240, 0.9);
+          box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.05), 0 2px 8px rgba(15, 23, 42, 0.02);
           transition: all var(--transition-normal);
         }
 
         .lib-search-capsule:focus-within {
-          border-color: #6366f1;
-          box-shadow: 0 16px 40px -4px rgba(99, 102, 241, 0.22), 0 0 0 3px rgba(99, 102, 241, 0.15);
+          border-color: rgba(234, 179, 8, 0.5);
+          box-shadow: 0 12px 32px -4px rgba(234, 179, 8, 0.12), 0 0 0 3px rgba(254, 240, 138, 0.35);
           transform: translateY(-1px);
         }
 
         .lib-search-icon {
-          color: #6366f1;
+          color: #94a3b8;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -232,6 +206,10 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
           flex-shrink: 0;
           padding: 10px 22px;
           font-size: 14px;
+          background: #0f172a !important;
+          color: #ffffff !important;
+          border: none !important;
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15) !important;
         }
 
         @media (max-width: 640px) {
