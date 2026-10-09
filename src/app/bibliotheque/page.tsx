@@ -55,6 +55,14 @@ export default function LibraryPage() {
     setOnlyFavorites(false);
   };
 
+  const handleToggleFilters = () => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 1024) {
+      setFilterDrawerOpen((prev) => !prev);
+    } else {
+      setIsDesktopFiltersOpen((prev) => !prev);
+    }
+  };
+
   const handleToggleFavorite = (resourceId: string, isFav: boolean) => {
     setFavorites((prev) => {
       if (isFav) {
@@ -214,7 +222,7 @@ export default function LibraryPage() {
                 onResetFilters={handleResetFilters}
                 onOpenMobileFilters={() => setFilterDrawerOpen(true)}
                 isFiltersOpen={isDesktopFiltersOpen}
-                onToggleFilters={() => setIsDesktopFiltersOpen((prev) => !prev)}
+                onToggleFilters={handleToggleFilters}
                 activeFiltersCount={activeFiltersCount}
                 onOpenResource={(res) => setSelectedResource(res)}
               />

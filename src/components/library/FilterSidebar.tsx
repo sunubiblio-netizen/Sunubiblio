@@ -178,6 +178,19 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
           </div>
         </div>
 
+        {/* Bouton de confirmation en bas du drawer mobile */}
+        {onClose && (
+          <div className="mobile-drawer-bottom-action">
+            <button
+              type="button"
+              className="mobile-apply-btn"
+              onClick={onClose}
+            >
+              Afficher les résultats
+            </button>
+          </div>
+        )}
+
         <style jsx>{`
           .filter-sidebar {
             width: 280px;
@@ -195,8 +208,10 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
             transition: all 0.2s ease;
           }
 
-          .filter-sidebar.desktop-closed {
-            display: none !important;
+          @media (min-width: 1025px) {
+            .filter-sidebar.desktop-closed {
+              display: none !important;
+            }
           }
 
           .filter-sidebar-header {
@@ -406,21 +421,60 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
             }
 
             .filter-sidebar.mobile-open {
-              display: block;
-              position: fixed;
-              top: 0;
-              left: 0;
-              bottom: 0;
-              width: 310px;
-              max-width: 86vw;
-              z-index: 1001;
-              overflow-y: auto;
-              box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18);
-              animation: slideDrawer 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+              display: flex !important;
+              flex-direction: column !important;
+              position: fixed !important;
+              top: 0 !important;
+              left: 0 !important;
+              bottom: 0 !important;
+              width: 320px !important;
+              max-width: 88vw !important;
+              height: 100vh !important;
+              background: #ffffff !important;
+              z-index: 2200 !important;
+              overflow-y: auto !important;
+              -webkit-overflow-scrolling: touch !important;
+              box-shadow: 0 20px 48px rgba(15, 23, 42, 0.28) !important;
+              animation: slideDrawer 0.24s cubic-bezier(0.16, 1, 0.3, 1) !important;
+              padding: 20px 18px 24px !important;
             }
 
             .mobile-close-btn {
-              display: flex;
+              display: flex !important;
+              width: 32px !important;
+              height: 32px !important;
+              border-radius: 50% !important;
+              background: #f1f5f9 !important;
+              border: none !important;
+              color: #475569 !important;
+              font-size: 14px !important;
+              align-items: center !important;
+              justify-content: center !important;
+              cursor: pointer !important;
+            }
+
+            .mobile-drawer-bottom-action {
+              margin-top: 24px;
+              padding-top: 16px;
+              border-top: 1px solid rgba(226, 232, 240, 0.8);
+            }
+
+            .mobile-apply-btn {
+              width: 100%;
+              padding: 13px 18px;
+              border-radius: 12px;
+              background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+              color: #713f12;
+              font-size: 14px;
+              font-weight: 700;
+              border: none;
+              cursor: pointer;
+              box-shadow: 0 4px 14px rgba(234, 179, 8, 0.25);
+              transition: transform 0.15s ease;
+            }
+
+            .mobile-apply-btn:active {
+              transform: scale(0.98);
             }
           }
 
@@ -430,12 +484,12 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
           @media (max-width: 1024px) {
             .mobile-backdrop {
-              display: block;
-              position: fixed;
-              inset: 0;
-              background: rgba(15, 23, 42, 0.4);
-              backdrop-filter: blur(4px);
-              z-index: 1000;
+              display: block !important;
+              position: fixed !important;
+              inset: 0 !important;
+              background: rgba(15, 23, 42, 0.5) !important;
+              backdrop-filter: blur(4px) !important;
+              z-index: 2100 !important;
             }
           }
 

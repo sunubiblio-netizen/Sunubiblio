@@ -176,24 +176,29 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
       {/* Top Header Row (Aéré, spacieux, bouton Filtres + bouton + transparent à gauche, Tri à droite) */}
       <div className="grid-header">
         <div className="grid-header-left">
-          {/* Bouton Filtres élégant (affiché quand la sidebar est fermée pour pouvoir la ré-ouvrir) */}
-          {!isFiltersOpen && (
-            <button
-              type="button"
-              className="open-filters-pill-btn"
-              onClick={onToggleFilters || onOpenMobileFilters}
-              aria-label="Ouvrir les filtres"
-              title="Ouvrir les filtres"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-              </svg>
-              <span>Filtres</span>
-              {activeFiltersCount !== undefined && activeFiltersCount > 0 && (
-                <span className="filter-pill-badge">{activeFiltersCount}</span>
-              )}
-            </button>
-          )}
+          {/* Bouton Filtres élégant (toujours visible sur mobile, et sur desktop quand la sidebar est fermée) */}
+          <button
+            type="button"
+            className={`open-filters-pill-btn ${isFiltersOpen ? 'desktop-hidden' : ''}`}
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.innerWidth <= 1024) {
+                if (onOpenMobileFilters) onOpenMobileFilters();
+                else if (onToggleFilters) onToggleFilters();
+              } else {
+                if (onToggleFilters) onToggleFilters();
+              }
+            }}
+            aria-label="Ouvrir les filtres"
+            title="Ouvrir les filtres"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+            <span>Filtres</span>
+            {activeFiltersCount !== undefined && activeFiltersCount > 0 && (
+              <span className="filter-pill-badge">{activeFiltersCount}</span>
+            )}
+          </button>
 
           {/* Bouton '+' transparent pour ouvrir/fermer les catégories */}
           <button
@@ -371,6 +376,12 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           color: #854d0e;
           box-shadow: 0 4px 12px rgba(234, 179, 8, 0.12);
           transform: translateY(-1px);
+        }
+
+        @media (min-width: 1025px) {
+          .open-filters-pill-btn.desktop-hidden {
+            display: none !important;
+          }
         }
 
         .cat-plus-toggle-btn {
