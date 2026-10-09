@@ -29,7 +29,7 @@ const INITIAL_FILTERS: FilterState = {
 export default function LibraryPage() {
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
-  const [isDesktopFiltersOpen, setIsDesktopFiltersOpen] = useState(true);
+  const [isDesktopFiltersOpen, setIsDesktopFiltersOpen] = useState(false);
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
