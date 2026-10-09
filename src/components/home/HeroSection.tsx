@@ -29,14 +29,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
       </div>
 
       <div className="container hero-center-container">
-        {/* Title — Single line, crisp and appealing */}
+        {/* Title — Ultra short, cursive Courgette styling matching reference */}
         <h1 className="hero-aurora-title">
-          Êtes-vous prêt à explorer le savoir ?
+          Explorez le savoir
         </h1>
 
-        {/* Subtitle — Single line, concise and appealing */}
+        {/* Subtitle — Short, concise, responsive */}
         <p className="hero-aurora-subtitle">
-          Des milliers d’ouvrages, cours et annales pour réussir à votre rythme.
+          Des milliers d’ouvrages, cours et annales
         </p>
 
         {/* Universal Search Capsule */}
@@ -165,22 +165,25 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
         }
 
         .hero-aurora-title {
-          font-size: clamp(26px, 3.8vw, 42px);
-          font-weight: 800;
+          font-family: 'Courgette', cursive, sans-serif;
+          font-size: clamp(32px, 4.4vw, 52px);
+          font-weight: 400;
           color: #0f172a;
           line-height: 1.25;
-          letter-spacing: -0.025em;
-          margin: 0 0 12px 0;
+          letter-spacing: -0.01em;
+          margin: 0 0 10px 0;
           white-space: nowrap;
+          text-align: center;
         }
 
         .hero-aurora-subtitle {
-          font-size: clamp(14px, 1.8vw, 17px);
+          font-size: clamp(13.5px, 1.5vw, 16px);
           font-weight: 500;
           color: #475569;
           line-height: 1.4;
           margin: 0 0 24px 0;
           white-space: nowrap;
+          text-align: center;
         }
 
         /* Search Capsule */
@@ -254,19 +257,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
 
         @media (max-width: 640px) {
           .hero-aurora-section {
-            padding: 24px 0;
+            padding: 16px 0;
           }
 
           .hero-aurora-title {
-            font-size: 22px;
-            white-space: normal;
-            letter-spacing: -0.02em;
+            font-size: clamp(24px, 7vw, 32px);
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+            margin-bottom: 8px;
           }
 
           .hero-aurora-subtitle {
             font-size: 13px;
-            white-space: normal;
-            margin-bottom: 24px;
+            white-space: nowrap;
+            margin-bottom: 20px;
           }
 
           .hero-search-capsule {
