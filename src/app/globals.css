@@ -354,9 +354,9 @@ input {
   left: 0 !important;
   right: 0 !important;
   z-index: 1000 !important;
-  background: rgba(250, 248, 255, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: transparent !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: none !important;
   box-shadow: none !important;
   transition: all 0.2s ease;

@@ -3,14 +3,11 @@
 import React, { useState } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { HeroSection } from '@/components/home/HeroSection';
-import { CategoryGrid } from '@/components/home/CategoryGrid';
 import { AuthModal } from '@/components/ui/AuthModal';
-import { CategoryItem } from '@/data/categories';
 
 export default function HomePage() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
-  const [activeCategory, setActiveCategory] = useState<CategoryItem | null>(null);
   const [searchFeedback, setSearchFeedback] = useState<string | null>(null);
 
   const handleOpenAuth = (mode: 'login' | 'register') => {
@@ -20,31 +17,19 @@ export default function HomePage() {
 
   const handleSearch = (query: string) => {
     setSearchFeedback(`Recherche en direct pour « ${query} »... Plus de 12 400 documents disponibles.`);
-    // Scroll smoothly to the results notification or category grid
     const target = document.getElementById('search-feedback-anchor');
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
-  const handleSelectCategory = (cat: CategoryItem) => {
-    setActiveCategory(cat);
-    setSearchFeedback(`Section sélectionnée : ${cat.title} — ${cat.subtitle}`);
-  };
-
   return (
     <div className="page-wrapper">
-      {/* Top sticky navigation bar */}
+      {/* Top sticky navigation bar - fully transparent without borders */}
       <Navbar onOpenAuth={handleOpenAuth} />
 
-      {/* Main Page Content */}
+      {/* Main Page Content - perfectly centered (title, description, search capsule) */}
       <main>
-        {/* Hero Section matching the visual reference */}
-        <HeroSection
-          onSearch={handleSearch}
-          onTagClick={handleSearch}
-        />
-
         {/* Dynamic Search / Feedback Banner if user interacts */}
         {searchFeedback && (
           <div id="search-feedback-anchor" className="container feedback-container">
@@ -64,11 +49,12 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* 8 Categories Grid matching reference */}
-        <CategoryGrid onSelectCategory={handleSelectCategory} />
+        {/* Hero Section centered in the dead center of the screen */}
+        <HeroSection
+          onSearch={handleSearch}
+          onTagClick={handleSearch}
+        />
       </main>
-
-      {/* Footer removed as requested - leaving only categories in the lower section */}
 
       {/* Authentication Modal */}
       <AuthModal
@@ -85,23 +71,22 @@ export default function HomePage() {
           flex-direction: column;
           position: relative;
           overflow: hidden;
-          background: #ffffff;
+          background: #faf8ff;
         }
 
         main {
           flex: 1;
           display: flex;
           flex-direction: column;
-          justify-content: space-between;
+          justify-content: center;
           align-items: center;
-          padding: 12px 0 48px;
           min-height: 0;
           width: 100%;
           position: relative;
           z-index: 1;
         }
 
-        @media (max-height: 680px), (max-width: 640px) {
+        @media (max-height: 580px) {
           .page-wrapper {
             height: auto;
             min-height: 100vh;
@@ -110,15 +95,19 @@ export default function HomePage() {
         }
 
         .feedback-container {
-          margin-bottom: 24px;
+          margin-bottom: 20px;
+          max-width: 640px;
+          width: 100%;
         }
 
         .feedback-card {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          background: #ffffff;
-          border: 1px solid rgba(99, 102, 241, 0.3);
+          background: rgba(255, 255, 255, 0.85);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(99, 102, 241, 0.25);
           border-radius: 16px;
           padding: 12px 20px;
           box-shadow: 0 4px 16px rgba(79, 70, 229, 0.08);

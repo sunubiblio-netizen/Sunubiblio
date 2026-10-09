@@ -19,10 +19,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
 
   return (
     <section className="hero-aurora-section">
-      {/* Background Aurora / Mesh Gradient strictly centered around title */}
+      {/* Full-screen fluid ambient aurora mesh */}
       <div className="hero-aurora-backdrop" aria-hidden="true">
         <div className="aurora-orb orb-blue" />
         <div className="aurora-orb orb-violet" />
+        <div className="aurora-orb orb-magenta" />
+        <div className="aurora-orb orb-cyan" />
         <div className="aurora-overlay" />
       </div>
 
@@ -37,10 +39,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           Des milliers d’ouvrages, cours et annales pour réussir à votre rythme.
         </p>
 
-        {/* Exact Universal Search Capsule from user reference */}
+        {/* Universal Search Capsule */}
         <form onSubmit={handleSubmit} className="hero-search-capsule">
           <div className="search-icon-wrap">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
@@ -58,7 +60,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
             className="hero-search-submit"
             aria-label="Lancer la recherche"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
@@ -69,17 +71,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
       <style jsx>{`
         .hero-aurora-section {
           position: relative;
-          padding: 18px 0 14px;
-          overflow: hidden;
+          padding: 20px 0;
           display: flex;
           align-items: center;
           justify-content: center;
           width: 100%;
         }
 
-        /* Ambient Mesh / Aurora Gradient */
+        /* Ambient Mesh / Full-screen Fluid Aurora Gradient */
         .hero-aurora-backdrop {
-          position: absolute;
+          position: fixed;
           inset: 0;
           overflow: hidden;
           pointer-events: none;
@@ -89,36 +90,53 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
         .aurora-orb {
           position: absolute;
           border-radius: 50%;
-          filter: blur(80px);
+          filter: blur(95px);
           opacity: 0.65;
-          animation: orb-pulse 8s ease-in-out infinite alternate;
+          animation: orb-pulse 9s ease-in-out infinite alternate;
         }
 
         .orb-blue {
-          width: 440px;
-          height: 250px;
-          top: -30px;
-          left: 15%;
-          background: radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, rgba(99, 102, 241, 0.15) 60%, transparent 100%);
+          width: 580px;
+          height: 440px;
+          top: 15%;
+          left: 10%;
+          background: radial-gradient(circle, rgba(59, 130, 246, 0.48) 0%, rgba(99, 102, 241, 0.22) 65%, transparent 100%);
         }
 
         .orb-violet {
-          width: 440px;
-          height: 250px;
-          top: -20px;
-          right: 15%;
-          background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.12) 60%, transparent 100%);
-          animation-delay: -2s;
+          width: 560px;
+          height: 460px;
+          top: 18%;
+          right: 10%;
+          background: radial-gradient(circle, rgba(168, 85, 247, 0.44) 0%, rgba(139, 92, 246, 0.2) 65%, transparent 100%);
+          animation-delay: -2.5s;
+        }
+
+        .orb-magenta {
+          width: 520px;
+          height: 400px;
+          bottom: 12%;
+          right: 22%;
+          background: radial-gradient(circle, rgba(236, 72, 153, 0.38) 0%, rgba(217, 70, 239, 0.16) 70%, transparent 100%);
+          animation-delay: -4.5s;
+        }
+
+        .orb-cyan {
+          width: 480px;
+          height: 380px;
+          bottom: 15%;
+          left: 18%;
+          background: radial-gradient(circle, rgba(56, 189, 248, 0.38) 0%, transparent 70%);
+          animation-delay: -3.5s;
         }
 
         .aurora-overlay {
           position: absolute;
           inset: 0;
-          background: linear-gradient(
-            180deg,
-            rgba(250, 248, 255, 0.3) 0%,
-            transparent 50%,
-            transparent 100%
+          background: radial-gradient(
+            circle at center,
+            transparent 0%,
+            rgba(250, 248, 255, 0.15) 100%
           );
         }
 
@@ -127,10 +145,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
             transform: scale(1) translate(0, 0);
           }
           50% {
-            transform: scale(1.08) translate(15px, -10px);
+            transform: scale(1.1) translate(18px, -12px);
           }
           100% {
-            transform: scale(0.96) translate(-10px, 12px);
+            transform: scale(0.95) translate(-12px, 14px);
           }
         }
 
@@ -141,50 +159,51 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           flex-direction: column;
           align-items: center;
           text-align: center;
-          max-width: 820px;
+          max-width: 860px;
           padding: 0 16px;
+          width: 100%;
         }
 
         .hero-aurora-title {
-          font-size: clamp(22px, 3.2vw, 34px);
+          font-size: clamp(26px, 3.8vw, 42px);
           font-weight: 800;
           color: #0f172a;
           line-height: 1.25;
           letter-spacing: -0.025em;
-          margin: 0 0 10px 0;
+          margin: 0 0 12px 0;
           white-space: nowrap;
         }
 
         .hero-aurora-subtitle {
-          font-size: clamp(13px, 1.6vw, 15px);
+          font-size: clamp(14px, 1.8vw, 17px);
           font-weight: 500;
           color: #475569;
           line-height: 1.4;
-          margin: 0 0 20px 0;
+          margin: 0 0 32px 0;
           white-space: nowrap;
         }
 
         /* Search Capsule */
         .hero-search-capsule {
           width: 100%;
-          max-width: 640px;
+          max-width: 660px;
           display: flex;
           align-items: center;
           background: #ffffff;
-          padding: 7px 8px 7px 20px;
+          padding: 8px 10px 8px 22px;
           border-radius: var(--radius-full);
           border: 1.5px solid rgba(226, 232, 240, 0.9);
           box-shadow:
-            0 16px 40px -10px rgba(79, 70, 229, 0.15),
-            0 4px 14px -2px rgba(15, 23, 42, 0.05);
+            0 20px 48px -10px rgba(79, 70, 229, 0.16),
+            0 6px 18px -2px rgba(15, 23, 42, 0.05);
           transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .hero-search-capsule:focus-within {
           border-color: #6366f1;
           box-shadow:
-            0 20px 48px -10px rgba(99, 102, 241, 0.25),
-            0 0 0 3px rgba(99, 102, 241, 0.12);
+            0 24px 54px -10px rgba(99, 102, 241, 0.28),
+            0 0 0 4px rgba(99, 102, 241, 0.12);
           transform: translateY(-2px);
         }
 
@@ -193,7 +212,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           display: flex;
           align-items: center;
           justify-content: center;
-          margin-right: 12px;
+          margin-right: 14px;
           flex-shrink: 0;
         }
 
@@ -201,7 +220,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           flex: 1;
           border: none;
           background: transparent;
-          font-size: 15px;
+          font-size: 16px;
           font-weight: 500;
           color: #0f172a;
           outline: none;
@@ -214,8 +233,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
         }
 
         .hero-search-submit {
-          width: 42px;
-          height: 42px;
+          width: 44px;
+          height: 44px;
           border-radius: 50%;
           border: none;
           background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
@@ -225,43 +244,42 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           cursor: pointer;
           transition: all 0.2s ease;
           flex-shrink: 0;
-          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+          box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
         }
 
         .hero-search-submit:hover {
           transform: scale(1.06);
-          box-shadow: 0 6px 16px rgba(99, 102, 241, 0.45);
+          box-shadow: 0 6px 18px rgba(99, 102, 241, 0.45);
         }
 
         @media (max-width: 640px) {
           .hero-aurora-section {
-            padding: 44px 0 36px;
-            min-height: auto;
+            padding: 24px 0;
           }
 
           .hero-aurora-title {
-            font-size: 20px;
-            white-space: nowrap;
+            font-size: 22px;
+            white-space: normal;
             letter-spacing: -0.02em;
           }
 
           .hero-aurora-subtitle {
-            font-size: 12.5px;
-            white-space: nowrap;
-            margin-bottom: 22px;
+            font-size: 13px;
+            white-space: normal;
+            margin-bottom: 24px;
           }
 
           .hero-search-capsule {
-            padding: 5px 6px 5px 14px;
+            padding: 6px 8px 6px 16px;
           }
 
           .hero-search-input {
-            font-size: 13.5px;
+            font-size: 14px;
           }
 
           .hero-search-submit {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
           }
         }
       `}</style>
