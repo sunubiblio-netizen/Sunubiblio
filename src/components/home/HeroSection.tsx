@@ -273,7 +273,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           50%, 100% { opacity: 0; }
         }
 
-        /* Search Capsule with visible 2px circulating light-blue gradient border */
+        /* Search Capsule with fine continuous animated light-blue gradient border */
         .hero-search-capsule {
           position: relative;
           width: 100%;
@@ -282,27 +282,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           align-items: center;
           padding: 8px 10px 8px 22px;
           border-radius: var(--radius-full);
-          border: 2px solid transparent;
+          border: 2.2px solid transparent;
           background:
             linear-gradient(#ffffff, #ffffff) padding-box,
-            conic-gradient(
-              from var(--search-angle, 0deg),
-              #0284c7 0deg,
-              #38bdf8 50deg,
-              #93c5fd 85deg,
-              #ffffff 110deg,
-              #38bdf8 135deg,
-              #0284c7 180deg,
-              #38bdf8 230deg,
-              #93c5fd 265deg,
-              #ffffff 290deg,
-              #38bdf8 315deg,
-              #0284c7 360deg
-            ) border-box;
-          animation: search-border-spin 3.8s linear infinite;
+            linear-gradient(135deg, #38bdf8 0%, #93c5fd 25%, #60a5fa 50%, #bae6fd 75%, #38bdf8 100%) border-box;
+          background-size: 100% 100%, 300% 300%;
+          animation: border-gradient-shift 7s ease-in-out infinite;
           box-shadow:
-            0 16px 40px -8px rgba(56, 189, 248, 0.2),
-            0 6px 20px -4px rgba(96, 165, 250, 0.15),
+            0 16px 40px -8px rgba(56, 189, 248, 0.18),
+            0 6px 20px -4px rgba(96, 165, 250, 0.12),
             0 2px 6px rgba(15, 23, 42, 0.04);
           transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
         }
@@ -310,17 +298,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
         .hero-search-capsule:focus-within {
           transform: translateY(-2px);
           box-shadow:
-            0 22px 50px -8px rgba(56, 189, 248, 0.28),
-            0 8px 26px -4px rgba(96, 165, 250, 0.22),
+            0 22px 50px -8px rgba(56, 189, 248, 0.25),
+            0 8px 26px -4px rgba(96, 165, 250, 0.2),
             0 0 0 3px rgba(56, 189, 248, 0.2);
         }
 
-        @keyframes search-border-spin {
-          from {
-            --search-angle: 0deg;
+        @keyframes border-gradient-shift {
+          0% {
+            background-position: 0% 0%, 0% 50%;
           }
-          to {
-            --search-angle: 360deg;
+          50% {
+            background-position: 0% 0%, 100% 50%;
+          }
+          100% {
+            background-position: 0% 0%, 0% 50%;
           }
         }
 
@@ -527,23 +518,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
             border: 1.8px solid transparent;
             background:
               linear-gradient(#ffffff, #ffffff) padding-box,
-              conic-gradient(
-                from var(--search-angle, 0deg),
-                #0284c7 0deg,
-                #38bdf8 50deg,
-                #93c5fd 85deg,
-                #ffffff 110deg,
-                #38bdf8 135deg,
-                #0284c7 180deg,
-                #38bdf8 230deg,
-                #93c5fd 265deg,
-                #ffffff 290deg,
-                #38bdf8 315deg,
-                #0284c7 360deg
-              ) border-box;
-            animation: search-border-spin 3.8s linear infinite;
+              linear-gradient(135deg, #38bdf8 0%, #93c5fd 25%, #60a5fa 50%, #bae6fd 75%, #38bdf8 100%) border-box;
+            background-size: 100% 100%, 300% 300%;
+            animation: border-gradient-shift 7s ease-in-out infinite;
             box-shadow:
-              0 10px 26px -6px rgba(56, 189, 248, 0.16),
+              0 10px 26px -6px rgba(56, 189, 248, 0.14),
               0 4px 12px rgba(15, 23, 42, 0.04);
           }
 
