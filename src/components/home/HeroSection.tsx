@@ -279,10 +279,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           max-width: 660px;
           display: flex;
           align-items: center;
-          background: #ffffff;
+          background: rgba(255, 255, 255, 0.72);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
           padding: 8px 10px 8px 22px;
           border-radius: var(--radius-full);
-          border: 1.5px solid rgba(219, 234, 254, 0.95);
+          border: 1.5px solid rgba(255, 255, 255, 0.85);
           box-shadow:
             0 20px 48px -10px rgba(37, 99, 235, 0.15),
             0 8px 24px -4px rgba(250, 204, 21, 0.1),
@@ -291,6 +293,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
         }
 
         .hero-search-capsule:focus-within {
+          background: rgba(255, 255, 255, 0.92);
           border-color: #3b82f6;
           box-shadow:
             0 24px 54px -10px rgba(37, 99, 235, 0.25),
