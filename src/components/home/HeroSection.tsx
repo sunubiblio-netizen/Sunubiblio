@@ -7,30 +7,52 @@ interface HeroSectionProps {
   onTagClick?: (tag: string) => void;
 }
 
-const DESCRIPTION_PHRASES = [
-  'Première bibliothèque numérique du Sénégal',
-  'Des milliers d’ouvrages, cours et annales',
-  'Apprenez, révisez et progressez chaque jour',
+const SEARCH_PHRASES = [
+  'Une première au Sénégal',
+  'Bibliothèque numérique complète',
+  'Rechercher un livre, un document...',
+  'Cours, annales et concours...',
+  'Des milliers d’ouvrages à explorer',
 ];
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSpinning, setIsSpinning] = useState(false);
+  const [displayText, setDisplayText] = useState('');
   const [phraseIndex, setPhraseIndex] = useState(0);
-  const [waveState, setWaveState] = useState<'wave-in' | 'wave-out'>('wave-in');
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // Fluid wave-in & wave-out phrase transition
+  // Typewriter effect on the search bar placeholder
   useEffect(() => {
-    const interval = setInterval(() => {
-      setWaveState('wave-out');
-      setTimeout(() => {
-        setPhraseIndex((prev) => (prev + 1) % DESCRIPTION_PHRASES.length);
-        setWaveState('wave-in');
-      }, 420);
-    }, 3400);
+    if (searchQuery) return;
 
-    return () => clearInterval(interval);
-  }, []);
+    const currentPhrase = SEARCH_PHRASES[phraseIndex % SEARCH_PHRASES.length];
+    let timer: NodeJS.Timeout;
+
+    if (!isDeleting && displayText === currentPhrase) {
+      // Pause at full phrase for comfortable reading
+      timer = setTimeout(() => {
+        setIsDeleting(true);
+      }, 2000);
+    } else if (isDeleting && displayText === '') {
+      // Pause when empty before next phrase
+      timer = setTimeout(() => {
+        setIsDeleting(false);
+        setPhraseIndex((prev) => (prev + 1) % SEARCH_PHRASES.length);
+      }, 400);
+    } else {
+      // Typing or deleting speed
+      const speed = isDeleting ? 30 : 60;
+      timer = setTimeout(() => {
+        const nextText = isDeleting
+          ? currentPhrase.substring(0, displayText.length - 1)
+          : currentPhrase.substring(0, displayText.length + 1);
+        setDisplayText(nextText);
+      }, speed);
+    }
+
+    return () => clearTimeout(timer);
+  }, [displayText, isDeleting, phraseIndex, searchQuery]);
 
   const triggerOrbSpin = () => {
     setIsSpinning(true);
@@ -64,11 +86,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           Explorez le savoir
         </h1>
 
-        {/* Subtitle / Description (Titre 2) — Fluid Wave Animation */}
+        {/* Subtitle / Description (Titre 2) — Clean static text */}
         <p className="hero-aurora-subtitle">
-          <span className={`hero-wave-text ${waveState}`}>
-            {DESCRIPTION_PHRASES[phraseIndex]}
-          </span>
+          Des milliers d’ouvrages, cours et annales
         </p>
 
         {/* Universal Search Capsule with clean animated gradient border */}
@@ -82,10 +102,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           <input
             type="text"
             className="hero-search-input"
-            placeholder="Rechercher..."
+            placeholder={searchQuery ? '' : displayText}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label="Rechercher"
+            aria-label="Recherche sur Sunubiblio"
           />
           <button
             type="submit"
@@ -239,53 +259,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           display: flex;
           align-items: center;
           justify-content: center;
-        }
-
-        .hero-wave-text {
-          display: inline-block;
-          will-change: transform, opacity, filter;
-        }
-
-        .hero-wave-text.wave-in {
-          animation: wave-wash-in 0.58s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-
-        .hero-wave-text.wave-out {
-          animation: wave-roll-out 0.42s cubic-bezier(0.4, 0, 0.7, 1) forwards;
-        }
-
-        @keyframes wave-wash-in {
-          0% {
-            opacity: 0;
-            transform: translateY(14px) rotate(1.8deg) skewX(1deg);
-            filter: blur(4px);
-          }
-          65% {
-            opacity: 0.95;
-            transform: translateY(-2px) rotate(-0.6deg) skewX(-0.5deg);
-            filter: blur(0px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) rotate(0deg) skewX(0deg);
-            filter: blur(0px);
-          }
-        }
-
-        @keyframes wave-roll-out {
-          0% {
-            opacity: 1;
-            transform: translateY(0) rotate(0deg) skewX(0deg);
-            filter: blur(0px);
-          }
-          35% {
-            transform: translateY(-3px) rotate(0.8deg) skewX(0.5deg);
-          }
-          100% {
-            opacity: 0;
-            transform: translateY(-14px) rotate(-1.8deg) skewX(-1deg);
-            filter: blur(4px);
-          }
         }
 
         /* Search Capsule with fine continuous animated light-blue gradient border */
