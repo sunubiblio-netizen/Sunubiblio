@@ -1,15 +1,58 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface HeroSectionProps {
   onSearch?: (query: string) => void;
   onTagClick?: (tag: string) => void;
 }
 
+const SEARCH_PHRASES = [
+  'Une première au Sénégal',
+  'Bibliothèque numérique complète',
+  'Rechercher un livre, un document...',
+  'Cours, annales et concours...',
+  'Des milliers d’ouvrages à explorer',
+];
+
 export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSpinning, setIsSpinning] = useState(false);
+  const [displayText, setDisplayText] = useState('');
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Typewriter effect: types, pauses, deletes, and cycles phrases smoothly
+  useEffect(() => {
+    if (searchQuery) return;
+
+    const currentPhrase = SEARCH_PHRASES[phraseIndex % SEARCH_PHRASES.length];
+    let timer: NodeJS.Timeout;
+
+    if (!isDeleting && displayText === currentPhrase) {
+      // Pause at full phrase for reading
+      timer = setTimeout(() => {
+        setIsDeleting(true);
+      }, 1900);
+    } else if (isDeleting && displayText === '') {
+      // Pause when empty before next phrase
+      timer = setTimeout(() => {
+        setIsDeleting(false);
+        setPhraseIndex((prev) => (prev + 1) % SEARCH_PHRASES.length);
+      }, 350);
+    } else {
+      // Typing or deleting speed
+      const speed = isDeleting ? 32 : 65;
+      timer = setTimeout(() => {
+        const nextText = isDeleting
+          ? currentPhrase.substring(0, displayText.length - 1)
+          : currentPhrase.substring(0, displayText.length + 1);
+        setDisplayText(nextText);
+      }, speed);
+    }
+
+    return () => clearTimeout(timer);
+  }, [displayText, isDeleting, phraseIndex, searchQuery]);
 
   const triggerOrbSpin = () => {
     setIsSpinning(true);
@@ -59,10 +102,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           <input
             type="text"
             className="hero-search-input"
-            placeholder="Rechercher un livre, un cours, une annale..."
+            placeholder={displayText}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label="Rechercher un livre, un cours, une annale"
+            aria-label="Recherche sur Sunubiblio"
           />
           <button
             type="submit"
@@ -252,16 +295,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           flex: 1;
           border: none;
           background: transparent;
-          font-size: 16px;
+          font-size: 15.5px;
           font-weight: 500;
           color: #0f172a;
           outline: none;
           min-width: 0;
+          width: 100%;
         }
 
         .hero-search-input::placeholder {
           color: #94a3b8;
-          font-weight: 400;
+          font-weight: 450;
         }
 
         /* 3D Glass Sphere Orb Button */
@@ -410,7 +454,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
 
         @media (max-width: 640px) {
           .hero-aurora-section {
-            padding: 16px 0;
+            padding: 14px 0;
+          }
+
+          .hero-center-container {
+            padding: 0 16px;
+            width: 100%;
+            max-width: 100%;
           }
 
           .hero-aurora-title {
@@ -423,20 +473,47 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           .hero-aurora-subtitle {
             font-size: 13px;
             white-space: nowrap;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
           }
 
           .hero-search-capsule {
-            padding: 6px 8px 6px 16px;
+            width: 100%;
+            max-width: 100%;
+            padding: 5px 6px 5px 14px;
+            border-radius: var(--radius-full);
+            box-shadow:
+              0 14px 34px -8px rgba(37, 99, 235, 0.14),
+              0 4px 12px rgba(15, 23, 42, 0.04);
+          }
+
+          .search-icon-wrap {
+            margin-right: 8px;
+            flex-shrink: 0;
+          }
+
+          .search-icon-wrap svg {
+            width: 18px;
+            height: 18px;
           }
 
           .hero-search-input {
-            font-size: 14px;
+            font-size: 13.5px;
+            min-width: 0;
+            width: 100%;
+            flex: 1;
+            padding-right: 4px;
+          }
+
+          .hero-search-input::placeholder {
+            font-size: 13px;
+            letter-spacing: -0.01em;
           }
 
           .hero-orb-button {
             width: 32px;
             height: 32px;
+            flex-shrink: 0;
+            margin-left: 4px;
           }
 
           .orb-specular-glare {
