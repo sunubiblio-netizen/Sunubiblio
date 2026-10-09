@@ -9,9 +9,18 @@ interface HeroSectionProps {
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSpinning, setIsSpinning] = useState(false);
+
+  const triggerOrbSpin = () => {
+    setIsSpinning(true);
+    setTimeout(() => {
+      setIsSpinning(false);
+    }, 950);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    triggerOrbSpin();
     if (onSearch && searchQuery.trim()) {
       onSearch(searchQuery.trim());
     }
@@ -57,13 +66,27 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           />
           <button
             type="submit"
-            className="hero-search-submit"
+            className={`hero-orb-button ${isSpinning ? 'is-spinning' : ''}`}
+            onClick={triggerOrbSpin}
             aria-label="Lancer la recherche"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
+            {/* 3D Glass Sphere Body */}
+            <span className="orb-glass-body">
+              {/* Specular glare & lighting reflections */}
+              <span className="orb-specular-glare" />
+              <span className="orb-caustic-ring" />
+              <span className="orb-sparkle orb-sparkle-1" />
+              <span className="orb-sparkle orb-sparkle-2" />
+              <span className="orb-sparkle orb-sparkle-3" />
+
+              {/* Centered fine arrow */}
+              <span className="orb-arrow-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </span>
+            </span>
           </button>
         </form>
       </div>
@@ -235,24 +258,173 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           font-weight: 400;
         }
 
-        .hero-search-submit {
+        /* 3D Glass Sphere Orb Button */
+        .hero-orb-button {
+          position: relative;
           width: 44px;
           height: 44px;
-          border-radius: 50%;
           border: none;
-          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+          background: transparent;
+          padding: 0;
+          cursor: pointer;
+          flex-shrink: 0;
           display: flex;
           align-items: center;
           justify-content: center;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          flex-shrink: 0;
-          box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+          outline: none;
+          border-radius: 50%;
+          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+          perspective: 600px;
         }
 
-        .hero-search-submit:hover {
-          transform: scale(1.06);
-          box-shadow: 0 6px 18px rgba(99, 102, 241, 0.45);
+        .hero-orb-button:hover {
+          transform: scale(1.08);
+        }
+
+        .hero-orb-button:active {
+          transform: scale(0.96);
+        }
+
+        /* Volumetric Glass Sphere Body with Specular Highlights & Depth */
+        .orb-glass-body {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          /* Rich 3D gradient matching Sunubiblio royal indigo/violet palette */
+          background: radial-gradient(circle at 30% 24%, #a855f7 0%, #7c3aed 28%, #4f46e5 58%, #1e1b4b 86%, #0b0f19 100%);
+          box-shadow:
+            0 8px 22px -2px rgba(79, 70, 229, 0.5),
+            0 2px 6px rgba(15, 23, 42, 0.2),
+            inset -3px -5px 10px rgba(15, 23, 42, 0.75),
+            inset 2px 3px 6px rgba(255, 255, 255, 0.6);
+          overflow: hidden;
+          transition: box-shadow 0.3s ease, filter 0.3s ease;
+        }
+
+        .hero-orb-button:hover .orb-glass-body {
+          box-shadow:
+            0 12px 28px -2px rgba(99, 102, 241, 0.65),
+            0 0 20px rgba(168, 85, 247, 0.45),
+            inset -3px -5px 10px rgba(15, 23, 42, 0.75),
+            inset 2px 3px 6px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Curved Specular Glare on top-left (inspired by crystal orb reflection) */
+        .orb-specular-glare {
+          position: absolute;
+          top: 3px;
+          left: 6px;
+          width: 20px;
+          height: 12px;
+          border-radius: 50%;
+          background: radial-gradient(ellipse at 50% 35%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.65) 45%, rgba(224, 231, 255, 0.15) 75%, transparent 100%);
+          transform: rotate(-32deg);
+          pointer-events: none;
+          z-index: 2;
+        }
+
+        /* Bottom Caustic Reflection */
+        .orb-caustic-ring {
+          position: absolute;
+          inset: 0;
+          border-radius: 50%;
+          background: radial-gradient(circle at 72% 82%, rgba(192, 132, 252, 0.45) 0%, transparent 45%);
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        /* Celestial sparkles inside glass */
+        .orb-sparkle {
+          position: absolute;
+          border-radius: 50%;
+          background: #ffffff;
+          pointer-events: none;
+          z-index: 2;
+          box-shadow: 0 0 3px 1px rgba(255, 255, 255, 0.85);
+        }
+
+        .orb-sparkle-1 {
+          width: 2.5px;
+          height: 2.5px;
+          top: 58%;
+          right: 24%;
+          opacity: 0.9;
+        }
+
+        .orb-sparkle-2 {
+          width: 1.6px;
+          height: 1.6px;
+          top: 72%;
+          right: 32%;
+          opacity: 0.75;
+        }
+
+        .orb-sparkle-3 {
+          width: 2px;
+          height: 2px;
+          top: 64%;
+          right: 17%;
+          opacity: 0.8;
+        }
+
+        /* Stylized White Arrow inside */
+        .orb-arrow-icon {
+          position: relative;
+          z-index: 4;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ffffff;
+          filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
+          transition: transform 0.2s ease;
+        }
+
+        /* Spinning & Color morphing on click */
+        .hero-orb-button.is-spinning .orb-glass-body {
+          animation: orb-spin-chroma 0.95s cubic-bezier(0.34, 1.25, 0.64, 1) forwards;
+        }
+
+        @keyframes orb-spin-chroma {
+          0% {
+            transform: rotate(0deg) scale(0.96);
+            filter: hue-rotate(0deg) brightness(1);
+            box-shadow:
+              0 8px 22px -2px rgba(79, 70, 229, 0.5),
+              0 2px 6px rgba(15, 23, 42, 0.2),
+              inset -3px -5px 10px rgba(15, 23, 42, 0.75),
+              inset 2px 3px 6px rgba(255, 255, 255, 0.6);
+          }
+          35% {
+            transform: rotate(180deg) scale(1.12);
+            filter: hue-rotate(120deg) brightness(1.25);
+            box-shadow:
+              0 14px 32px 0 rgba(16, 185, 129, 0.55),
+              0 0 24px rgba(6, 182, 212, 0.4),
+              inset -3px -5px 10px rgba(15, 23, 42, 0.75),
+              inset 2px 3px 6px rgba(255, 255, 255, 0.85);
+          }
+          70% {
+            transform: rotate(310deg) scale(1.06);
+            filter: hue-rotate(240deg) brightness(1.2);
+            box-shadow:
+              0 12px 28px 0 rgba(236, 72, 153, 0.5),
+              0 0 20px rgba(168, 85, 247, 0.4),
+              inset -3px -5px 10px rgba(15, 23, 42, 0.75),
+              inset 2px 3px 6px rgba(255, 255, 255, 0.8);
+          }
+          100% {
+            transform: rotate(360deg) scale(1);
+            filter: hue-rotate(360deg) brightness(1);
+            box-shadow:
+              0 8px 22px -2px rgba(79, 70, 229, 0.5),
+              0 2px 6px rgba(15, 23, 42, 0.2),
+              inset -3px -5px 10px rgba(15, 23, 42, 0.75),
+              inset 2px 3px 6px rgba(255, 255, 255, 0.6);
+          }
         }
 
         @media (max-width: 640px) {
@@ -281,9 +453,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
             font-size: 14px;
           }
 
-          .hero-search-submit {
+          .hero-orb-button {
             width: 40px;
             height: 40px;
+          }
+
+          .orb-specular-glare {
+            width: 17px;
+            height: 10px;
+            top: 2.5px;
+            left: 5px;
           }
         }
       `}</style>
