@@ -15846,7 +15846,7 @@ input {
    RESPONSIVE NAVIGATION MOBILE
    ========================================================================== */
 @media (max-width: 768px) {
-  /* Éviter que backdrop-filter ne piège les dropdowns fixed dans le header sur mobile */
+  /* Navbar mobile 100% transparente sans fond blanc ni bordure */
   .navbar-wrapper {
     position: sticky !important;
     top: 0 !important;
@@ -15855,9 +15855,9 @@ input {
     z-index: 1000 !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    background: #faf8ff !important;
-    border-bottom: 1px solid rgba(226, 232, 240, 0.85) !important;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    background: transparent !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
   }
 
   /* Masquer le conteneur desktop unique */
@@ -15871,6 +15871,7 @@ input {
     flex-direction: column;
     width: 100%;
     padding-top: env(safe-area-inset-top, 0px);
+    background: transparent !important;
   }
 
   /* SECTION 1 — IDENTITÉ : Ligne dédiée aérée alignée à GAUCHE */
@@ -15880,8 +15881,8 @@ input {
     justify-content: flex-start;
     padding: 10px 16px 6px 16px;
     height: 46px;
-    border-bottom: 1px solid rgba(226, 232, 240, 0.45);
-    background: rgba(255, 255, 255, 0.45);
+    border-bottom: none !important;
+    background: transparent !important;
     box-sizing: border-box;
   }
 
