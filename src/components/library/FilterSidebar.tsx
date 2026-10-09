@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { FilterState } from '@/types/library';
-import { SUBJECT_OPTIONS, RESOURCE_TYPES, ACCESS_LEVELS, RELIGION_SUB_OPTIONS } from '@/data/mockLibrary';
+import { RESOURCE_TYPES, ACCESS_LEVELS, RELIGION_SUB_OPTIONS } from '@/data/mockLibrary';
 
 interface FilterSidebarProps {
   filters: FilterState;
@@ -12,6 +12,7 @@ interface FilterSidebarProps {
   isOpen?: boolean;
   onClose?: () => void;
   isDesktopOpen?: boolean;
+  onToggleDesktop?: () => void;
 }
 
 const CATEGORY_FILTER_LIST = [
@@ -24,14 +25,6 @@ const CATEGORY_FILTER_LIST = [
   { id: 'religion', label: 'Religion & Spiritualité' },
 ];
 
-const CYCLE_FILTER_LIST = [
-  { id: 'all', label: 'Tous les niveaux' },
-  { id: 'primaire', label: 'Primaire' },
-  { id: 'college', label: 'Collège' },
-  { id: 'lycee', label: 'Lycée' },
-  { id: 'universite', label: 'Université' },
-];
-
 export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   filters,
   onFilterChange,
@@ -40,14 +33,44 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   isOpen = false,
   onClose,
   isDesktopOpen = true,
+  onToggleDesktop,
 }) => {
   return (
     <>
-      {/* 1. Affichage sur Desktop (ouvert par défaut comme sur l'Image 2, toggleable) */}
+      {/* Onglet compact visible sur Desktop quand la sidebar est fermée pour pouvoir ré-ouvrir d'un clic */}
+      {!isDesktopOpen && (
+        <button
+          type="button"
+          className="collapsed-filter-tab"
+          onClick={onToggleDesktop}
+          aria-label="Ouvrir les filtres"
+          title="Ouvrir les filtres"
+        >
+          <div className="tab-left">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+            <span className="tab-title">Filtres</span>
+            {activeFiltersCount > 0 && (
+              <span className="filters-count-badge">{activeFiltersCount}</span>
+            )}
+          </div>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      )}
+
+      {/* 1. Affichage sur Desktop (ouvert par défaut, cliquable pour fermer) */}
       <aside className={`filter-sidebar ${isOpen ? 'mobile-open' : ''} ${!isDesktopOpen ? 'desktop-closed' : ''}`}>
-        {/* En-tête Filtres */}
+        {/* En-tête Filtres : cliquable pour ouvrir/fermer comme demandé */}
         <div className="filter-sidebar-header">
-          <div className="header-title-wrap">
+          <button
+            type="button"
+            className="header-title-toggle-btn"
+            onClick={onToggleDesktop || onClose}
+            title="Cliquer pour fermer les filtres"
+          >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
             </svg>
@@ -55,7 +78,13 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
             {activeFiltersCount > 0 && (
               <span className="filters-count-badge">{activeFiltersCount}</span>
             )}
-          </div>
+            <span className="collapse-arrow-icon" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </span>
+          </button>
+
           <div className="header-actions">
             {activeFiltersCount > 0 && (
               <button
@@ -127,53 +156,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
           </div>
         )}
 
-        {/* 2. Niveau */}
-        <div className="filter-group">
-          <h3 className="filter-group-title">NIVEAU</h3>
-          <div className="filter-options-list">
-            {CYCLE_FILTER_LIST.map((cyc) => (
-              <label
-                key={cyc.id}
-                className={`filter-radio-label ${filters.cycle === cyc.id ? 'active' : ''}`}
-              >
-                <input
-                  type="radio"
-                  name="cycle_filter"
-                  checked={filters.cycle === cyc.id}
-                  onChange={() => onFilterChange({ cycle: cyc.id, grade: undefined })}
-                  className="filter-radio-input"
-                />
-                <span className="radio-indicator" />
-                <span className="filter-label-text">{cyc.label}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* 3. Matière */}
-        <div className="filter-group">
-          <h3 className="filter-group-title">MATIÈRE</h3>
-          <div className="filter-options-list">
-            {SUBJECT_OPTIONS.map((sub) => (
-              <label
-                key={sub.id}
-                className={`filter-radio-label ${filters.subject === sub.id ? 'active' : ''}`}
-              >
-                <input
-                  type="radio"
-                  name="subject_filter"
-                  checked={filters.subject === sub.id}
-                  onChange={() => onFilterChange({ subject: sub.id })}
-                  className="filter-radio-input"
-                />
-                <span className="radio-indicator" />
-                <span className="filter-label-text">{sub.label}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* 4. Type de ressource */}
+        {/* 2. Type de ressource */}
         <div className="filter-group">
           <h3 className="filter-group-title">TYPE DE RESSOURCE</h3>
           <div className="filter-options-list">
@@ -196,7 +179,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
           </div>
         </div>
 
-        {/* 5. Accès */}
+        {/* 3. Accès */}
         <div className="filter-group">
           <h3 className="filter-group-title">ACCÈS</h3>
           <div className="filter-options-list">
@@ -220,6 +203,45 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </div>
 
         <style jsx>{`
+          /* Onglet compact quand fermé sur PC */
+          .collapsed-filter-tab {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: #ffffff;
+            border: 1.5px solid rgba(226, 232, 240, 0.9);
+            border-radius: var(--radius-lg);
+            padding: 12px 18px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+            position: sticky;
+            top: 96px;
+            z-index: 20;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            flex-shrink: 0;
+          }
+
+          .collapsed-filter-tab:hover {
+            border-color: #eab308;
+            background: #fffdf5;
+            box-shadow: 0 6px 20px rgba(234, 179, 8, 0.12);
+            transform: translateY(-1px);
+          }
+
+          .tab-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+
+          .tab-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: -0.01em;
+          }
+
           .filter-sidebar {
             width: 280px;
             flex-shrink: 0;
@@ -249,10 +271,38 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
             border-bottom: 1px solid rgba(226, 232, 240, 0.75);
           }
 
-          .header-title-wrap {
+          .header-title-toggle-btn {
             display: flex;
             align-items: center;
             gap: 8px;
+            background: transparent;
+            border: none;
+            padding: 4px 6px;
+            margin: -4px -6px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+          }
+
+          .header-title-toggle-btn:hover {
+            background: #f8fafc;
+          }
+
+          .header-title-toggle-btn:hover .collapse-arrow-icon {
+            background: #e2e8f0;
+            transform: translateX(-2px);
+          }
+
+          .collapse-arrow-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            margin-left: 4px;
+            transition: all 0.15s ease;
           }
 
           .sidebar-title {

@@ -176,24 +176,7 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
       {/* Top Header Row (Aéré, spacieux, bouton Filtres + bouton + transparent à gauche, Tri à droite) */}
       <div className="grid-header">
         <div className="grid-header-left">
-          {/* Bouton Filtres : ouvre/ferme les filtres (Image 2) */}
-          <button
-            type="button"
-            className={`filter-toggle-pill-btn ${isFiltersOpen ? 'active' : ''}`}
-            onClick={onToggleFilters || onOpenMobileFilters}
-            aria-expanded={isFiltersOpen}
-            aria-label="Afficher ou masquer les filtres"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-            </svg>
-            <span>Filtres</span>
-            {(activeFiltersCount !== undefined ? activeFiltersCount : activePills.length) > 0 && (
-              <span className="filter-pill-badge">{activeFiltersCount !== undefined ? activeFiltersCount : activePills.length}</span>
-            )}
-          </button>
-
-          {/* Bouton '+' transparent placé à côté de Filtres (dans le cercle tracé par l'utilisateur) */}
+          {/* Bouton '+' transparent pour ouvrir/fermer les catégories */}
           <button
             type="button"
             className={`cat-plus-toggle-btn ${isCategoryBarOpen ? 'active' : ''}`}

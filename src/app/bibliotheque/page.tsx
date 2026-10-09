@@ -201,6 +201,7 @@ export default function LibraryPage() {
               isOpen={filterDrawerOpen}
               onClose={() => setFilterDrawerOpen(false)}
               isDesktopOpen={isDesktopFiltersOpen}
+              onToggleDesktop={() => setIsDesktopFiltersOpen((prev) => !prev)}
             />
 
             {/* Colonne droite : Livres et contrôles dans le rectangle tracé par l'utilisateur */}
