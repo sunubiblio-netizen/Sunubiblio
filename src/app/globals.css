@@ -1488,12 +1488,12 @@ input {
     max-width: 370px !important;
     margin: 0 auto !important;
     z-index: 990 !important;
-    background: rgba(255, 255, 255, 0.94) !important;
+    background: rgba(255, 255, 255, 0.28) !important;
     -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
     backdrop-filter: blur(20px) saturate(180%) !important;
-    border: 1px solid rgba(226, 232, 240, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
     border-radius: 28px !important;
-    box-shadow: 0 10px 25px -4px rgba(79, 70, 229, 0.12), 0 3px 10px -1px rgba(15, 23, 42, 0.06) !important;
+    box-shadow: 0 8px 30px -4px rgba(15, 23, 42, 0.08), inset 0 1px 1px 0 rgba(255, 255, 255, 0.6) !important;
     padding: 3px 6px !important;
     user-select: none !important;
     -webkit-user-select: none !important;
@@ -1539,7 +1539,7 @@ input {
     align-items: center !important;
     justify-content: center !important;
     gap: 2px !important;
-    color: #64748b !important;
+    color: #475569 !important;
     text-decoration: none !important;
     height: 100% !important;
     padding: 1px 0 !important;
@@ -1563,7 +1563,7 @@ input {
     height: 24px !important;
     border-radius: 9999px !important;
     background: transparent !important;
-    color: #64748b !important;
+    color: #475569 !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
@@ -1582,22 +1582,22 @@ input {
     text-overflow: ellipsis !important;
     max-width: 100% !important;
     padding: 0 1px !important;
-    color: #64748b !important;
+    color: #475569 !important;
     transition: color 0.2s ease, font-weight 0.2s ease !important;
   }
 
   /* État actif aux couleurs officielles Sunubiblio */
   .mobile-bottom-nav-root .nav-tab-item.active {
-    color: #4f46e5 !important;
+    color: #0284c7 !important;
   }
 
   .mobile-bottom-nav-root .nav-tab-item.active .tab-pill {
-    background: #eef2ff !important;
-    color: #4f46e5 !important;
+    background: rgba(2, 132, 199, 0.15) !important;
+    color: #0284c7 !important;
   }
 
   .mobile-bottom-nav-root .nav-tab-item.active .tab-label {
-    color: #4f46e5 !important;
+    color: #0284c7 !important;
     font-weight: 700 !important;
   }
 
@@ -1607,7 +1607,7 @@ input {
     height: 20px !important;
     border-radius: 50% !important;
     overflow: hidden !important;
-    border: 1.5px solid #cbd5e1 !important;
+    border: 1.5px solid rgba(148, 163, 184, 0.5) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -1616,8 +1616,8 @@ input {
   }
 
   .mobile-bottom-nav-root .telegram-avatar-frame.is-active {
-    border-color: #4f46e5 !important;
-    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25) !important;
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.25) !important;
   }
 
   .mobile-bottom-nav-root .telegram-avatar-img {
