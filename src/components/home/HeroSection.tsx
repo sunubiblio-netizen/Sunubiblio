@@ -16,39 +16,21 @@ const DESCRIPTION_PHRASES = [
 export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSpinning, setIsSpinning] = useState(false);
-  const [displayText, setDisplayText] = useState('');
   const [phraseIndex, setPhraseIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [animState, setAnimState] = useState<'entering' | 'exiting'>('entering');
 
-  // Typewriter effect on the description / subtitle
+  // Modern pop-in & pop-out phrase transition
   useEffect(() => {
-    const currentPhrase = DESCRIPTION_PHRASES[phraseIndex % DESCRIPTION_PHRASES.length];
-    let timer: NodeJS.Timeout;
-
-    if (!isDeleting && displayText === currentPhrase) {
-      // Pause at full phrase for comfortable reading
-      timer = setTimeout(() => {
-        setIsDeleting(true);
-      }, 2100);
-    } else if (isDeleting && displayText === '') {
-      // Pause when empty before next phrase
-      timer = setTimeout(() => {
-        setIsDeleting(false);
+    const interval = setInterval(() => {
+      setAnimState('exiting');
+      setTimeout(() => {
         setPhraseIndex((prev) => (prev + 1) % DESCRIPTION_PHRASES.length);
-      }, 400);
-    } else {
-      // Typing or deleting speed
-      const speed = isDeleting ? 30 : 60;
-      timer = setTimeout(() => {
-        const nextText = isDeleting
-          ? currentPhrase.substring(0, displayText.length - 1)
-          : currentPhrase.substring(0, displayText.length + 1);
-        setDisplayText(nextText);
-      }, speed);
-    }
+        setAnimState('entering');
+      }, 340);
+    }, 3200);
 
-    return () => clearTimeout(timer);
-  }, [displayText, isDeleting, phraseIndex]);
+    return () => clearInterval(interval);
+  }, []);
 
   const triggerOrbSpin = () => {
     setIsSpinning(true);
@@ -82,10 +64,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           Explorez le savoir
         </h1>
 
-        {/* Subtitle / Description (Titre 2) — Animated Typewriter effect */}
+        {/* Subtitle / Description (Titre 2) — Modern Pop Animation */}
         <p className="hero-aurora-subtitle">
-          <span>{displayText}</span>
-          <span className="typewriter-cursor" aria-hidden="true">|</span>
+          <span className={`hero-pop-text ${animState}`}>
+            {DESCRIPTION_PHRASES[phraseIndex]}
+          </span>
         </p>
 
         {/* Universal Search Capsule with clean animated gradient border */}
@@ -256,21 +239,49 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 2px;
         }
 
-        .typewriter-cursor {
+        .hero-pop-text {
           display: inline-block;
-          font-weight: 300;
-          color: #3b82f6;
-          opacity: 1;
-          animation: cursor-blink 0.9s infinite;
-          margin-left: 1px;
+          will-change: transform, opacity, filter;
         }
 
-        @keyframes cursor-blink {
-          0%, 45% { opacity: 1; }
-          50%, 100% { opacity: 0; }
+        .hero-pop-text.entering {
+          animation: text-pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .hero-pop-text.exiting {
+          animation: text-pop-out 0.32s cubic-bezier(0.4, 0, 1, 1) forwards;
+        }
+
+        @keyframes text-pop-in {
+          0% {
+            opacity: 0;
+            transform: scale(0.86) translateY(8px);
+            filter: blur(4px);
+          }
+          70% {
+            transform: scale(1.04) translateY(-1px);
+            filter: blur(0px);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            filter: blur(0px);
+          }
+        }
+
+        @keyframes text-pop-out {
+          0% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            filter: blur(0px);
+          }
+          100% {
+            opacity: 0;
+            transform: scale(0.92) translateY(-7px);
+            filter: blur(3px);
+          }
         }
 
         /* Search Capsule with fine continuous animated light-blue gradient border */
