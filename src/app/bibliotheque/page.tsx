@@ -5,7 +5,6 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { AuthModal } from '@/components/ui/AuthModal';
 import { LibraryHero } from '@/components/library/LibraryHero';
-import { QuickCategories } from '@/components/library/QuickCategories';
 import { FilterSidebar } from '@/components/library/FilterSidebar';
 import { ResourceGrid } from '@/components/library/ResourceGrid';
 import { ResourceDetailModal } from '@/components/library/ResourceDetailModal';
@@ -189,17 +188,21 @@ export default function LibraryPage() {
           onSearch={(query) => handleFilterChange({ searchQuery: query })}
         />
 
-        {/* Quick horizontal categories pills */}
-        <QuickCategories
-          activeCategory={filters.category}
-          onSelectCategory={(catId) => handleFilterChange({ category: catId })}
-        />
-
-        {/* Main Content Area (Aéré et spacieux sur toute la largeur) */}
+        {/* Main Content Area */}
         <div className="container library-content-container">
           <div className="library-layout">
-            <div className="library-main-col">
-              {/* Main Results Grid */}
+            {/* Colonne Filtres (ouverte sur PC à gauche comme sur l'Image 2) */}
+            <FilterSidebar
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onResetFilters={handleResetFilters}
+              activeFiltersCount={activeFiltersCount}
+              isOpen={filterDrawerOpen}
+              onClose={() => setFilterDrawerOpen(false)}
+            />
+
+            {/* Colonne droite : Livres et contrôles dans le rectangle tracé par l'utilisateur */}
+            <div className="library-right-col">
               <ResourceGrid
                 resources={paginatedResources}
                 totalCount={filteredAndSortedResources.length}
@@ -215,16 +218,6 @@ export default function LibraryPage() {
             </div>
           </div>
         </div>
-
-        {/* Panneau de filtres coulissant (Desktop & Mobile, fermé par défaut) */}
-        <FilterSidebar
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onResetFilters={handleResetFilters}
-          activeFiltersCount={activeFiltersCount}
-          isOpen={filterDrawerOpen}
-          onClose={() => setFilterDrawerOpen(false)}
-        />
       </main>
 
       {/* Institutional Footer */}
@@ -260,15 +253,18 @@ export default function LibraryPage() {
         .library-content-container {
           padding-top: 24px;
           padding-bottom: 60px;
-          max-width: 1240px;
+          max-width: 1360px;
         }
 
         .library-layout {
+          display: flex;
+          align-items: flex-start;
+          gap: 28px;
           width: 100%;
         }
 
-        .library-main-col {
-          width: 100%;
+        .library-right-col {
+          flex: 1;
           min-width: 0;
         }
 
@@ -276,6 +272,10 @@ export default function LibraryPage() {
           .library-content-container {
             padding-top: 16px;
             padding-bottom: 80px;
+          }
+
+          .library-layout {
+            display: block;
           }
         }
       `}</style>

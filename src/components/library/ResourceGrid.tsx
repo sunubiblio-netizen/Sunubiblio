@@ -65,6 +65,21 @@ interface ResourceGridProps {
   activeFiltersCount?: number;
 }
 
+const QUICK_CATEGORY_ITEMS = [
+  { id: 'livres', label: 'Livres' },
+  { id: 'cours', label: 'Cours' },
+  { id: 'annales', label: 'Annales' },
+  { id: 'exercices', label: 'Exercices' },
+  { id: 'documents', label: 'Documents' },
+  { id: 'informatique', label: 'Informatique' },
+  { id: 'sciences', label: 'Sciences' },
+  { id: 'business', label: 'Business & Entrepreneuriat' },
+  { id: 'litterature', label: 'Littérature' },
+  { id: 'finance', label: 'Finance & Management' },
+  { id: 'dev_perso', label: 'Développement personnel' },
+  { id: 'religion', label: 'Religion & Spiritualité' },
+];
+
 export const ResourceGrid: React.FC<ResourceGridProps> = ({
   resources,
   totalCount,
@@ -77,6 +92,7 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
   onToggleFilters,
   activeFiltersCount,
 }) => {
+  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
 
   // Active filter badges
   const activePills: { key: string; label: string; remove: () => void }[] = [];
@@ -167,6 +183,70 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
               <span className="filter-pill-badge">{activeFiltersCount !== undefined ? activeFiltersCount : activePills.length}</span>
             )}
           </button>
+
+          {/* Bouton '+' transparent pour ouvrir les catégories (Livres, Cours, Annales...) */}
+          <div className="cat-plus-picker-wrapper">
+            <button
+              type="button"
+              className={`cat-plus-btn ${isCategoryMenuOpen ? 'active' : ''}`}
+              onClick={() => setIsCategoryMenuOpen(!isCategoryMenuOpen)}
+              aria-expanded={isCategoryMenuOpen}
+              aria-label="Choisir une catégorie"
+              title="Catégories (Livres, Cours, Annales...)"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </button>
+
+            {isCategoryMenuOpen && (
+              <>
+                <div
+                  className="cat-picker-backdrop"
+                  onClick={() => setIsCategoryMenuOpen(false)}
+                  aria-hidden="true"
+                />
+                <div className="cat-picker-dropdown" role="dialog" aria-label="Catégories">
+                  <div className="cat-picker-header">
+                    <span className="cat-picker-title">Catégories</span>
+                    <button
+                      type="button"
+                      className="cat-picker-close"
+                      onClick={() => setIsCategoryMenuOpen(false)}
+                      aria-label="Fermer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <div className="cat-picker-list">
+                    {QUICK_CATEGORY_ITEMS.map((cat) => {
+                      const isActive = filters.category === cat.id;
+                      return (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          className={`cat-picker-item ${isActive ? 'active' : ''}`}
+                          onClick={() => {
+                            onFilterChange({ category: isActive ? 'all' : cat.id, page: 1 });
+                            setIsCategoryMenuOpen(false);
+                          }}
+                        >
+                          <span className="item-dot" />
+                          <span className="item-name">{cat.label}</span>
+                          {isActive && (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         <div className="grid-header-right">
@@ -248,6 +328,162 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           justify-content: space-between;
           margin-bottom: 20px;
           gap: 16px;
+        }
+
+        .grid-header-left {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          position: relative;
+        }
+
+        .cat-plus-picker-wrapper {
+          position: relative;
+        }
+
+        .cat-plus-btn {
+          width: 36px;
+          height: 36px;
+          border-radius: var(--radius-full);
+          background: transparent;
+          border: 1.5px dashed #cbd5e1;
+          color: #64748b;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .cat-plus-btn:hover,
+        .cat-plus-btn.active {
+          background: #fffdf5;
+          border-color: #eab308;
+          color: #854d0e;
+          border-style: solid;
+          box-shadow: 0 2px 8px rgba(234, 179, 8, 0.18);
+          transform: rotate(90deg);
+        }
+
+        .cat-picker-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 490;
+          background: rgba(15, 23, 42, 0.08);
+          backdrop-filter: blur(1px);
+        }
+
+        .cat-picker-dropdown {
+          position: absolute;
+          top: calc(100% + 8px);
+          left: 0;
+          width: 270px;
+          max-height: 400px;
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.95);
+          border-radius: 16px;
+          box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.12), 0 2px 8px rgba(15, 23, 42, 0.04);
+          z-index: 500;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          animation: popoverFade 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes popoverFade {
+          from {
+            opacity: 0;
+            transform: translateY(-6px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .cat-picker-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 12px 16px;
+          border-bottom: 1px solid #f1f5f9;
+        }
+
+        .cat-picker-title {
+          font-size: 13px;
+          font-weight: 700;
+          color: #0f172a;
+        }
+
+        .cat-picker-close {
+          background: transparent;
+          border: none;
+          color: #94a3b8;
+          font-size: 12px;
+          cursor: pointer;
+          padding: 4px;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .cat-picker-close:hover {
+          color: #0f172a;
+          background: #f1f5f9;
+        }
+
+        .cat-picker-list {
+          padding: 6px;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .cat-picker-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 8px 12px;
+          border-radius: 10px;
+          background: transparent;
+          border: none;
+          color: #334155;
+          font-size: 13px;
+          font-weight: 600;
+          text-align: left;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          width: 100%;
+        }
+
+        .cat-picker-item:hover {
+          background: #fffdf5;
+          color: #854d0e;
+        }
+
+        .cat-picker-item.active {
+          background: #fefce8;
+          color: #854d0e;
+          font-weight: 700;
+        }
+
+        .cat-picker-item .item-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #cbd5e1;
+          flex-shrink: 0;
+        }
+
+        .cat-picker-item.active .item-dot {
+          background: #eab308;
+          box-shadow: 0 0 6px rgba(234, 179, 8, 0.6);
+        }
+
+        .cat-picker-item .item-name {
+          flex: 1;
         }
 
         .filter-toggle-pill-btn {
@@ -362,18 +598,17 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           color: #ef4444;
         }
 
-        /* Cards Layout */
+        /* Cards Layout (4 cartes par ligne sur PC pour épouser le rectangle tracé) */
         .cards-container.grid {
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 20px;
+          gap: 18px;
         }
 
-        /* When on very large monitors */
-        @media (min-width: 1400px) {
+        @media (min-width: 1280px) {
           .cards-container.grid {
             grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 20px;
+            gap: 16px;
           }
         }
 
