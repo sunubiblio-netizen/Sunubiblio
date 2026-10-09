@@ -7,12 +7,10 @@ interface HeroSectionProps {
   onTagClick?: (tag: string) => void;
 }
 
-const SEARCH_PHRASES = [
-  'Une première au Sénégal',
-  'Bibliothèque numérique complète',
-  'Rechercher un livre, un document...',
-  'Cours, annales et concours...',
-  'Des milliers d’ouvrages à explorer',
+const DESCRIPTION_PHRASES = [
+  'Première bibliothèque numérique du Sénégal',
+  'Des milliers d’ouvrages, cours et annales',
+  'Apprenez, révisez et progressez chaque jour',
 ];
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
@@ -22,27 +20,25 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Typewriter effect: types, pauses, deletes, and cycles phrases smoothly
+  // Typewriter effect on the description / subtitle
   useEffect(() => {
-    if (searchQuery) return;
-
-    const currentPhrase = SEARCH_PHRASES[phraseIndex % SEARCH_PHRASES.length];
+    const currentPhrase = DESCRIPTION_PHRASES[phraseIndex % DESCRIPTION_PHRASES.length];
     let timer: NodeJS.Timeout;
 
     if (!isDeleting && displayText === currentPhrase) {
-      // Pause at full phrase for reading
+      // Pause at full phrase for comfortable reading
       timer = setTimeout(() => {
         setIsDeleting(true);
-      }, 1900);
+      }, 2100);
     } else if (isDeleting && displayText === '') {
       // Pause when empty before next phrase
       timer = setTimeout(() => {
         setIsDeleting(false);
-        setPhraseIndex((prev) => (prev + 1) % SEARCH_PHRASES.length);
-      }, 350);
+        setPhraseIndex((prev) => (prev + 1) % DESCRIPTION_PHRASES.length);
+      }, 400);
     } else {
       // Typing or deleting speed
-      const speed = isDeleting ? 32 : 65;
+      const speed = isDeleting ? 30 : 60;
       timer = setTimeout(() => {
         const nextText = isDeleting
           ? currentPhrase.substring(0, displayText.length - 1)
@@ -52,7 +48,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
     }
 
     return () => clearTimeout(timer);
-  }, [displayText, isDeleting, phraseIndex, searchQuery]);
+  }, [displayText, isDeleting, phraseIndex]);
 
   const triggerOrbSpin = () => {
     setIsSpinning(true);
@@ -86,12 +82,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           Explorez le savoir
         </h1>
 
-        {/* Subtitle — Short, concise, responsive */}
+        {/* Subtitle / Description (Titre 2) — Animated Typewriter effect */}
         <p className="hero-aurora-subtitle">
-          Des milliers d’ouvrages, cours et annales
+          <span>{displayText}</span>
+          <span className="typewriter-cursor" aria-hidden="true">|</span>
         </p>
 
-        {/* Universal Search Capsule */}
+        {/* Universal Search Capsule with clean static placeholder */}
         <form onSubmit={handleSubmit} className="hero-search-capsule">
           <div className="search-icon-wrap">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -102,10 +99,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           <input
             type="text"
             className="hero-search-input"
-            placeholder={displayText}
+            placeholder="Rechercher un livre, un cours, un document..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label="Recherche sur Sunubiblio"
+            aria-label="Rechercher un livre, un cours, un document"
           />
           <button
             type="submit"
@@ -255,6 +252,25 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           margin: 0 0 24px 0;
           white-space: nowrap;
           text-align: center;
+          min-height: 26px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 2px;
+        }
+
+        .typewriter-cursor {
+          display: inline-block;
+          font-weight: 300;
+          color: #3b82f6;
+          opacity: 1;
+          animation: cursor-blink 0.9s infinite;
+          margin-left: 1px;
+        }
+
+        @keyframes cursor-blink {
+          0%, 45% { opacity: 1; }
+          50%, 100% { opacity: 0; }
         }
 
         /* Search Capsule */
@@ -471,9 +487,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           }
 
           .hero-aurora-subtitle {
-            font-size: 13px;
+            font-size: clamp(11.5px, 3.6vw, 13.5px);
             white-space: nowrap;
             margin-bottom: 18px;
+            min-height: 22px;
           }
 
           .hero-search-capsule {
