@@ -12,6 +12,13 @@ body[style*="overflow: hidden"] .scroll-navigation-global {
 }
 
 :root {
+  /* Base Signature Palette (Couleur de base officielle du site) */
+  --base-sun: #fef08a;
+  --base-sun-light: #fef9c3;
+  --base-sun-gold: #facc15;
+  --base-sun-amber: #f59e0b;
+  --base-sun-glow: rgba(254, 240, 138, 0.45);
+
   /* Chromatic Palette */
   --primary: #4f46e5;
   --primary-hover: #4338ca;
@@ -28,7 +35,7 @@ body[style*="overflow: hidden"] .scroll-navigation-global {
   --blue: #3b82f6;
 
   /* Neutrals & Surfaces */
-  --bg-canvas: #faf8ff;
+  --bg-canvas: transparent;
   --bg-gradient-top: radial-gradient(circle at 80% 10%, rgba(217, 70, 239, 0.08) 0%, rgba(79, 70, 229, 0.05) 30%, transparent 60%);
   --bg-gradient-bottom: radial-gradient(circle at 15% 45%, rgba(6, 182, 212, 0.06) 0%, rgba(79, 70, 229, 0.04) 40%, transparent 70%);
 
@@ -90,6 +97,7 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent !important;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+  background-color: transparent !important;
 }
 
 /* ==========================================================================
@@ -1710,6 +1718,9 @@ input {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
 }
 
 .page-wrapper > main,

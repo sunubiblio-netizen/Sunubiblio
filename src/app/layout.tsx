@@ -48,6 +48,7 @@ export const metadata: Metadata = {
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { ScrollNavigation } from '@/components/shared/ScrollNavigation';
 import { SunubiblioTopLine } from '@/components/layout/SunubiblioTopLine';
+import { GlobalAuroraBackdrop } from '@/components/layout/GlobalAuroraBackdrop';
 
 export default function RootLayout({
   children,
@@ -64,6 +65,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       </head>
       <body>
+        <GlobalAuroraBackdrop />
         <SunubiblioTopLine />
         {children}
         <ScrollNavigation />

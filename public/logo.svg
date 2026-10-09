@@ -1,20 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="6 6 88 88" fill="none">
   <defs>
+    <!-- Top-Right Petal: Pure Vibrant Sky/Royal Blue -->
     <linearGradient id="pet1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3B82F6"/>
-      <stop offset="100%" stop-color="#6366F1"/>
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#0284C7"/>
     </linearGradient>
+    <!-- Bottom-Right Petal: Warm Sunny Amber Gold -->
     <linearGradient id="pet2" x1="100%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#06B6D4"/>
-      <stop offset="100%" stop-color="#3B82F6"/>
+      <stop offset="0%" stop-color="#FACC15"/>
+      <stop offset="100%" stop-color="#EAB308"/>
     </linearGradient>
+    <!-- Bottom-Left Petal: Soft Sunny Pale Yellow / Butter Cream (Base Color) -->
     <linearGradient id="pet3" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#4F46E5"/>
-      <stop offset="100%" stop-color="#EC4899"/>
+      <stop offset="0%" stop-color="#FEF08A"/>
+      <stop offset="100%" stop-color="#FACC15"/>
     </linearGradient>
+    <!-- Top-Left Petal: Luminous Crystal Cyan / Sky Blue -->
     <linearGradient id="pet4" x1="100%" y1="100%" x2="0%" y2="0%">
-      <stop offset="0%" stop-color="#D946EF"/>
-      <stop offset="100%" stop-color="#8B5CF6"/>
+      <stop offset="0%" stop-color="#0EA5E9"/>
+      <stop offset="100%" stop-color="#38BDF8"/>
     </linearGradient>
   </defs>
   <g transform="translate(50,50)">
