@@ -179,7 +179,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           font-weight: 500;
           color: #475569;
           line-height: 1.4;
-          margin: 0 0 32px 0;
+          margin: 0 0 24px 0;
           white-space: nowrap;
         }
 

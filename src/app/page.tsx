@@ -80,6 +80,7 @@ export default function HomePage() {
           flex-direction: column;
           justify-content: center;
           align-items: center;
+          padding-bottom: 64px;
           min-height: 0;
           width: 100%;
           position: relative;
