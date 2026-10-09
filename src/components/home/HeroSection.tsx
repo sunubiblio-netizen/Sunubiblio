@@ -19,12 +19,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
 
   return (
     <section className="hero-aurora-section">
-      {/* Background Aurora / Mesh Gradient matching user reference */}
+      {/* Background Aurora / Mesh Gradient strictly centered around title */}
       <div className="hero-aurora-backdrop" aria-hidden="true">
         <div className="aurora-orb orb-blue" />
         <div className="aurora-orb orb-violet" />
-        <div className="aurora-orb orb-magenta" />
-        <div className="aurora-orb orb-cyan" />
         <div className="aurora-overlay" />
       </div>
 
@@ -97,38 +95,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
         }
 
         .orb-blue {
-          width: 500px;
-          height: 360px;
-          top: -60px;
-          left: 10%;
-          background: radial-gradient(circle, rgba(59, 130, 246, 0.55) 0%, rgba(99, 102, 241, 0.25) 70%, transparent 100%);
+          width: 440px;
+          height: 250px;
+          top: -30px;
+          left: 15%;
+          background: radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, rgba(99, 102, 241, 0.15) 60%, transparent 100%);
         }
 
         .orb-violet {
-          width: 480px;
-          height: 380px;
-          top: 10px;
+          width: 440px;
+          height: 250px;
+          top: -20px;
           right: 15%;
-          background: radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(139, 92, 246, 0.2) 70%, transparent 100%);
+          background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(139, 92, 246, 0.12) 60%, transparent 100%);
           animation-delay: -2s;
-        }
-
-        .orb-magenta {
-          width: 520px;
-          height: 340px;
-          bottom: -40px;
-          right: 25%;
-          background: radial-gradient(circle, rgba(236, 72, 153, 0.5) 0%, rgba(217, 70, 239, 0.2) 70%, transparent 100%);
-          animation-delay: -4s;
-        }
-
-        .orb-cyan {
-          width: 380px;
-          height: 300px;
-          bottom: -20px;
-          left: 20%;
-          background: radial-gradient(circle, rgba(56, 189, 248, 0.45) 0%, transparent 70%);
-          animation-delay: -3s;
         }
 
         .aurora-overlay {

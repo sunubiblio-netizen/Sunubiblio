@@ -150,7 +150,7 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelectCategory }) 
                   className="category-squircle-box"
                   style={{
                     background: theme.gradient,
-                    boxShadow: `0 10px 22px -4px ${theme.glow}, 0 2px 6px -1px rgba(0, 0, 0, 0.08), inset 0 1px 1px 0 rgba(255, 255, 255, 0.45)`,
+                    boxShadow: '0 8px 18px -4px rgba(15, 23, 42, 0.12), 0 2px 4px rgba(0, 0, 0, 0.04), inset 0 1px 1px 0 rgba(255, 255, 255, 0.45)',
                   }}
                 >
                   <div className="squircle-glass-highlight" />

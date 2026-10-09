@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { HeroSection } from '@/components/home/HeroSection';
 import { CategoryGrid } from '@/components/home/CategoryGrid';
-import { Footer } from '@/components/layout/Footer';
 import { AuthModal } from '@/components/ui/AuthModal';
 import { CategoryItem } from '@/data/categories';
 
@@ -69,8 +68,7 @@ export default function HomePage() {
         <CategoryGrid onSelectCategory={handleSelectCategory} />
       </main>
 
-      {/* Complete institutional footer */}
-      <Footer />
+      {/* Footer removed as requested - leaving only categories in the lower section */}
 
       {/* Authentication Modal */}
       <AuthModal
@@ -87,6 +85,7 @@ export default function HomePage() {
           flex-direction: column;
           position: relative;
           overflow: hidden;
+          background: #ffffff;
         }
 
         main {
@@ -95,7 +94,7 @@ export default function HomePage() {
           flex-direction: column;
           justify-content: space-between;
           align-items: center;
-          padding: 12px 0 20px;
+          padding: 12px 0 48px;
           min-height: 0;
           width: 100%;
           position: relative;
