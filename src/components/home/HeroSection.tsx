@@ -70,7 +70,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
             onClick={triggerOrbSpin}
             aria-label="Lancer la recherche"
           >
-            {/* 3D Glass Sphere Body */}
+            {/* 3D Transparent Crystal Glass Sphere */}
             <span className="orb-glass-body">
               {/* Specular glare & lighting reflections */}
               <span className="orb-specular-glare" />
@@ -78,14 +78,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
               <span className="orb-sparkle orb-sparkle-1" />
               <span className="orb-sparkle orb-sparkle-2" />
               <span className="orb-sparkle orb-sparkle-3" />
-
-              {/* Centered fine arrow */}
-              <span className="orb-arrow-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="12 5 19 12 12 19" />
-                </svg>
-              </span>
             </span>
           </button>
         </form>
@@ -285,7 +277,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           transform: scale(0.96);
         }
 
-        /* Volumetric Glass Sphere Body with Specular Highlights & Depth */
+        /* Volumetric Transparent Crystal Gray Glass Sphere Body */
         .orb-glass-body {
           position: relative;
           width: 100%;
@@ -294,26 +286,37 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           display: flex;
           align-items: center;
           justify-content: center;
-          /* Rich 3D gradient matching Sunubiblio royal indigo/violet palette */
-          background: radial-gradient(circle at 30% 24%, #a855f7 0%, #7c3aed 28%, #4f46e5 58%, #1e1b4b 86%, #0b0f19 100%);
+          backdrop-filter: blur(6px);
+          -webkit-backdrop-filter: blur(6px);
+          /* Transparent crystal gray matching search slate tone */
+          background: radial-gradient(
+            circle at 30% 24%,
+            rgba(255, 255, 255, 0.85) 0%,
+            rgba(241, 245, 249, 0.45) 25%,
+            rgba(203, 213, 225, 0.25) 55%,
+            rgba(148, 163, 184, 0.35) 82%,
+            rgba(100, 116, 139, 0.45) 100%
+          );
+          border: 1.5px solid rgba(203, 213, 225, 0.85);
           box-shadow:
-            0 8px 22px -2px rgba(79, 70, 229, 0.5),
-            0 2px 6px rgba(15, 23, 42, 0.2),
-            inset -3px -5px 10px rgba(15, 23, 42, 0.75),
-            inset 2px 3px 6px rgba(255, 255, 255, 0.6);
+            0 4px 14px rgba(100, 116, 139, 0.16),
+            0 2px 6px rgba(148, 163, 184, 0.12),
+            inset -3px -5px 8px rgba(100, 116, 139, 0.35),
+            inset 2px 3px 6px rgba(255, 255, 255, 0.9);
           overflow: hidden;
-          transition: box-shadow 0.3s ease, filter 0.3s ease;
+          transition: box-shadow 0.3s ease, border-color 0.3s ease;
         }
 
         .hero-orb-button:hover .orb-glass-body {
+          border-color: rgba(148, 163, 184, 0.95);
           box-shadow:
-            0 12px 28px -2px rgba(99, 102, 241, 0.65),
-            0 0 20px rgba(168, 85, 247, 0.45),
-            inset -3px -5px 10px rgba(15, 23, 42, 0.75),
-            inset 2px 3px 6px rgba(255, 255, 255, 0.8);
+            0 6px 18px rgba(100, 116, 139, 0.22),
+            0 0 14px rgba(203, 213, 225, 0.45),
+            inset -3px -5px 8px rgba(100, 116, 139, 0.4),
+            inset 2px 3px 6px rgba(255, 255, 255, 0.95);
         }
 
-        /* Curved Specular Glare on top-left (inspired by crystal orb reflection) */
+        /* Curved Specular Glare on top-left */
         .orb-specular-glare {
           position: absolute;
           top: 3px;
@@ -321,7 +324,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           width: 20px;
           height: 12px;
           border-radius: 50%;
-          background: radial-gradient(ellipse at 50% 35%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.65) 45%, rgba(224, 231, 255, 0.15) 75%, transparent 100%);
+          background: radial-gradient(ellipse at 50% 35%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.7) 45%, rgba(241, 245, 249, 0.2) 75%, transparent 100%);
           transform: rotate(-32deg);
           pointer-events: none;
           z-index: 2;
@@ -332,19 +335,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           position: absolute;
           inset: 0;
           border-radius: 50%;
-          background: radial-gradient(circle at 72% 82%, rgba(192, 132, 252, 0.45) 0%, transparent 45%);
+          background: radial-gradient(circle at 72% 82%, rgba(255, 255, 255, 0.5) 0%, transparent 45%);
           pointer-events: none;
           z-index: 1;
         }
 
-        /* Celestial sparkles inside glass */
+        /* Celestial sparkles inside transparent crystal */
         .orb-sparkle {
           position: absolute;
           border-radius: 50%;
           background: #ffffff;
           pointer-events: none;
           z-index: 2;
-          box-shadow: 0 0 3px 1px rgba(255, 255, 255, 0.85);
+          box-shadow: 0 0 3px 1px rgba(255, 255, 255, 0.9);
         }
 
         .orb-sparkle-1 {
@@ -352,7 +355,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           height: 2.5px;
           top: 58%;
           right: 24%;
-          opacity: 0.9;
+          opacity: 0.85;
         }
 
         .orb-sparkle-2 {
@@ -360,7 +363,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           height: 1.6px;
           top: 72%;
           right: 32%;
-          opacity: 0.75;
+          opacity: 0.7;
         }
 
         .orb-sparkle-3 {
@@ -371,59 +374,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           opacity: 0.8;
         }
 
-        /* Stylized White Arrow inside */
-        .orb-arrow-icon {
-          position: relative;
-          z-index: 4;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #ffffff;
-          filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
-          transition: transform 0.2s ease;
-        }
-
-        /* Spinning & Color morphing on click */
+        /* Pure 3D Rotation on click without color change */
         .hero-orb-button.is-spinning .orb-glass-body {
-          animation: orb-spin-chroma 0.95s cubic-bezier(0.34, 1.25, 0.64, 1) forwards;
+          animation: orb-spin-pure 0.95s cubic-bezier(0.34, 1.25, 0.64, 1) forwards;
         }
 
-        @keyframes orb-spin-chroma {
+        @keyframes orb-spin-pure {
           0% {
             transform: rotate(0deg) scale(0.96);
-            filter: hue-rotate(0deg) brightness(1);
-            box-shadow:
-              0 8px 22px -2px rgba(79, 70, 229, 0.5),
-              0 2px 6px rgba(15, 23, 42, 0.2),
-              inset -3px -5px 10px rgba(15, 23, 42, 0.75),
-              inset 2px 3px 6px rgba(255, 255, 255, 0.6);
           }
-          35% {
-            transform: rotate(180deg) scale(1.12);
-            filter: hue-rotate(120deg) brightness(1.25);
-            box-shadow:
-              0 14px 32px 0 rgba(16, 185, 129, 0.55),
-              0 0 24px rgba(6, 182, 212, 0.4),
-              inset -3px -5px 10px rgba(15, 23, 42, 0.75),
-              inset 2px 3px 6px rgba(255, 255, 255, 0.85);
+          40% {
+            transform: rotate(180deg) scale(1.08);
           }
-          70% {
-            transform: rotate(310deg) scale(1.06);
-            filter: hue-rotate(240deg) brightness(1.2);
-            box-shadow:
-              0 12px 28px 0 rgba(236, 72, 153, 0.5),
-              0 0 20px rgba(168, 85, 247, 0.4),
-              inset -3px -5px 10px rgba(15, 23, 42, 0.75),
-              inset 2px 3px 6px rgba(255, 255, 255, 0.8);
+          75% {
+            transform: rotate(300deg) scale(1.03);
           }
           100% {
             transform: rotate(360deg) scale(1);
-            filter: hue-rotate(360deg) brightness(1);
-            box-shadow:
-              0 8px 22px -2px rgba(79, 70, 229, 0.5),
-              0 2px 6px rgba(15, 23, 42, 0.2),
-              inset -3px -5px 10px rgba(15, 23, 42, 0.75),
-              inset 2px 3px 6px rgba(255, 255, 255, 0.6);
           }
         }
 
