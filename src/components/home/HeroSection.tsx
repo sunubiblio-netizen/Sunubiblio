@@ -88,42 +88,39 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           <span className="typewriter-cursor" aria-hidden="true">|</span>
         </p>
 
-        {/* Universal Search Capsule with animated brown & light-blue gradient border */}
-        <div className="hero-search-gradient-track">
-          <div className="search-border-conic-rotor" aria-hidden="true" />
-          <form onSubmit={handleSubmit} className="hero-search-capsule">
-            <div className="search-icon-wrap">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-            </div>
-            <input
-              type="text"
-              className="hero-search-input"
-              placeholder="Rechercher..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              aria-label="Rechercher"
-            />
-            <button
-              type="submit"
-              className={`hero-orb-button ${isSpinning ? 'is-spinning' : ''}`}
-              onClick={triggerOrbSpin}
-              aria-label="Lancer la recherche"
-            >
-              {/* 3D Transparent Crystal Glass Sphere */}
-              <span className="orb-glass-body">
-                {/* Specular glare & lighting reflections */}
-                <span className="orb-specular-glare" />
-                <span className="orb-caustic-ring" />
-                <span className="orb-sparkle orb-sparkle-1" />
-                <span className="orb-sparkle orb-sparkle-2" />
-                <span className="orb-sparkle orb-sparkle-3" />
-              </span>
-            </button>
-          </form>
-        </div>
+        {/* Universal Search Capsule with clean animated gradient border */}
+        <form onSubmit={handleSubmit} className="hero-search-capsule">
+          <div className="search-icon-wrap">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            className="hero-search-input"
+            placeholder="Rechercher..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label="Rechercher"
+          />
+          <button
+            type="submit"
+            className={`hero-orb-button ${isSpinning ? 'is-spinning' : ''}`}
+            onClick={triggerOrbSpin}
+            aria-label="Lancer la recherche"
+          >
+            {/* 3D Transparent Crystal Glass Sphere */}
+            <span className="orb-glass-body">
+              {/* Specular glare & lighting reflections */}
+              <span className="orb-specular-glare" />
+              <span className="orb-caustic-ring" />
+              <span className="orb-sparkle orb-sparkle-1" />
+              <span className="orb-sparkle orb-sparkle-2" />
+              <span className="orb-sparkle orb-sparkle-3" />
+            </span>
+          </button>
+        </form>
       </div>
 
       <style jsx>{`
@@ -276,82 +273,46 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           50%, 100% { opacity: 0; }
         }
 
-        /* Search Outer Track with 1.5px fine animated gradient border */
-        .hero-search-gradient-track {
+        /* Search Capsule with fine continuous animated gradient border (Marron dominant + Bleu clair, zéro vert) */
+        .hero-search-capsule {
           position: relative;
           width: 100%;
           max-width: 660px;
-          padding: 1.5px;
+          display: flex;
+          align-items: center;
+          padding: 8px 10px 8px 22px;
           border-radius: var(--radius-full);
-          overflow: hidden;
+          border: 1.5px solid transparent;
+          background:
+            linear-gradient(#ffffff, #ffffff) padding-box,
+            linear-gradient(135deg, #78350f 0%, #b45309 30%, #60a5fa 65%, #93c5fd 82%, #78350f 100%) border-box;
+          background-size: 100% 100%, 300% 300%;
+          animation: border-gradient-shift 7s ease-in-out infinite;
           box-shadow:
             0 16px 40px -8px rgba(120, 53, 15, 0.12),
             0 8px 24px -4px rgba(59, 130, 246, 0.1),
             0 2px 6px rgba(15, 23, 42, 0.04);
-          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .hero-search-gradient-track:focus-within {
-          transform: translateY(-2px);
-          box-shadow:
-            0 20px 48px -8px rgba(120, 53, 15, 0.2),
-            0 8px 28px -4px rgba(59, 130, 246, 0.18),
-            0 0 0 3px rgba(146, 64, 14, 0.1);
-        }
-
-        /* Continuous rotating gradient (Marron dominant + Bleu clair doux + Blanc, zéro vert) */
-        .search-border-conic-rotor {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 780px;
-          height: 780px;
-          transform: translate(-50%, -50%);
-          background: conic-gradient(
-            from 0deg,
-            #78350f 0deg,
-            #92400e 45deg,
-            #b45309 85deg,
-            #60a5fa 130deg,
-            #93c5fd 165deg,
-            #ffffff 180deg,
-            #78350f 215deg,
-            #92400e 260deg,
-            #b45309 295deg,
-            #38bdf8 335deg,
-            #78350f 360deg
-          );
-          animation: border-conic-rotate 7s linear infinite;
-          will-change: transform;
-        }
-
-        @keyframes border-conic-rotate {
-          from {
-            transform: translate(-50%, -50%) rotate(0deg);
-          }
-          to {
-            transform: translate(-50%, -50%) rotate(360deg);
-          }
-        }
-
-        /* Search Capsule surface (Single frosted glass layer, no extra white border) */
-        .hero-search-capsule {
-          position: relative;
-          z-index: 1;
-          width: 100%;
-          display: flex;
-          align-items: center;
-          background: rgba(255, 255, 255, 0.78);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          padding: 8px 10px 8px 22px;
-          border-radius: var(--radius-full);
-          border: none;
-          transition: background 0.2s ease;
+          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
         }
 
         .hero-search-capsule:focus-within {
-          background: rgba(255, 255, 255, 0.94);
+          transform: translateY(-2px);
+          box-shadow:
+            0 22px 50px -8px rgba(120, 53, 15, 0.18),
+            0 8px 26px -4px rgba(59, 130, 246, 0.16),
+            0 0 0 3px rgba(96, 165, 250, 0.15);
+        }
+
+        @keyframes border-gradient-shift {
+          0% {
+            background-position: 0% 0%, 0% 50%;
+          }
+          50% {
+            background-position: 0% 0%, 100% 50%;
+          }
+          100% {
+            background-position: 0% 0%, 0% 50%;
+          }
         }
 
         .search-icon-wrap {
@@ -549,22 +510,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
             min-height: 22px;
           }
 
-          .hero-search-gradient-track {
-            width: 100%;
-            max-width: 100%;
-            padding: 1.3px;
-            box-shadow:
-              0 12px 30px -6px rgba(120, 53, 15, 0.12),
-              0 4px 12px rgba(15, 23, 42, 0.04);
-          }
-
           .hero-search-capsule {
             width: 100%;
             max-width: 100%;
             padding: 5px 6px 5px 14px;
             border-radius: var(--radius-full);
-            box-shadow: none;
-            border: none;
+            border: 1.3px solid transparent;
+            background:
+              linear-gradient(#ffffff, #ffffff) padding-box,
+              linear-gradient(135deg, #78350f 0%, #b45309 30%, #60a5fa 65%, #93c5fd 82%, #78350f 100%) border-box;
+            background-size: 100% 100%, 300% 300%;
+            animation: border-gradient-shift 7s ease-in-out infinite;
+            box-shadow:
+              0 10px 26px -6px rgba(120, 53, 15, 0.1),
+              0 4px 12px rgba(15, 23, 42, 0.04);
           }
 
           .search-icon-wrap {
