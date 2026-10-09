@@ -28,13 +28,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
 
   return (
     <section className="hero-aurora-section">
-      {/* Full-screen fluid ambient atmospheric sky-blue mesh */}
+      {/* Full-screen fluid ambient mesh (Chocolat Havane & Vert Impérial - Style Lovable) */}
       <div className="hero-aurora-backdrop" aria-hidden="true">
-        <div className="aurora-orb orb-sky" />
-        <div className="aurora-orb orb-azure" />
-        <div className="aurora-orb orb-cyan" />
-        <div className="aurora-orb orb-powder" />
-        <div className="aurora-overlay" />
+        <div className="aurora-orb orb-forest-left" />
+        <div className="aurora-orb orb-forest-right" />
+        <div className="aurora-orb orb-chocolate-bottom" />
+        <div className="aurora-orb orb-amber-accent" />
+        <div className="aurora-center-spotlight" />
       </div>
 
       <div className="container hero-center-container">
@@ -93,66 +93,74 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           width: 100%;
         }
 
-        /* Ambient Mesh / Full-screen Fluid Atmospheric Sky Blue & Azure Gradient */
+        /* Ambient Mesh / Full-screen Fluid Havane Chocolate & Imperial Green (Lovable Technique) */
         .hero-aurora-backdrop {
           position: fixed;
           inset: 0;
           overflow: hidden;
           pointer-events: none;
           z-index: 0;
-          background: radial-gradient(circle at 50% 25%, #f4f9ff 0%, #e8f3fe 55%, #dbeafe 100%);
+          background: radial-gradient(circle at 50% 28%, #ffffff 0%, #faf8f5 55%, #f5efe6 100%);
         }
 
         .aurora-orb {
           position: absolute;
           border-radius: 50%;
           filter: blur(95px);
-          opacity: 0.72;
+          opacity: 0.78;
           animation: orb-pulse 10s ease-in-out infinite alternate;
         }
 
-        .orb-sky {
-          width: 680px;
-          height: 520px;
-          top: 4%;
-          left: 6%;
-          background: radial-gradient(circle, rgba(56, 189, 248, 0.55) 0%, rgba(96, 165, 250, 0.3) 50%, transparent 75%);
+        /* Top-Left: Imperial Deep Emerald / Forest Green */
+        .orb-forest-left {
+          width: 740px;
+          height: 560px;
+          top: -6%;
+          left: -6%;
+          background: radial-gradient(circle at 25% 25%, rgba(20, 83, 45, 0.72) 0%, rgba(22, 163, 74, 0.44) 45%, rgba(74, 222, 128, 0.18) 70%, transparent 85%);
         }
 
-        .orb-azure {
-          width: 640px;
-          height: 500px;
-          top: 6%;
-          right: 5%;
-          background: radial-gradient(circle, rgba(96, 165, 250, 0.52) 0%, rgba(59, 130, 246, 0.28) 55%, transparent 75%);
+        /* Top-Right: Deep Jade / Viridian Green */
+        .orb-forest-right {
+          width: 700px;
+          height: 540px;
+          top: -5%;
+          right: -5%;
+          background: radial-gradient(circle at 75% 25%, rgba(5, 150, 105, 0.68) 0%, rgba(16, 185, 129, 0.4) 45%, rgba(52, 211, 153, 0.16) 70%, transparent 85%);
           animation-delay: -3s;
         }
 
-        .orb-cyan {
-          width: 580px;
-          height: 460px;
-          bottom: 8%;
-          left: 12%;
-          background: radial-gradient(circle, rgba(14, 165, 233, 0.48) 0%, rgba(56, 189, 248, 0.22) 60%, transparent 75%);
+        /* Bottom & Lower Flanks: Sweeping Havane & Rich Chocolate Brown (Lovable style sweep) */
+        .orb-chocolate-bottom {
+          width: 110vw;
+          height: 560px;
+          bottom: -10%;
+          left: -5vw;
+          background: radial-gradient(ellipse 85% 75% at 50% 100%, rgba(69, 26, 3, 0.78) 0%, rgba(120, 53, 15, 0.64) 36%, rgba(180, 83, 9, 0.32) 65%, transparent 95%);
           animation-delay: -5s;
         }
 
-        .orb-powder {
-          width: 650px;
-          height: 520px;
-          bottom: 5%;
-          right: 10%;
-          background: radial-gradient(circle, rgba(147, 197, 253, 0.55) 0%, rgba(186, 230, 253, 0.3) 60%, transparent 80%);
+        /* Warm Amber / Cognac Accent Glow on right */
+        .orb-amber-accent {
+          width: 620px;
+          height: 480px;
+          bottom: 6%;
+          right: 3%;
+          background: radial-gradient(circle, rgba(146, 64, 14, 0.58) 0%, rgba(217, 119, 6, 0.28) 50%, transparent 75%);
           animation-delay: -2s;
         }
 
-        .aurora-overlay {
+        /* Lovable-Style Pure White Luminous Spotlight Center */
+        .aurora-center-spotlight {
           position: absolute;
           inset: 0;
+          pointer-events: none;
           background: radial-gradient(
-            circle at 50% 50%,
-            rgba(255, 255, 255, 0.08) 0%,
-            rgba(237, 246, 255, 0.3) 100%
+            ellipse 65% 55% at 50% 36%,
+            rgba(255, 255, 255, 0.98) 0%,
+            rgba(255, 255, 255, 0.75) 35%,
+            rgba(254, 243, 199, 0.2) 62%,
+            transparent 85%
           );
         }
 
@@ -184,7 +192,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           font-family: 'Courgette', cursive, sans-serif;
           font-size: clamp(32px, 4.4vw, 52px);
           font-weight: 400;
-          color: #0f172a;
+          color: #1c1917;
           line-height: 1.25;
           letter-spacing: -0.01em;
           margin: 0 0 10px 0;
@@ -195,7 +203,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
         .hero-aurora-subtitle {
           font-size: clamp(13.5px, 1.5vw, 16px);
           font-weight: 500;
-          color: #475569;
+          color: #57534e;
           line-height: 1.4;
           margin: 0 0 24px 0;
           white-space: nowrap;
@@ -211,18 +219,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           background: #ffffff;
           padding: 8px 10px 8px 22px;
           border-radius: var(--radius-full);
-          border: 1.5px solid rgba(186, 230, 253, 0.85);
+          border: 1.5px solid rgba(180, 83, 9, 0.35);
           box-shadow:
-            0 20px 48px -10px rgba(56, 189, 248, 0.16),
-            0 6px 18px -2px rgba(15, 23, 42, 0.04);
+            0 20px 48px -10px rgba(69, 26, 3, 0.15),
+            0 6px 18px -2px rgba(20, 83, 45, 0.06);
           transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .hero-search-capsule:focus-within {
-          border-color: #38bdf8;
+          border-color: #15803d;
           box-shadow:
-            0 24px 54px -10px rgba(56, 189, 248, 0.26),
-            0 0 0 4px rgba(56, 189, 248, 0.12);
+            0 24px 54px -10px rgba(21, 128, 61, 0.22),
+            0 0 0 4px rgba(21, 128, 61, 0.12);
           transform: translateY(-2px);
         }
 
@@ -278,7 +286,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           transform: scale(0.94);
         }
 
-        /* Volumetric Highly-Transparent Crystal Gray Glass Sphere Body */
+        /* Volumetric Highly-Transparent Crystal Glass Sphere Body */
         .orb-glass-body {
           position: relative;
           width: 100%;
@@ -289,31 +297,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           justify-content: center;
           backdrop-filter: blur(8px);
           -webkit-backdrop-filter: blur(8px);
-          /* Ultra-subtle transparent crystal glass */
+          /* Subtle crystal glass with organic warm amber/stone tint */
           background: radial-gradient(
             circle at 30% 24%,
-            rgba(255, 255, 255, 0.65) 0%,
-            rgba(241, 245, 249, 0.25) 25%,
-            rgba(203, 213, 225, 0.12) 55%,
-            rgba(148, 163, 184, 0.18) 82%,
-            rgba(100, 116, 139, 0.25) 100%
+            rgba(255, 255, 255, 0.72) 0%,
+            rgba(254, 243, 199, 0.28) 25%,
+            rgba(231, 229, 228, 0.15) 55%,
+            rgba(180, 83, 9, 0.16) 82%,
+            rgba(69, 26, 3, 0.22) 100%
           );
-          border: 1.5px solid rgba(203, 213, 225, 0.6);
+          border: 1.5px solid rgba(180, 83, 9, 0.35);
           box-shadow:
-            0 3px 10px rgba(100, 116, 139, 0.1),
-            0 1px 3px rgba(148, 163, 184, 0.08),
-            inset -2px -3px 6px rgba(100, 116, 139, 0.22),
-            inset 1.5px 2px 4px rgba(255, 255, 255, 0.85);
+            0 3px 10px rgba(69, 26, 3, 0.12),
+            0 1px 3px rgba(20, 83, 45, 0.08),
+            inset -2px -3px 6px rgba(69, 26, 3, 0.2),
+            inset 1.5px 2px 4px rgba(255, 255, 255, 0.88);
           overflow: hidden;
           transition: box-shadow 0.25s ease, border-color 0.25s ease;
         }
 
         .hero-orb-button:hover .orb-glass-body {
-          border-color: rgba(148, 163, 184, 0.85);
+          border-color: rgba(21, 128, 61, 0.7);
           box-shadow:
-            0 5px 14px rgba(100, 116, 139, 0.18),
-            0 0 12px rgba(203, 213, 225, 0.35),
-            inset -2px -3px 6px rgba(100, 116, 139, 0.28),
+            0 5px 14px rgba(69, 26, 3, 0.18),
+            0 0 12px rgba(34, 197, 94, 0.25),
+            inset -2px -3px 6px rgba(69, 26, 3, 0.25),
             inset 1.5px 2px 4px rgba(255, 255, 255, 0.95);
         }
 

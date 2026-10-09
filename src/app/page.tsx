@@ -71,7 +71,7 @@ export default function HomePage() {
           flex-direction: column;
           position: relative;
           overflow: hidden;
-          background: #edf6ff;
+          background: #faf8f5;
         }
 
         main {
