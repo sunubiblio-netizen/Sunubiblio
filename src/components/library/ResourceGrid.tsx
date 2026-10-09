@@ -60,6 +60,9 @@ interface ResourceGridProps {
   onResetFilters: () => void;
   onOpenMobileFilters: () => void;
   onOpenResource: (resource: Resource) => void;
+  isFiltersOpen?: boolean;
+  onToggleFilters?: () => void;
+  activeFiltersCount?: number;
 }
 
 export const ResourceGrid: React.FC<ResourceGridProps> = ({
@@ -70,8 +73,10 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
   onResetFilters,
   onOpenMobileFilters,
   onOpenResource,
+  isFiltersOpen,
+  onToggleFilters,
+  activeFiltersCount,
 }) => {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Active filter badges
   const activePills: { key: string; label: string; remove: () => void }[] = [];
@@ -144,34 +149,27 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
 
   return (
     <section className="resource-grid-section">
-      {/* Top Header Row */}
+      {/* Top Header Row (Aéré, spacieux, bouton Filtres à gauche, Tri à droite) */}
       <div className="grid-header">
-        <div className="grid-title-block">
-          <h2 className="grid-title">Bibliothèque</h2>
-          <p className="grid-subtitle">
-            <span className="results-count">
-              {activePills.length > 0 ? `${totalCount} ressource${totalCount > 1 ? 's' : ''} trouvée${totalCount > 1 ? 's' : ''}` : '1 248 ressources disponibles'}
-            </span>
-          </p>
-        </div>
-
-        <div className="grid-controls">
-          {/* Mobile Filter Button */}
+        <div className="grid-header-left">
           <button
             type="button"
-            className="mobile-filter-trigger"
-            onClick={onOpenMobileFilters}
+            className={`filter-toggle-pill-btn ${isFiltersOpen ? 'active' : ''}`}
+            onClick={onToggleFilters || onOpenMobileFilters}
+            aria-expanded={isFiltersOpen}
+            aria-label="Afficher ou masquer les filtres"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
             </svg>
             <span>Filtres</span>
-            {activePills.length > 0 && (
-              <span className="mobile-badge-count">{activePills.length}</span>
+            {(activeFiltersCount !== undefined ? activeFiltersCount : activePills.length) > 0 && (
+              <span className="filter-pill-badge">{activeFiltersCount !== undefined ? activeFiltersCount : activePills.length}</span>
             )}
           </button>
+        </div>
 
-          {/* Designer Sort Dropdown */}
+        <div className="grid-header-right">
           <SortDropdown
             value={filters.sortBy}
             onChange={(val) => onFilterChange({ sortBy: val, page: 1 })}
@@ -179,38 +177,6 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
             labelPrefix="Trier par :"
             align="right"
           />
-
-          {/* Grid / List View Toggle */}
-          <div className="view-toggle-wrap desktop-only">
-            <button
-              type="button"
-              className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
-              onClick={() => setViewMode('grid')}
-              aria-label="Affichage en grille"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="7" height="7" />
-                <rect x="14" y="3" width="7" height="7" />
-                <rect x="14" y="14" width="7" height="7" />
-                <rect x="3" y="14" width="7" height="7" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              className={`view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
-              onClick={() => setViewMode('list')}
-              aria-label="Affichage en liste"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="8" y1="6" x2="21" y2="6" />
-                <line x1="8" y1="12" x2="21" y2="12" />
-                <line x1="8" y1="18" x2="21" y2="18" />
-                <line x1="3" y1="6" x2="3.01" y2="6" />
-                <line x1="3" y1="12" x2="3.01" y2="12" />
-                <line x1="3" y1="18" x2="3.01" y2="18" />
-              </svg>
-            </button>
-          </div>
         </div>
       </div>
 
@@ -250,7 +216,7 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
       {resources.length === 0 ? (
         <EmptyState onResetFilters={onResetFilters} />
       ) : (
-        <div className={`cards-container ${viewMode}`}>
+        <div className="cards-container grid">
           {resources.map((res) => (
             <ResourceCard
               key={res.id}
@@ -280,85 +246,53 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 16px;
+          margin-bottom: 20px;
           gap: 16px;
-          flex-wrap: wrap;
         }
 
-        .grid-title {
-          font-size: 22px;
-          font-weight: 800;
-          color: #0f172a;
-          letter-spacing: -0.02em;
-          margin-bottom: 2px;
-        }
-
-        .grid-subtitle {
-          font-size: 13.5px;
-          color: #64748b;
-        }
-
-        .results-count {
-          font-weight: 700;
-          color: #d97706;
-        }
-
-        .grid-controls {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .mobile-filter-trigger {
-          display: none;
+        .filter-toggle-pill-btn {
+          display: inline-flex;
           align-items: center;
           gap: 8px;
-          padding: 8px 14px;
+          padding: 8px 18px;
           border-radius: var(--radius-full);
           background: #ffffff;
-          border: 1px solid rgba(234, 179, 8, 0.4);
+          border: 1.5px solid #e2e8f0;
+          color: #334155;
           font-size: 13.5px;
-          font-weight: 700;
-          color: #d97706;
-          box-shadow: 0 2px 6px rgba(234, 179, 8, 0.1);
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
         }
 
-        .mobile-badge-count {
-          width: 18px;
-          height: 18px;
+        .filter-toggle-pill-btn:hover {
+          border-color: rgba(234, 179, 8, 0.45);
+          background: #fffdf5;
+          color: #854d0e;
+          transform: translateY(-1px);
+        }
+
+        .filter-toggle-pill-btn.active {
+          background: #fefce8;
+          border-color: #eab308;
+          color: #713f12;
+          font-weight: 700;
+          box-shadow: 0 2px 8px rgba(234, 179, 8, 0.18);
+        }
+
+        .filter-pill-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 19px;
+          height: 19px;
+          padding: 0 5px;
           border-radius: 50%;
           background: #eab308;
-          color: #ffffff;
+          color: #713f12;
           font-size: 11px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .view-toggle-wrap {
-          display: flex;
-          align-items: center;
-          gap: 2px;
-          background: #f1f5f9;
-          border-radius: var(--radius-full);
-          padding: 3px;
-        }
-
-        .view-toggle-btn {
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #64748b;
-          transition: all 0.15s ease;
-        }
-
-        .view-toggle-btn.active {
-          background: #ffffff;
-          color: #d97706;
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+          font-weight: 700;
         }
 
         /* Active filter pills */

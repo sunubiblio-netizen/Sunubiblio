@@ -27,11 +27,6 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
       </div>
 
       <div className="container lib-hero-container">
-        {/* Compact Badge */}
-        <div className="badge-pill lib-badge">
-          <span className="badge-dot" />
-          <span>Bibliothèque Universelle & Savoirs</span>
-        </div>
 
         {/* Title & Condensed Catchy Subtitle */}
         <h1 className="lib-hero-title">
@@ -123,18 +118,6 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
           max-width: 920px;
         }
 
-        .lib-badge {
-          margin-bottom: 16px;
-          background: #ffffff !important;
-          border: 1.5px solid #fde047 !important;
-          color: #854d0e !important;
-          box-shadow: 0 2px 8px rgba(234, 179, 8, 0.08);
-        }
-
-        .lib-badge :global(.badge-dot) {
-          background-color: #eab308 !important;
-          box-shadow: 0 0 8px rgba(234, 179, 8, 0.6) !important;
-        }
 
         .lib-hero-title {
           font-size: clamp(28px, 4vw, 42px);

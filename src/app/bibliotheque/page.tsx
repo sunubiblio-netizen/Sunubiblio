@@ -7,7 +7,6 @@ import { AuthModal } from '@/components/ui/AuthModal';
 import { LibraryHero } from '@/components/library/LibraryHero';
 import { QuickCategories } from '@/components/library/QuickCategories';
 import { FilterSidebar } from '@/components/library/FilterSidebar';
-import { MobileFilterDrawer } from '@/components/library/MobileFilterDrawer';
 import { ResourceGrid } from '@/components/library/ResourceGrid';
 import { ResourceDetailModal } from '@/components/library/ResourceDetailModal';
 import { MOCK_RESOURCES } from '@/data/mockLibrary';
@@ -30,7 +29,7 @@ const INITIAL_FILTERS: FilterState = {
 
 export default function LibraryPage() {
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
@@ -196,19 +195,10 @@ export default function LibraryPage() {
           onSelectCategory={(catId) => handleFilterChange({ category: catId })}
         />
 
-        {/* Main Content Area */}
+        {/* Main Content Area (Aéré et spacieux sur toute la largeur) */}
         <div className="container library-content-container">
           <div className="library-layout">
-            {/* Desktop Left Sidebar */}
-            <FilterSidebar
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              onResetFilters={handleResetFilters}
-              activeFiltersCount={activeFiltersCount}
-            />
-
-            {/* Right Main Column */}
-            <div className="library-right-col">
+            <div className="library-main-col">
               {/* Main Results Grid */}
               <ResourceGrid
                 resources={paginatedResources}
@@ -216,26 +206,29 @@ export default function LibraryPage() {
                 filters={filters}
                 onFilterChange={handleFilterChange}
                 onResetFilters={handleResetFilters}
-                onOpenMobileFilters={() => setMobileDrawerOpen(true)}
+                onOpenMobileFilters={() => setFilterDrawerOpen(true)}
+                isFiltersOpen={filterDrawerOpen}
+                onToggleFilters={() => setFilterDrawerOpen((prev) => !prev)}
+                activeFiltersCount={activeFiltersCount}
                 onOpenResource={(res) => setSelectedResource(res)}
               />
             </div>
           </div>
         </div>
+
+        {/* Panneau de filtres coulissant (Desktop & Mobile, fermé par défaut) */}
+        <FilterSidebar
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onResetFilters={handleResetFilters}
+          activeFiltersCount={activeFiltersCount}
+          isOpen={filterDrawerOpen}
+          onClose={() => setFilterDrawerOpen(false)}
+        />
       </main>
 
       {/* Institutional Footer */}
       <Footer />
-
-      {/* Mobile Drawer (Bottom Sheet) */}
-      <MobileFilterDrawer
-        isOpen={mobileDrawerOpen}
-        onClose={() => setMobileDrawerOpen(false)}
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onResetFilters={handleResetFilters}
-        totalResultsCount={filteredAndSortedResources.length}
-      />
 
       {/* Document Detail Preview Modal */}
       <ResourceDetailModal
@@ -265,26 +258,23 @@ export default function LibraryPage() {
         }
 
         .library-content-container {
-          padding-top: 28px;
+          padding-top: 24px;
           padding-bottom: 60px;
+          max-width: 1240px;
         }
 
         .library-layout {
-          display: flex;
-          align-items: flex-start;
-          gap: 28px;
+          width: 100%;
         }
 
-        .library-right-col {
-          flex: 1;
+        .library-main-col {
+          width: 100%;
           min-width: 0;
-          display: flex;
-          flex-direction: column;
         }
 
         @media (max-width: 1024px) {
           .library-content-container {
-            padding-top: 18px;
+            padding-top: 16px;
             padding-bottom: 80px;
           }
         }
