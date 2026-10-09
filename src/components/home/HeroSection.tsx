@@ -177,23 +177,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
 
         /* Bottom: Soft Sunny Pale Yellow Sweep (remplaçant le magenta de l'image 2) */
         .orb-soft-yellow-bottom {
-          width: 105vw;
-          height: 520px;
-          bottom: -12%;
-          left: -2.5vw;
-          background: radial-gradient(ellipse 85% 70% at 50% 100%, rgba(254, 240, 138, 0.75) 0%, rgba(254, 249, 195, 0.5) 35%, rgba(255, 255, 255, 0.3) 65%, transparent 95%);
-          opacity: 0.78;
+          width: 110vw;
+          height: 580px;
+          bottom: -2%;
+          left: -5vw;
+          background: radial-gradient(ellipse 90% 75% at 50% 100%, rgba(254, 240, 138, 0.82) 0%, rgba(254, 249, 195, 0.6) 38%, rgba(255, 255, 255, 0.25) 70%, transparent 95%);
+          opacity: 0.85;
           animation-delay: -5s;
         }
 
         /* Subtle Pale Yellow / Warm Light Accent */
         .orb-pale-yellow-accent {
-          width: 520px;
-          height: 420px;
-          bottom: 6%;
-          right: 10%;
-          background: radial-gradient(circle, rgba(253, 224, 71, 0.45) 0%, rgba(254, 240, 138, 0.25) 50%, transparent 75%);
-          opacity: 0.7;
+          width: 560px;
+          height: 460px;
+          bottom: 12%;
+          right: 8%;
+          background: radial-gradient(circle, rgba(253, 224, 71, 0.5) 0%, rgba(254, 240, 138, 0.3) 50%, transparent 75%);
+          opacity: 0.75;
           animation-delay: -2s;
         }
 
