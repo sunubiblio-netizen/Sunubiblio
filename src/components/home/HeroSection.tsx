@@ -28,12 +28,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
 
   return (
     <section className="hero-aurora-section">
-      {/* Full-screen fluid ambient aurora mesh */}
+      {/* Full-screen fluid ambient atmospheric sky-blue mesh */}
       <div className="hero-aurora-backdrop" aria-hidden="true">
-        <div className="aurora-orb orb-blue" />
-        <div className="aurora-orb orb-violet" />
-        <div className="aurora-orb orb-magenta" />
+        <div className="aurora-orb orb-sky" />
+        <div className="aurora-orb orb-azure" />
         <div className="aurora-orb orb-cyan" />
+        <div className="aurora-orb orb-powder" />
         <div className="aurora-overlay" />
       </div>
 
@@ -93,65 +93,66 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           width: 100%;
         }
 
-        /* Ambient Mesh / Full-screen Fluid Aurora Gradient */
+        /* Ambient Mesh / Full-screen Fluid Atmospheric Sky Blue & Azure Gradient */
         .hero-aurora-backdrop {
           position: fixed;
           inset: 0;
           overflow: hidden;
           pointer-events: none;
           z-index: 0;
+          background: radial-gradient(circle at 50% 25%, #f4f9ff 0%, #e8f3fe 55%, #dbeafe 100%);
         }
 
         .aurora-orb {
           position: absolute;
           border-radius: 50%;
           filter: blur(95px);
-          opacity: 0.65;
-          animation: orb-pulse 9s ease-in-out infinite alternate;
+          opacity: 0.72;
+          animation: orb-pulse 10s ease-in-out infinite alternate;
         }
 
-        .orb-blue {
-          width: 580px;
-          height: 440px;
-          top: 8%;
-          left: 10%;
-          background: radial-gradient(circle, rgba(59, 130, 246, 0.48) 0%, rgba(99, 102, 241, 0.22) 65%, transparent 100%);
+        .orb-sky {
+          width: 680px;
+          height: 520px;
+          top: 4%;
+          left: 6%;
+          background: radial-gradient(circle, rgba(56, 189, 248, 0.55) 0%, rgba(96, 165, 250, 0.3) 50%, transparent 75%);
         }
 
-        .orb-violet {
-          width: 560px;
-          height: 460px;
-          top: 10%;
-          right: 10%;
-          background: radial-gradient(circle, rgba(168, 85, 247, 0.44) 0%, rgba(139, 92, 246, 0.2) 65%, transparent 100%);
-          animation-delay: -2.5s;
-        }
-
-        .orb-magenta {
-          width: 520px;
-          height: 400px;
-          bottom: 12%;
-          right: 22%;
-          background: radial-gradient(circle, rgba(236, 72, 153, 0.38) 0%, rgba(217, 70, 239, 0.16) 70%, transparent 100%);
-          animation-delay: -4.5s;
+        .orb-azure {
+          width: 640px;
+          height: 500px;
+          top: 6%;
+          right: 5%;
+          background: radial-gradient(circle, rgba(96, 165, 250, 0.52) 0%, rgba(59, 130, 246, 0.28) 55%, transparent 75%);
+          animation-delay: -3s;
         }
 
         .orb-cyan {
-          width: 480px;
-          height: 380px;
-          bottom: 15%;
-          left: 18%;
-          background: radial-gradient(circle, rgba(56, 189, 248, 0.38) 0%, transparent 70%);
-          animation-delay: -3.5s;
+          width: 580px;
+          height: 460px;
+          bottom: 8%;
+          left: 12%;
+          background: radial-gradient(circle, rgba(14, 165, 233, 0.48) 0%, rgba(56, 189, 248, 0.22) 60%, transparent 75%);
+          animation-delay: -5s;
+        }
+
+        .orb-powder {
+          width: 650px;
+          height: 520px;
+          bottom: 5%;
+          right: 10%;
+          background: radial-gradient(circle, rgba(147, 197, 253, 0.55) 0%, rgba(186, 230, 253, 0.3) 60%, transparent 80%);
+          animation-delay: -2s;
         }
 
         .aurora-overlay {
           position: absolute;
           inset: 0;
           background: radial-gradient(
-            circle at center,
-            transparent 0%,
-            rgba(250, 248, 255, 0.15) 100%
+            circle at 50% 50%,
+            rgba(255, 255, 255, 0.08) 0%,
+            rgba(237, 246, 255, 0.3) 100%
           );
         }
 
@@ -210,18 +211,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           background: #ffffff;
           padding: 8px 10px 8px 22px;
           border-radius: var(--radius-full);
-          border: 1.5px solid rgba(226, 232, 240, 0.9);
+          border: 1.5px solid rgba(186, 230, 253, 0.85);
           box-shadow:
-            0 20px 48px -10px rgba(79, 70, 229, 0.16),
-            0 6px 18px -2px rgba(15, 23, 42, 0.05);
+            0 20px 48px -10px rgba(56, 189, 248, 0.16),
+            0 6px 18px -2px rgba(15, 23, 42, 0.04);
           transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .hero-search-capsule:focus-within {
-          border-color: #6366f1;
+          border-color: #38bdf8;
           box-shadow:
-            0 24px 54px -10px rgba(99, 102, 241, 0.28),
-            0 0 0 4px rgba(99, 102, 241, 0.12);
+            0 24px 54px -10px rgba(56, 189, 248, 0.26),
+            0 0 0 4px rgba(56, 189, 248, 0.12);
           transform: translateY(-2px);
         }
 
