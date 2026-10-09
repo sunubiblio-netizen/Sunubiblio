@@ -28,15 +28,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
 
   return (
     <section className="hero-aurora-section">
-      {/* Full-screen fluid ambient chromatic mesh (Grabient Inspiration) */}
+      {/* Full-screen fluid ambient mesh (Bleu Éclatant, Jaune Très Clair & Blanc) */}
       <div className="hero-aurora-backdrop" aria-hidden="true">
-        <div className="grabient-orb orb-coral-heart" />
-        <div className="grabient-orb orb-lavender-wave" />
-        <div className="grabient-orb orb-sun-glow" />
-        <div className="grabient-orb orb-powder-sky" />
-        <div className="grabient-orb orb-lemon-corner" />
-        <div className="grabient-orb orb-blush-corner" />
-        <div className="grabient-overlay" />
+        <div className="aurora-orb orb-blue-left" />
+        <div className="aurora-orb orb-blue-right" />
+        <div className="aurora-orb orb-soft-yellow-bottom" />
+        <div className="aurora-orb orb-pale-yellow-accent" />
+        <div className="aurora-center-spotlight" />
       </div>
 
       <div className="container hero-center-container">
@@ -95,7 +93,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           width: 100%;
         }
 
-        /* Ambient Mesh / Full-screen Fluid Grabient Chromatic Watercolor (Coral, Lavender, Butter Sun) */
+        /* Ambient Mesh / Full-screen Fluid Blue Wings, Soft Pale Yellow & Pure White (Style Image 2) */
         .hero-aurora-backdrop {
           position: fixed;
           inset: 0;
@@ -105,93 +103,72 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           background: #ffffff;
         }
 
-        .grabient-orb {
+        .aurora-orb {
           position: absolute;
           border-radius: 50%;
           filter: blur(85px);
-          animation: grabient-drift 11s ease-in-out infinite alternate;
+          animation: orb-drift 10s ease-in-out infinite alternate;
           will-change: transform;
         }
 
-        /* 1. Core Sunset Coral / Peach Rose (Center-Right heart of Grabient) */
-        .orb-coral-heart {
-          width: 620px;
-          height: 480px;
-          top: 16%;
-          right: 18%;
-          background: radial-gradient(circle, rgba(251, 113, 133, 0.82) 0%, rgba(244, 63, 94, 0.58) 45%, rgba(251, 146, 60, 0.35) 75%, transparent 90%);
-          opacity: 0.78;
+        /* Top-Left: Intense Vibrant Royal Blue Wing (Image 2 style) */
+        .orb-blue-left {
+          width: 720px;
+          height: 540px;
+          top: -8%;
+          left: -8%;
+          background: radial-gradient(circle at 20% 20%, rgba(29, 78, 216, 0.85) 0%, rgba(37, 99, 235, 0.62) 35%, rgba(59, 130, 246, 0.35) 60%, transparent 85%);
+          opacity: 0.82;
         }
 
-        /* 2. Dreamy Lavender / Periwinkle Lilac Wave (Top-Center / Left) */
-        .orb-lavender-wave {
-          width: 680px;
-          height: 460px;
-          top: 4%;
-          left: 20%;
-          background: radial-gradient(circle, rgba(167, 139, 250, 0.78) 0%, rgba(129, 140, 248, 0.52) 45%, rgba(192, 132, 252, 0.3) 75%, transparent 90%);
-          opacity: 0.75;
+        /* Top-Right: Intense Vibrant Royal Blue Wing (Image 2 style) */
+        .orb-blue-right {
+          width: 700px;
+          height: 520px;
+          top: -6%;
+          right: -8%;
+          background: radial-gradient(circle at 80% 20%, rgba(29, 78, 216, 0.82) 0%, rgba(37, 99, 235, 0.58) 35%, rgba(96, 165, 250, 0.32) 60%, transparent 85%);
+          opacity: 0.8;
           animation-delay: -3s;
         }
 
-        /* 3. Luminous Butter Yellow / Sunlight Glow (Bottom-Center / Right) */
-        .orb-sun-glow {
-          width: 660px;
-          height: 460px;
-          bottom: 4%;
-          left: 28%;
-          background: radial-gradient(circle, rgba(253, 224, 71, 0.82) 0%, rgba(250, 204, 21, 0.55) 45%, rgba(254, 240, 138, 0.3) 75%, transparent 90%);
+        /* Bottom: Soft Sunny Pale Yellow Sweep (remplaçant le magenta de l'image 2) */
+        .orb-soft-yellow-bottom {
+          width: 105vw;
+          height: 520px;
+          bottom: -12%;
+          left: -2.5vw;
+          background: radial-gradient(ellipse 85% 70% at 50% 100%, rgba(254, 240, 138, 0.75) 0%, rgba(254, 249, 195, 0.5) 35%, rgba(255, 255, 255, 0.3) 65%, transparent 95%);
           opacity: 0.78;
-          animation-delay: -6s;
-        }
-
-        /* 4. Ethereal Powder Blue (Mid-Left cloud) */
-        .orb-powder-sky {
-          width: 480px;
-          height: 420px;
-          top: 20%;
-          left: 4%;
-          background: radial-gradient(circle, rgba(186, 230, 253, 0.82) 0%, rgba(147, 197, 253, 0.52) 50%, transparent 80%);
-          opacity: 0.68;
-          animation-delay: -4s;
-        }
-
-        /* 5. Delicate Lemon Corner (Top-Right) */
-        .orb-lemon-corner {
-          width: 440px;
-          height: 380px;
-          top: 2%;
-          right: 4%;
-          background: radial-gradient(circle, rgba(254, 240, 138, 0.85) 0%, rgba(253, 230, 138, 0.45) 55%, transparent 80%);
-          opacity: 0.68;
-          animation-delay: -2s;
-        }
-
-        /* 6. Soft Blush Blossom (Bottom-Left) */
-        .orb-blush-corner {
-          width: 420px;
-          height: 380px;
-          bottom: 6%;
-          left: 4%;
-          background: radial-gradient(circle, rgba(254, 205, 211, 0.85) 0%, rgba(251, 207, 232, 0.45) 55%, transparent 80%);
-          opacity: 0.65;
           animation-delay: -5s;
         }
 
-        /* Grabient Soft Edge Diffuser */
-        .grabient-overlay {
+        /* Subtle Pale Yellow / Warm Light Accent */
+        .orb-pale-yellow-accent {
+          width: 520px;
+          height: 420px;
+          bottom: 6%;
+          right: 10%;
+          background: radial-gradient(circle, rgba(253, 224, 71, 0.45) 0%, rgba(254, 240, 138, 0.25) 50%, transparent 75%);
+          opacity: 0.7;
+          animation-delay: -2s;
+        }
+
+        /* Pure White Luminous Spotlight Center (Exactement comme Image 2 Lovable sous le texte) */
+        .aurora-center-spotlight {
           position: absolute;
           inset: 0;
           pointer-events: none;
           background: radial-gradient(
-            ellipse 85% 75% at 50% 50%,
-            transparent 0%,
-            rgba(255, 255, 255, 0.12) 60%,
-            rgba(255, 255, 255, 0.45) 100%
+            ellipse 70% 60% at 50% 36%,
+            rgba(255, 255, 255, 0.98) 0%,
+            rgba(255, 255, 255, 0.82) 35%,
+            rgba(255, 255, 255, 0.4) 65%,
+            transparent 85%
           );
         }
 
-        @keyframes grabient-drift {
+        @keyframes orb-drift {
           0% {
             transform: translate(0, 0) scale(1);
           }
@@ -246,19 +223,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           background: #ffffff;
           padding: 8px 10px 8px 22px;
           border-radius: var(--radius-full);
-          border: 1.5px solid rgba(226, 232, 240, 0.95);
+          border: 1.5px solid rgba(219, 234, 254, 0.95);
           box-shadow:
-            0 20px 48px -10px rgba(244, 63, 94, 0.12),
-            0 8px 24px -4px rgba(129, 140, 248, 0.12),
-            0 2px 6px rgba(15, 23, 42, 0.03);
+            0 20px 48px -10px rgba(37, 99, 235, 0.15),
+            0 8px 24px -4px rgba(250, 204, 21, 0.1),
+            0 2px 6px rgba(15, 23, 42, 0.04);
           transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .hero-search-capsule:focus-within {
-          border-color: #fb7185;
+          border-color: #3b82f6;
           box-shadow:
-            0 24px 54px -10px rgba(251, 113, 133, 0.25),
-            0 0 0 4px rgba(251, 113, 133, 0.12);
+            0 24px 54px -10px rgba(37, 99, 235, 0.25),
+            0 0 0 4px rgba(59, 130, 246, 0.12);
           transform: translateY(-2px);
         }
 
@@ -325,31 +302,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           justify-content: center;
           backdrop-filter: blur(8px);
           -webkit-backdrop-filter: blur(8px);
-          /* Subtle prismatic crystal with blush & lavender tint */
+          /* Subtle crystal glass with sky-blue and soft pale yellow reflection */
           background: radial-gradient(
             circle at 30% 24%,
-            rgba(255, 255, 255, 0.8) 0%,
-            rgba(254, 205, 211, 0.28) 25%,
-            rgba(224, 231, 255, 0.18) 55%,
-            rgba(254, 240, 138, 0.16) 82%,
-            rgba(148, 163, 184, 0.22) 100%
+            rgba(255, 255, 255, 0.85) 0%,
+            rgba(219, 234, 254, 0.28) 25%,
+            rgba(254, 249, 195, 0.18) 55%,
+            rgba(147, 197, 253, 0.16) 82%,
+            rgba(100, 116, 139, 0.22) 100%
           );
-          border: 1.5px solid rgba(226, 232, 240, 0.95);
+          border: 1.5px solid rgba(219, 234, 254, 0.9);
           box-shadow:
-            0 3px 10px rgba(244, 63, 94, 0.1),
-            0 1px 3px rgba(129, 140, 248, 0.08),
-            inset -2px -3px 6px rgba(148, 163, 184, 0.2),
+            0 3px 10px rgba(37, 99, 235, 0.12),
+            0 1px 3px rgba(250, 204, 21, 0.08),
+            inset -2px -3px 6px rgba(100, 116, 139, 0.2),
             inset 1.5px 2px 4px rgba(255, 255, 255, 0.95);
           overflow: hidden;
           transition: box-shadow 0.25s ease, border-color 0.25s ease;
         }
 
         .hero-orb-button:hover .orb-glass-body {
-          border-color: rgba(251, 113, 133, 0.7);
+          border-color: rgba(59, 130, 246, 0.7);
           box-shadow:
-            0 5px 14px rgba(251, 113, 133, 0.2),
-            0 0 12px rgba(167, 139, 250, 0.25),
-            inset -2px -3px 6px rgba(148, 163, 184, 0.25),
+            0 5px 14px rgba(37, 99, 235, 0.2),
+            0 0 12px rgba(96, 165, 250, 0.25),
+            inset -2px -3px 6px rgba(100, 116, 139, 0.25),
             inset 1.5px 2px 4px rgba(255, 255, 255, 1);
         }
 
