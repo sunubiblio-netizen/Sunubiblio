@@ -1,5 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Courgette&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
+@property --search-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
 /* Verrouillage scroll et masquage des éléments flottants lors de l'ouverture d'une modale */
 body.modal-scroll-locked .scroll-navigation-global,
 html.modal-scroll-locked .scroll-navigation-global,
