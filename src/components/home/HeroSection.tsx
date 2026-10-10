@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { RotatingResourcesCylinder } from './RotatingResourcesCylinder';
 
 interface HeroSectionProps {
   onSearch?: (query: string) => void;
@@ -109,70 +110,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           </button>
         </form>
 
-        {/* Tagline under search capsule */}
-        <div className="hero-tags-motto">
-          <span>Apprendre</span>
-          <span className="motto-dot">•</span>
-          <span>Explorer</span>
-          <span className="motto-dot">•</span>
-          <span>Réussir</span>
-        </div>
-
-        {/* Bottom Resources & Partners Strip */}
-        <div className="hero-bottom-resources">
-          <span className="resources-heading">NOS RESSOURCES ET PARTENAIRES</span>
-          <div className="resources-grid">
-            <div className="resource-item">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-              </svg>
-              <span>Bibliothèques numériques</span>
-            </div>
-
-            <div className="resource-item">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                <path d="M6 12v5c3 3 9 3 12 0v-5" />
-              </svg>
-              <span>Cours en ligne</span>
-            </div>
-
-            <div className="resource-item">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="16" y1="13" x2="8" y2="13" />
-                <line x1="16" y1="17" x2="8" y2="17" />
-                <polyline points="10 9 9 9 8 9" />
-              </svg>
-              <span>Annales & Concours</span>
-            </div>
-
-            <div className="resource-item">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-              <span>Ressources éducatives</span>
-            </div>
-
-            <div className="resource-item">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-              </svg>
-              <span>Accès hors ligne</span>
-            </div>
-          </div>
-        </div>
+        {/* 3D Rotating Cylinder Carousel of Frosted Glass Resource Cards */}
+        <RotatingResourcesCylinder />
       </div>
 
       <style jsx>{`
         .hero-eclipse-section {
           position: relative;
-          padding: 20px 0 30px 0;
+          padding: 10px 0 20px 0;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -196,7 +141,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           flex-direction: column;
           align-items: center;
           gap: 6px;
-          margin-bottom: 16px;
+          margin-bottom: 14px;
         }
 
         .hero-brand-name {
@@ -229,7 +174,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           font-weight: 450;
           color: #a1a1aa;
           line-height: 1.4;
-          margin: 0 0 28px 0;
+          margin: 0 0 26px 0;
           text-align: center;
         }
 
@@ -309,76 +254,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           transform: scale(0.96);
         }
 
-        .hero-tags-motto {
-          margin-top: 22px;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          font-size: 13.5px;
-          font-weight: 500;
-          color: #71717a;
-        }
-
-        .motto-dot {
-          color: #52525b;
-          font-size: 10px;
-        }
-
-        /* Bottom Resources Strip */
-        .hero-bottom-resources {
-          margin-top: 50px;
-          width: 100%;
-          max-width: 960px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 18px;
-        }
-
-        .resources-heading {
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.25em;
-          color: #71717a;
-          text-transform: uppercase;
-        }
-
-        .resources-grid {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-wrap: wrap;
-          gap: 36px;
-          width: 100%;
-        }
-
-        .resource-item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          color: #a1a1aa;
-          font-size: 13.5px;
-          font-weight: 500;
-          transition: color 0.15s ease;
-        }
-
-        .resource-item:hover {
-          color: #f97316;
-        }
-
-        @media (max-width: 768px) {
-          .hero-bottom-resources {
-            margin-top: 36px;
-          }
-
-          .resources-grid {
-            gap: 20px 24px;
-          }
-        }
-
         @media (max-width: 640px) {
           .hero-eclipse-section {
-            padding: 8px 0 16px 0;
+            padding: 6px 0 12px 0;
           }
 
           .hero-center-container {
@@ -386,8 +264,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           }
 
           .hero-brand-badge {
-            margin-bottom: 8px;
-            gap: 4px;
+            margin-bottom: 6px;
+            gap: 3px;
           }
 
           .hero-brand-name {
@@ -402,7 +280,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
 
           .hero-eclipse-subtitle {
             font-size: 12.5px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
           }
 
           .hero-search-capsule {
@@ -416,36 +294,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           .hero-action-orange-btn {
             width: 36px;
             height: 36px;
-          }
-
-          .hero-tags-motto {
-            font-size: 11.5px;
-            gap: 8px;
-            margin-top: 12px;
-          }
-
-          .hero-bottom-resources {
-            margin-top: 20px;
-            gap: 12px;
-          }
-
-          .resources-heading {
-            font-size: 10px;
-            letter-spacing: 0.2em;
-          }
-
-          .resources-grid {
-            gap: 8px 12px;
-          }
-
-          .resource-item {
-            font-size: 11px;
-            gap: 5px;
-          }
-
-          .resource-item svg {
-            width: 15px;
-            height: 15px;
           }
         }
       `}</style>
