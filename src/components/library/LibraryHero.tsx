@@ -81,10 +81,10 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
       <style jsx>{`
         .lib-hero-wrapper {
           position: relative;
-          padding: 48px 0 32px 0;
+          padding: 48px 0 36px 0;
           overflow: hidden;
-          background: transparent;
-          border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+          background: linear-gradient(180deg, transparent 0%, rgba(254, 249, 195, 0.15) 70%, transparent 100%);
+          border-bottom: none;
         }
 
         .lib-hero-ambient {
