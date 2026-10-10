@@ -8,16 +8,15 @@ interface HeroSectionProps {
 }
 
 const SEARCH_PHRASES = [
+  'Rechercher un livre, un cours, un concours...',
   'Une première au Sénégal',
   'Bibliothèque numérique complète',
-  'Rechercher un livre, un document...',
-  'Cours, annales et concours...',
   'Des milliers d’ouvrages à explorer',
+  'Préparez vos examens & concours...',
 ];
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSpinning, setIsSpinning] = useState(false);
   const [displayText, setDisplayText] = useState('');
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -30,18 +29,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
     let timer: NodeJS.Timeout;
 
     if (!isDeleting && displayText === currentPhrase) {
-      // Pause at full phrase for comfortable reading
       timer = setTimeout(() => {
         setIsDeleting(true);
       }, 2000);
     } else if (isDeleting && displayText === '') {
-      // Pause when empty before next phrase
       timer = setTimeout(() => {
         setIsDeleting(false);
         setPhraseIndex((prev) => (prev + 1) % SEARCH_PHRASES.length);
       }, 400);
     } else {
-      // Typing or deleting speed
       const speed = isDeleting ? 30 : 60;
       timer = setTimeout(() => {
         const nextText = isDeleting
@@ -54,38 +50,41 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
     return () => clearTimeout(timer);
   }, [displayText, isDeleting, phraseIndex, searchQuery]);
 
-  const triggerOrbSpin = () => {
-    setIsSpinning(true);
-    setTimeout(() => {
-      setIsSpinning(false);
-    }, 450);
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    triggerOrbSpin();
     if (onSearch && searchQuery.trim()) {
       onSearch(searchQuery.trim());
     }
   };
 
   return (
-    <section className="hero-aurora-section">
+    <section className="hero-eclipse-section">
       <div className="container hero-center-container">
-        {/* Title — Ultra short, cursive Courgette styling matching reference */}
-        <h1 className="hero-aurora-title">
-          Explorez le savoir
+        {/* Brandmark pill at top */}
+        <div className="hero-brand-badge">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="brand-flower-icon">
+            <rect x="2" y="2" width="9" height="9" rx="3" fill="#f97316" />
+            <rect x="13" y="2" width="9" height="9" rx="3" fill="#ea580c" />
+            <rect x="2" y="13" width="9" height="9" rx="3" fill="#ea580c" />
+            <rect x="13" y="13" width="9" height="9" rx="3" fill="#f97316" />
+          </svg>
+          <span className="hero-brand-name">SUNUBIBLIO</span>
+        </div>
+
+        {/* Title — Clean bold modern font: "Explorez" in pure white + "le savoir" in warm fiery orange */}
+        <h1 className="hero-eclipse-title">
+          Explorez <span className="hero-title-accent">le savoir</span>
         </h1>
 
-        {/* Subtitle / Description (Titre 2) — Clean static text */}
-        <p className="hero-aurora-subtitle">
+        {/* Subtitle / Description */}
+        <p className="hero-eclipse-subtitle">
           Des milliers d’ouvrages, cours et annales
         </p>
 
-        {/* Universal Search Capsule with clean animated gradient border */}
+        {/* Search Capsule dark & warm amber glow */}
         <form onSubmit={handleSubmit} className="hero-search-capsule">
           <div className="search-icon-wrap">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
@@ -96,31 +95,84 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
             placeholder={searchQuery ? '' : displayText}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label="Recherche sur Sunubiblio"
+            aria-label="Rechercher un livre, un cours, un concours"
           />
           <button
             type="submit"
-            className={`hero-orb-button ${isSpinning ? 'is-spinning' : ''}`}
-            onClick={triggerOrbSpin}
+            className="hero-action-orange-btn"
             aria-label="Lancer la recherche"
           >
-            {/* 3D Transparent Crystal Glass Sphere */}
-            <span className="orb-glass-body">
-              {/* Specular glare & lighting reflections */}
-              <span className="orb-specular-glare" />
-              <span className="orb-caustic-ring" />
-              <span className="orb-sparkle orb-sparkle-1" />
-              <span className="orb-sparkle orb-sparkle-2" />
-              <span className="orb-sparkle orb-sparkle-3" />
-            </span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
           </button>
         </form>
+
+        {/* Tagline under search capsule */}
+        <div className="hero-tags-motto">
+          <span>Apprendre</span>
+          <span className="motto-dot">•</span>
+          <span>Explorer</span>
+          <span className="motto-dot">•</span>
+          <span>Réussir</span>
+        </div>
+
+        {/* Bottom Resources & Partners Strip */}
+        <div className="hero-bottom-resources">
+          <span className="resources-heading">NOS RESSOURCES ET PARTENAIRES</span>
+          <div className="resources-grid">
+            <div className="resource-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+              </svg>
+              <span>Bibliothèques numériques</span>
+            </div>
+
+            <div className="resource-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                <path d="M6 12v5c3 3 9 3 12 0v-5" />
+              </svg>
+              <span>Cours en ligne</span>
+            </div>
+
+            <div className="resource-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
+              </svg>
+              <span>Annales & Concours</span>
+            </div>
+
+            <div className="resource-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              <span>Ressources éducatives</span>
+            </div>
+
+            <div className="resource-item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+              <span>Accès hors ligne</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <style jsx>{`
-        .hero-aurora-section {
+        .hero-eclipse-section {
           position: relative;
-          padding: 20px 0;
+          padding: 20px 0 30px 0;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -134,85 +186,86 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           flex-direction: column;
           align-items: center;
           text-align: center;
-          max-width: 860px;
+          max-width: 980px;
           padding: 0 16px;
           width: 100%;
         }
 
-        .hero-aurora-title {
-          font-family: 'Courgette', cursive, sans-serif;
-          font-size: clamp(32px, 4.4vw, 52px);
-          font-weight: 400;
-          color: #0f172a;
-          line-height: 1.25;
-          letter-spacing: -0.01em;
-          margin: 0 0 10px 0;
-          white-space: nowrap;
-          text-align: center;
-        }
-
-        .hero-aurora-subtitle {
-          font-size: clamp(13.5px, 1.5vw, 16px);
-          font-weight: 500;
-          color: #475569;
-          line-height: 1.4;
-          margin: 0 0 24px 0;
-          white-space: nowrap;
-          text-align: center;
-          min-height: 26px;
+        .hero-brand-badge {
           display: flex;
+          flex-direction: column;
           align-items: center;
-          justify-content: center;
+          gap: 6px;
+          margin-bottom: 16px;
         }
 
-        /* Search Capsule with fine continuous animated sunny gold gradient border */
+        .hero-brand-name {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.35em;
+          color: #a1a1aa;
+          text-transform: uppercase;
+        }
+
+        .hero-eclipse-title {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          font-size: clamp(38px, 5.5vw, 68px);
+          font-weight: 800;
+          color: #ffffff;
+          line-height: 1.1;
+          letter-spacing: -0.025em;
+          margin: 0 0 12px 0;
+          text-align: center;
+        }
+
+        .hero-title-accent {
+          background: linear-gradient(135deg, #ff9a3d 0%, #ea580c 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .hero-eclipse-subtitle {
+          font-size: clamp(14px, 1.8vw, 17px);
+          font-weight: 450;
+          color: #a1a1aa;
+          line-height: 1.4;
+          margin: 0 0 28px 0;
+          text-align: center;
+        }
+
+        /* Search Capsule dark & warm amber glow */
         .hero-search-capsule {
           position: relative;
           width: 100%;
           max-width: 660px;
           display: flex;
           align-items: center;
-          padding: 8px 10px 8px 22px;
+          padding: 6px 8px 6px 20px;
           border-radius: var(--radius-full);
-          border: 2.2px solid transparent;
-          background:
-            linear-gradient(#ffffff, #ffffff) padding-box,
-            linear-gradient(135deg, #facc15 0%, #fef08a 25%, #f59e0b 50%, #fef9c3 75%, #facc15 100%) border-box;
-          background-size: 100% 100%, 300% 300%;
-          animation: border-gradient-shift 7s ease-in-out infinite;
+          background: rgba(22, 18, 16, 0.76);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.12);
           box-shadow:
-            0 16px 40px -8px rgba(250, 204, 21, 0.2),
-            0 6px 20px -4px rgba(254, 240, 138, 0.18),
-            0 2px 6px rgba(15, 23, 42, 0.03);
-          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+            0 14px 40px -8px rgba(0, 0, 0, 0.6),
+            0 0 0 1px rgba(234, 88, 12, 0.25);
+          transition: all 0.25s ease;
         }
 
         .hero-search-capsule:focus-within {
-          transform: translateY(-2px);
+          border-color: rgba(249, 115, 22, 0.6);
           box-shadow:
-            0 22px 50px -8px rgba(250, 204, 21, 0.28),
-            0 8px 26px -4px rgba(254, 240, 138, 0.24),
-            0 0 0 3px rgba(254, 240, 138, 0.45);
-        }
-
-        @keyframes border-gradient-shift {
-          0% {
-            background-position: 0% 0%, 0% 50%;
-          }
-          50% {
-            background-position: 0% 0%, 100% 50%;
-          }
-          100% {
-            background-position: 0% 0%, 0% 50%;
-          }
+            0 20px 50px -8px rgba(0, 0, 0, 0.8),
+            0 0 25px rgba(234, 88, 12, 0.35),
+            0 0 0 2px rgba(249, 115, 22, 0.3);
+          transform: translateY(-1px);
         }
 
         .search-icon-wrap {
-          color: #94a3b8;
+          color: #71717a;
+          margin-right: 12px;
           display: flex;
           align-items: center;
-          justify-content: center;
-          margin-right: 14px;
           flex-shrink: 0;
         }
 
@@ -220,239 +273,153 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           flex: 1;
           border: none;
           background: transparent;
-          font-size: 15.5px;
+          font-size: 15px;
           font-weight: 500;
-          color: #0f172a;
+          color: #ffffff;
           outline: none;
           min-width: 0;
-          width: 100%;
         }
 
         .hero-search-input::placeholder {
-          color: #94a3b8;
-          font-weight: 450;
+          color: #71717a;
         }
 
-        /* 3D Glass Sphere Orb Button */
-        .hero-orb-button {
-          position: relative;
-          width: 36px;
-          height: 36px;
+        .hero-action-orange-btn {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
           border: none;
-          background: transparent;
-          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           cursor: pointer;
+          color: #ffffff;
+          box-shadow: 0 4px 16px rgba(234, 88, 12, 0.5);
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
           flex-shrink: 0;
+        }
+
+        .hero-action-orange-btn:hover {
+          transform: scale(1.06);
+          box-shadow: 0 6px 20px rgba(234, 88, 12, 0.7);
+        }
+
+        .hero-action-orange-btn:active {
+          transform: scale(0.96);
+        }
+
+        .hero-tags-motto {
+          margin-top: 22px;
           display: flex;
           align-items: center;
-          justify-content: center;
-          outline: none;
-          border-radius: 50%;
-          transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-          perspective: 600px;
+          gap: 12px;
+          font-size: 13.5px;
+          font-weight: 500;
+          color: #71717a;
         }
 
-        .hero-orb-button:hover {
-          transform: scale(1.1);
+        .motto-dot {
+          color: #52525b;
+          font-size: 10px;
         }
 
-        .hero-orb-button:active {
-          transform: scale(0.94);
-        }
-
-        /* Volumetric Highly-Transparent Crystal Glass Sphere Body */
-        .orb-glass-body {
-          position: relative;
+        /* Bottom Resources Strip */
+        .hero-bottom-resources {
+          margin-top: 50px;
           width: 100%;
-          height: 100%;
-          border-radius: 50%;
+          max-width: 960px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 18px;
+        }
+
+        .resources-heading {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.25em;
+          color: #71717a;
+          text-transform: uppercase;
+        }
+
+        .resources-grid {
           display: flex;
           align-items: center;
           justify-content: center;
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          /* Subtle crystal glass with warm sunny gold reflections matching library */
-          background: radial-gradient(
-            circle at 30% 24%,
-            rgba(255, 255, 255, 0.9) 0%,
-            rgba(254, 249, 195, 0.32) 25%,
-            rgba(254, 240, 138, 0.2) 55%,
-            rgba(250, 204, 21, 0.15) 82%,
-            rgba(180, 120, 60, 0.18) 100%
-          );
-          border: 1.5px solid rgba(254, 240, 138, 0.85);
-          box-shadow:
-            0 3px 10px rgba(234, 179, 8, 0.14),
-            0 1px 3px rgba(245, 158, 11, 0.08),
-            inset -2px -3px 6px rgba(180, 120, 60, 0.18),
-            inset 1.5px 2px 4px rgba(255, 255, 255, 0.95);
-          overflow: hidden;
-          transition: box-shadow 0.25s ease, border-color 0.25s ease;
+          flex-wrap: wrap;
+          gap: 36px;
+          width: 100%;
         }
 
-        .hero-orb-button:hover .orb-glass-body {
-          border-color: rgba(234, 179, 8, 0.7);
-          box-shadow:
-            0 5px 14px rgba(234, 179, 8, 0.22),
-            0 0 12px rgba(250, 204, 21, 0.25),
-            inset -2px -3px 6px rgba(180, 120, 60, 0.22),
-            inset 1.5px 2px 4px rgba(255, 255, 255, 1);
+        .resource-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: #a1a1aa;
+          font-size: 13.5px;
+          font-weight: 500;
+          transition: color 0.15s ease;
         }
 
-        /* Curved Specular Glare on top-left */
-        .orb-specular-glare {
-          position: absolute;
-          top: 2px;
-          left: 4px;
-          width: 16px;
-          height: 10px;
-          border-radius: 50%;
-          background: radial-gradient(ellipse at 50% 35%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.65) 45%, rgba(241, 245, 249, 0.15) 75%, transparent 100%);
-          transform: rotate(-32deg);
-          pointer-events: none;
-          z-index: 2;
+        .resource-item:hover {
+          color: #f97316;
         }
 
-        /* Bottom Caustic Reflection */
-        .orb-caustic-ring {
-          position: absolute;
-          inset: 0;
-          border-radius: 50%;
-          background: radial-gradient(circle at 72% 82%, rgba(255, 255, 255, 0.45) 0%, transparent 45%);
-          pointer-events: none;
-          z-index: 1;
-        }
-
-        /* Celestial sparkles inside transparent crystal */
-        .orb-sparkle {
-          position: absolute;
-          border-radius: 50%;
-          background: #ffffff;
-          pointer-events: none;
-          z-index: 2;
-          box-shadow: 0 0 2.5px 1px rgba(255, 255, 255, 0.85);
-        }
-
-        .orb-sparkle-1 {
-          width: 2px;
-          height: 2px;
-          top: 58%;
-          right: 24%;
-          opacity: 0.8;
-        }
-
-        .orb-sparkle-2 {
-          width: 1.4px;
-          height: 1.4px;
-          top: 72%;
-          right: 32%;
-          opacity: 0.65;
-        }
-
-        .orb-sparkle-3 {
-          width: 1.8px;
-          height: 1.8px;
-          top: 64%;
-          right: 17%;
-          opacity: 0.75;
-        }
-
-        /* Fast 3D Rotation on click without color change */
-        .hero-orb-button.is-spinning .orb-glass-body {
-          animation: orb-spin-pure 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
-        }
-
-        @keyframes orb-spin-pure {
-          0% {
-            transform: rotate(0deg) scale(0.95);
+        @media (max-width: 768px) {
+          .hero-bottom-resources {
+            margin-top: 36px;
           }
-          45% {
-            transform: rotate(190deg) scale(1.08);
-          }
-          80% {
-            transform: rotate(320deg) scale(1.02);
-          }
-          100% {
-            transform: rotate(360deg) scale(1);
+
+          .resources-grid {
+            gap: 20px 24px;
           }
         }
 
         @media (max-width: 640px) {
-          .hero-aurora-section {
+          .hero-eclipse-section {
             padding: 14px 0;
           }
 
           .hero-center-container {
             padding: 0 16px;
-            width: 100%;
-            max-width: 100%;
           }
 
-          .hero-aurora-title {
-            font-size: clamp(24px, 7vw, 32px);
-            white-space: nowrap;
-            letter-spacing: -0.01em;
+          .hero-eclipse-title {
+            font-size: clamp(28px, 8vw, 36px);
             margin-bottom: 8px;
           }
 
-          .hero-aurora-subtitle {
-            font-size: clamp(11.5px, 3.6vw, 13.5px);
-            white-space: nowrap;
-            margin-bottom: 18px;
-            min-height: 22px;
+          .hero-eclipse-subtitle {
+            font-size: 13px;
+            margin-bottom: 20px;
           }
 
           .hero-search-capsule {
-            width: 100%;
-            max-width: 100%;
-            padding: 5px 6px 5px 14px;
-            border-radius: var(--radius-full);
-            border: 1.8px solid transparent;
-            background:
-              linear-gradient(#ffffff, #ffffff) padding-box,
-              linear-gradient(135deg, #facc15 0%, #fef08a 25%, #f59e0b 50%, #fef9c3 75%, #facc15 100%) border-box;
-            background-size: 100% 100%, 300% 300%;
-            animation: border-gradient-shift 7s ease-in-out infinite;
-            box-shadow:
-              0 10px 26px -6px rgba(250, 204, 21, 0.2),
-              0 4px 12px rgba(15, 23, 42, 0.03);
-          }
-
-          .search-icon-wrap {
-            margin-right: 8px;
-            flex-shrink: 0;
-          }
-
-          .search-icon-wrap svg {
-            width: 18px;
-            height: 18px;
+            padding: 4px 6px 4px 14px;
           }
 
           .hero-search-input {
             font-size: 13.5px;
-            min-width: 0;
-            width: 100%;
-            flex: 1;
-            padding-right: 4px;
           }
 
-          .hero-search-input::placeholder {
-            font-size: 13px;
-            letter-spacing: -0.01em;
+          .hero-action-orange-btn {
+            width: 38px;
+            height: 38px;
           }
 
-          .hero-orb-button {
-            width: 32px;
-            height: 32px;
-            flex-shrink: 0;
-            margin-left: 4px;
+          .hero-tags-motto {
+            font-size: 12px;
+            gap: 8px;
+            margin-top: 16px;
           }
 
-          .orb-specular-glare {
-            width: 14px;
-            height: 8px;
-            top: 2px;
-            left: 3.5px;
+          .resources-grid {
+            gap: 14px 18px;
+          }
+
+          .resource-item {
+            font-size: 12px;
           }
         }
       `}</style>

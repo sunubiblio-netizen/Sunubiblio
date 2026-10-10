@@ -65,13 +65,13 @@ export default function HomePage() {
 
       <style jsx>{`
         .page-wrapper {
-          height: 100vh;
-          height: 100dvh;
+          min-height: 100vh;
+          min-height: 100dvh;
           display: flex;
           flex-direction: column;
           position: relative;
-          overflow: hidden;
-          background: #ffffff;
+          overflow-x: hidden;
+          background: transparent;
         }
 
         main {
@@ -80,7 +80,8 @@ export default function HomePage() {
           flex-direction: column;
           justify-content: center;
           align-items: center;
-          padding-bottom: 130px;
+          padding-top: 10px;
+          padding-bottom: 30px;
           min-height: 0;
           width: 100%;
           position: relative;
