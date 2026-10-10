@@ -378,21 +378,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
 
         @media (max-width: 640px) {
           .hero-eclipse-section {
-            padding: 14px 0;
+            padding: 8px 0 16px 0;
           }
 
           .hero-center-container {
-            padding: 0 16px;
+            padding: 0 12px;
+          }
+
+          .hero-brand-badge {
+            margin-bottom: 8px;
+            gap: 4px;
+          }
+
+          .hero-brand-name {
+            font-size: 10px;
+            letter-spacing: 0.3em;
           }
 
           .hero-eclipse-title {
-            font-size: clamp(28px, 8vw, 36px);
-            margin-bottom: 8px;
+            font-size: clamp(26px, 7.5vw, 34px);
+            margin-bottom: 6px;
           }
 
           .hero-eclipse-subtitle {
-            font-size: 13px;
-            margin-bottom: 20px;
+            font-size: 12.5px;
+            margin-bottom: 16px;
           }
 
           .hero-search-capsule {
@@ -404,22 +414,38 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           }
 
           .hero-action-orange-btn {
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
           }
 
           .hero-tags-motto {
-            font-size: 12px;
+            font-size: 11.5px;
             gap: 8px;
-            margin-top: 16px;
+            margin-top: 12px;
+          }
+
+          .hero-bottom-resources {
+            margin-top: 20px;
+            gap: 12px;
+          }
+
+          .resources-heading {
+            font-size: 10px;
+            letter-spacing: 0.2em;
           }
 
           .resources-grid {
-            gap: 14px 18px;
+            gap: 8px 12px;
           }
 
           .resource-item {
-            font-size: 12px;
+            font-size: 11px;
+            gap: 5px;
+          }
+
+          .resource-item svg {
+            width: 15px;
+            height: 15px;
           }
         }
       `}</style>

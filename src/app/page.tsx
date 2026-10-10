@@ -81,7 +81,7 @@ export default function HomePage() {
           justify-content: center;
           align-items: center;
           padding-top: 10px;
-          padding-bottom: 30px;
+          padding-bottom: 90px;
           min-height: 0;
           width: 100%;
           position: relative;
