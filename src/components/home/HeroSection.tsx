@@ -165,7 +165,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           justify-content: center;
         }
 
-        /* Search Capsule with fine continuous animated light-blue gradient border */
+        /* Search Capsule with fine continuous animated sunny gold gradient border */
         .hero-search-capsule {
           position: relative;
           width: 100%;
@@ -177,12 +177,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           border: 2.2px solid transparent;
           background:
             linear-gradient(#ffffff, #ffffff) padding-box,
-            linear-gradient(135deg, #7dd3fc 0%, #bae6fd 25%, #93c5fd 50%, #e0f2fe 75%, #7dd3fc 100%) border-box;
+            linear-gradient(135deg, #facc15 0%, #fef08a 25%, #f59e0b 50%, #fef9c3 75%, #facc15 100%) border-box;
           background-size: 100% 100%, 300% 300%;
           animation: border-gradient-shift 7s ease-in-out infinite;
           box-shadow:
-            0 16px 40px -8px rgba(125, 211, 252, 0.22),
-            0 6px 20px -4px rgba(186, 230, 253, 0.18),
+            0 16px 40px -8px rgba(250, 204, 21, 0.2),
+            0 6px 20px -4px rgba(254, 240, 138, 0.18),
             0 2px 6px rgba(15, 23, 42, 0.03);
           transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
         }
@@ -190,9 +190,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
         .hero-search-capsule:focus-within {
           transform: translateY(-2px);
           box-shadow:
-            0 22px 50px -8px rgba(125, 211, 252, 0.28),
-            0 8px 26px -4px rgba(186, 230, 253, 0.25),
-            0 0 0 3px rgba(186, 230, 253, 0.45);
+            0 22px 50px -8px rgba(250, 204, 21, 0.28),
+            0 8px 26px -4px rgba(254, 240, 138, 0.24),
+            0 0 0 3px rgba(254, 240, 138, 0.45);
         }
 
         @keyframes border-gradient-shift {
@@ -271,31 +271,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           justify-content: center;
           backdrop-filter: blur(8px);
           -webkit-backdrop-filter: blur(8px);
-          /* Subtle crystal glass with sky-blue and soft pale yellow reflection */
+          /* Subtle crystal glass with warm sunny gold reflections matching library */
           background: radial-gradient(
             circle at 30% 24%,
-            rgba(255, 255, 255, 0.85) 0%,
-            rgba(219, 234, 254, 0.28) 25%,
-            rgba(254, 249, 195, 0.18) 55%,
-            rgba(147, 197, 253, 0.16) 82%,
-            rgba(100, 116, 139, 0.22) 100%
+            rgba(255, 255, 255, 0.9) 0%,
+            rgba(254, 249, 195, 0.32) 25%,
+            rgba(254, 240, 138, 0.2) 55%,
+            rgba(250, 204, 21, 0.15) 82%,
+            rgba(180, 120, 60, 0.18) 100%
           );
-          border: 1.5px solid rgba(219, 234, 254, 0.9);
+          border: 1.5px solid rgba(254, 240, 138, 0.85);
           box-shadow:
-            0 3px 10px rgba(37, 99, 235, 0.12),
-            0 1px 3px rgba(250, 204, 21, 0.08),
-            inset -2px -3px 6px rgba(100, 116, 139, 0.2),
+            0 3px 10px rgba(234, 179, 8, 0.14),
+            0 1px 3px rgba(245, 158, 11, 0.08),
+            inset -2px -3px 6px rgba(180, 120, 60, 0.18),
             inset 1.5px 2px 4px rgba(255, 255, 255, 0.95);
           overflow: hidden;
           transition: box-shadow 0.25s ease, border-color 0.25s ease;
         }
 
         .hero-orb-button:hover .orb-glass-body {
-          border-color: rgba(59, 130, 246, 0.7);
+          border-color: rgba(234, 179, 8, 0.7);
           box-shadow:
-            0 5px 14px rgba(37, 99, 235, 0.2),
-            0 0 12px rgba(96, 165, 250, 0.25),
-            inset -2px -3px 6px rgba(100, 116, 139, 0.25),
+            0 5px 14px rgba(234, 179, 8, 0.22),
+            0 0 12px rgba(250, 204, 21, 0.25),
+            inset -2px -3px 6px rgba(180, 120, 60, 0.22),
             inset 1.5px 2px 4px rgba(255, 255, 255, 1);
         }
 
@@ -410,11 +410,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
             border: 1.8px solid transparent;
             background:
               linear-gradient(#ffffff, #ffffff) padding-box,
-              linear-gradient(135deg, #7dd3fc 0%, #bae6fd 25%, #93c5fd 50%, #e0f2fe 75%, #7dd3fc 100%) border-box;
+              linear-gradient(135deg, #facc15 0%, #fef08a 25%, #f59e0b 50%, #fef9c3 75%, #facc15 100%) border-box;
             background-size: 100% 100%, 300% 300%;
             animation: border-gradient-shift 7s ease-in-out infinite;
             box-shadow:
-              0 10px 26px -6px rgba(125, 211, 252, 0.2),
+              0 10px 26px -6px rgba(250, 204, 21, 0.2),
               0 4px 12px rgba(15, 23, 42, 0.03);
           }
 

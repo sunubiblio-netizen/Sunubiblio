@@ -108,10 +108,10 @@ export default function HomePage() {
           background: rgba(255, 255, 255, 0.85);
           backdrop-filter: blur(16px);
           -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(99, 102, 241, 0.25);
+          border: 1px solid rgba(234, 179, 8, 0.3);
           border-radius: 16px;
           padding: 12px 20px;
-          box-shadow: 0 4px 16px rgba(79, 70, 229, 0.08);
+          box-shadow: 0 4px 16px rgba(234, 179, 8, 0.08);
           animation: slide-down 0.25s ease-out;
         }
 
@@ -125,14 +125,14 @@ export default function HomePage() {
           width: 8px;
           height: 8px;
           border-radius: 50%;
-          background: #4f46e5;
-          box-shadow: 0 0 10px #4f46e5;
+          background: #eab308;
+          box-shadow: 0 0 10px #facc15;
         }
 
         .feedback-text {
           font-size: 14px;
           font-weight: 600;
-          color: #1e1b4b;
+          color: #713f12;
         }
 
         .feedback-dismiss {
@@ -145,8 +145,8 @@ export default function HomePage() {
         }
 
         .feedback-dismiss:hover {
-          color: #4f46e5;
-          background: #f1f5f9;
+          color: #854d0e;
+          background: #fefce8;
         }
 
         @keyframes slide-down {
