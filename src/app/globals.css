@@ -18396,3 +18396,198 @@ input {
   }
 }
 
+/* ==========================================================================
+   SUNUBIBLIO 3D ROTATING ARC CAROUSEL - FROSTED GLASS RESOURCE TILES
+   ========================================================================== */
+
+.arc-carousel-container {
+  width: 100%;
+  max-width: 860px;
+  margin-top: 18px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+  padding: 0 6px;
+}
+
+.arc-carousel-container:active {
+  cursor: grabbing;
+}
+
+.arc-viewport {
+  width: 100%;
+  height: 142px;
+  perspective: 1100px;
+  perspective-origin: 50% 50%;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 6%,
+    black 94%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 6%,
+    black 94%,
+    transparent 100%
+  );
+}
+
+.arc-track {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+.arc-glass-card {
+  width: 120px !important;
+  height: 116px !important;
+  flex-shrink: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 14px 8px 12px 8px !important;
+  border-radius: 20px !important;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.06) 100%
+  ) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1.4px solid rgba(255, 255, 255, 0.28) !important;
+  box-shadow:
+    0 12px 28px -4px rgba(0, 0, 0, 0.6),
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.38) !important;
+  text-decoration: none !important;
+  transform-style: preserve-3d !important;
+  will-change: transform, opacity !important;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease !important;
+}
+
+.arc-glass-card:hover {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.24) 0%,
+    rgba(249, 115, 22, 0.18) 100%
+  ) !important;
+  border-color: rgba(249, 115, 22, 0.8) !important;
+  box-shadow:
+    0 16px 36px -4px rgba(234, 88, 12, 0.4),
+    0 0 18px rgba(249, 115, 22, 0.28),
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.5) !important;
+}
+
+.card-icon-wrap {
+  width: 38px !important;
+  height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 auto 8px auto !important;
+  flex-shrink: 0 !important;
+  transition: transform 0.2s ease !important;
+}
+
+.card-icon-wrap svg {
+  display: block !important;
+  margin: auto !important;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35)) !important;
+}
+
+.arc-glass-card:hover .card-icon-wrap {
+  transform: scale(1.12) !important;
+}
+
+.card-text-group {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  width: 100% !important;
+  gap: 2px !important;
+}
+
+.card-main-title {
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  letter-spacing: -0.01em !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+  line-height: 1.25 !important;
+}
+
+.card-sub-info {
+  font-size: 9.5px !important;
+  font-weight: 500 !important;
+  color: rgba(255, 255, 255, 0.72) !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+  line-height: 1.2 !important;
+}
+
+/* Responsive Smartphones (<= 640px) */
+@media (max-width: 640px) {
+  .arc-carousel-container {
+    margin-top: 14px !important;
+    padding: 0 4px !important;
+  }
+
+  .arc-viewport {
+    height: 114px !important;
+  }
+
+  .arc-track {
+    gap: 8px !important;
+  }
+
+  .arc-glass-card {
+    width: 98px !important;
+    height: 96px !important;
+    padding: 10px 6px 8px 6px !important;
+    border-radius: 16px !important;
+  }
+
+  .card-icon-wrap {
+    width: 28px !important;
+    height: 28px !important;
+    margin: 0 auto 5px auto !important;
+  }
+
+  .card-icon-wrap svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .card-main-title {
+    font-size: 11px !important;
+  }
+
+  .card-sub-info {
+    font-size: 8px !important;
+  }
+}
+
