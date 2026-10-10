@@ -106,7 +106,7 @@ const BASE_RESOURCES: ResourceItem[] = [
   },
 ];
 
-// 4 repeated sets to ensure infinite seamless track looping
+// Sets repeated for infinite continuous rotation
 const LOOP_RESOURCES = [
   ...BASE_RESOURCES,
   ...BASE_RESOURCES,
@@ -127,20 +127,21 @@ export const RotatingResourcesCylinder: React.FC = () => {
 
   useEffect(() => {
     let animId: number;
-    const speed = 0.55; // Pixels per frame for smooth continuous glide
+    const speed = 0.55; // Vitesse de rotation continue
 
-    const update3DTransforms = () => {
+    const updateSphereTransforms = () => {
       const container = containerRef.current;
       const track = trackRef.current;
       if (!container || !track) return;
 
       const isMobile = window.innerWidth <= 640;
-      const cardWidth = isMobile ? 98 : 120;
-      const cardGap = isMobile ? 8 : 12;
+      // Dimensions de la carte arrondie comme une balle
+      const cardWidth = isMobile ? 86 : 108;
+      const cardGap = isMobile ? 8 : 10;
       const cardStep = cardWidth + cardGap;
-      const singleSetWidth = BASE_RESOURCES.length * cardStep; // 7 * step
+      const singleSetWidth = BASE_RESOURCES.length * cardStep;
 
-      // Wrap around for endless looping
+      // Boucle infinie sans à-coup
       if (offsetRef.current >= singleSetWidth) {
         offsetRef.current -= singleSetWidth;
       } else if (offsetRef.current < 0) {
@@ -153,23 +154,44 @@ export const RotatingResourcesCylinder: React.FC = () => {
 
       track.style.transform = `translateX(-${currentOffset}px)`;
 
-      // Dynamic 3D panoramic curve: curves cards inward towards the depth at the sides
+      // Transformation sphérique 3D : la carte centrale avance fièrement en avant
       const cards = track.children;
       for (let i = 0; i < cards.length; i++) {
         const card = cards[i] as HTMLElement;
         const cardLeft = i * cardStep - currentOffset;
         const cardCenter = cardLeft + cardWidth / 2;
         const distFromCenter = cardCenter - center;
-        const normDist = distFromCenter / (containerWidth / 2);
-        const clampedNorm = Math.max(-1.25, Math.min(1.25, normDist));
+        // normDist: 0 = centre exact, ±1 = voisins directs
+        const normDist = distFromCenter / cardStep;
+        const absNorm = Math.abs(normDist);
 
-        const rotY = -clampedNorm * 20;
-        const transZ = -Math.pow(Math.abs(clampedNorm), 1.35) * 35;
-        const scale = 1 - Math.abs(clampedNorm) * 0.05;
-        const opacity = Math.max(0.45, 1 - Math.pow(Math.abs(clampedNorm), 2) * 0.45);
+        // 1. Mise en avant de la carte du milieu :
+        // Au centre (absNorm = 0) : translateZ = +30px, scale = 1.15
+        // Sur les côtés (absNorm = 1) : translateZ = -18px, scale = 0.88
+        const transZ = 28 - Math.pow(absNorm, 1.45) * 46;
+        const scale = Math.max(0.78, 1.14 - absNorm * 0.26);
+        const rotY = -Math.max(-1.5, Math.min(1.5, normDist)) * 26;
+
+        // zIndex : la carte centrale est toujours au-dessus des deux voisines
+        const zIndex = Math.round(Math.max(1, (3 - absNorm) * 10));
+
+        // Opacité et fondu doux aux limites des traits rouges
+        let opacity = 1;
+        if (absNorm > 0.8) {
+          opacity = Math.max(0, 1 - (absNorm - 0.8) * 1.5);
+        }
+
+        // Effet lumineux supplémentaire sur la carte reine du milieu
+        if (absNorm < 0.45) {
+          card.classList.add('is-center-front');
+        } else {
+          card.classList.remove('is-center-front');
+        }
 
         card.style.transform = `rotateY(${rotY}deg) translateZ(${transZ}px) scale(${scale})`;
+        card.style.zIndex = `${zIndex}`;
         card.style.opacity = `${opacity}`;
+        card.style.pointerEvents = absNorm > 1.35 ? 'none' : 'auto';
       }
     };
 
@@ -177,7 +199,7 @@ export const RotatingResourcesCylinder: React.FC = () => {
       if (!isPausedRef.current) {
         offsetRef.current += speed;
       }
-      update3DTransforms();
+      updateSphereTransforms();
       animId = requestAnimationFrame(loop);
     };
 
@@ -185,7 +207,7 @@ export const RotatingResourcesCylinder: React.FC = () => {
     return () => cancelAnimationFrame(animId);
   }, []);
 
-  // Drag and touch interaction handlers
+  // Gestion du glissement tactile et souris
   const handleStart = (clientX: number) => {
     isDraggingRef.current = true;
     hasDraggedRef.current = false;
@@ -212,7 +234,7 @@ export const RotatingResourcesCylinder: React.FC = () => {
 
   return (
     <div
-      className="arc-carousel-container"
+      className="arc-carousel-container sphere-carousel-limiter"
       ref={containerRef}
       onMouseEnter={() => {
         isPausedRef.current = true;
@@ -226,22 +248,22 @@ export const RotatingResourcesCylinder: React.FC = () => {
       onTouchStart={(e) => handleStart(e.touches[0].clientX)}
       onTouchMove={(e) => handleMove(e.touches[0].clientX)}
       onTouchEnd={handleEnd}
-      aria-label="Carrousel 3D incurvé des 7 ressources Sunubiblio"
+      aria-label="Carrousel 3D sphérique des ressources Sunubiblio"
     >
-      {/* 3D Viewport with side gradient mask */}
-      <div className="arc-viewport">
-        <div className="arc-track" ref={trackRef}>
+      {/* Fenêtre 3D calibrée strictement entre les 2 limites rouges */}
+      <div className="arc-viewport sphere-viewport">
+        <div className="arc-track sphere-track" ref={trackRef}>
           {LOOP_RESOURCES.map((item, idx) => (
             <Link
               key={`${item.id}-${idx}`}
               href={item.href}
-              className="arc-glass-card"
+              className="arc-glass-card sphere-ball-card"
               onClick={(e) => {
                 if (hasDraggedRef.current) e.preventDefault();
               }}
               title={item.title}
             >
-              {/* Icône rigoureusement centrée dans sa carte */}
+              {/* Icône rigoureusement centrée dans la balle */}
               <div
                 className="card-icon-wrap"
                 style={{ color: item.accent }}
@@ -261,4 +283,3 @@ export const RotatingResourcesCylinder: React.FC = () => {
     </div>
   );
 };
-

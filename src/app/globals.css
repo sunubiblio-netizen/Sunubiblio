@@ -18397,13 +18397,13 @@ input {
 }
 
 /* ==========================================================================
-   SUNUBIBLIO 3D ROTATING ARC CAROUSEL - FROSTED GLASS RESOURCE TILES
+   SUNUBIBLIO 3D SPHERICAL BALL CAROUSEL - RESOURCE CAPSULES
    ========================================================================== */
 
-.arc-carousel-container {
+.arc-carousel-container.sphere-carousel-limiter {
   width: 100%;
-  max-width: 860px;
-  margin-top: 18px;
+  max-width: 380px;
+  margin: 18px auto 0 auto;
   position: relative;
   display: flex;
   align-items: center;
@@ -18412,94 +18412,111 @@ input {
   user-select: none;
   -webkit-user-select: none;
   touch-action: pan-y;
-  padding: 0 6px;
+  padding: 0 4px;
 }
 
-.arc-carousel-container:active {
+.arc-carousel-container.sphere-carousel-limiter:active {
   cursor: grabbing;
 }
 
-.arc-viewport {
+/* Limite stricte définie par les repères : masque progressif latéral */
+.arc-viewport.sphere-viewport {
   width: 100%;
   height: 142px;
-  perspective: 1100px;
+  perspective: 1000px;
   perspective-origin: 50% 50%;
   overflow: hidden;
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
   mask-image: linear-gradient(
     to right,
     transparent 0%,
-    black 6%,
-    black 94%,
+    black 14%,
+    black 86%,
     transparent 100%
   );
   -webkit-mask-image: linear-gradient(
     to right,
     transparent 0%,
-    black 6%,
-    black 94%,
+    black 14%,
+    black 86%,
     transparent 100%
   );
 }
 
-.arc-track {
+.arc-track.sphere-track {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   will-change: transform;
   transform-style: preserve-3d;
 }
 
-.arc-glass-card {
-  width: 120px !important;
-  height: 116px !important;
+/* Carte « Arrondie comme une balle » (Pebble / Squircle 3D) */
+.arc-glass-card.sphere-ball-card {
+  width: 108px !important;
+  height: 108px !important;
   flex-shrink: 0 !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
   text-align: center !important;
-  padding: 14px 8px 12px 8px !important;
-  border-radius: 20px !important;
+  padding: 10px 8px !important;
+  border-radius: 28px !important;
   background: linear-gradient(
     145deg,
     rgba(255, 255, 255, 0.16) 0%,
-    rgba(255, 255, 255, 0.06) 100%
+    rgba(255, 255, 255, 0.05) 100%
   ) !important;
   backdrop-filter: blur(20px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border: 1.4px solid rgba(255, 255, 255, 0.28) !important;
+  border: 1.4px solid rgba(255, 255, 255, 0.26) !important;
   box-shadow:
-    0 12px 28px -4px rgba(0, 0, 0, 0.6),
+    0 10px 24px -4px rgba(0, 0, 0, 0.6),
     inset 0 1px 1.5px rgba(255, 255, 255, 0.38) !important;
   text-decoration: none !important;
   transform-style: preserve-3d !important;
-  will-change: transform, opacity !important;
+  will-change: transform, opacity, z-index !important;
   transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease !important;
 }
 
-.arc-glass-card:hover {
+/* La carte qui est au milieu s'avance fièrement devant les 2 à côté */
+.arc-glass-card.sphere-ball-card.is-center-front {
+  border-color: rgba(249, 115, 22, 0.85) !important;
   background: linear-gradient(
     145deg,
     rgba(255, 255, 255, 0.24) 0%,
-    rgba(249, 115, 22, 0.18) 100%
+    rgba(249, 115, 22, 0.16) 100%
   ) !important;
-  border-color: rgba(249, 115, 22, 0.8) !important;
   box-shadow:
-    0 16px 36px -4px rgba(234, 88, 12, 0.4),
-    0 0 18px rgba(249, 115, 22, 0.28),
-    inset 0 1px 1.5px rgba(255, 255, 255, 0.5) !important;
+    0 16px 36px -4px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(234, 88, 12, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.55) !important;
+}
+
+.arc-glass-card.sphere-ball-card:hover {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.26) 0%,
+    rgba(249, 115, 22, 0.2) 100%
+  ) !important;
+  border-color: rgba(249, 115, 22, 0.9) !important;
+  box-shadow:
+    0 18px 40px -4px rgba(234, 88, 12, 0.45),
+    0 0 22px rgba(249, 115, 22, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
 }
 
 .card-icon-wrap {
-  width: 38px !important;
-  height: 38px !important;
+  width: 34px !important;
+  height: 34px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  margin: 0 auto 8px auto !important;
+  margin: 0 auto 6px auto !important;
   flex-shrink: 0 !important;
   transition: transform 0.2s ease !important;
 }
@@ -18507,11 +18524,17 @@ input {
 .card-icon-wrap svg {
   display: block !important;
   margin: auto !important;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35)) !important;
+  width: 20px !important;
+  height: 20px !important;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4)) !important;
+}
+
+.arc-glass-card.is-center-front .card-icon-wrap {
+  transform: scale(1.1) !important;
 }
 
 .arc-glass-card:hover .card-icon-wrap {
-  transform: scale(1.12) !important;
+  transform: scale(1.15) !important;
 }
 
 .card-text-group {
@@ -18525,7 +18548,7 @@ input {
 }
 
 .card-main-title {
-  font-size: 12.5px !important;
+  font-size: 11.5px !important;
   font-weight: 700 !important;
   color: #ffffff !important;
   letter-spacing: -0.01em !important;
@@ -18534,11 +18557,11 @@ input {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   max-width: 100% !important;
-  line-height: 1.25 !important;
+  line-height: 1.2 !important;
 }
 
 .card-sub-info {
-  font-size: 9.5px !important;
+  font-size: 9px !important;
   font-weight: 500 !important;
   color: rgba(255, 255, 255, 0.72) !important;
   text-align: center !important;
@@ -18546,48 +18569,66 @@ input {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   max-width: 100% !important;
-  line-height: 1.2 !important;
+  line-height: 1.15 !important;
 }
 
-/* Responsive Smartphones (<= 640px) */
+/* ==========================================================================
+   Responsive Smartphones (<= 640px) : Calibré STRICTEMENT sur les 2 traits rouges
+   ========================================================================== */
 @media (max-width: 640px) {
-  .arc-carousel-container {
+  .arc-carousel-container.sphere-carousel-limiter {
+    max-width: 275px !important;
     margin-top: 14px !important;
-    padding: 0 4px !important;
+    padding: 0 2px !important;
   }
 
-  .arc-viewport {
-    height: 114px !important;
+  .arc-viewport.sphere-viewport {
+    height: 116px !important;
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 12%,
+      black 88%,
+      transparent 100%
+    ) !important;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 12%,
+      black 88%,
+      transparent 100%
+    ) !important;
   }
 
-  .arc-track {
+  .arc-track.sphere-track {
     gap: 8px !important;
   }
 
-  .arc-glass-card {
-    width: 98px !important;
-    height: 96px !important;
-    padding: 10px 6px 8px 6px !important;
-    border-radius: 16px !important;
+  .arc-glass-card.sphere-ball-card {
+    width: 86px !important;
+    height: 86px !important;
+    padding: 8px 4px !important;
+    border-radius: 24px !important;
   }
 
   .card-icon-wrap {
-    width: 28px !important;
-    height: 28px !important;
-    margin: 0 auto 5px auto !important;
+    width: 26px !important;
+    height: 26px !important;
+    margin: 0 auto 4px auto !important;
   }
 
   .card-icon-wrap svg {
-    width: 18px !important;
-    height: 18px !important;
+    width: 16px !important;
+    height: 16px !important;
   }
 
   .card-main-title {
-    font-size: 11px !important;
+    font-size: 10px !important;
   }
 
   .card-sub-info {
-    font-size: 8px !important;
+    font-size: 7.5px !important;
   }
 }
+
 
