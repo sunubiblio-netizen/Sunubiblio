@@ -18419,31 +18419,40 @@ input {
   cursor: grabbing;
 }
 
-/* Limite stricte définie par les repères : masque progressif latéral */
+/* Limite stricte définie par les repères : fenêtrage 3D */
 .arc-viewport.sphere-viewport {
   width: 100%;
   height: 142px;
   perspective: 1000px;
+  -webkit-perspective: 1000px;
   perspective-origin: 50% 50%;
+  -webkit-perspective-origin: 50% 50%;
   overflow: hidden;
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 14%,
-    black 86%,
-    transparent 100%
-  );
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 14%,
-    black 86%,
-    transparent 100%
-  );
+}
+
+.sphere-edge-fade-left {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 32px;
+  background: linear-gradient(to right, #090706 0%, rgba(9, 7, 6, 0.7) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 50;
+}
+
+.sphere-edge-fade-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 32px;
+  background: linear-gradient(to left, #090706 0%, rgba(9, 7, 6, 0.7) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 50;
 }
 
 .arc-track.sphere-track {
@@ -18452,6 +18461,7 @@ input {
   gap: 10px;
   will-change: transform;
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
 }
 
 /* Carte « Arrondie comme une balle » (Pebble / Squircle 3D) */
@@ -18584,20 +18594,11 @@ input {
 
   .arc-viewport.sphere-viewport {
     height: 116px !important;
-    mask-image: linear-gradient(
-      to right,
-      transparent 0%,
-      black 12%,
-      black 88%,
-      transparent 100%
-    ) !important;
-    -webkit-mask-image: linear-gradient(
-      to right,
-      transparent 0%,
-      black 12%,
-      black 88%,
-      transparent 100%
-    ) !important;
+  }
+
+  .sphere-edge-fade-left,
+  .sphere-edge-fade-right {
+    width: 24px !important;
   }
 
   .arc-track.sphere-track {

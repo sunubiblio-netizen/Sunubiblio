@@ -106,7 +106,7 @@ const BASE_RESOURCES: ResourceItem[] = [
   },
 ];
 
-// Sets repeated for infinite continuous rotation
+// Sets de cartes pour un roulement infini fluide
 const LOOP_RESOURCES = [
   ...BASE_RESOURCES,
   ...BASE_RESOURCES,
@@ -127,7 +127,16 @@ export const RotatingResourcesCylinder: React.FC = () => {
 
   useEffect(() => {
     let animId: number;
-    const speed = 0.55; // Vitesse de rotation continue
+    const speed = 0.5; // Vitesse de rotation continue fluide
+
+    const isMobileInit = window.innerWidth <= 640;
+    const cWidthInit = isMobileInit ? 86 : 108;
+    const cGapInit = isMobileInit ? 8 : 10;
+    const cStepInit = cWidthInit + cGapInit;
+    const setWidthInit = BASE_RESOURCES.length * cStepInit;
+
+    // Démarre au milieu du ruban pour que les voisins existent toujours
+    offsetRef.current = setWidthInit;
 
     const updateSphereTransforms = () => {
       const container = containerRef.current;
@@ -135,63 +144,59 @@ export const RotatingResourcesCylinder: React.FC = () => {
       if (!container || !track) return;
 
       const isMobile = window.innerWidth <= 640;
-      // Dimensions de la carte arrondie comme une balle
-      const cardWidth = isMobile ? 86 : 108;
-      const cardGap = isMobile ? 8 : 10;
-      const cardStep = cardWidth + cardGap;
-      const singleSetWidth = BASE_RESOURCES.length * cardStep;
+      const cWidth = isMobile ? 86 : 108;
+      const cGap = isMobile ? 8 : 10;
+      const cStep = cWidth + cGap;
+      const setWidth = BASE_RESOURCES.length * cStep;
 
-      // Boucle infinie sans à-coup
-      if (offsetRef.current >= singleSetWidth) {
-        offsetRef.current -= singleSetWidth;
-      } else if (offsetRef.current < 0) {
-        offsetRef.current += singleSetWidth;
+      // Boucle infinie dans la plage [setWidth, 2 * setWidth)
+      if (offsetRef.current >= 2 * setWidth) {
+        offsetRef.current -= setWidth;
+      } else if (offsetRef.current < setWidth) {
+        offsetRef.current += setWidth;
       }
 
       const containerWidth = container.offsetWidth;
       const center = containerWidth / 2;
       const currentOffset = offsetRef.current;
 
-      track.style.transform = `translateX(-${currentOffset}px)`;
+      // Positionnement de la piste centré dans la fenêtre
+      const baseX = center - cWidth / 2;
+      track.style.transform = `translateX(${baseX - currentOffset}px)`;
+      (track.style as unknown as { webkitTransform: string }).webkitTransform = `translateX(${baseX - currentOffset}px)`;
 
-      // Transformation sphérique 3D : la carte centrale avance fièrement en avant
+      // Transformation sphérique 3D pour chaque carte
       const cards = track.children;
       for (let i = 0; i < cards.length; i++) {
         const card = cards[i] as HTMLElement;
-        const cardLeft = i * cardStep - currentOffset;
-        const cardCenter = cardLeft + cardWidth / 2;
-        const distFromCenter = cardCenter - center;
-        // normDist: 0 = centre exact, ±1 = voisins directs
-        const normDist = distFromCenter / cardStep;
+        const distFromCenter = i * cStep - currentOffset;
+        const normDist = distFromCenter / cStep;
         const absNorm = Math.abs(normDist);
 
         // 1. Mise en avant de la carte du milieu :
-        // Au centre (absNorm = 0) : translateZ = +30px, scale = 1.15
-        // Sur les côtés (absNorm = 1) : translateZ = -18px, scale = 0.88
+        // Au centre (absNorm = 0) : translateZ = +28px, scale = 1.14
+        // Voisins gauche et droite (absNorm = 1) : translateZ = -18px, scale = 0.88
         const transZ = 28 - Math.pow(absNorm, 1.45) * 46;
-        const scale = Math.max(0.78, 1.14 - absNorm * 0.26);
+        const scale = Math.max(0.75, 1.14 - absNorm * 0.26);
         const rotY = -Math.max(-1.5, Math.min(1.5, normDist)) * 26;
+        const zIndex = Math.round(Math.max(1, (4 - absNorm) * 10));
 
-        // zIndex : la carte centrale est toujours au-dessus des deux voisines
-        const zIndex = Math.round(Math.max(1, (3 - absNorm) * 10));
+        // Opacité : toujours visible pour les 3 cartes centrales
+        const opacity = Math.max(0.2, Math.min(1, 1.35 - absNorm * 0.65));
 
-        // Opacité et fondu doux aux limites des traits rouges
-        let opacity = 1;
-        if (absNorm > 0.8) {
-          opacity = Math.max(0, 1 - (absNorm - 0.8) * 1.5);
-        }
-
-        // Effet lumineux supplémentaire sur la carte reine du milieu
+        // Halo lumineux supplémentaire sur la carte reine du milieu
         if (absNorm < 0.45) {
           card.classList.add('is-center-front');
         } else {
           card.classList.remove('is-center-front');
         }
 
-        card.style.transform = `rotateY(${rotY}deg) translateZ(${transZ}px) scale(${scale})`;
+        const transformValue = `rotateY(${rotY}deg) translate3d(0, 0, ${transZ}px) scale(${scale})`;
+        card.style.transform = transformValue;
+        (card.style as unknown as { webkitTransform: string }).webkitTransform = transformValue;
         card.style.zIndex = `${zIndex}`;
         card.style.opacity = `${opacity}`;
-        card.style.pointerEvents = absNorm > 1.35 ? 'none' : 'auto';
+        card.style.pointerEvents = absNorm > 1.4 ? 'none' : 'auto';
       }
     };
 
@@ -252,6 +257,10 @@ export const RotatingResourcesCylinder: React.FC = () => {
     >
       {/* Fenêtre 3D calibrée strictement entre les 2 limites rouges */}
       <div className="arc-viewport sphere-viewport">
+        {/* Voiles de fondu latéraux compatibles tous navigateurs */}
+        <div className="sphere-edge-fade-left" />
+        <div className="sphere-edge-fade-right" />
+
         <div className="arc-track sphere-track" ref={trackRef}>
           {LOOP_RESOURCES.map((item, idx) => (
             <Link
