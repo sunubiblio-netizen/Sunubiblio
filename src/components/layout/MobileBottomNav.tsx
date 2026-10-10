@@ -27,7 +27,7 @@ export const MobileBottomNav: React.FC = () => {
 
   return (
     <nav
-      className={`mobile-bottom-nav-root ${shouldHideBottomNav ? 'is-hidden-on-player' : ''} ${isHome ? 'bottom-nav-dark' : ''}`}
+      className={`mobile-bottom-nav-root ${shouldHideBottomNav ? 'is-hidden-on-player' : ''}`}
       style={shouldHideBottomNav ? { display: 'none' } : undefined}
       aria-label="Navigation mobile principale"
       aria-hidden={shouldHideBottomNav ? 'true' : undefined}

@@ -1,55 +1,16 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { RotatingResourcesCylinder } from './RotatingResourcesCylinder';
+import React, { useState } from 'react';
+import { FloatCard } from './FloatCard';
+import { POPULAR_TAGS } from '@/data/categories';
 
 interface HeroSectionProps {
   onSearch?: (query: string) => void;
   onTagClick?: (tag: string) => void;
 }
 
-const SEARCH_PHRASES = [
-  'Rechercher un livre, un cours, un concours...',
-  'Une première au Sénégal',
-  'Bibliothèque numérique complète',
-  'Des milliers d’ouvrages à explorer',
-  'Préparez vos examens & concours...',
-];
-
-export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [displayText, setDisplayText] = useState('');
-  const [phraseIndex, setPhraseIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  // Typewriter effect on the search bar placeholder
-  useEffect(() => {
-    if (searchQuery) return;
-
-    const currentPhrase = SEARCH_PHRASES[phraseIndex % SEARCH_PHRASES.length];
-    let timer: NodeJS.Timeout;
-
-    if (!isDeleting && displayText === currentPhrase) {
-      timer = setTimeout(() => {
-        setIsDeleting(true);
-      }, 2000);
-    } else if (isDeleting && displayText === '') {
-      timer = setTimeout(() => {
-        setIsDeleting(false);
-        setPhraseIndex((prev) => (prev + 1) % SEARCH_PHRASES.length);
-      }, 400);
-    } else {
-      const speed = isDeleting ? 30 : 60;
-      timer = setTimeout(() => {
-        const nextText = isDeleting
-          ? currentPhrase.substring(0, displayText.length - 1)
-          : currentPhrase.substring(0, displayText.length + 1);
-        setDisplayText(nextText);
-      }, speed);
-    }
-
-    return () => clearTimeout(timer);
-  }, [displayText, isDeleting, phraseIndex, searchQuery]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,244 +20,226 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
   };
 
   return (
-    <section className="hero-eclipse-section">
-      <div className="container hero-center-container">
-        {/* Brandmark pill at top */}
-        <div className="hero-brand-badge">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="brand-flower-icon">
-            <rect x="2" y="2" width="9" height="9" rx="3" fill="#f97316" />
-            <rect x="13" y="2" width="9" height="9" rx="3" fill="#ea580c" />
-            <rect x="2" y="13" width="9" height="9" rx="3" fill="#ea580c" />
-            <rect x="13" y="13" width="9" height="9" rx="3" fill="#f97316" />
-          </svg>
-          <span className="hero-brand-name">SUNUBIBLIO</span>
+    <section className="hero-section">
+      <div className="container hero-container">
+        {/* Left Column: Messaging & Universal Search */}
+        <div className="hero-content">
+          {/* Pill Badge */}
+          <div className="badge-pill hero-badge">
+            <span className="badge-dot" />
+            <span>Votre réussite, notre priorité</span>
+          </div>
+
+          {/* Monumental Headline with Vibrant Gradient Accent */}
+          <h1 className="hero-title">
+            La bibliothèque numérique{' '}
+            <span className="hero-title-accent">
+              pour tous vos objectifs
+            </span>
+          </h1>
+
+          {/* Subtitle */}
+          <p className="hero-description">
+            Accédez à des milliers de ressources éducatives, de concours,
+            d'exercices et de documents pour réussir vos études et atteindre
+            vos objectifs professionnels.
+          </p>
+
+          {/* Universal Search Capsule Form */}
+          <form onSubmit={handleSubmit} className="hero-search-capsule">
+            <div className="search-icon-wrap">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              className="hero-search-input"
+              placeholder="Rechercher un livre, un cours, une annale..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button
+              type="submit"
+              className="hero-search-submit"
+              aria-label="Lancer la recherche"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </button>
+          </form>
+
+          {/* Popular Tags Row */}
+          <div className="popular-tags-row">
+            <span className="popular-label">Populaires :</span>
+            <div className="tags-scroller">
+              {POPULAR_TAGS.slice(0, 5).map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery(tag);
+                    if (onTagClick) onTagClick(tag);
+                  }}
+                  className="popular-tag-chip"
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Title — Clean bold modern font: "Explorez" in pure white + "le savoir" in warm fiery orange */}
-        <h1 className="hero-eclipse-title">
-          Explorez <span className="hero-title-accent">le savoir</span>
-        </h1>
+        {/* Right Column: Signature 3D Petal Composition with Ambient Glow and Floating Badges */}
+        <div className="hero-visual-col">
+          {/* Ambient Glow Orbs */}
+          <div className="visual-glow-backdrop" />
+          <div className="visual-glow-secondary" />
 
-        {/* Subtitle / Description */}
-        <p className="hero-eclipse-subtitle">
-          Des milliers d’ouvrages, cours et annales
-        </p>
+          {/* Desktop Floating Cards */}
+          <div className="float-wrapper top-right float-anim-slow">
+            <FloatCard
+              icon={
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+              }
+              title="Des ressources pour tous les niveaux"
+              subtitle="Du primaire au doctorat"
+              accentColor="#4f46e5"
+            />
+          </div>
 
-        {/* Search Capsule dark & warm amber glow */}
-        <form onSubmit={handleSubmit} className="hero-search-capsule">
-          <div className="search-icon-wrap">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          <div className="float-wrapper center-left float-anim-mid">
+            <FloatCard
+              icon={
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                  <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                </svg>
+              }
+              title="Préparez vos concours"
+              subtitle="Sénégal et International"
+              accentColor="#7c3aed"
+            />
+          </div>
+
+          <div className="float-wrapper bottom-right float-anim-fast">
+            <FloatCard
+              icon={
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ec4899" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-5.04z" />
+                  <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-5.04z" />
+                </svg>
+              }
+              title="IA intégrée"
+              subtitle="Des outils pour mieux apprendre"
+              accentColor="#ec4899"
+            />
+          </div>
+
+          {/* The Geometric 4-Petal Signature Graphic */}
+          <div className="petal-composition">
+            <svg
+              className="petal-svg"
+              viewBox="0 0 400 400"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="petalTop" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#38BDF8" />
+                  <stop offset="40%" stopColor="#3B82F6" />
+                  <stop offset="100%" stopColor="#6366F1" />
+                </linearGradient>
+
+                <linearGradient id="petalRight" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#EC4899" />
+                  <stop offset="60%" stopColor="#D946EF" />
+                  <stop offset="100%" stopColor="#A855F7" />
+                </linearGradient>
+
+                <linearGradient id="petalBottom" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#6366F1" />
+                  <stop offset="50%" stopColor="#4338CA" />
+                  <stop offset="100%" stopColor="#1E1B4B" />
+                </linearGradient>
+
+                <linearGradient id="petalLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#C084FC" />
+                  <stop offset="50%" stopColor="#818CF8" />
+                  <stop offset="100%" stopColor="#3B82F6" />
+                </linearGradient>
+
+                <filter id="petalShadow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="16" stdDeviation="16" floodColor="#4f46e5" floodOpacity="0.22" />
+                </filter>
+              </defs>
+
+              <g filter="url(#petalShadow)" transform="translate(200, 200)">
+                <path
+                  d="M 0,-16 C 50,-120 120,-150 150,-120 C 180,-90 150,-20 60,0 Z"
+                  fill="url(#petalTop)"
+                />
+                <path
+                  d="M 16,0 C 120,50 150,120 120,150 C 90,180 20,150 0,60 Z"
+                  fill="url(#petalRight)"
+                />
+                <path
+                  d="M 0,16 C -50,120 -120,150 -150,120 C -180,90 -150,20 -60,0 Z"
+                  fill="url(#petalBottom)"
+                />
+                <path
+                  d="M -16,0 C -120,-50 -150,-120 -120,-150 C -90,-180 -20,-150 0,-60 Z"
+                  fill="url(#petalLeft)"
+                />
+              </g>
             </svg>
           </div>
-          <input
-            type="text"
-            className="hero-search-input"
-            placeholder={searchQuery ? '' : displayText}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label="Rechercher un livre, un cours, un concours"
-          />
-          <button
-            type="submit"
-            className="hero-action-orange-btn"
-            aria-label="Lancer la recherche"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </button>
-        </form>
 
-        {/* 3D Rotating Cylinder Carousel of Frosted Glass Resource Cards */}
-        <RotatingResourcesCylinder />
+          {/* Mobile Showcase Cards (displayed on mobile below the visual) */}
+          <div className="mobile-showcase-grid mobile-only">
+            <div className="mobile-showcase-pill">
+              <div className="mini-icon-box" style={{ color: '#4f46e5' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                  <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                </svg>
+              </div>
+              <div className="mini-texts">
+                <span className="mini-title">Tous niveaux</span>
+                <span className="mini-desc">Primaire au doctorat</span>
+              </div>
+            </div>
+            <div className="mobile-showcase-pill">
+              <div className="mini-icon-box" style={{ color: '#9333ea' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+              </div>
+              <div className="mini-texts">
+                <span className="mini-title">Préparation concours</span>
+                <span className="mini-desc">Sénégal & International</span>
+              </div>
+            </div>
+            <div className="mobile-showcase-pill">
+              <div className="mini-icon-box" style={{ color: '#ec4899' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-5.04z" />
+                </svg>
+              </div>
+              <div className="mini-texts">
+                <span className="mini-title">Tuteur IA</span>
+                <span className="mini-desc">Outils & exercices</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
-
-      <style jsx>{`
-        .hero-eclipse-section {
-          position: relative;
-          padding: 10px 0 20px 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 100%;
-        }
-
-        .hero-center-container {
-          position: relative;
-          z-index: 2;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-          max-width: 980px;
-          padding: 0 16px;
-          width: 100%;
-        }
-
-        .hero-brand-badge {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 6px;
-          margin-bottom: 14px;
-        }
-
-        .hero-brand-name {
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 0.35em;
-          color: #a1a1aa;
-          text-transform: uppercase;
-        }
-
-        .hero-eclipse-title {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-          font-size: clamp(38px, 5.5vw, 68px);
-          font-weight: 800;
-          color: #ffffff;
-          line-height: 1.1;
-          letter-spacing: -0.025em;
-          margin: 0 0 12px 0;
-          text-align: center;
-        }
-
-        .hero-title-accent {
-          background: linear-gradient(135deg, #ff9a3d 0%, #ea580c 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-
-        .hero-eclipse-subtitle {
-          font-size: clamp(14px, 1.8vw, 17px);
-          font-weight: 450;
-          color: #a1a1aa;
-          line-height: 1.4;
-          margin: 0 0 26px 0;
-          text-align: center;
-        }
-
-        /* Search Capsule dark & warm amber glow */
-        .hero-search-capsule {
-          position: relative;
-          width: 100%;
-          max-width: 660px;
-          display: flex;
-          align-items: center;
-          padding: 6px 8px 6px 20px;
-          border-radius: var(--radius-full);
-          background: rgba(22, 18, 16, 0.76);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          box-shadow:
-            0 14px 40px -8px rgba(0, 0, 0, 0.6),
-            0 0 0 1px rgba(234, 88, 12, 0.25);
-          transition: all 0.25s ease;
-        }
-
-        .hero-search-capsule:focus-within {
-          border-color: rgba(249, 115, 22, 0.6);
-          box-shadow:
-            0 20px 50px -8px rgba(0, 0, 0, 0.8),
-            0 0 25px rgba(234, 88, 12, 0.35),
-            0 0 0 2px rgba(249, 115, 22, 0.3);
-          transform: translateY(-1px);
-        }
-
-        .search-icon-wrap {
-          color: #71717a;
-          margin-right: 12px;
-          display: flex;
-          align-items: center;
-          flex-shrink: 0;
-        }
-
-        .hero-search-input {
-          flex: 1;
-          border: none;
-          background: transparent;
-          font-size: 15px;
-          font-weight: 500;
-          color: #ffffff;
-          outline: none;
-          min-width: 0;
-        }
-
-        .hero-search-input::placeholder {
-          color: #71717a;
-        }
-
-        .hero-action-orange-btn {
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-          border: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          color: #ffffff;
-          box-shadow: 0 4px 16px rgba(234, 88, 12, 0.5);
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-          flex-shrink: 0;
-        }
-
-        .hero-action-orange-btn:hover {
-          transform: scale(1.06);
-          box-shadow: 0 6px 20px rgba(234, 88, 12, 0.7);
-        }
-
-        .hero-action-orange-btn:active {
-          transform: scale(0.96);
-        }
-
-        @media (max-width: 640px) {
-          .hero-eclipse-section {
-            padding: 6px 0 12px 0;
-          }
-
-          .hero-center-container {
-            padding: 0 12px;
-          }
-
-          .hero-brand-badge {
-            margin-bottom: 6px;
-            gap: 3px;
-          }
-
-          .hero-brand-name {
-            font-size: 10px;
-            letter-spacing: 0.3em;
-          }
-
-          .hero-eclipse-title {
-            font-size: clamp(26px, 7.5vw, 34px);
-            margin-bottom: 6px;
-          }
-
-          .hero-eclipse-subtitle {
-            font-size: 12.5px;
-            margin-bottom: 14px;
-          }
-
-          .hero-search-capsule {
-            padding: 4px 6px 4px 14px;
-          }
-
-          .hero-search-input {
-            font-size: 13.5px;
-          }
-
-          .hero-action-orange-btn {
-            width: 36px;
-            height: 36px;
-          }
-        }
-      `}</style>
     </section>
   );
 };

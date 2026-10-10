@@ -47,10 +47,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   const isConcours = pathname === '/concours' || pathname.startsWith('/concours/');
   const isExercices = pathname === '/exercices' || pathname.startsWith('/exercices/');
   const isIA = pathname === '/ia' || pathname.startsWith('/ia/');
-  const isHome = pathname === '/' || pathname === '';
-
   return (
-    <header className={`navbar-wrapper ${hideOnMobile ? 'desktop-only-navbar' : ''} ${isHome ? 'navbar-dark-theme' : ''}`}>
+    <header className={`navbar-wrapper ${hideOnMobile ? 'desktop-only-navbar' : ''}`}>
       {/* =========================================================
           1. HEADER DESKTOP / TABLETTE (Inchangé - Disposition fluide)
           ========================================================= */}

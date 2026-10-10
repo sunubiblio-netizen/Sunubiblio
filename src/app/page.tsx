@@ -3,11 +3,16 @@
 import React, { useState } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { HeroSection } from '@/components/home/HeroSection';
+import { CategoryGrid } from '@/components/home/CategoryGrid';
+import { FeaturesBar } from '@/components/home/FeaturesBar';
+import { Footer } from '@/components/layout/Footer';
 import { AuthModal } from '@/components/ui/AuthModal';
+import { CategoryItem } from '@/data/categories';
 
 export default function HomePage() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [activeCategory, setActiveCategory] = useState<CategoryItem | null>(null);
   const [searchFeedback, setSearchFeedback] = useState<string | null>(null);
 
   const handleOpenAuth = (mode: 'login' | 'register') => {
@@ -17,19 +22,31 @@ export default function HomePage() {
 
   const handleSearch = (query: string) => {
     setSearchFeedback(`Recherche en direct pour « ${query} »... Plus de 12 400 documents disponibles.`);
+    // Scroll smoothly to the results notification or category grid
     const target = document.getElementById('search-feedback-anchor');
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
+  const handleSelectCategory = (cat: CategoryItem) => {
+    setActiveCategory(cat);
+    setSearchFeedback(`Section sélectionnée : ${cat.title} — ${cat.subtitle}`);
+  };
+
   return (
     <div className="page-wrapper">
-      {/* Top sticky navigation bar - fully transparent without borders */}
+      {/* Top sticky navigation bar */}
       <Navbar onOpenAuth={handleOpenAuth} />
 
-      {/* Main Page Content - perfectly centered (title, description, search capsule) */}
+      {/* Main Page Content */}
       <main>
+        {/* Hero Section matching the visual reference */}
+        <HeroSection
+          onSearch={handleSearch}
+          onTagClick={handleSearch}
+        />
+
         {/* Dynamic Search / Feedback Banner if user interacts */}
         {searchFeedback && (
           <div id="search-feedback-anchor" className="container feedback-container">
@@ -49,12 +66,15 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Hero Section centered in the dead center of the screen */}
-        <HeroSection
-          onSearch={handleSearch}
-          onTagClick={handleSearch}
-        />
+        {/* 8 Categories Grid matching reference */}
+        <CategoryGrid onSelectCategory={handleSelectCategory} />
+
+        {/* 4 Pillars Reassurance Bar matching reference */}
+        <FeaturesBar />
       </main>
+
+      {/* Complete institutional footer */}
+      <Footer />
 
       {/* Authentication Modal */}
       <AuthModal
@@ -66,53 +86,28 @@ export default function HomePage() {
       <style jsx>{`
         .page-wrapper {
           min-height: 100vh;
-          min-height: 100dvh;
           display: flex;
           flex-direction: column;
           position: relative;
-          overflow-x: hidden;
-          background: transparent;
         }
 
         main {
           flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          padding-top: 10px;
-          padding-bottom: 90px;
-          min-height: 0;
-          width: 100%;
-          position: relative;
-          z-index: 1;
-        }
-
-        @media (max-height: 580px) {
-          .page-wrapper {
-            height: auto;
-            min-height: 100vh;
-            overflow-y: auto;
-          }
         }
 
         .feedback-container {
-          margin-bottom: 20px;
-          max-width: 640px;
-          width: 100%;
+          margin-bottom: 24px;
         }
 
         .feedback-card {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          background: rgba(255, 255, 255, 0.85);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(234, 179, 8, 0.3);
+          background: #ffffff;
+          border: 1px solid rgba(99, 102, 241, 0.3);
           border-radius: 16px;
           padding: 12px 20px;
-          box-shadow: 0 4px 16px rgba(234, 179, 8, 0.08);
+          box-shadow: 0 4px 16px rgba(79, 70, 229, 0.08);
           animation: slide-down 0.25s ease-out;
         }
 
@@ -126,14 +121,14 @@ export default function HomePage() {
           width: 8px;
           height: 8px;
           border-radius: 50%;
-          background: #eab308;
-          box-shadow: 0 0 10px #facc15;
+          background: #4f46e5;
+          box-shadow: 0 0 10px #4f46e5;
         }
 
         .feedback-text {
           font-size: 14px;
           font-weight: 600;
-          color: #713f12;
+          color: #1e1b4b;
         }
 
         .feedback-dismiss {
@@ -146,8 +141,8 @@ export default function HomePage() {
         }
 
         .feedback-dismiss:hover {
-          color: #854d0e;
-          background: #fefce8;
+          color: #4f46e5;
+          background: #f1f5f9;
         }
 
         @keyframes slide-down {
