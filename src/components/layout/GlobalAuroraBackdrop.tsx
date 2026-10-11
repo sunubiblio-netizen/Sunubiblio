@@ -111,6 +111,50 @@ export const GlobalAuroraBackdrop: React.FC = () => {
           );
         }
 
+        @media (max-width: 768px) {
+          .orb-sun-top-left {
+            width: 320px;
+            height: 240px;
+            top: -6%;
+            left: -15%;
+            opacity: 0.38;
+            filter: blur(55px);
+          }
+
+          .orb-sun-top-right {
+            width: 300px;
+            height: 230px;
+            top: -5%;
+            right: -15%;
+            opacity: 0.35;
+            filter: blur(55px);
+          }
+
+          .orb-sun-bottom {
+            height: 260px;
+            bottom: -2%;
+            opacity: 0.35;
+            filter: blur(50px);
+          }
+
+          .orb-sun-accent {
+            width: 260px;
+            height: 200px;
+            opacity: 0.25;
+            filter: blur(45px);
+          }
+
+          .aurora-center-spotlight {
+            background: radial-gradient(
+              ellipse 85% 75% at 50% 36%,
+              rgba(255, 255, 255, 1) 0%,
+              rgba(255, 255, 255, 0.96) 50%,
+              rgba(255, 255, 255, 0.75) 80%,
+              transparent 100%
+            );
+          }
+        }
+
         @keyframes global-orb-drift {
           0% {
             transform: translate(0, 0) scale(1);
