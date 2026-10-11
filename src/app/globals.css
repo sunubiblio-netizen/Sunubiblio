@@ -14083,7 +14083,8 @@ input {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6366f1, #ec4899);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
   flex-shrink: 0;
 }
 
@@ -14193,10 +14194,10 @@ input {
 
 @media (hover: hover) and (pointer: fine) {
   .app-launcher-tile:hover {
-    background: #f8faff;
-    border-color: rgba(99, 102, 241, 0.18);
+    background: #fafafa;
+    border-color: rgba(245, 158, 11, 0.2);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px -2px rgba(99, 102, 241, 0.08);
+    box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.06);
   }
 }
 
@@ -14226,12 +14227,12 @@ input {
 
 .app-launcher-tile.is-clicked-floating .tile-icon-container {
   transform: translateY(-6px) scale(1.18) !important;
-  filter: drop-shadow(0 10px 16px rgba(79, 70, 229, 0.32)) !important;
+  filter: drop-shadow(0 10px 16px rgba(245, 158, 11, 0.35)) !important;
 }
 
 .app-launcher-tile.is-clicked-floating .tile-label {
   transform: translateY(-3px) !important;
-  color: #4338ca !important;
+  color: #0f172a !important;
   font-weight: 700 !important;
 }
 
@@ -14246,12 +14247,12 @@ input {
 
 .app-launcher-service-card.is-clicked-floating .service-icon-wrap {
   transform: translateY(-4px) scale(1.15) !important;
-  filter: drop-shadow(0 10px 16px rgba(79, 70, 229, 0.32)) !important;
+  filter: drop-shadow(0 10px 16px rgba(245, 158, 11, 0.35)) !important;
 }
 
 .app-launcher-service-card.is-clicked-floating .service-label {
   transform: translateY(-2px) !important;
-  color: #4338ca !important;
+  color: #0f172a !important;
   font-weight: 700 !important;
 }
 
@@ -14260,9 +14261,9 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  margin-bottom: 4px;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 5px;
   transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -14277,7 +14278,7 @@ input {
 }
 
 .app-launcher-tile:hover .tile-vector-icon {
-  filter: drop-shadow(0 2px 6px rgba(99, 102, 241, 0.25));
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
 }
 
 .tile-micro-badge {
@@ -14293,12 +14294,13 @@ input {
 }
 
 .badge-ai {
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
-  color: #ffffff;
+  background: #0f172a;
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 .badge-new {
-  background: linear-gradient(135deg, #ec4899, #f43f5e);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
   color: #ffffff;
 }
 
@@ -14326,7 +14328,8 @@ input {
 }
 
 .app-launcher-tile:hover .tile-label {
-  color: #4f46e5;
+  color: #0f172a;
+  font-weight: 700;
 }
 
 /* Entrée spécifique Mon Compte & Services (Formules & Tarifs) */
@@ -14343,29 +14346,29 @@ input {
   padding: 10px 14px;
   border-radius: 14px;
   text-decoration: none;
-  background: linear-gradient(135deg, rgba(248, 250, 255, 0.95) 0%, rgba(253, 244, 255, 0.6) 100%);
-  border: 1px solid rgba(99, 102, 241, 0.16);
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
   transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   outline: none;
 }
 
 .app-launcher-service-card:hover {
-  background: linear-gradient(135deg, rgba(238, 242, 255, 0.95) 0%, rgba(253, 242, 248, 0.85) 100%);
-  border-color: rgba(99, 102, 241, 0.35);
+  background: #fafafa;
+  border-color: rgba(245, 158, 11, 0.35);
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px -3px rgba(99, 102, 241, 0.14);
+  box-shadow: 0 4px 14px -3px rgba(15, 23, 42, 0.08);
 }
 
 .app-launcher-service-card:focus-visible {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
 }
 
 .app-launcher-service-card.is-active-service {
-  background: rgba(99, 102, 241, 0.08);
-  border-color: #6366f1;
-  box-shadow: 0 0 0 1px #6366f1;
+  background: rgba(245, 158, 11, 0.06);
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 1px #f59e0b;
 }
 
 .service-icon-wrap {
@@ -14385,7 +14388,7 @@ input {
 .service-vector-icon {
   display: block;
   flex-shrink: 0;
-  filter: drop-shadow(0 2px 4px rgba(79, 70, 229, 0.2));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
 }
 
 .service-meta {
@@ -14409,7 +14412,7 @@ input {
 }
 
 .app-launcher-service-card:hover .service-label {
-  color: #4f46e5;
+  color: #d97706;
 }
 
 .service-micro-badge {
@@ -14441,7 +14444,7 @@ input {
 }
 
 .app-launcher-service-card:hover .service-chevron {
-  color: #4f46e5;
+  color: #d97706;
   transform: translateX(2px);
 }
 
@@ -16305,12 +16308,12 @@ input {
 
   .app-launcher-tile.is-clicked-floating .tile-icon-container {
     transform: translateY(-6px) scale(1.18) !important;
-    filter: drop-shadow(0 10px 16px rgba(79, 70, 229, 0.32)) !important;
+    filter: drop-shadow(0 10px 16px rgba(245, 158, 11, 0.35)) !important;
   }
 
   .app-launcher-tile.is-clicked-floating .tile-label {
     transform: translateY(-3px) !important;
-    color: #4338ca !important;
+    color: #0f172a !important;
     font-weight: 700 !important;
   }
 
