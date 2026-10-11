@@ -234,39 +234,45 @@ export const IconCours: React.FC<IconProps> = ({ size = 38, className = '' }) =>
   </svg>
 );
 
-/** 8. Visio / Cours en direct : Caméra emblématique d'Instagram (Style Officiel Instagram Sunset Gradient) */
+/** 8. Visio / Cours en direct : Caméra d'appel vidéo Instagram (Style Application Instagram / Icons8 Color) */
 export const IconVisio: React.FC<IconProps> = ({ size = 38, className = '' }) => (
   <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
     <defs>
-      {/* Dégradé signature coucher de soleil Instagram (Jaune Or / Corail / Rose / Pourpre / Violet) */}
-      <linearGradient id="insta-cam-gradient" x1="6" y1="42" x2="42" y2="6" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#FED373" />
-        <stop offset="25%" stopColor="#F15245" />
-        <stop offset="50%" stopColor="#D92E7F" />
-        <stop offset="75%" stopColor="#9B36B7" />
-        <stop offset="100%" stopColor="#515BD4" />
+      {/* Dégradé vibrant caméra Instagram (Corail / Fuchsia / Pourpre) */}
+      <linearGradient id="insta-video-body" x1="4" y1="12" x2="30" y2="36" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FF5252" />
+        <stop offset="40%" stopColor="#E91E63" />
+        <stop offset="100%" stopColor="#C2185B" />
       </linearGradient>
-      {/* Halo solaire d'angle inférieur gauche */}
-      <radialGradient id="insta-cam-radial" cx="10" cy="38" r="32" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#FFDC80" />
-        <stop offset="20%" stopColor="#FCAF45" />
-        <stop offset="50%" stopColor="#F77737" stopOpacity="0.8" />
-        <stop offset="100%" stopColor="#F56040" stopOpacity="0" />
+      {/* Dégradé cône d'objectif vidéo */}
+      <linearGradient id="insta-video-lens" x1="30" y1="11" x2="44" y2="37" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FF4081" />
+        <stop offset="100%" stopColor="#AD1457" />
+      </linearGradient>
+      {/* Lentille circulaire intérieure avec reflet de verre */}
+      <radialGradient id="insta-video-glass" cx="16" cy="22" r="6" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FFFFFF" />
+        <stop offset="45%" stopColor="#F8BBD0" />
+        <stop offset="100%" stopColor="#880E4F" />
       </radialGradient>
     </defs>
 
-    {/* Corps de la caméra Instagram aux angles arrondis (squircle) */}
-    <rect x="6" y="6" width="36" height="36" rx="11" fill="url(#insta-cam-gradient)" />
-    <rect x="6" y="6" width="36" height="36" rx="11" fill="url(#insta-cam-radial)" />
+    {/* Boîtier principal de la caméra vidéo aux angles arrondis (format Instagram) */}
+    <rect x="4" y="12" width="26" height="24" rx="6" fill="url(#insta-video-body)" />
+    {/* Reflet de brillance supérieur doux */}
+    <path d="M10 14H24C26.2 14 28 15.8 28 18V18.5C28 18.5 24 16 17 16C10 16 6 18.5 6 18.5V18C6 15.8 7.8 14 10 14Z" fill="#FFFFFF" fillOpacity="0.35" />
 
-    {/* Cadre de l'objectif de la caméra en blanc pur */}
-    <rect x="13" y="13" width="22" height="22" rx="6.5" stroke="#FFFFFF" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
+    {/* Cône de projection / objectif de caméra vidéo orienté à droite */}
+    <path d="M30 18.5L41.5 11.5C42.8 10.7 44 11.6 44 13V35C44 36.4 42.8 37.3 41.5 36.5L30 29.5V18.5Z" fill="url(#insta-video-lens)" />
+    {/* Biseau lumineux du cône */}
+    <path d="M30 18.5L41.5 11.5C42.2 11.1 43 11.5 43 12.2V14.5L30 21V18.5Z" fill="#FFFFFF" fillOpacity="0.25" />
 
-    {/* Cercle central de la lentille de l'appareil photo */}
-    <circle cx="24" cy="24" r="5.6" stroke="#FFFFFF" strokeWidth="2.8" />
+    {/* Lentille centrale circulaire de caméra */}
+    <circle cx="17" cy="24" r="6" fill="url(#insta-video-glass)" />
+    <circle cx="17" cy="24" r="3.5" fill="#FFFFFF" fillOpacity="0.9" />
 
-    {/* Point flash / voyant optique supérieur droit */}
-    <circle cx="30.2" cy="17.8" r="1.4" fill="#FFFFFF" />
+    {/* Témoin lumineux actif vert de connexion en direct */}
+    <circle cx="9" cy="17" r="1.5" fill="#00E676" />
   </svg>
 );
 
