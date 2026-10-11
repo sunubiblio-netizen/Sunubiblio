@@ -129,32 +129,27 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* =========================================================
-          2. HEADER MOBILE EXCLUSIF : STRUCTURÉ EN 2 SECTIONS
+          2. HEADER MOBILE EXCLUSIF : UNE SEULE LIGNE COMPACTE & ÉLÉGANTE
           ========================================================= */}
       <div className="navbar-mobile-header mobile-only">
-        {/* SECTION 1 — IDENTITÉ : Ligne dédiée aérée pour le Logo & Marque */}
-        <div className="mobile-header-identity">
-          <Link
-            href="/"
-            className="mobile-brand-link"
-            title="Sunubiblio — Accueil"
-            aria-label="Sunubiblio — Retour à l'accueil"
-          >
-            <div className="brand-logo-wrap">
-              <SunubiblioLogo size={28} />
-            </div>
-            <span className="brand-name">Sunubiblio</span>
-          </Link>
-        </div>
-
-        {/* SECTION 2 — NAVIGATION & ACTIONS : [Hot Dog] (Mon Espace) ... [🔔] [SunuIA] [⋮⋮⋮] */}
-        <div className="mobile-header-actions-row">
-          {/* 1. Menu Hot Dog stylisé à gauche pour ouvrir le menu slide */}
-          <div className="mobile-profile-left">
+        <div className="mobile-header-single-row">
+          {/* GAUCHE : [Menu Hot Dog] + [Logo] + [Sunubiblio] */}
+          <div className="mobile-header-left-group">
             <UserMenu onOpenAuth={onOpenAuth} triggerVariant="hotdog" />
+            <Link
+              href="/"
+              className="mobile-brand-link"
+              title="Sunubiblio — Accueil"
+              aria-label="Sunubiblio — Retour à l'accueil"
+            >
+              <div className="brand-logo-wrap">
+                <SunubiblioLogo size={26} />
+              </div>
+              <span className="brand-name">Sunubiblio</span>
+            </Link>
           </div>
 
-          {/* 2. Groupe compact des actions de droite : [🔔] [SunuIA] [⋮⋮⋮] */}
+          {/* DROITE : [🔔] [SunuIA] [⋮⋮⋮] */}
           <div className="mobile-actions-right-group">
             {/* Notifications */}
             <NotificationsPopover />
