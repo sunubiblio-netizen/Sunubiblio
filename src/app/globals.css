@@ -14657,20 +14657,10 @@ input {
 .user-menu-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.28);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   z-index: 9999;
-  animation: userMenuBackdropFadeIn 0.25s ease-out forwards;
-}
-
-@keyframes userMenuBackdropFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 .user-menu-dropdown {
@@ -16092,11 +16082,10 @@ input {
     width: 100vw !important;
     height: 100vh !important;
     height: 100dvh !important;
-    background: rgba(15, 23, 42, 0.45) !important;
-    backdrop-filter: blur(5px) !important;
-    -webkit-backdrop-filter: blur(5px) !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     z-index: 10000 !important;
-    animation: userMenuBackdropFadeIn 0.25s ease-out forwards !important;
     touch-action: none !important;
   }
 
@@ -16291,11 +16280,10 @@ input {
   .user-menu-backdrop {
     position: fixed !important;
     inset: 0 !important;
-    background: rgba(15, 23, 42, 0.42) !important;
-    backdrop-filter: blur(4px) !important;
-    -webkit-backdrop-filter: blur(4px) !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     z-index: 10000 !important;
-    animation: userMenuBackdropFadeIn 0.26s ease-out forwards !important;
   }
 
   .user-menu-dropdown {

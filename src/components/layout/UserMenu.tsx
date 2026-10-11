@@ -58,9 +58,14 @@ export const UserMenu: React.FC<UserMenuProps> = ({
     };
   }, [isOpen]);
 
-  // Verrouillage STRICT et ABSOLU de l'arrière-plan (aucun défilement ni sautillement sur mobile iOS/Android/Desktop)
+  // Verrouillage de l'arrière-plan uniquement sur mobile (side-drawer plein écran)
   useEffect(() => {
     if (!isOpen) return;
+
+    // Sur Desktop (popover classique), pas de verrouillage agressif pour une navigation fluide
+    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+      return;
+    }
 
     const scrollY = window.scrollY;
     const body = document.body;
