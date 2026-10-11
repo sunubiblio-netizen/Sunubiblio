@@ -57,25 +57,88 @@ export const IconEducation: React.FC<IconProps> = ({ size = 38, className = '' }
   </svg>
 );
 
-/** 3. Concours : Trophée coupe d'or avec étoile & socle en bois (Style Icons8 Color) */
+/** 3. Concours : Trophée coupe d'or réaliste avec reflets métalliques, anses 3D & socle marbre (Style Icons8 Color Réaliste) */
 export const IconConcours: React.FC<IconProps> = ({ size = 38, className = '' }) => (
   <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
-    {/* Poignée gauche */}
-    <path d="M14 14H10C7.8 14 6 15.8 6 18C6 22 9.5 24.5 14 25V21C11.5 21 9.5 19.5 9.5 18C9.5 16.9 10.4 16 11.5 16H14V14Z" fill="#FFA000" />
-    {/* Poignée droite */}
-    <path d="M34 14H38C40.2 14 42 15.8 42 18C42 22 38.5 24.5 34 25V21C36.5 21 38.5 19.5 38.5 18C38.5 16.9 37.6 16 36.5 16H34V14Z" fill="#FFA000" />
-    {/* Corps principal de la coupe (Or éclatant) */}
-    <path d="M12 8H36V20C36 26.6 30.6 32 24 32C17.4 32 12 26.6 12 20V8Z" fill="#FFC107" />
-    {/* Reflet lumineux sur la coupe */}
-    <path d="M15 10H20V24C17.5 22.8 15.5 20.2 15 17V10Z" fill="#FFE082" />
-    {/* Étoile de victoire */}
-    <polygon points="24,14 25.8,18 30,18.4 26.8,21.2 27.8,25.4 24,23.2 20.2,25.4 21.2,21.2 18,18.4 22.2,18" fill="#FFF9C4" />
-    {/* Pied & tige de la coupe */}
-    <path d="M21 32H27V37H21V32Z" fill="#FFA000" />
-    {/* Socle en bois acajou verni */}
-    <rect x="14" y="37" width="20" height="6" rx="2" fill="#5D4037" />
-    {/* Plaque d'or sur le socle */}
-    <rect x="18" y="39" width="12" height="2" rx="1" fill="#FFD54F" />
+    <defs>
+      {/* Dégradé or principal du calice */}
+      <linearGradient id="trophy-gold-body" x1="12" y1="8" x2="36" y2="28" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FFF176" />
+        <stop offset="25%" stopColor="#FFD54F" />
+        <stop offset="60%" stopColor="#FFA000" />
+        <stop offset="100%" stopColor="#FF8F00" />
+      </linearGradient>
+      {/* Intérieur creux de la coupe (profondeur) */}
+      <linearGradient id="trophy-gold-inner" x1="24" y1="6" x2="24" y2="12" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#E65100" />
+        <stop offset="100%" stopColor="#FFA000" />
+      </linearGradient>
+      {/* Dégradé des anses galbées */}
+      <linearGradient id="trophy-handles" x1="6" y1="12" x2="42" y2="24" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FFF59D" />
+        <stop offset="50%" stopColor="#FFB300" />
+        <stop offset="100%" stopColor="#E65100" />
+      </linearGradient>
+      {/* Dégradé socle marbre/ébène noble */}
+      <linearGradient id="trophy-base" x1="24" y1="36" x2="24" y2="44" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#4E342E" />
+        <stop offset="40%" stopColor="#3E2723" />
+        <stop offset="100%" stopColor="#211512" />
+      </linearGradient>
+      {/* Plaque d'or sur socle */}
+      <linearGradient id="trophy-plaque" x1="18" y1="39" x2="30" y2="41" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FFF9C4" />
+        <stop offset="50%" stopColor="#FFD54F" />
+        <stop offset="100%" stopColor="#FFA000" />
+      </linearGradient>
+    </defs>
+
+    {/* Anse gauche galbée 3D avec biseau intérieur */}
+    <path d="M14 12C9 12 5 15.5 5 20C5 24 8.5 26.5 13 26.5V23.5C9.8 23.5 7.8 21.8 7.8 20C7.8 17.5 10.5 14.8 14 14.8V12Z" fill="url(#trophy-handles)" />
+    <path d="M14 12C11 12 8 15 8 19C8 22 10 23.5 13 23.5" stroke="#FFE082" strokeWidth="1.2" strokeLinecap="round" />
+
+    {/* Anse droite galbée 3D avec biseau intérieur */}
+    <path d="M34 12C39 12 43 15.5 43 20C43 24 39.5 26.5 35 26.5V23.5C38.2 23.5 40.2 21.8 40.2 20C40.2 17.5 37.5 14.8 34 14.8V12Z" fill="url(#trophy-handles)" />
+    <path d="M34 12C37 12 40 15 40 19C40 22 38 23.5 35 23.5" stroke="#FFE082" strokeWidth="1.2" strokeLinecap="round" />
+
+    {/* Calice / Corps principal de la coupe */}
+    <path d="M12 9C12 9 12.5 21 21 25.5V30H27V25.5C35.5 21 36 9 36 9H12Z" fill="url(#trophy-gold-body)" />
+
+    {/* Intérieur ovale du calice (effet d'ouverture creuse) */}
+    <ellipse cx="24" cy="9" rx="12" ry="3.5" fill="url(#trophy-gold-inner)" />
+    {/* Rebord supérieur lumineux de la coupe */}
+    <ellipse cx="24" cy="9" rx="12" ry="3.5" stroke="#FFF9C4" strokeWidth="1.5" fill="none" />
+
+    {/* Reflet vertical lustré sur le flanc gauche du calice */}
+    <path d="M15 11C15 11 15.5 18 20 22.5C18.5 20.5 17.5 16 17.5 11H15Z" fill="#FFFFFF" fillOpacity="0.45" />
+
+    {/* Branche de laurier de victoire gravée (or pâle) */}
+    <path d="M19 19C17 17.5 17 14.5 19 13.5" stroke="#FFF9C4" strokeWidth="1.2" strokeLinecap="round" />
+    <path d="M29 19C31 17.5 31 14.5 29 13.5" stroke="#FFF9C4" strokeWidth="1.2" strokeLinecap="round" />
+
+    {/* Étoile 3D biseautée au centre de la coupe */}
+    <polygon points="24,12 25.6,15.8 29.5,16.2 26.5,19 27.5,23 24,20.8 20.5,23 21.5,19 18.5,16.2 22.4,15.8" fill="#FFF9C4" />
+    <polygon points="24,12 25.6,15.8 29.5,16.2 26.5,19 24,20.8" fill="#FFF59D" />
+    <polygon points="24,20.8 20.5,23 21.5,19 18.5,16.2 22.4,15.8" fill="#FFA000" />
+
+    {/* Tige tournée & bague dorée */}
+    <ellipse cx="24" cy="30" rx="4.5" ry="1.5" fill="#FFE082" />
+    <path d="M20 30C20 30 19 33 17 34H31C29 33 28 30 28 30H20Z" fill="url(#trophy-gold-body)" />
+    <ellipse cx="24" cy="34" rx="7.5" ry="2" fill="#FFA000" />
+    <ellipse cx="24" cy="34" rx="7.5" ry="2" stroke="#FFF9C4" strokeWidth="1" fill="none" />
+
+    {/* Socle étagé en marbre / bois précieux poli */}
+    <path d="M15 35H33L35 38H13L15 35Z" fill="#5D4037" />
+    <rect x="12" y="38" width="24" height="6" rx="1.5" fill="url(#trophy-base)" />
+    <rect x="12" y="38" width="24" height="1" fill="#8D6E63" />
+
+    {/* Plaque d'or gravée de prestige sur le socle */}
+    <rect x="16" y="39.5" width="16" height="3" rx="0.8" fill="url(#trophy-plaque)" />
+    {/* Vis de fixation dorées */}
+    <circle cx="17.2" cy="41" r="0.5" fill="#5D4037" />
+    <circle cx="30.8" cy="41" r="0.5" fill="#5D4037" />
+    {/* Ligne d'inscription sur la plaque */}
+    <line x1="19.5" y1="41" x2="28.5" y2="41" stroke="#E65100" strokeWidth="0.8" strokeLinecap="round" />
   </svg>
 );
 
@@ -171,24 +234,98 @@ export const IconCours: React.FC<IconProps> = ({ size = 38, className = '' }) =>
   </svg>
 );
 
-/** 8. Visio / Cours en direct : Caméra vidéo rouge avec ondes live (Style Icons8 Color) */
+/** 8. Visio / Cours en direct : Caméra de visioconférence HD réaliste avec objectif en verre optique & écran live (Style Icons8 Color Réaliste) */
 export const IconVisio: React.FC<IconProps> = ({ size = 38, className = '' }) => (
   <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
-    {/* Boîtier caméra rouge vif */}
-    <rect x="6" y="14" width="24" height="20" rx="4" fill="#E53935" />
-    <rect x="8" y="16" width="20" height="16" rx="2.5" fill="#EF5350" />
-    {/* Objectif triangulaire caméra */}
-    <polygon points="30,20 40,14 40,34 30,28" fill="#C62828" />
-    <polygon points="31,21 38,16 38,32 31,27" fill="#E53935" />
-    {/* Lentille centrale avec reflet */}
-    <circle cx="18" cy="24" r="5" fill="#263238" />
-    <circle cx="18" cy="24" r="3.5" fill="#4FC3F7" />
-    <circle cx="19" cy="23" r="1.2" fill="#FFFFFF" />
-    {/* Point indicateur REC */}
-    <circle cx="10" cy="18" r="1.5" fill="#FFEB3B" />
-    {/* Ondes de diffusion en direct (Live arcs) */}
-    <path d="M12 9C15.5 6 20.5 6 24 9" stroke="#FF9800" strokeWidth="2.5" strokeLinecap="round" />
-    <path d="M9 6C14 2 22 2 27 6" stroke="#FFA000" strokeWidth="2.5" strokeLinecap="round" />
+    <defs>
+      {/* Dégradé boîtier caméra gris sidéral métallique */}
+      <linearGradient id="visio-cam-body" x1="16" y1="14" x2="31" y2="34" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#455A64" />
+        <stop offset="45%" stopColor="#37474F" />
+        <stop offset="100%" stopColor="#212121" />
+      </linearGradient>
+      {/* Dégradé cylindre de l'objectif */}
+      <linearGradient id="visio-barrel" x1="31" y1="17" x2="42" y2="32" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#607D8B" />
+        <stop offset="45%" stopColor="#37474F" />
+        <stop offset="100%" stopColor="#1A1A1A" />
+      </linearGradient>
+      {/* Lentille en verre optique traité multicouche (Reflet saphir/cyan) */}
+      <radialGradient id="visio-lens-glass" cx="37.5" cy="23" r="7" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#E0F7FA" />
+        <stop offset="25%" stopColor="#4DD0E1" />
+        <stop offset="55%" stopColor="#0288D1" />
+        <stop offset="85%" stopColor="#0D47A1" />
+        <stop offset="100%" stopColor="#051026" />
+      </radialGradient>
+      {/* Écran LCD live ouvert */}
+      <linearGradient id="visio-screen-bg" x1="4" y1="16" x2="16" y2="32" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#263238" />
+        <stop offset="100%" stopColor="#102027" />
+      </linearGradient>
+      {/* Liseré rouge cinéma sur l'objectif */}
+      <linearGradient id="visio-accent-ring" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#FF1744" />
+        <stop offset="100%" stopColor="#D50000" />
+      </linearGradient>
+    </defs>
+
+    {/* Trépied / pied métallique brossé */}
+    <ellipse cx="20" cy="42" rx="9" ry="2.5" fill="#78909C" />
+    <ellipse cx="20" cy="41.5" rx="7.5" ry="1.8" fill="#B0BEC5" />
+    <path d="M18.5 35H21.5V41.5H18.5V35Z" fill="#546E7A" />
+    {/* Rotule articulée de caméra */}
+    <circle cx="20" cy="35" r="3" fill="#37474F" />
+    <circle cx="20" cy="35" r="1.5" fill="#CFD8DC" />
+
+    {/* Écran LCD rabattu ouvert sur le côté gauche */}
+    <rect x="3" y="16" width="13" height="17" rx="2" fill="#212121" stroke="#37474F" strokeWidth="1" />
+    {/* Image en direct dans l'écran LCD */}
+    <rect x="4.5" y="17.5" width="10" height="14" rx="1" fill="url(#visio-screen-bg)" />
+    {/* Silhouette du participant en direct sur l'écran */}
+    <circle cx="9.5" cy="22" r="2.5" fill="#FFB74D" />
+    <path d="M5.5 28.5C5.5 26 7.5 25 9.5 25C11.5 25 13.5 26 13.5 28.5" fill="#4CAF50" />
+    {/* Point vert de connexion active sur l'écran */}
+    <circle cx="12.5" cy="19.5" r="0.9" fill="#00E676" />
+    {/* Charnière d'écran en acier */}
+    <rect x="14" y="22" width="3" height="5" rx="1" fill="#78909C" />
+
+    {/* Boîtier principal de la caméra */}
+    <rect x="16" y="15" width="15" height="19" rx="3.5" fill="url(#visio-cam-body)" />
+    {/* Poignée supérieure avec microphone stéréo */}
+    <path d="M18 15V11C18 9.9 18.9 9 20 9H27C28.1 9 29 9.9 29 11V15" stroke="#455A64" strokeWidth="2.5" strokeLinecap="round" />
+    <rect x="21" y="7" width="8" height="4" rx="1.5" fill="#37474F" />
+    {/* Grille du micro studio à points */}
+    <line x1="23" y1="8.5" x2="27" y2="8.5" stroke="#78909C" strokeWidth="0.8" strokeLinecap="round" />
+    <line x1="23" y1="9.8" x2="27" y2="9.8" stroke="#78909C" strokeWidth="0.8" strokeLinecap="round" />
+
+    {/* Anneau rouge "Cinema Edition" sur le barillet d'objectif */}
+    <rect x="30" y="18" width="2" height="13" rx="0.5" fill="url(#visio-accent-ring)" />
+
+    {/* Fût d'objectif cylindrique 3D */}
+    <path d="M31 17H38L42 20.5V28.5L38 32H31V17Z" fill="url(#visio-barrel)" />
+    {/* Bague de mise au point texturée avec cannelures */}
+    <rect x="33" y="17.5" width="3.5" height="14" fill="#263238" />
+    <line x1="34" y1="18.5" x2="34" y2="30.5" stroke="#546E7A" strokeWidth="0.8" strokeLinecap="round" />
+    <line x1="35.5" y1="18.5" x2="35.5" y2="30.5" stroke="#546E7A" strokeWidth="0.8" strokeLinecap="round" />
+
+    {/* Pare-soleil / Bague frontale de l'objectif */}
+    <ellipse cx="39" cy="24.5" rx="3" ry="7" fill="#1A1A1A" />
+
+    {/* Lentille optique en verre frontal traité multicouche */}
+    <ellipse cx="38.5" cy="24.5" rx="2.5" ry="6" fill="url(#visio-lens-glass)" />
+
+    {/* Reflet courbe de verre réaliste (glint optique) */}
+    <path d="M37.5 20C37.5 20 39.5 21 39.5 23C39.5 21.5 38.5 20 37.5 20Z" fill="#FFFFFF" fillOpacity="0.85" />
+    <circle cx="38" cy="26" r="0.8" fill="#80DEEA" />
+
+    {/* Témoin lumineux d'enregistrement REC rouge vif avec halo */}
+    <circle cx="21" cy="18" r="2" fill="#FF1744" />
+    <circle cx="21" cy="18" r="1" fill="#FFEB3B" />
+
+    {/* Ondes de diffusion en direct (Live streaming broadcast) */}
+    <path d="M42 19C43.5 20.8 44.5 22.8 44.5 24.5C44.5 26.2 43.5 28.2 42 30" stroke="#FF5252" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M44.5 16.5C46.5 19 47.5 21.8 47.5 24.5C47.5 27.2 46.5 30 44.5 32.5" stroke="#FFA000" strokeWidth="1.8" strokeLinecap="round" />
   </svg>
 );
 
