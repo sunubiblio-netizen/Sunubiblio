@@ -113,44 +113,74 @@ export const GlobalAuroraBackdrop: React.FC = () => {
 
         @media (max-width: 768px) {
           .orb-sun-top-left {
-            width: 320px;
-            height: 240px;
-            top: -6%;
-            left: -15%;
-            opacity: 0.38;
-            filter: blur(55px);
+            width: 580px;
+            height: 420px;
+            top: -10%;
+            left: -20%;
+            background: radial-gradient(
+              circle at 30% 30%,
+              rgba(254, 240, 138, 0.55) 0%,
+              rgba(254, 249, 195, 0.35) 40%,
+              rgba(255, 255, 255, 0.1) 70%,
+              transparent 85%
+            );
+            opacity: 0.6;
+            filter: blur(70px);
           }
 
           .orb-sun-top-right {
-            width: 300px;
-            height: 230px;
-            top: -5%;
-            right: -15%;
-            opacity: 0.35;
-            filter: blur(55px);
+            width: 560px;
+            height: 400px;
+            top: -8%;
+            right: -20%;
+            background: radial-gradient(
+              circle at 70% 30%,
+              rgba(253, 224, 71, 0.45) 0%,
+              rgba(254, 240, 138, 0.3) 40%,
+              rgba(255, 255, 255, 0.1) 70%,
+              transparent 85%
+            );
+            opacity: 0.58;
+            filter: blur(70px);
           }
 
           .orb-sun-bottom {
-            height: 260px;
-            bottom: -2%;
-            opacity: 0.35;
-            filter: blur(50px);
+            width: 120vw;
+            height: 460px;
+            bottom: -4%;
+            left: -10vw;
+            background: radial-gradient(
+              ellipse 90% 75% at 50% 100%,
+              rgba(254, 240, 138, 0.55) 0%,
+              rgba(254, 249, 195, 0.35) 38%,
+              transparent 90%
+            );
+            opacity: 0.58;
+            filter: blur(65px);
           }
 
           .orb-sun-accent {
-            width: 260px;
-            height: 200px;
-            opacity: 0.25;
-            filter: blur(45px);
+            width: 440px;
+            height: 360px;
+            bottom: 8%;
+            right: -10%;
+            background: radial-gradient(
+              circle,
+              rgba(250, 204, 21, 0.28) 0%,
+              rgba(254, 240, 138, 0.15) 50%,
+              transparent 75%
+            );
+            opacity: 0.5;
+            filter: blur(60px);
           }
 
           .aurora-center-spotlight {
             background: radial-gradient(
-              ellipse 85% 75% at 50% 36%,
-              rgba(255, 255, 255, 1) 0%,
-              rgba(255, 255, 255, 0.96) 50%,
-              rgba(255, 255, 255, 0.75) 80%,
-              transparent 100%
+              ellipse 75% 65% at 50% 38%,
+              rgba(255, 255, 255, 0.96) 0%,
+              rgba(255, 255, 255, 0.85) 40%,
+              rgba(255, 255, 255, 0.4) 70%,
+              transparent 90%
             );
           }
         }
