@@ -67,7 +67,7 @@ export const AppLauncherItem: React.FC<AppLauncherItemProps> = ({
       aria-label={`${app.name}${app.badge ? ` (${app.badge.text})` : ''}`}
     >
       <div className="tile-icon-container">
-        <IconComponent size={34} className="tile-vector-icon" />
+        <IconComponent size={38} className="tile-vector-icon" />
         {app.badge && (
           <span className={`tile-micro-badge badge-${app.badge.variant}`}>
             {app.badge.text}

@@ -14268,7 +14268,7 @@ input {
 }
 
 .app-launcher-tile:hover .tile-icon-container {
-  transform: scale(1.08);
+  transform: translateY(-2px) scale(1.1);
 }
 
 .tile-vector-icon {
@@ -14278,7 +14278,7 @@ input {
 }
 
 .app-launcher-tile:hover .tile-vector-icon {
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.12));
 }
 
 .tile-micro-badge {
