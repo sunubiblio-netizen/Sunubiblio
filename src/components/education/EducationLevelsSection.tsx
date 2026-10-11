@@ -80,7 +80,7 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           </div>
 
           <h2 className="levels-main-title">
-            Explorez par <span className="gradient-hero-text">niveau scolaire & académique</span>
+            Explorez par <span className="levels-title-accent">niveau scolaire & académique</span>
           </h2>
 
           <p className="levels-main-desc">
@@ -192,12 +192,12 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           align-items: center;
           gap: 7px;
           padding: 6px 14px;
-          background: rgba(79, 70, 229, 0.08);
-          border: 1px solid rgba(79, 70, 229, 0.2);
+          background: rgba(245, 158, 11, 0.08);
+          border: 1px solid rgba(245, 158, 11, 0.25);
           border-radius: 9999px;
           font-size: 12.5px;
           font-weight: 700;
-          color: #4338ca;
+          color: #b45309;
           margin-bottom: 14px;
         }
 
@@ -205,8 +205,15 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           width: 7px;
           height: 7px;
           border-radius: 50%;
-          background: #4f46e5;
-          box-shadow: 0 0 8px #6366f1;
+          background: #f59e0b;
+          box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+        }
+
+        .levels-title-accent {
+          background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          display: inline-block;
         }
 
         .levels-main-title {
@@ -248,14 +255,14 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
 
         .edu-card:hover {
           transform: translateY(-4px);
-          border-color: rgba(99, 102, 241, 0.45);
-          box-shadow: 0 16px 32px -8px rgba(99, 102, 241, 0.12);
+          border-color: rgba(245, 158, 11, 0.45);
+          box-shadow: 0 16px 32px -8px rgba(217, 119, 6, 0.12);
         }
 
         .edu-card-active {
-          border-color: #6366f1;
-          box-shadow: 0 0 0 3.5px rgba(99, 102, 241, 0.16), 0 12px 28px -6px rgba(99, 102, 241, 0.12);
-          background: #fafbff;
+          border-color: #d97706;
+          box-shadow: 0 0 0 3.5px rgba(245, 158, 11, 0.18), 0 12px 28px -6px rgba(217, 119, 6, 0.12);
+          background: #fffdfa;
         }
 
         .edu-card-top {
@@ -299,7 +306,7 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
         .edu-card-subtitle {
           font-size: 12.5px;
           font-weight: 600;
-          color: #4f46e5;
+          color: #b45309;
           margin-bottom: 10px;
         }
 
@@ -329,8 +336,9 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
         }
 
         .edu-grade-more {
-          color: #6366f1;
-          background: #e0e7ff;
+          color: #b45309;
+          background: #fef3c7;
+          border: 1px solid rgba(245, 158, 11, 0.3);
           font-weight: 700;
         }
 
@@ -345,25 +353,30 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
         .edu-action-label {
           font-size: 13px;
           font-weight: 700;
-          color: #4f46e5;
-          transition: color 0.15s;
+          color: #0f172a;
+          transition: color 0.15s ease;
+        }
+
+        .edu-card:hover .edu-action-label {
+          color: #d97706;
         }
 
         .edu-action-arrow {
           width: 28px;
           height: 28px;
           border-radius: 50%;
-          background: rgba(79, 70, 229, 0.08);
-          color: #4f46e5;
+          background: rgba(245, 158, 11, 0.12);
+          color: #d97706;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: all 0.2s;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .edu-card:hover .edu-action-arrow {
-          background: #4f46e5;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
           color: #ffffff;
+          box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
           transform: translateX(3px);
         }
 

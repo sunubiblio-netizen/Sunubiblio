@@ -181,7 +181,7 @@ export default function EducationPage() {
                 <span>Catalogue & Recherche</span>
               </div>
               <h2 className="catalog-title">
-                Ressources <span className="gradient-hero-text">éducatives</span>
+                Ressources <span className="catalog-title-accent">éducatives</span>
               </h2>
               <p className="catalog-subtitle">
                 Filtrez selon votre niveau, votre matière ou vos besoins d’apprentissage pour trouver
@@ -264,6 +264,13 @@ export default function EducationPage() {
           line-height: 1.22;
           letter-spacing: -0.025em;
           margin-bottom: 12px;
+        }
+
+        .catalog-title-accent {
+          background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          display: inline-block;
         }
 
         .catalog-subtitle {

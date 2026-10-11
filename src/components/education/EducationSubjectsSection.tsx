@@ -119,7 +119,7 @@ export const EducationSubjectsSection: React.FC<EducationSubjectsSectionProps> =
           </div>
 
           <h2 className="section-title">
-            Explorer par <span className="gradient-hero-text">matière d’enseignement</span>
+            Explorer par <span className="subjects-title-accent">matière d’enseignement</span>
           </h2>
 
           <p className="section-subtitle">
@@ -236,16 +236,23 @@ export const EducationSubjectsSection: React.FC<EducationSubjectsSectionProps> =
           outline: none;
         }
 
+        .subjects-title-accent {
+          background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          display: inline-block;
+        }
+
         .subject-card:hover {
           transform: translateY(-3px);
-          border-color: #6366f1;
-          box-shadow: 0 10px 24px -6px rgba(99, 102, 241, 0.12);
+          border-color: rgba(245, 158, 11, 0.45);
+          box-shadow: 0 10px 24px -6px rgba(217, 119, 6, 0.12);
         }
 
         .subject-card-selected {
-          border-color: #4f46e5 !important;
+          border-color: #d97706 !important;
           background: #ffffff;
-          box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.16) !important;
+          box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18) !important;
         }
 
         .subject-icon-box {
@@ -297,14 +304,15 @@ export const EducationSubjectsSection: React.FC<EducationSubjectsSectionProps> =
         }
 
         .subject-card:hover .subject-action {
-          color: #4f46e5;
+          color: #d97706;
         }
 
         .selected-tag {
           font-size: 11px;
           font-weight: 700;
-          color: #4f46e5;
-          background: #eef2ff;
+          color: #b45309;
+          background: #fef3c7;
+          border: 1px solid rgba(245, 158, 11, 0.3);
           padding: 2px 8px;
           border-radius: 999px;
         }
