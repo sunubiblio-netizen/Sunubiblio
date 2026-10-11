@@ -197,14 +197,14 @@ export const UserMenu: React.FC<UserMenuProps> = ({
               <div className="user-menu-banner">
                 <div className="banner-left">
                   <strong>Sunubiblio Gold</strong>
-                  <span>Accès illimité Concours, IA & Docs</span>
+                  <span>{currentUser.isGoldMember ? 'Accès illimité actif' : 'Accès illimité Concours, IA & Docs'}</span>
                 </div>
                 <Link
                   href="/tarifs"
                   className="user-upgrade-pill-btn"
                   onClick={() => setIsOpen(false)}
                 >
-                  Découvrir
+                  {currentUser.isGoldMember ? 'Gérer' : 'Découvrir'}
                 </Link>
               </div>
             </div>
@@ -292,29 +292,8 @@ export const UserMenu: React.FC<UserMenuProps> = ({
               </div>
             </div>
 
-            {/* ZONE BASSE DU DRAWER (Fixée tout en bas avec Inscription et Déconnexion) */}
+            {/* ZONE BASSE DU DRAWER (Fixée tout en bas avec Déconnexion) */}
             <div className="user-drawer-footer">
-              {/* Bouton Inscription */}
-              <button
-                type="button"
-                className="user-drawer-register-btn"
-                onClick={() => {
-                  setIsOpen(false);
-                  if (onOpenAuth) onOpenAuth('register');
-                }}
-              >
-                <div className="register-icon-wrap">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                    <circle cx="8.5" cy="7" r="4" />
-                    <line x1="20" y1="8" x2="20" y2="14" />
-                    <line x1="23" y1="11" x2="17" y2="11" />
-                  </svg>
-                </div>
-                <span className="register-main-label">Inscription</span>
-                <span className="register-free-badge">Gratuit</span>
-              </button>
-
               {/* Bouton Déconnexion */}
               <button
                 type="button"

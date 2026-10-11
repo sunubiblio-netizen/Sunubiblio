@@ -27,9 +27,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
             <span>Votre réussite, notre priorité</span>
           </div>
 
-          {/* Titre monumental centré tout en noir */}
+          {/* Titre monumental centré tout en noir avec rupture équilibrée */}
           <h1 className="hero-title">
-            La bibliothèque numérique de l’excellence
+            La bibliothèque numérique<br />de l’excellence
           </h1>
 
           {/* Description centrée */}
