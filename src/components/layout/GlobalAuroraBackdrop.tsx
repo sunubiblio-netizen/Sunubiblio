@@ -1,15 +1,13 @@
 'use client';
 
 import React from 'react';
-import { usePathname } from 'next/navigation';
 
 /**
  * GlobalAuroraBackdrop
  *
- * Gère l'arrière-plan avec intelligence :
- * - Page d'accueil ('/') : décor héro unique d'origine (ailes bleu ciel/azur en haut, centre lumineux, halo jaune/crème en bas).
- * - Toutes les autres pages : AUCUN bleu ! Uniquement la couleur de base adorée (crème solaire doux / jaune pâle)
- *   en symbiose avec le blanc pur pour une ambiance sereine, épurée et sans mélange désordonné.
+ * Arrière-plan signature Warm Sunny Gold & Pure White :
+ * Blanc pur en symbiose avec de doux halos crème solaire et or pâle
+ * (jaune doux / crème ensoleillé), inspiré de la Bibliothèque Sunubiblio.
  */
 export const GlobalAuroraBackdrop: React.FC = () => {
   return (

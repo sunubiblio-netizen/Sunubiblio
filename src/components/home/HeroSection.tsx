@@ -103,41 +103,41 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }
           <div className="float-wrapper top-right float-anim-slow">
             <FloatCard
               icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                 </svg>
               }
               title="Des ressources pour tous les niveaux"
               subtitle="Du primaire au doctorat"
-              accentColor="#4f46e5"
+              accentColor="#d97706"
             />
           </div>
 
           <div className="float-wrapper center-left float-anim-mid">
             <FloatCard
               icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
                   <path d="M6 12v5c3 3 9 3 12 0v-5" />
                 </svg>
               }
               title="Préparez vos concours"
               subtitle="Sénégal et International"
-              accentColor="#7c3aed"
+              accentColor="#eab308"
             />
           </div>
 
           <div className="float-wrapper bottom-right float-anim-fast">
             <FloatCard
               icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ec4899" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-5.04z" />
                   <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-5.04z" />
                 </svg>
               }
               title="IA intégrée"
               subtitle="Des outils pour mieux apprendre"
-              accentColor="#ec4899"
+              accentColor="#f59e0b"
             />
           </div>
 
@@ -151,31 +151,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }
             >
               <defs>
                 <linearGradient id="petalTop" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#38BDF8" />
-                  <stop offset="40%" stopColor="#3B82F6" />
-                  <stop offset="100%" stopColor="#6366F1" />
+                  <stop offset="0%" stopColor="#fde047" />
+                  <stop offset="45%" stopColor="#eab308" />
+                  <stop offset="100%" stopColor="#d97706" />
                 </linearGradient>
 
                 <linearGradient id="petalRight" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#EC4899" />
-                  <stop offset="60%" stopColor="#D946EF" />
-                  <stop offset="100%" stopColor="#A855F7" />
+                  <stop offset="0%" stopColor="#fef08a" />
+                  <stop offset="50%" stopColor="#f59e0b" />
+                  <stop offset="100%" stopColor="#d97706" />
                 </linearGradient>
 
                 <linearGradient id="petalBottom" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#6366F1" />
-                  <stop offset="50%" stopColor="#4338CA" />
-                  <stop offset="100%" stopColor="#1E1B4B" />
+                  <stop offset="0%" stopColor="#d97706" />
+                  <stop offset="50%" stopColor="#b45309" />
+                  <stop offset="100%" stopColor="#78350f" />
                 </linearGradient>
 
                 <linearGradient id="petalLeft" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#C084FC" />
-                  <stop offset="50%" stopColor="#818CF8" />
-                  <stop offset="100%" stopColor="#3B82F6" />
+                  <stop offset="0%" stopColor="#fde68a" />
+                  <stop offset="50%" stopColor="#f59e0b" />
+                  <stop offset="100%" stopColor="#b45309" />
                 </linearGradient>
 
                 <filter id="petalShadow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feDropShadow dx="0" dy="16" stdDeviation="16" floodColor="#4f46e5" floodOpacity="0.22" />
+                  <feDropShadow dx="0" dy="16" stdDeviation="16" floodColor="#d97706" floodOpacity="0.25" />
                 </filter>
               </defs>
 
@@ -203,7 +203,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }
           {/* Mobile Showcase Cards (displayed on mobile below the visual) */}
           <div className="mobile-showcase-grid mobile-only">
             <div className="mobile-showcase-pill">
-              <div className="mini-icon-box" style={{ color: '#4f46e5' }}>
+              <div className="mini-icon-box" style={{ color: '#d97706' }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                   <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
                   <path d="M6 12v5c3 3 9 3 12 0v-5" />
@@ -215,7 +215,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }
               </div>
             </div>
             <div className="mobile-showcase-pill">
-              <div className="mini-icon-box" style={{ color: '#9333ea' }}>
+              <div className="mini-icon-box" style={{ color: '#b45309' }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                   <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
@@ -226,7 +226,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch, onTagClick }
               </div>
             </div>
             <div className="mobile-showcase-pill">
-              <div className="mini-icon-box" style={{ color: '#ec4899' }}>
+              <div className="mini-icon-box" style={{ color: '#eab308' }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                   <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-5.04z" />
                 </svg>

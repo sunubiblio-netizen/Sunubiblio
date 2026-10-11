@@ -89,7 +89,7 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({ onSelectCategory }) 
         <div className="section-header">
           <div className="header-left">
             <div className="section-icon-box">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="3" width="7" height="7" rx="2" />
                 <rect x="14" y="3" width="7" height="7" rx="2" />
                 <rect x="14" y="14" width="7" height="7" rx="2" />
