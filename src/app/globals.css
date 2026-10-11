@@ -14602,46 +14602,46 @@ input {
   transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Trait supérieur : court (14px) */
+/* Trait supérieur : court (14px) - Noir profond chic du site */
 .hotdog-bar-top {
   width: 14px;
-  background: linear-gradient(90deg, #1e1b4b 0%, #2563eb 100%);
+  background: #0f172a;
 }
 
-/* Trait central : long (24px) - "la saucisse du hot dog" */
+/* Trait central : long (24px) - Or ambré chaleureux signature Sunubiblio */
 .hotdog-bar-middle {
   width: 24px;
-  background: linear-gradient(90deg, #2563eb 0%, #4f46e5 100%);
-  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.28);
+  background: linear-gradient(90deg, #f59e0b 0%, #eab308 100%);
+  box-shadow: 0 1px 4px rgba(245, 158, 11, 0.35);
 }
 
-/* Trait inférieur : court (14px) */
+/* Trait inférieur : court (14px) - Noir profond chic du site */
 .hotdog-bar-bottom {
   width: 14px;
-  background: linear-gradient(90deg, #1e1b4b 0%, #2563eb 100%);
+  background: #0f172a;
 }
 
-/* Au survol : illumination aux couleurs ciel et bleu roi Sunubiblio */
+/* Au survol : illumination dorée ambrée subtile */
 .user-menu-hotdog-btn:hover .hotdog-bar-top,
 .user-menu-hotdog-btn:hover .hotdog-bar-bottom {
   width: 16px;
-  background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+  background: #0f172a;
 }
 
 .user-menu-hotdog-btn:hover .hotdog-bar-middle {
-  background: linear-gradient(90deg, #38bdf8 0%, #6366f1 100%);
-  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.45);
+  background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.45);
 }
 
 /* Lorsque le slide drawer est ouvert (état actif) */
 .user-menu-hotdog-btn.is-active .hotdog-bar-middle {
-  background: linear-gradient(90deg, #ec4899 0%, #4f46e5 100%);
-  box-shadow: 0 2px 10px rgba(236, 72, 153, 0.4);
+  background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
 }
 
 .user-menu-hotdog-btn.is-active .hotdog-bar-top,
 .user-menu-hotdog-btn.is-active .hotdog-bar-bottom {
-  background: #4f46e5;
+  background: #0f172a;
   width: 16px;
 }
 
