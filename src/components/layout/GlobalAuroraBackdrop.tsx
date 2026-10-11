@@ -43,12 +43,11 @@ export const GlobalAuroraBackdrop: React.FC = () => {
           left: -8%;
           background: radial-gradient(
             circle at 30% 30%,
-            rgba(254, 240, 138, 0.72) 0%,
-            rgba(254, 249, 195, 0.5) 40%,
-            rgba(255, 255, 255, 0.2) 70%,
-            transparent 85%
+            rgba(254, 240, 138, 0.28) 0%,
+            rgba(254, 249, 195, 0.12) 40%,
+            transparent 75%
           );
-          opacity: 0.8;
+          opacity: 0.35;
         }
 
         .orb-sun-top-right {
@@ -58,12 +57,11 @@ export const GlobalAuroraBackdrop: React.FC = () => {
           right: -8%;
           background: radial-gradient(
             circle at 70% 30%,
-            rgba(253, 224, 71, 0.58) 0%,
-            rgba(254, 240, 138, 0.42) 40%,
-            rgba(255, 255, 255, 0.2) 70%,
-            transparent 85%
+            rgba(253, 224, 71, 0.22) 0%,
+            rgba(254, 240, 138, 0.1) 40%,
+            transparent 75%
           );
-          opacity: 0.78;
+          opacity: 0.32;
           animation-delay: -3s;
         }
 
@@ -74,12 +72,11 @@ export const GlobalAuroraBackdrop: React.FC = () => {
           left: -5vw;
           background: radial-gradient(
             ellipse 90% 75% at 50% 100%,
-            rgba(254, 240, 138, 0.78) 0%,
-            rgba(254, 249, 195, 0.55) 38%,
-            rgba(255, 255, 255, 0.25) 70%,
-            transparent 95%
+            rgba(254, 240, 138, 0.25) 0%,
+            rgba(254, 249, 195, 0.12) 40%,
+            transparent 85%
           );
-          opacity: 0.82;
+          opacity: 0.35;
           animation-delay: -5s;
         }
 
@@ -90,11 +87,10 @@ export const GlobalAuroraBackdrop: React.FC = () => {
           right: 5%;
           background: radial-gradient(
             circle,
-            rgba(250, 204, 21, 0.4) 0%,
-            rgba(254, 240, 138, 0.25) 50%,
-            transparent 75%
+            rgba(250, 204, 21, 0.16) 0%,
+            transparent 70%
           );
-          opacity: 0.7;
+          opacity: 0.25;
           animation-delay: -2s;
         }
 
@@ -103,11 +99,11 @@ export const GlobalAuroraBackdrop: React.FC = () => {
           inset: 0;
           pointer-events: none;
           background: radial-gradient(
-            ellipse 70% 60% at 50% 38%,
-            rgba(255, 255, 255, 0.98) 0%,
-            rgba(255, 255, 255, 0.85) 35%,
-            rgba(255, 255, 255, 0.45) 65%,
-            transparent 85%
+            ellipse 80% 70% at 50% 40%,
+            rgba(255, 255, 255, 1) 0%,
+            rgba(255, 255, 255, 0.95) 45%,
+            rgba(255, 255, 255, 0.75) 75%,
+            transparent 100%
           );
         }
 
