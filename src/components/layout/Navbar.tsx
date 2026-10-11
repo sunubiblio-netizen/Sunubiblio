@@ -132,33 +132,35 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* =========================================================
-          2. HEADER MOBILE EXCLUSIF : UNE SEULE LIGNE COMPACTE & ÉLÉGANTE
+          2. HEADER MOBILE EXCLUSIF : IDENTITÉ EN HAUT + 3 TRAITS & ACTIONS EN DESSOUS
           ========================================================= */}
       <div
         className="navbar-mobile-header mobile-only"
         style={{ backgroundColor: '#ffffff' }}
       >
-        <div
-          className="mobile-header-single-row"
-          style={{ backgroundColor: '#ffffff' }}
-        >
-          {/* GAUCHE : [Menu Hot Dog] + [Logo] + [Sunubiblio] */}
-          <div className="mobile-header-left-group">
+        {/* LIGNE 1 — IDENTITÉ : Logo & Marque Sunubiblio au-dessus des 3 traits */}
+        <div className="mobile-header-identity">
+          <Link
+            href="/"
+            className="mobile-brand-link"
+            title="Sunubiblio — Accueil"
+            aria-label="Sunubiblio — Retour à l'accueil"
+          >
+            <div className="brand-logo-wrap">
+              <SunubiblioLogo size={28} />
+            </div>
+            <span className="brand-name">Sunubiblio</span>
+          </Link>
+        </div>
+
+        {/* LIGNE 2 — NAVIGATION & ACTIONS : [Hot Dog ☰] ... [🔔] [SunuIA] [⋮⋮⋮] */}
+        <div className="mobile-header-actions-row">
+          {/* Menu Hot Dog 3 traits à gauche */}
+          <div className="mobile-profile-left">
             <UserMenu onOpenAuth={onOpenAuth} triggerVariant="hotdog" />
-            <Link
-              href="/"
-              className="mobile-brand-link"
-              title="Sunubiblio — Accueil"
-              aria-label="Sunubiblio — Retour à l'accueil"
-            >
-              <div className="brand-logo-wrap">
-                <SunubiblioLogo size={26} />
-              </div>
-              <span className="brand-name">Sunubiblio</span>
-            </Link>
           </div>
 
-          {/* DROITE : [🔔] [SunuIA] [⋮⋮⋮] */}
+          {/* Actions de droite : [🔔] [SunuIA] [⋮⋮⋮] */}
           <div className="mobile-actions-right-group">
             {/* Notifications */}
             <NotificationsPopover />
