@@ -242,13 +242,13 @@ export const ScrollNavigation: React.FC = () => {
         }
 
         .scroll-nav-btn:hover:not(:disabled) {
-          background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-          color: #ffffff;
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+          background: #0f172a;
+          color: #f59e0b;
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
         }
 
         .scroll-nav-btn:focus-visible {
-          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
+          box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.35);
         }
 
         .scroll-nav-btn.is-disabled {

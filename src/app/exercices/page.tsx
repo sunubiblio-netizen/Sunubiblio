@@ -39,8 +39,8 @@ const ACTION_MODES_CONFIG = [
         <polyline points="22 4 12 14.01 9 11.01" />
       </svg>
     ),
-    color: '#2563eb',
-    bgColor: '#eff6ff',
+    color: '#d97706',
+    bgColor: '#fffbeb',
   },
   {
     id: 'qcm' as ExerciseMode,
@@ -1245,10 +1245,7 @@ export default function ExercicesPage() {
         .header-simple-title {
           font-size: clamp(1.5rem, 3.2vw, 1.9rem);
           font-weight: 800;
-          background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #4f46e5 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          color: #1e3a8a;
+          color: #0f172a;
           margin: 0;
           letter-spacing: -0.025em;
           text-align: left;
@@ -1381,12 +1378,12 @@ export default function ExercicesPage() {
         }
 
         .level-popover-item.is-selected .level-item-title {
-          color: #1d4ed8;
+          color: #d97706;
           font-weight: 800;
         }
 
         .level-item-check {
-          color: #2563eb;
+          color: #d97706;
           flex-shrink: 0;
           margin-left: auto;
         }
@@ -1609,7 +1606,7 @@ export default function ExercicesPage() {
         }
 
         .item-check-badge {
-          color: #2563eb;
+          color: #d97706;
           font-weight: 900;
           font-size: 1rem;
         }
@@ -1619,21 +1616,23 @@ export default function ExercicesPage() {
           width: 44px;
           height: 44px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-          color: #ffffff;
+          background: #0f172a;
+          color: #fbbf24;
           border: none;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.28);
           transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
           flex-shrink: 0;
         }
 
         .btn-chat-send-submit:hover:not(:disabled) {
           transform: scale(1.06);
-          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+          background: #1e293b;
+          color: #ffffff;
+          box-shadow: 0 6px 20px rgba(15, 23, 42, 0.4);
         }
 
         .btn-chat-send-submit:active:not(:disabled) {
@@ -1702,9 +1701,9 @@ export default function ExercicesPage() {
           gap: 6px;
           font-size: 0.7813rem;
           font-weight: 700;
-          color: #2563eb;
+          color: #0f172a;
           background: #ffffff;
-          border: 1px solid #bfdbfe;
+          border: 1px solid rgba(245, 158, 11, 0.35);
           padding: 6px 12px;
           border-radius: 8px;
           cursor: pointer;
@@ -1713,8 +1712,9 @@ export default function ExercicesPage() {
         }
 
         .btn-new-exercise:hover {
-          background: #eff6ff;
-          border-color: #2563eb;
+          background: #fef3c7;
+          border-color: #f59e0b;
+          color: #0f172a;
         }
 
         .session-topic-full-banner {
@@ -1767,7 +1767,7 @@ export default function ExercicesPage() {
           width: 36px;
           height: 36px;
           border: 3px solid #e2e8f0;
-          border-top-color: #2563eb;
+          border-top-color: #f59e0b;
           border-radius: 50%;
           animation: spin 0.8s linear infinite;
           margin-bottom: 14px;
@@ -1826,8 +1826,8 @@ export default function ExercicesPage() {
           font-size: 0.6875rem;
           font-weight: 800;
           text-transform: uppercase;
-          background: #eff6ff;
-          color: #2563eb;
+          background: #fffbeb;
+          color: #d97706;
           padding: 3px 8px;
           border-radius: 6px;
           display: inline-block;
@@ -1856,7 +1856,7 @@ export default function ExercicesPage() {
 
         .statement-box {
           background: #f8fafc;
-          border-left: 3px solid #2563eb;
+          border-left: 3px solid #f59e0b;
           border-radius: 0 10px 10px 0;
           padding: 12px 14px;
           margin-bottom: 14px;
@@ -1972,8 +1972,8 @@ export default function ExercicesPage() {
 
         .student-answer-textarea:focus {
           outline: none;
-          border-color: #2563eb;
-          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+          border-color: #f59e0b;
+          box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
         }
 
         /* Jauge & Compteur de mots pédagogique */
@@ -2140,9 +2140,9 @@ export default function ExercicesPage() {
         .btn-ask-about-this {
           font-size: 0.7188rem;
           font-weight: 700;
-          color: #2563eb;
+          color: #d97706;
           background: #ffffff;
-          border: 1px solid #bfdbfe;
+          border: 1px solid #fde68a;
           border-radius: 9999px;
           padding: 4px 10px;
           cursor: pointer;
@@ -2150,8 +2150,8 @@ export default function ExercicesPage() {
         }
 
         .btn-ask-about-this:hover {
-          background: #eff6ff;
-          border-color: #2563eb;
+          background: #fffbeb;
+          border-color: #f59e0b;
         }
 
         .solution-text {
@@ -2219,15 +2219,15 @@ export default function ExercicesPage() {
         }
 
         .step-dot:hover {
-          border-color: #2563eb;
-          color: #2563eb;
+          border-color: #f59e0b;
+          color: #f59e0b;
         }
 
         .step-dot.is-active {
-          border-color: #2563eb;
-          background: #2563eb;
-          color: #ffffff;
-          box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+          border-color: #0f172a;
+          background: #0f172a;
+          color: #fbbf24;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.35);
         }
 
         .step-dot.is-done,
@@ -2271,17 +2271,17 @@ export default function ExercicesPage() {
         }
 
         .step-dot.is-answered {
-          border-color: #3b82f6;
-          background: #eff6ff;
-          color: #1d4ed8;
+          border-color: #f59e0b;
+          background: #fef3c7;
+          color: #b45309;
           font-weight: 800;
         }
 
         .step-dot.is-answered.is-active {
-          border-color: #2563eb;
-          background: #2563eb;
-          color: #ffffff;
-          box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+          border-color: #0f172a;
+          background: #0f172a;
+          color: #fbbf24;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.35);
         }
 
         .qcm-answered-counter-pill {
@@ -2337,27 +2337,28 @@ export default function ExercicesPage() {
 
         .btn-ex-nav-next,
         .btn-qcm-next {
-          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          background: #0f172a;
           color: #ffffff;
-          box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+          box-shadow: 0 3px 10px rgba(15, 23, 42, 0.25);
         }
 
         .btn-ex-nav-next:hover,
         .btn-qcm-next:hover {
-          background: #1e40af;
+          background: #1e293b;
+          color: #fbbf24;
           transform: translateY(-1px);
-          box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.35);
         }
 
         .btn-qcm-next.is-subtle {
-          background: #eff6ff;
-          color: #1d4ed8;
-          border: 1px solid #bfdbfe;
+          background: #fef3c7;
+          color: #b45309;
+          border: 1px solid rgba(245, 158, 11, 0.3);
           box-shadow: none;
         }
 
         .btn-qcm-next.is-subtle:hover {
-          background: #dbeafe;
+          background: #fde68a;
           transform: none;
         }
 
@@ -2414,9 +2415,9 @@ export default function ExercicesPage() {
           gap: 6px;
           padding: 8px 14px;
           border-radius: 9999px;
-          border: 1px solid #cbd5e1;
+          border: 1.5px solid #e2e8f0;
           background: #ffffff;
-          color: #2563eb;
+          color: #0f172a;
           font-size: 0.7813rem;
           font-weight: 700;
           cursor: pointer;
@@ -2424,8 +2425,9 @@ export default function ExercicesPage() {
         }
 
         .btn-review-questions:hover {
-          background: #eff6ff;
-          border-color: #93c5fd;
+          background: #fffbeb;
+          border-color: #f59e0b;
+          color: #d97706;
         }
 
         .qcm-recap-cards-list {
@@ -2485,7 +2487,7 @@ export default function ExercicesPage() {
           background: #f8fafc;
           border-radius: 8px;
           padding: 8px 10px;
-          border-left: 3px solid #2563eb;
+          border-left: 3px solid #f59e0b;
         }
 
         .recap-choice-line {
@@ -2515,14 +2517,14 @@ export default function ExercicesPage() {
         }
 
         .qcm-score-banner {
-          background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
           color: #ffffff;
           border-radius: 16px;
           padding: 16px 20px;
           display: flex;
           align-items: center;
           gap: 16px;
-          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+          box-shadow: 0 6px 20px rgba(15, 23, 42, 0.2);
           animation: cardPop 0.2s ease;
         }
 
@@ -2612,14 +2614,14 @@ export default function ExercicesPage() {
         }
 
         .qcm-option-btn.is-selected {
-          border-color: #2563eb;
-          background: #eff6ff;
-          color: #1d4ed8;
+          border-color: #f59e0b;
+          background: #fffbeb;
+          color: #92400e;
           font-weight: 600;
         }
 
         .qcm-option-btn.is-selected .option-letter {
-          background: #2563eb;
+          background: #f59e0b;
           color: #ffffff;
         }
 
@@ -2694,7 +2696,7 @@ export default function ExercicesPage() {
         .correction-sub-tag {
           font-size: 0.6875rem;
           font-weight: 700;
-          color: #2563eb;
+          color: #d97706;
           text-transform: uppercase;
           letter-spacing: 0.04em;
         }
@@ -2881,9 +2883,9 @@ export default function ExercicesPage() {
         .criterion-score-badge {
           font-size: 0.7188rem;
           font-weight: 800;
-          color: #2563eb;
-          background: #eff6ff;
-          border: 1px solid #bfdbfe;
+          color: #d97706;
+          background: #fffbeb;
+          border: 1px solid #fde68a;
           padding: 2px 7px;
           border-radius: 9999px;
         }
@@ -3099,7 +3101,7 @@ export default function ExercicesPage() {
 
         .bubble-user {
           align-self: flex-end;
-          background: #2563eb;
+          background: #0f172a;
           color: #ffffff;
           border-bottom-right-radius: 4px;
         }

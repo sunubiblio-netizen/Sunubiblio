@@ -937,7 +937,7 @@ export const EducationHierarchyNavigator: React.FC<EducationHierarchyNavigatorPr
         }
 
         .footer-action-link {
-          color: #2563eb;
+          color: #d97706;
           font-weight: 700;
         }
 

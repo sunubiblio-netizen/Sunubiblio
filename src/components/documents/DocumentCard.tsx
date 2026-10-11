@@ -24,7 +24,7 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({
       case 'PDF':
         return { bg: '#fef2f2', color: '#dc2626', border: 'rgba(239, 68, 68, 0.25)' };
       case 'DOCX':
-        return { bg: '#eff6ff', color: '#2563eb', border: 'rgba(59, 130, 246, 0.25)' };
+        return { bg: '#fef3c7', color: '#b45309', border: 'rgba(245, 158, 11, 0.3)' };
       case 'XLSX':
         return { bg: '#f0fdf4', color: '#16a34a', border: 'rgba(34, 197, 94, 0.25)' };
       default:

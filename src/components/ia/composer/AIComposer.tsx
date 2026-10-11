@@ -287,8 +287,8 @@ export const AIComposer: React.FC<AIComposerProps> = ({
         }
 
         .ai-composer-card:focus-within {
-          border-color: #6366f1;
-          box-shadow: 0 14px 40px -8px rgba(99, 102, 241, 0.16), 0 0 0 3px rgba(99, 102, 241, 0.15);
+          border-color: #f59e0b;
+          box-shadow: 0 14px 40px -8px rgba(245, 158, 11, 0.16), 0 0 0 3px rgba(245, 158, 11, 0.15);
         }
 
         .composer-error-alert {
@@ -371,10 +371,10 @@ export const AIComposer: React.FC<AIComposerProps> = ({
         }
 
         .btn-web-search-toggle.active {
-          background: #eff6ff;
-          border-color: #3b82f6;
-          color: #2563eb;
-          box-shadow: 0 2px 6px rgba(37, 99, 235, 0.12);
+          background: #fffbeb;
+          border-color: #f59e0b;
+          color: #d97706;
+          box-shadow: 0 2px 6px rgba(217, 119, 6, 0.15);
         }
 
         .web-search-label {
@@ -404,15 +404,15 @@ export const AIComposer: React.FC<AIComposerProps> = ({
         }
 
         .btn-send-message.active {
-          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #7c3aed 100%);
-          color: #ffffff;
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          color: #fbbf24;
           cursor: pointer;
-          box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25);
         }
 
         .btn-send-message.active:hover {
           transform: scale(1.06);
-          box-shadow: 0 6px 18px rgba(79, 70, 229, 0.45);
+          box-shadow: 0 6px 18px rgba(15, 23, 42, 0.35);
         }
 
         .btn-send-message.active:active {

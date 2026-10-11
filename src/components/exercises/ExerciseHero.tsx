@@ -142,7 +142,7 @@ export const ExerciseHero: React.FC<ExerciseHeroProps> = ({
           position: relative;
           padding: 20px 24px;
           background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
-          border: 1.5px solid #bfdbfe;
+          border: 1.5px solid rgba(245, 158, 11, 0.25);
           display: flex;
           align-items: center;
           gap: 18px;
@@ -152,8 +152,9 @@ export const ExerciseHero: React.FC<ExerciseHeroProps> = ({
           position: absolute;
           top: -10px;
           right: 24px;
-          background: linear-gradient(135deg, #2563eb, #1d4ed8);
-          color: #ffffff;
+          background: #0f172a;
+          color: #fbbf24;
+          border: 1px solid rgba(245, 158, 11, 0.3);
           font-size: 0.6875rem;
           font-weight: 800;
           padding: 3px 10px;
@@ -188,7 +189,7 @@ export const ExerciseHero: React.FC<ExerciseHeroProps> = ({
 
         .gen-main-subtitle {
           font-size: 0.875rem;
-          color: #3b82f6;
+          color: #d97706;
           font-weight: 600;
           margin: 0;
         }
@@ -199,16 +200,16 @@ export const ExerciseHero: React.FC<ExerciseHeroProps> = ({
           gap: 6px;
           font-weight: 700;
           font-size: 0.875rem;
-          color: #1d4ed8;
+          color: #0f172a;
           padding: 8px 16px;
           border-radius: 10px;
-          background: #dbeafe;
-          transition: background 0.15s ease;
+          background: #fef3c7;
+          transition: all 0.15s ease;
         }
 
         .gen-main-card:hover .gen-action-arrow {
-          background: #2563eb;
-          color: #ffffff;
+          background: #0f172a;
+          color: #fbbf24;
         }
 
         .gen-sub-options-grid {
@@ -235,8 +236,8 @@ export const ExerciseHero: React.FC<ExerciseHeroProps> = ({
         }
 
         .icon-qcm {
-          background: #eff6ff;
-          color: #2563eb;
+          background: #fef3c7;
+          color: #d97706;
         }
 
         .icon-corriger {

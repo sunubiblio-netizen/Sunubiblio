@@ -336,7 +336,7 @@ export const SenegalReligionsSection: React.FC<SenegalReligionsSectionProps> = (
         }
 
         .christian-indicator {
-          background: #2563eb;
+          background: #d97706;
         }
 
         .other-indicator {

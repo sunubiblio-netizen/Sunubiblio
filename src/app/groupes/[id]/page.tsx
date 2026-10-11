@@ -527,7 +527,7 @@ export default function GroupDetailPage() {
                         </div>
                       </div>
                       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2563eb' }}>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#d97706' }}>
                           💬 {d.repliesCount} réponses
                         </span>
                       </div>

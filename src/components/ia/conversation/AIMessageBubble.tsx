@@ -669,17 +669,18 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
         }
 
         :global(.msg-inline-link) {
-          color: #2563eb;
+          color: #d97706;
           text-decoration: underline;
           text-underline-offset: 2px;
           word-break: break-all;
+          font-weight: 600;
         }
 
         :global(.msg-quote) {
           margin: 10px 0;
           padding: 8px 14px;
-          border-left: 3px solid #6366f1;
-          background: #f8faff;
+          border-left: 3px solid #f59e0b;
+          background: #fffbeb;
           border-radius: 0 8px 8px 0;
           font-size: 14px;
           color: #334155;
@@ -850,15 +851,15 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
           border: 1px solid #e2e8f0;
           border-radius: 8px;
           text-decoration: none;
-          color: #2563eb;
+          color: #d97706;
           font-size: 12px;
           transition: all 0.15s ease;
           max-width: 100%;
         }
 
         .source-chip:hover {
-          border-color: #93c5fd;
-          background: #eff6ff;
+          border-color: #f59e0b;
+          background: #fffbeb;
         }
 
         .source-badge {

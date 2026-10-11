@@ -3401,8 +3401,8 @@ input {
 }
 
 .nav-card-icon.verify {
-  background: #eff6ff;
-  color: #2563eb;
+  background: #fffbeb;
+  color: #d97706;
 }
 
 .nav-card-icon.convert {
@@ -4087,7 +4087,7 @@ input {
 }
 
 .file-preview-icon {
-  color: #2563eb;
+  color: #d97706;
 }
 
 .file-name {
@@ -9903,7 +9903,7 @@ input {
 .score-main-value {
   font-size: 1.625rem;
   font-weight: 900;
-  color: #2563eb;
+  color: #d97706;
   line-height: 1.1;
 }
 
@@ -10037,16 +10037,17 @@ input {
 }
 
 .next-test-btn {
-  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%) !important;
-  color: #ffffff !important;
+  background: #0f172a !important;
+  color: #fbbf24 !important;
   border: none !important;
-  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.28);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.28);
   font-weight: 700 !important;
 }
 
 .next-test-btn:hover {
-  background: linear-gradient(135deg, #4338ca 0%, #2563eb 100%) !important;
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+  background: #1e293b !important;
+  color: #f59e0b !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.4);
   transform: translateY(-1px);
 }
 
@@ -14802,8 +14803,8 @@ input {
   border-radius: 50%;
   flex-shrink: 0;
   padding: 2px;
-  background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 50%, #6366f1 100%);
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #d97706 100%);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
 }
 
 .user-header-avatar-img {
@@ -15042,13 +15043,13 @@ input {
   width: 32px;
   height: 32px;
   border-radius: 9px;
-  background: linear-gradient(135deg, #4f46e5 0%, #2563eb 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #fbbf24;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
 }
 
 .register-btn-text {
@@ -18004,7 +18005,7 @@ input {
 }
 
 .link-inline {
-  color: #2563eb;
+  color: #d97706;
   font-weight: 700;
   text-decoration: underline;
 }
@@ -18355,12 +18356,12 @@ input {
 }
 
 .social-action-btn.is-active-tab {
-  background-color: #eff6ff;
-  color: #2563eb;
+  background-color: #fffbeb;
+  color: #d97706;
 }
 
 .social-action-btn.is-saved {
-  color: #2563eb;
+  color: #d97706;
 }
 
 .social-action-save {

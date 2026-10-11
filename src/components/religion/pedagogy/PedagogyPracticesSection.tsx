@@ -151,8 +151,8 @@ export const PedagogyPracticesSection: React.FC<PedagogyPracticesSectionProps> =
         }
 
         .practice-cat-pill.rituel {
-          background: #eff6ff;
-          color: #2563eb;
+          background: #f1f5f9;
+          color: #1e293b;
         }
 
         .practice-cat-pill.ethique {

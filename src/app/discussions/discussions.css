@@ -1337,8 +1337,8 @@ html {
 }
 
 .file-format-badge.docx {
-  background: #dbeafe;
-  color: #2563eb;
+  background: #fef3c7;
+  color: #b45309;
 }
 
 .file-item-info {
@@ -2680,9 +2680,9 @@ body.chat-conversation-active .mobile-bottom-nav-root {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: #eff6ff;
-  border: 1px solid #dbeafe;
-  color: #1d4ed8;
+  background: #fef3c7;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #b45309;
   padding: 5px 12px;
   border-radius: 12px;
   font-size: 0.88rem;
@@ -2770,25 +2770,25 @@ body.chat-conversation-active .mobile-bottom-nav-root {
 }
 
 .chat-act-icon-wrap.video {
-  background: #eff6ff;
-  color: #2563eb;
-  border: 1px solid #bfdbfe;
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 .chat-act-icon-wrap.video:hover {
-  background: #2563eb;
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+  background: #0f172a;
+  color: #fbbf24;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
 }
 
 .chat-act-icon-wrap.search {
-  background: #f0f9ff;
-  color: #0284c7;
-  border: 1px solid #bae6fd;
+  background: #f8fafc;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
 }
 .chat-act-icon-wrap.search:hover {
-  background: #0284c7;
+  background: #0f172a;
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
 }
 
 .chat-act-icon-wrap.forward {

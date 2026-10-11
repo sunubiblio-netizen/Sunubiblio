@@ -796,18 +796,18 @@ export const AIInputSelector = React.forwardRef<AIInputSelectorHandle, AIInputSe
           width: 50px;
           height: 50px;
           border-radius: 14px;
-          background: #eff6ff;
-          color: #2563eb;
+          background: #fffbeb;
+          color: #d97706;
           display: flex;
           align-items: center;
           justify-content: center;
           margin-bottom: 8px;
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+          box-shadow: 0 4px 12px rgba(217, 119, 6, 0.12);
         }
 
         .lib-res-cover {
-          background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-          color: #ffffff;
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          color: #fbbf24;
         }
 
         .status-row,
@@ -830,8 +830,8 @@ export const AIInputSelector = React.forwardRef<AIInputSelectorHandle, AIInputSe
         }
 
         .badge-lib-origin {
-          background: #eff6ff;
-          color: #1d4ed8;
+          background: #fffbeb;
+          color: #d97706;
         }
 
         .doc-type-pill,
@@ -874,7 +874,7 @@ export const AIInputSelector = React.forwardRef<AIInputSelectorHandle, AIInputSe
           font-weight: 700;
           background: #ffffff;
           border: 1.5px solid #cbd5e1;
-          color: #1e3a8a;
+          color: #0f172a;
           padding: 7px 16px;
           border-radius: 9999px;
           cursor: pointer;
@@ -882,8 +882,9 @@ export const AIInputSelector = React.forwardRef<AIInputSelectorHandle, AIInputSe
         }
 
         .btn-change-doc:hover {
-          background: #eff6ff;
-          border-color: #2563eb;
+          background: #fffbeb;
+          border-color: #f59e0b;
+          color: #d97706;
         }
 
         .btn-remove-doc-text {

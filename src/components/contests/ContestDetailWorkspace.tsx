@@ -697,8 +697,8 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .status-pill.upcoming {
-          background: #eff6ff;
-          color: #2563eb;
+          background: #fef3c7;
+          color: #b45309;
         }
 
         /* Identity Banner */
@@ -1203,8 +1203,8 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .sub-badge {
-          color: #2563eb;
-          background: #eff6ff;
+          color: #d97706;
+          background: #fffbeb;
           font-weight: 700;
           padding: 1px 7px;
           border-radius: 4px;

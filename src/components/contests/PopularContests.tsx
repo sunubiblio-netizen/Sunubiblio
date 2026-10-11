@@ -186,8 +186,8 @@ export const PopularContests: React.FC<PopularContestsProps> = ({
         }
 
         .status-pill.upcoming {
-          background: #eff6ff;
-          color: #2563eb;
+          background: #fef3c7;
+          color: #b45309;
         }
 
         .contest-full-name {

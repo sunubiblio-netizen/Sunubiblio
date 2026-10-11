@@ -55,9 +55,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
               fontWeight: 700,
               padding: '2px 6px',
               borderRadius: '5px',
-              color: '#2563eb',
-              background: '#eff6ff',
-              border: '1px solid rgba(37, 99, 235, 0.3)',
+              color: '#d97706',
+              background: '#fffbeb',
+              border: '1px solid rgba(245, 158, 11, 0.35)',
               whiteSpace: 'nowrap',
               lineHeight: 1.2,
             }}
@@ -505,9 +505,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         }
 
         .access-badge.sub {
-          color: #2563eb;
-          background: #eff6ff;
-          border: 1px solid rgba(37, 99, 235, 0.3);
+          color: #d97706;
+          background: #fffbeb;
+          border: 1px solid rgba(245, 158, 11, 0.35);
         }
 
         .access-badge.premium {

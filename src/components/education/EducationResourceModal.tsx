@@ -1055,21 +1055,21 @@ export const EducationResourceModal: React.FC<EducationResourceModalProps> = ({
         }
 
         .sample-unlock-banner {
-          background: #eff6ff;
-          border-top: 1px solid #bfdbfe;
+          background: #fffbeb;
+          border-top: 1px solid #fde68a;
           padding: 12px 18px;
         }
 
         .unlock-info strong {
           font-size: 13px;
-          color: #1e40af;
+          color: #92400e;
           display: block;
           margin-bottom: 2px;
         }
 
         .unlock-info p {
           font-size: 12px;
-          color: #2563eb;
+          color: #b45309;
           margin: 0;
         }
 

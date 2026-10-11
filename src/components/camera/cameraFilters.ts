@@ -76,7 +76,7 @@ export const CAMERA_FILTERS: CameraFilter[] = [
     id: 'sunu-glow',
     name: 'Sunu Glow',
     cssFilter: 'brightness(1.08) contrast(1.15) saturate(1.2)',
-    previewBg: 'linear-gradient(135deg, #2563eb 0%, #9333ea 100%)',
+    previewBg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
     icon: '⭐',
     badge: '★',
   },

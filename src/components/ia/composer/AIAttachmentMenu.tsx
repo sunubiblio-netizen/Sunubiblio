@@ -268,8 +268,8 @@ export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
         }
 
         .item-icon.doc {
-          background: #eff6ff;
-          color: #2563eb;
+          background: #fffbeb;
+          color: #d97706;
         }
 
         .item-icon.img {

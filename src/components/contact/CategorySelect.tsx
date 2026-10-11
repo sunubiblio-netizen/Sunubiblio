@@ -34,8 +34,8 @@ const CATEGORY_CONFIGS: CategoryOptionConfig[] = [
     label: 'Compte & Profil',
     description: 'Connexion, mot de passe oublié ou gestion de votre profil',
     badge: 'Espace membre',
-    color: '#2563eb',
-    bgColor: '#eff6ff',
+    color: '#d97706',
+    bgColor: '#fffbeb',
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />

@@ -13,11 +13,11 @@
   --pub-text-main: #0f172a;
   --pub-text-body: #334155;
   --pub-text-muted: #64748b;
-  --pub-primary: #2563eb;
-  --pub-primary-hover: #1d4ed8;
-  --pub-primary-light: #eff6ff;
-  --pub-indigo: #4f46e5;
-  --pub-indigo-hover: #4338ca;
+  --pub-primary: #0f172a;
+  --pub-primary-hover: #1e293b;
+  --pub-primary-light: #fef3c7;
+  --pub-indigo: #d97706;
+  --pub-indigo-hover: #b45309;
   --pub-radius: 14px;
   --pub-radius-sm: 8px;
   --pub-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
@@ -1311,9 +1311,9 @@
 }
 
 .pub-modal-format-pill.active {
-  background: #eff6ff;
-  border-color: #93c5fd;
-  color: #2563eb;
+  background: #fffbeb;
+  border-color: #f59e0b;
+  color: #d97706;
 }
 
 /* Corps du formulaire */

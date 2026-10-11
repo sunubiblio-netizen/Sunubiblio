@@ -205,8 +205,8 @@ export const IAHeroCentered: React.FC<IAHeroCenteredProps> = ({
         }
 
         .icon-resumer {
-          background: #eff6ff;
-          color: #2563eb;
+          background: #fffbeb;
+          color: #d97706;
         }
 
         .icon-expliquer {

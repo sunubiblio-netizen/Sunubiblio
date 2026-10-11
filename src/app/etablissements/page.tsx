@@ -391,7 +391,7 @@ export default function EtablissementsPage() {
         }
 
         .etab-title-gradient {
-          background: linear-gradient(135deg, #2563eb, #0d9488);
+          background: linear-gradient(135deg, #0f172a 30%, #d97706 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
@@ -520,15 +520,15 @@ export default function EtablissementsPage() {
           width: 52px;
           height: 52px;
           border-radius: 12px;
-          background: linear-gradient(135deg, #1e3a8a, #2563eb);
+          background: linear-gradient(135deg, #0f172a, #1e293b);
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #ffffff;
+          color: #fbbf24;
           font-weight: 800;
           font-size: 0.9375rem;
           flex-shrink: 0;
-          box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+          box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
         }
 
         .etab-meta-head {
@@ -539,7 +539,7 @@ export default function EtablissementsPage() {
           display: inline-block;
           font-size: 0.6875rem;
           font-weight: 700;
-          color: #2563eb;
+          color: #d97706;
           text-transform: uppercase;
           letter-spacing: 0.04em;
           margin-bottom: 4px;
@@ -585,7 +585,7 @@ export default function EtablissementsPage() {
 
         .annonce-chip {
           font-weight: 700;
-          color: #1d4ed8;
+          color: #d97706;
           white-space: nowrap;
         }
 
@@ -624,7 +624,7 @@ export default function EtablissementsPage() {
 
         .more-formations {
           font-weight: 600;
-          color: #2563eb;
+          color: #d97706;
           margin-top: 2px;
         }
 
@@ -687,17 +687,18 @@ export default function EtablissementsPage() {
         .btn-details {
           padding: 7px 14px;
           border-radius: 8px;
-          background: #1e3a8a;
+          background: #0f172a;
           color: #ffffff;
           border: none;
           font-size: 0.8125rem;
           font-weight: 600;
           cursor: pointer;
-          transition: background 0.15s ease;
+          transition: all 0.15s ease;
         }
 
         .btn-details:hover {
-          background: #1d4ed8;
+          background: #1e293b;
+          color: #fbbf24;
         }
 
         .etab-empty-state {
@@ -710,10 +711,17 @@ export default function EtablissementsPage() {
           margin-top: 14px;
           padding: 8px 18px;
           border-radius: 8px;
-          background: #1e3a8a;
+          background: #0f172a;
           color: #ffffff;
           border: none;
           cursor: pointer;
+          font-weight: 600;
+          transition: all 0.15s ease;
+        }
+
+        .btn-reset-filters:hover {
+          background: #1e293b;
+          color: #fbbf24;
         }
 
         /* Modal */
@@ -821,12 +829,18 @@ export default function EtablissementsPage() {
           width: 100%;
           padding: 12px;
           border-radius: 10px;
-          background: linear-gradient(135deg, #1e3a8a, #2563eb);
-          color: #ffffff;
+          background: #0f172a;
+          color: #fbbf24;
           font-weight: 700;
           border: none;
           font-size: 0.9375rem;
           cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .btn-cta-postuler:hover {
+          background: #1e293b;
+          color: #f59e0b;
         }
       `}</style>
     </div>

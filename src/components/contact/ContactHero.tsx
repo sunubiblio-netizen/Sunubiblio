@@ -268,8 +268,8 @@ export const ContactHero: React.FC = () => {
         }
 
         .icon-blue {
-          background: #eff6ff;
-          color: #2563eb;
+          background: #fffbeb;
+          color: #d97706;
         }
 
         .icon-emerald {
