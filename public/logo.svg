@@ -1,26 +1,30 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="6 6 88 88" fill="none">
   <defs>
-    <!-- Top-Right Petal: Pure Vibrant Sky/Royal Blue -->
+    <!-- Pétale 1 (Haut-Droit) : Or Solaire Rayonnant Sunubiblio -->
     <linearGradient id="pet1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#38BDF8"/>
-      <stop offset="100%" stop-color="#0284C7"/>
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
     </linearGradient>
-    <!-- Bottom-Right Petal: Warm Sunny Amber Gold -->
+
+    <!-- Pétale 2 (Bas-Droit) : Ambre Cuivré / Miel Doré Prestigieux -->
     <linearGradient id="pet2" x1="100%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#FACC15"/>
-      <stop offset="100%" stop-color="#EAB308"/>
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
     </linearGradient>
-    <!-- Bottom-Left Petal: Soft Sunny Pale Yellow / Butter Cream (Base Color) -->
+
+    <!-- Pétale 3 (Bas-Gauche) : Or Aurore Lumineux Doux -->
     <linearGradient id="pet3" x1="0%" y1="100%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#FEF08A"/>
-      <stop offset="100%" stop-color="#FACC15"/>
+      <stop offset="100%" stop-color="#FBBF24"/>
     </linearGradient>
-    <!-- Top-Left Petal: Luminous Crystal Cyan / Sky Blue -->
+
+    <!-- Pétale 4 (Haut-Gauche) : Noir Ardoise / Titane Prestige Sunubiblio -->
     <linearGradient id="pet4" x1="100%" y1="100%" x2="0%" y2="0%">
-      <stop offset="0%" stop-color="#0EA5E9"/>
-      <stop offset="100%" stop-color="#38BDF8"/>
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0F172A"/>
     </linearGradient>
   </defs>
+
   <g transform="translate(50,50)">
     <path d="M 0,-6 C 12,-28 28,-36 36,-28 C 44,-20 36,-4 14,0 Z" fill="url(#pet1)" />
     <path d="M 6,0 C 28,12 36,28 28,36 C 20,44 4,36 0,14 Z" fill="url(#pet2)" />

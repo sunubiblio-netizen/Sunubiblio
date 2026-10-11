@@ -1,21 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
   <defs>
-    <!-- Dégradé Pétale 1 : Bleu Azur / Cyan Lumineux Sunubiblio -->
+    <!-- Dégradé Pétale 1 (Haut) : Or Solaire Rayonnant Sunubiblio -->
     <linearGradient id="sunuIaG1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0EA5E9" />
-      <stop offset="100%" stop-color="#38BDF8" />
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="100%" stop-color="#F59E0B" />
     </linearGradient>
 
-    <!-- Dégradé Pétale 2 : Or Solaire / Ambre Chaleureux Sunubiblio -->
+    <!-- Dégradé Pétale 2 (Bas Droite) : Ambre Cuivré / Miel Doré -->
     <linearGradient id="sunuIaG2" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#F59E0B" />
-      <stop offset="100%" stop-color="#FBBF24" />
+      <stop offset="100%" stop-color="#D97706" />
     </linearGradient>
 
-    <!-- Dégradé Pétale 3 : Bleu Roi / Bleu Nuit Profond Sunubiblio -->
+    <!-- Dégradé Pétale 3 (Bas Gauche) : Noir Ardoise / Titane Prestige -->
     <linearGradient id="sunuIaG3" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1E1B4B" />
-      <stop offset="100%" stop-color="#0284C7" />
+      <stop offset="0%" stop-color="#334155" />
+      <stop offset="100%" stop-color="#0F172A" />
     </linearGradient>
 
     <!-- Lueur subtile du noyau intelligent aux reflets or solaire -->
@@ -26,15 +26,15 @@
     </radialGradient>
   </defs>
 
-  <!-- Groupe de 3 pétales arrondis en vortex dynamique aux couleurs Sunubiblio -->
+  <!-- Groupe de 3 pétales en vortex dynamique aux couleurs de prestige Sunubiblio -->
   <g>
-    <!-- Pétale 1 (Haut - Bleu Azur Sunubiblio) -->
+    <!-- Pétale 1 (Haut - Or Solaire) -->
     <path
       d="M 24 17.5 C 27.5 10 37 7.5 40 14 C 42.5 19.5 39.5 25 32 25.5 C 27.5 25.8 24.5 21.5 24 17.5 Z"
       fill="url(#sunuIaG1)"
     />
 
-    <!-- Pétale 2 (Bas Droite - Or Solaire Sunubiblio) -->
+    <!-- Pétale 2 (Bas Droite - Ambre Miel) -->
     <g transform="rotate(120 24 24)">
       <path
         d="M 24 17.5 C 27.5 10 37 7.5 40 14 C 42.5 19.5 39.5 25 32 25.5 C 27.5 25.8 24.5 21.5 24 17.5 Z"
@@ -42,7 +42,7 @@
       />
     </g>
 
-    <!-- Pétale 3 (Bas Gauche - Bleu Nuit Sunubiblio) -->
+    <!-- Pétale 3 (Bas Gauche - Noir Ardoise Prestige) -->
     <g transform="rotate(240 24 24)">
       <path
         d="M 24 17.5 C 27.5 10 37 7.5 40 14 C 42.5 19.5 39.5 25 32 25.5 C 27.5 25.8 24.5 21.5 24 17.5 Z"
