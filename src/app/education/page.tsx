@@ -144,14 +144,14 @@ export default function EducationPage() {
 
       {/* Main Content */}
       <main>
-        {/* 1. Hero Section */}
+        {/* 1. Hero Section Centré avec Recherche Universelle */}
         <EducationHero
-          onExploreClick={() => scrollToSection('niveaux')}
-          onSearchClick={() => {
+          initialSearch={filters.searchQuery}
+          onSearch={(query) => {
+            handleFilterChange({ searchQuery: query });
             scrollToSection('ressources');
-            const searchInput = document.getElementById('education-search-input');
-            if (searchInput) searchInput.focus();
           }}
+          onExploreClick={() => scrollToSection('niveaux')}
         />
 
         {/* 2. Explore by Level */}
