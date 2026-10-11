@@ -234,98 +234,39 @@ export const IconCours: React.FC<IconProps> = ({ size = 38, className = '' }) =>
   </svg>
 );
 
-/** 8. Visio / Cours en direct : Caméra de visioconférence HD réaliste avec objectif en verre optique & écran live (Style Icons8 Color Réaliste) */
+/** 8. Visio / Cours en direct : Caméra emblématique d'Instagram (Style Officiel Instagram Sunset Gradient) */
 export const IconVisio: React.FC<IconProps> = ({ size = 38, className = '' }) => (
   <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
     <defs>
-      {/* Dégradé boîtier caméra gris sidéral métallique */}
-      <linearGradient id="visio-cam-body" x1="16" y1="14" x2="31" y2="34" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#455A64" />
-        <stop offset="45%" stopColor="#37474F" />
-        <stop offset="100%" stopColor="#212121" />
+      {/* Dégradé signature coucher de soleil Instagram (Jaune Or / Corail / Rose / Pourpre / Violet) */}
+      <linearGradient id="insta-cam-gradient" x1="6" y1="42" x2="42" y2="6" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FED373" />
+        <stop offset="25%" stopColor="#F15245" />
+        <stop offset="50%" stopColor="#D92E7F" />
+        <stop offset="75%" stopColor="#9B36B7" />
+        <stop offset="100%" stopColor="#515BD4" />
       </linearGradient>
-      {/* Dégradé cylindre de l'objectif */}
-      <linearGradient id="visio-barrel" x1="31" y1="17" x2="42" y2="32" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#607D8B" />
-        <stop offset="45%" stopColor="#37474F" />
-        <stop offset="100%" stopColor="#1A1A1A" />
-      </linearGradient>
-      {/* Lentille en verre optique traité multicouche (Reflet saphir/cyan) */}
-      <radialGradient id="visio-lens-glass" cx="37.5" cy="23" r="7" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#E0F7FA" />
-        <stop offset="25%" stopColor="#4DD0E1" />
-        <stop offset="55%" stopColor="#0288D1" />
-        <stop offset="85%" stopColor="#0D47A1" />
-        <stop offset="100%" stopColor="#051026" />
+      {/* Halo solaire d'angle inférieur gauche */}
+      <radialGradient id="insta-cam-radial" cx="10" cy="38" r="32" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#FFDC80" />
+        <stop offset="20%" stopColor="#FCAF45" />
+        <stop offset="50%" stopColor="#F77737" stopOpacity="0.8" />
+        <stop offset="100%" stopColor="#F56040" stopOpacity="0" />
       </radialGradient>
-      {/* Écran LCD live ouvert */}
-      <linearGradient id="visio-screen-bg" x1="4" y1="16" x2="16" y2="32" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#263238" />
-        <stop offset="100%" stopColor="#102027" />
-      </linearGradient>
-      {/* Liseré rouge cinéma sur l'objectif */}
-      <linearGradient id="visio-accent-ring" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="#FF1744" />
-        <stop offset="100%" stopColor="#D50000" />
-      </linearGradient>
     </defs>
 
-    {/* Trépied / pied métallique brossé */}
-    <ellipse cx="20" cy="42" rx="9" ry="2.5" fill="#78909C" />
-    <ellipse cx="20" cy="41.5" rx="7.5" ry="1.8" fill="#B0BEC5" />
-    <path d="M18.5 35H21.5V41.5H18.5V35Z" fill="#546E7A" />
-    {/* Rotule articulée de caméra */}
-    <circle cx="20" cy="35" r="3" fill="#37474F" />
-    <circle cx="20" cy="35" r="1.5" fill="#CFD8DC" />
+    {/* Corps de la caméra Instagram aux angles arrondis (squircle) */}
+    <rect x="6" y="6" width="36" height="36" rx="11" fill="url(#insta-cam-gradient)" />
+    <rect x="6" y="6" width="36" height="36" rx="11" fill="url(#insta-cam-radial)" />
 
-    {/* Écran LCD rabattu ouvert sur le côté gauche */}
-    <rect x="3" y="16" width="13" height="17" rx="2" fill="#212121" stroke="#37474F" strokeWidth="1" />
-    {/* Image en direct dans l'écran LCD */}
-    <rect x="4.5" y="17.5" width="10" height="14" rx="1" fill="url(#visio-screen-bg)" />
-    {/* Silhouette du participant en direct sur l'écran */}
-    <circle cx="9.5" cy="22" r="2.5" fill="#FFB74D" />
-    <path d="M5.5 28.5C5.5 26 7.5 25 9.5 25C11.5 25 13.5 26 13.5 28.5" fill="#4CAF50" />
-    {/* Point vert de connexion active sur l'écran */}
-    <circle cx="12.5" cy="19.5" r="0.9" fill="#00E676" />
-    {/* Charnière d'écran en acier */}
-    <rect x="14" y="22" width="3" height="5" rx="1" fill="#78909C" />
+    {/* Cadre de l'objectif de la caméra en blanc pur */}
+    <rect x="13" y="13" width="22" height="22" rx="6.5" stroke="#FFFFFF" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
 
-    {/* Boîtier principal de la caméra */}
-    <rect x="16" y="15" width="15" height="19" rx="3.5" fill="url(#visio-cam-body)" />
-    {/* Poignée supérieure avec microphone stéréo */}
-    <path d="M18 15V11C18 9.9 18.9 9 20 9H27C28.1 9 29 9.9 29 11V15" stroke="#455A64" strokeWidth="2.5" strokeLinecap="round" />
-    <rect x="21" y="7" width="8" height="4" rx="1.5" fill="#37474F" />
-    {/* Grille du micro studio à points */}
-    <line x1="23" y1="8.5" x2="27" y2="8.5" stroke="#78909C" strokeWidth="0.8" strokeLinecap="round" />
-    <line x1="23" y1="9.8" x2="27" y2="9.8" stroke="#78909C" strokeWidth="0.8" strokeLinecap="round" />
+    {/* Cercle central de la lentille de l'appareil photo */}
+    <circle cx="24" cy="24" r="5.6" stroke="#FFFFFF" strokeWidth="2.8" />
 
-    {/* Anneau rouge "Cinema Edition" sur le barillet d'objectif */}
-    <rect x="30" y="18" width="2" height="13" rx="0.5" fill="url(#visio-accent-ring)" />
-
-    {/* Fût d'objectif cylindrique 3D */}
-    <path d="M31 17H38L42 20.5V28.5L38 32H31V17Z" fill="url(#visio-barrel)" />
-    {/* Bague de mise au point texturée avec cannelures */}
-    <rect x="33" y="17.5" width="3.5" height="14" fill="#263238" />
-    <line x1="34" y1="18.5" x2="34" y2="30.5" stroke="#546E7A" strokeWidth="0.8" strokeLinecap="round" />
-    <line x1="35.5" y1="18.5" x2="35.5" y2="30.5" stroke="#546E7A" strokeWidth="0.8" strokeLinecap="round" />
-
-    {/* Pare-soleil / Bague frontale de l'objectif */}
-    <ellipse cx="39" cy="24.5" rx="3" ry="7" fill="#1A1A1A" />
-
-    {/* Lentille optique en verre frontal traité multicouche */}
-    <ellipse cx="38.5" cy="24.5" rx="2.5" ry="6" fill="url(#visio-lens-glass)" />
-
-    {/* Reflet courbe de verre réaliste (glint optique) */}
-    <path d="M37.5 20C37.5 20 39.5 21 39.5 23C39.5 21.5 38.5 20 37.5 20Z" fill="#FFFFFF" fillOpacity="0.85" />
-    <circle cx="38" cy="26" r="0.8" fill="#80DEEA" />
-
-    {/* Témoin lumineux d'enregistrement REC rouge vif avec halo */}
-    <circle cx="21" cy="18" r="2" fill="#FF1744" />
-    <circle cx="21" cy="18" r="1" fill="#FFEB3B" />
-
-    {/* Ondes de diffusion en direct (Live streaming broadcast) */}
-    <path d="M42 19C43.5 20.8 44.5 22.8 44.5 24.5C44.5 26.2 43.5 28.2 42 30" stroke="#FF5252" strokeWidth="1.8" strokeLinecap="round" />
-    <path d="M44.5 16.5C46.5 19 47.5 21.8 47.5 24.5C47.5 27.2 46.5 30 44.5 32.5" stroke="#FFA000" strokeWidth="1.8" strokeLinecap="round" />
+    {/* Point flash / voyant optique supérieur droit */}
+    <circle cx="30.2" cy="17.8" r="1.4" fill="#FFFFFF" />
   </svg>
 );
 
