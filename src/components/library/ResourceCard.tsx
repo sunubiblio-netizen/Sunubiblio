@@ -75,9 +75,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
               fontWeight: 700,
               padding: '2px 6px',
               borderRadius: '5px',
-              color: '#059669',
-              background: '#ecfdf5',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
+              color: '#d97706',
+              background: '#fffbeb',
+              border: '1px solid rgba(245, 158, 11, 0.3)',
               whiteSpace: 'nowrap',
               lineHeight: 1.2,
             }}
@@ -161,7 +161,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
         {/* Hover Action Overlay */}
         <div className="cover-hover-action">
-          <button type="button" className="btn-primary hover-view-btn">
+          <button type="button" className="hover-view-btn">
             <span>Consulter</span>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12" />
@@ -209,8 +209,8 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
         .resource-card:hover {
           transform: translateY(-4px);
-          border-color: rgba(99, 102, 241, 0.35);
-          box-shadow: 0 14px 30px -6px rgba(79, 70, 229, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
+          border-color: rgba(245, 158, 11, 0.45);
+          box-shadow: 0 14px 30px -6px rgba(217, 119, 6, 0.14), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
         }
 
         /* Cover Area — Elevated Presentation */
@@ -417,11 +417,25 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         }
 
         .hover-view-btn {
-          padding: 7px 16px;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 7.5px 18px;
           font-size: 12.5px;
           font-weight: 700;
-          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+          color: #ffffff;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          border: 1px solid rgba(255, 255, 255, 0.35);
+          box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45);
           border-radius: var(--radius-full);
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          cursor: pointer;
+        }
+
+        .hover-view-btn:hover {
+          background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%);
+          transform: scale(1.05);
+          box-shadow: 0 8px 24px rgba(217, 119, 6, 0.6);
         }
 
         /* Body Area — Compact, Balanced & Breathing (At Red Limit Line) */
@@ -478,8 +492,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         .grade-pill {
           font-size: 9.5px;
           font-weight: 700;
-          color: #4f46e5;
-          background: #eef2ff;
+          color: #475569;
+          background: #f1f5f9;
+          border: 1px solid rgba(203, 213, 225, 0.8);
           padding: 2px 6px;
           border-radius: 5px;
           white-space: nowrap;
@@ -499,9 +514,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         }
 
         .access-badge.free {
-          color: #059669;
-          background: #ecfdf5;
-          border: 1px solid rgba(16, 185, 129, 0.3);
+          color: #d97706;
+          background: #fffbeb;
+          border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
         .access-badge.sub {

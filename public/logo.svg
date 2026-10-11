@@ -18,10 +18,10 @@
       <stop offset="100%" stop-color="#FBBF24"/>
     </linearGradient>
 
-    <!-- Pétale 4 (Haut-Gauche) : Noir Ardoise / Titane Prestige Sunubiblio -->
+    <!-- Pétale 4 (Haut-Gauche) : Ambre Chaud Profond / Or Flamboyant -->
     <linearGradient id="pet4" x1="100%" y1="100%" x2="0%" y2="0%">
-      <stop offset="0%" stop-color="#334155"/>
-      <stop offset="100%" stop-color="#0F172A"/>
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#EA580C"/>
     </linearGradient>
   </defs>
 

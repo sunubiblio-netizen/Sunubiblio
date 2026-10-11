@@ -12,10 +12,10 @@
       <stop offset="100%" stop-color="#D97706" />
     </linearGradient>
 
-    <!-- Dégradé Pétale 3 (Bas Gauche) : Noir Ardoise / Titane Prestige -->
+    <!-- Dégradé Pétale 3 (Bas Gauche) : Or Flamboyant / Ambre Chaud -->
     <linearGradient id="sunuIaG3" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#334155" />
-      <stop offset="100%" stop-color="#0F172A" />
+      <stop offset="0%" stop-color="#FBBF24" />
+      <stop offset="100%" stop-color="#EA580C" />
     </linearGradient>
 
     <!-- Lueur subtile du noyau intelligent aux reflets or solaire -->
