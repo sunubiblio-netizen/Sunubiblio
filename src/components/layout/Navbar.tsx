@@ -48,7 +48,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   const isExercices = pathname === '/exercices' || pathname.startsWith('/exercices/');
   const isIA = pathname === '/ia' || pathname.startsWith('/ia/');
   return (
-    <header className={`navbar-wrapper ${hideOnMobile ? 'desktop-only-navbar' : ''}`}>
+    <header
+      className={`navbar-wrapper ${hideOnMobile ? 'desktop-only-navbar' : ''}`}
+      style={{ backgroundColor: '#ffffff' }}
+    >
       {/* =========================================================
           1. HEADER DESKTOP / TABLETTE (Inchangé - Disposition fluide)
           ========================================================= */}
@@ -67,34 +70,34 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
             <span className="brand-name">Sunubiblio</span>
           </Link>
-
-          {/* Navigation essentielle visible sur Desktop : Bibliothèque, Éducation, Concours */}
-          <nav className="essential-nav-links desktop-only" aria-label="Navigation principale essentielle">
-            <Link
-              href="/bibliotheque"
-              className={`essential-nav-link ${isBibliotheque ? 'active' : ''}`}
-            >
-              <span>Bibliothèque</span>
-              {isBibliotheque && <span className="active-indicator" />}
-            </Link>
-
-            <Link
-              href="/education"
-              className={`essential-nav-link ${isEducation ? 'active' : ''}`}
-            >
-              <span>Éducation</span>
-              {isEducation && <span className="active-indicator" />}
-            </Link>
-
-            <Link
-              href="/concours"
-              className={`essential-nav-link ${isConcours ? 'active' : ''}`}
-            >
-              <span>Concours</span>
-              {isConcours && <span className="active-indicator" />}
-            </Link>
-          </nav>
         </div>
+
+        {/* Navigation essentielle visible sur Desktop : Bibliothèque, Éducation, Concours */}
+        <nav className="essential-nav-links desktop-only" aria-label="Navigation principale essentielle">
+          <Link
+            href="/bibliotheque"
+            className={`essential-nav-link ${isBibliotheque ? 'active' : ''}`}
+          >
+            <span>Bibliothèque</span>
+            {isBibliotheque && <span className="active-indicator" />}
+          </Link>
+
+          <Link
+            href="/education"
+            className={`essential-nav-link ${isEducation ? 'active' : ''}`}
+          >
+            <span>Éducation</span>
+            {isEducation && <span className="active-indicator" />}
+          </Link>
+
+          <Link
+            href="/concours"
+            className={`essential-nav-link ${isConcours ? 'active' : ''}`}
+          >
+            <span>Concours</span>
+            {isConcours && <span className="active-indicator" />}
+          </Link>
+        </nav>
 
         {/* DROITE : [Aide] + [Notifications] + [SunuIA] + [Applications] + [Avatar] */}
         <div className="nav-right-actions">
@@ -131,8 +134,14 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* =========================================================
           2. HEADER MOBILE EXCLUSIF : UNE SEULE LIGNE COMPACTE & ÉLÉGANTE
           ========================================================= */}
-      <div className="navbar-mobile-header mobile-only">
-        <div className="mobile-header-single-row">
+      <div
+        className="navbar-mobile-header mobile-only"
+        style={{ backgroundColor: '#ffffff' }}
+      >
+        <div
+          className="mobile-header-single-row"
+          style={{ backgroundColor: '#ffffff' }}
+        >
           {/* GAUCHE : [Menu Hot Dog] + [Logo] + [Sunubiblio] */}
           <div className="mobile-header-left-group">
             <UserMenu onOpenAuth={onOpenAuth} triggerVariant="hotdog" />

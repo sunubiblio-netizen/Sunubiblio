@@ -364,11 +364,10 @@ input {
   left: 0 !important;
   right: 0 !important;
   z-index: 1000 !important;
-  background: rgba(255, 255, 255, 0.94) !important;
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03) !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07) !important;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04) !important;
   transition: all 0.2s ease;
   width: 100%;
   flex-shrink: 0;
@@ -15933,18 +15932,17 @@ input {
    RESPONSIVE NAVIGATION MOBILE
    ========================================================================== */
 @media (max-width: 768px) {
-  /* Navbar mobile avec fond blanc / crème flouté protecteur */
+  /* Navbar mobile avec fond blanc pur 100% opaque (#ffffff) */
   .navbar-wrapper {
     position: sticky !important;
     top: 0 !important;
     left: 0 !important;
     right: 0 !important;
     z-index: 1000 !important;
-    background: rgba(255, 255, 255, 0.95) !important;
-    backdrop-filter: blur(16px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05) !important;
   }
 
   /* Masquer le conteneur desktop unique */
@@ -15952,12 +15950,14 @@ input {
     display: none !important;
   }
 
-  /* Header mobile en une seule ligne élégante et compacte */
+  /* Header mobile en une seule ligne élégante et compacte sur fond blanc pur */
   .navbar-mobile-header {
     display: flex !important;
-    flex-direction: column;
-    width: 100%;
-    padding-top: env(safe-area-inset-top, 0px);
+    flex-direction: column !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    padding-top: env(safe-area-inset-top, 0px) !important;
   }
 
   .mobile-header-single-row {
@@ -15967,7 +15967,10 @@ input {
     padding: 0 12px !important;
     height: 54px !important;
     width: 100% !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
     box-sizing: border-box !important;
+    flex-wrap: nowrap !important;
   }
 
   .mobile-header-left-group {
@@ -15975,6 +15978,8 @@ input {
     align-items: center !important;
     gap: 8px !important;
     flex-shrink: 0 !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
   }
 
   .mobile-brand-link {
@@ -15983,6 +15988,8 @@ input {
     gap: 7px !important;
     text-decoration: none !important;
     line-height: 1 !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
   }
 
   .mobile-brand-link .brand-logo-wrap {
@@ -15992,6 +15999,7 @@ input {
     align-items: center !important;
     justify-content: center !important;
     line-height: 0 !important;
+    flex-shrink: 0 !important;
   }
 
   .mobile-brand-link .brand-name {
@@ -16003,6 +16011,7 @@ input {
     margin: 0 !important;
     padding: 0 !important;
     display: inline-block !important;
+    white-space: nowrap !important;
   }
 
   /* Groupe compact des actions de droite : [🔔] [SunuIA] [⋮] */
@@ -16011,6 +16020,7 @@ input {
     align-items: center !important;
     gap: 8px !important;
     flex-shrink: 0 !important;
+    flex-wrap: nowrap !important;
   }
 
   .mobile-actions-right-group .header-icon-btn,
