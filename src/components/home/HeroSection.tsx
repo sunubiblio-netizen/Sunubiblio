@@ -50,7 +50,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
             <input
               type="text"
               className="hero-search-input"
-              placeholder="Rechercher un livre, un cours, une annale, un document..."
+              placeholder="Rechercher..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Rechercher"

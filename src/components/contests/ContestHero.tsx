@@ -64,7 +64,7 @@ export const ContestHero: React.FC<ContestHeroProps> = ({
             <input
               type="text"
               className="contest-search-input"
-              placeholder="Rechercher un concours (ex: FASTEF, ENA, Police, Douanes, CREM)..."
+              placeholder="Rechercher..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               aria-label="Rechercher un concours"

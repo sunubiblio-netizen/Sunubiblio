@@ -69,7 +69,7 @@ export const ReligionHero: React.FC<ReligionHeroProps> = ({
           <input
             type="text"
             className="lib-search-input"
-            placeholder="Rechercher un livre, enseignement, texte, conférence, document, auteur, tradition..."
+            placeholder="Rechercher..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             aria-label="Rechercher dans les traditions religieuses et spirituelles"

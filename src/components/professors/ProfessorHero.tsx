@@ -70,7 +70,7 @@ export const ProfessorHero: React.FC<ProfessorHeroProps> = ({
               className="professors-search-input"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Rechercher une matière, un professeur, une ville ou un pays..."
+              placeholder="Rechercher..."
               aria-label="Rechercher une matière, un professeur, une ville ou un pays"
             />
             {searchQuery && (

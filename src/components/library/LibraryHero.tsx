@@ -47,7 +47,7 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
           <input
             type="text"
             className="lib-search-input"
-            placeholder="Rechercher un livre, un cours, une annale, un exercice..."
+            placeholder="Rechercher..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             aria-label="Rechercher dans la bibliothèque"
