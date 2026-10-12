@@ -9,12 +9,14 @@ export const EducationCTA: React.FC = () => {
       <div className="container">
         <div className="cta-card">
           <div className="cta-content">
-            <div className="badge-pill cta-badge">
-              <span className="badge-dot" />
-              <span>Plateforme Universelle</span>
+            <div className="cta-badge-pill">
+              <span className="badge-pulse-dot" />
+              <span>Plateforme universelle</span>
             </div>
 
-            <h2 className="cta-title">Votre apprentissage commence ici</h2>
+            <h2 className="cta-title">
+              Votre <span className="cta-title-accent">apprentissage</span> commence ici
+            </h2>
 
             <p className="cta-description">
               Trouvez les ressources dont vous avez besoin et avancez à votre rythme avec
@@ -26,14 +28,9 @@ export const EducationCTA: React.FC = () => {
               <Link
                 href="/bibliotheque"
                 className="cta-btn"
-                style={{
-                  background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                  boxShadow: '0 8px 24px -4px rgba(217, 119, 6, 0.45)',
-                  color: '#ffffff',
-                }}
               >
                 <span>Explorer la bibliothèque</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12" />
                   <polyline points="12 5 19 12 12 19" />
                 </svg>
@@ -69,7 +66,8 @@ export const EducationCTA: React.FC = () => {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          box-shadow: 0 24px 50px -12px rgba(15, 23, 42, 0.25);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.25);
         }
 
         .cta-content {
@@ -78,16 +76,26 @@ export const EducationCTA: React.FC = () => {
           z-index: 2;
         }
 
-        .cta-badge {
-          background: rgba(255, 255, 255, 0.12);
-          color: #ffffff;
-          border-color: rgba(255, 255, 255, 0.2);
+        .cta-badge-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 14px;
+          background: rgba(245, 158, 11, 0.12);
+          border: 1px solid rgba(245, 158, 11, 0.3);
+          border-radius: 9999px;
+          font-size: 12.5px;
+          font-weight: 700;
+          color: #fbbf24;
           margin-bottom: 18px;
         }
 
-        .cta-badge :global(.badge-dot) {
+        .badge-pulse-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
           background: #f59e0b;
-          box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+          box-shadow: 0 0 8px rgba(245, 158, 11, 0.7);
         }
 
         .cta-title {
@@ -97,6 +105,13 @@ export const EducationCTA: React.FC = () => {
           margin: 0 0 14px;
           line-height: 1.22;
           letter-spacing: -0.025em;
+        }
+
+        .cta-title-accent {
+          background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          display: inline;
         }
 
         .cta-description {
@@ -115,21 +130,32 @@ export const EducationCTA: React.FC = () => {
         .cta-btn {
           display: inline-flex;
           align-items: center;
-          gap: 10px;
-          padding: 14px 28px;
-          font-size: 15px;
+          justify-content: center;
+          gap: 9px;
+          height: 46px;
+          padding: 0 26px;
+          font-size: 14.5px;
           font-weight: 700;
-          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-          color: #ffffff;
-          border-radius: var(--radius-full, 9999px);
-          box-shadow: 0 8px 24px -4px rgba(217, 119, 6, 0.4);
-          transition: all 0.2s ease;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+          color: #ffffff !important;
+          border-radius: 9999px !important;
+          border: none !important;
+          outline: none !important;
+          box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4) !important;
+          text-decoration: none;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .cta-btn:hover {
           transform: translateY(-2px);
-          background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%);
-          box-shadow: 0 12px 28px -4px rgba(217, 119, 6, 0.55);
+          background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%) !important;
+          box-shadow: 0 6px 20px rgba(217, 119, 6, 0.52) !important;
+          color: #ffffff !important;
+        }
+
+        .cta-btn:active {
+          transform: translateY(0);
         }
 
         .cta-graphic {

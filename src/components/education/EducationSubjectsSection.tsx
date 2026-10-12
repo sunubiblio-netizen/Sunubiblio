@@ -108,9 +108,9 @@ export const EducationSubjectsSection: React.FC<EducationSubjectsSectionProps> =
       <div className="container">
         {/* Section Header */}
         <div className="subjects-center-header">
-          <div className="badge-pill section-badge">
-            <span className="badge-dot" />
-            <span>Matières Fondamentales</span>
+          <div className="subjects-badge-pill">
+            <span className="badge-pulse-dot" />
+            <span>Matières fondamentales</span>
           </div>
 
           <h2 className="section-title">
@@ -190,9 +190,26 @@ export const EducationSubjectsSection: React.FC<EducationSubjectsSectionProps> =
           margin: 0 auto 44px;
         }
 
-        .section-badge {
+        .subjects-badge-pill {
           display: inline-flex;
-          margin-bottom: 14px;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 14px;
+          background: rgba(245, 158, 11, 0.08);
+          border: 1px solid rgba(245, 158, 11, 0.25);
+          border-radius: 9999px;
+          font-size: 12.5px;
+          font-weight: 700;
+          color: #b45309;
+          margin-bottom: 16px;
+        }
+
+        .badge-pulse-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #f59e0b;
+          box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
         }
 
         .section-title {
