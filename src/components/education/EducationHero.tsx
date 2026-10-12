@@ -31,15 +31,9 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
       </div>
 
       <div className="container edu-hero-container">
-        {/* Badge officiel harmonisé */}
-        <div className="edu-hero-badge">
-          <span className="badge-pulse-dot" />
-          <span>Programmes officiels du Sénégal</span>
-        </div>
-
-        {/* Title Centered & Harmonisé */}
+        {/* Title Centered */}
         <h1 className="edu-hero-title">
-          Votre <span className="edu-title-accent">parcours scolaire</span> commence ici
+          Votre parcours scolaire commence ici
         </h1>
 
         {/* Subtitle Centered */}
@@ -93,32 +87,12 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
         .edu-hero-wrapper {
           position: relative;
           padding: 48px 0 36px 0;
-          overflow: hidden;
-          background: linear-gradient(180deg, transparent 0%, rgba(254, 249, 195, 0.22) 70%, transparent 100%);
+          background: transparent;
           border-bottom: none;
         }
 
         .edu-hero-ambient {
-          position: absolute;
-          inset: 0;
-          overflow: hidden;
-          pointer-events: none;
-        }
-
-        .ambient-blob {
-          position: absolute;
-          border-radius: 50%;
-          filter: blur(60px);
-          opacity: 0.55;
-        }
-
-        .blob-sun {
-          width: 520px;
-          height: 340px;
-          top: -80px;
-          left: 50%;
-          transform: translateX(-50%);
-          background: radial-gradient(circle, rgba(254, 240, 138, 0.4) 0%, rgba(254, 249, 195, 0.22) 50%, transparent 75%);
+          display: none;
         }
 
         .edu-hero-container {
@@ -132,28 +106,6 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
           z-index: 1;
         }
 
-        .edu-hero-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 6px 14px;
-          background: rgba(245, 158, 11, 0.08);
-          border: 1px solid rgba(245, 158, 11, 0.25);
-          border-radius: 9999px;
-          font-size: 12.5px;
-          font-weight: 700;
-          color: #b45309;
-          margin-bottom: 16px;
-        }
-
-        .badge-pulse-dot {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: #f59e0b;
-          box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
-        }
-
         .edu-hero-title {
           font-size: clamp(28px, 4vw, 42px);
           font-weight: 800;
@@ -161,12 +113,6 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
           line-height: 1.18;
           letter-spacing: -0.03em;
           margin-bottom: 14px;
-        }
-
-        .edu-title-accent {
-          background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
         }
 
         .edu-hero-subtitle {
@@ -193,8 +139,8 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
         }
 
         .edu-search-capsule:focus-within {
-          border-color: rgba(234, 179, 8, 0.5);
-          box-shadow: 0 12px 32px -4px rgba(234, 179, 8, 0.12), 0 0 0 3px rgba(254, 240, 138, 0.35);
+          border-color: rgba(15, 23, 42, 0.4);
+          box-shadow: 0 12px 32px -4px rgba(15, 23, 42, 0.08), 0 0 0 3px rgba(226, 232, 240, 0.6);
           transform: translateY(-1px);
         }
 
@@ -245,21 +191,20 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          padding: 10px 24px;
+          padding: 10px 22px;
           font-size: 14px;
-          font-weight: 700;
+          font-weight: 600;
           border-radius: var(--radius-full);
-          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+          background: #0f172a !important;
           color: #ffffff !important;
           border: none !important;
-          box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35) !important;
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15) !important;
           cursor: pointer;
           transition: all var(--transition-normal);
         }
 
         .edu-search-btn:hover {
-          background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%) !important;
-          box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45) !important;
+          background: #1e293b !important;
           transform: translateY(-1px);
         }
 
