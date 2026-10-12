@@ -115,35 +115,13 @@ export default function EducationPage() {
           display: flex;
           flex-direction: column;
           position: relative;
-          background: #f8fafc;
-          overflow-x: hidden;
-        }
-
-        /* Ambiance Bleu Ciel Nuageux Doux & Vaporeux */
-        .education-page-wrapper::before {
-          content: '';
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          pointer-events: none;
-          z-index: 0;
-          background:
-            /* Lueur haute droite : Azur ciel aéré doux */
-            radial-gradient(circle at 85% 12%, rgba(186, 230, 253, 0.52) 0%, rgba(224, 242, 254, 0.28) 35%, transparent 65%),
-            /* Lueur latérale gauche : Nuage vaporeux bleu pastel */
-            radial-gradient(circle at 10% 42%, rgba(199, 210, 254, 0.32) 0%, rgba(224, 242, 254, 0.25) 30%, transparent 60%),
-            /* Lueur basse droite : Reflet ciel pur feutré */
-            radial-gradient(circle at 85% 75%, rgba(186, 230, 253, 0.42) 0%, rgba(240, 249, 255, 0.22) 40%, transparent 70%),
-            /* Dégradé de fond ciel nuageux très subtil */
-            linear-gradient(180deg, #f0f7ff 0%, #f8fafc 42%, #f0f7ff 100%);
+          background: #ffffff;
         }
 
         .education-main {
           flex: 1;
           position: relative;
-          z-index: 1;
+          background: #ffffff;
         }
       `}</style>
     </div>
