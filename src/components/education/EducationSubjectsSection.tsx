@@ -237,9 +237,7 @@ export const EducationSubjectsSection: React.FC<EducationSubjectsSectionProps> =
         }
 
         .subjects-title-accent {
-          background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+          color: var(--text-heading, #0f172a);
           display: inline-block;
         }
 
@@ -310,9 +308,9 @@ export const EducationSubjectsSection: React.FC<EducationSubjectsSectionProps> =
         .selected-tag {
           font-size: 11px;
           font-weight: 700;
-          color: #b45309;
-          background: #fef3c7;
-          border: 1px solid rgba(245, 158, 11, 0.3);
+          color: #0f172a;
+          background: #e2e8f0;
+          border: 1px solid #cbd5e1;
           padding: 2px 8px;
           border-radius: 999px;
         }

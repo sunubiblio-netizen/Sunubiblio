@@ -114,7 +114,7 @@ export default function EducationPage() {
           min-height: 100vh;
           display: flex;
           flex-direction: column;
-          background: #f8fafc;
+          background: #f1f5f9;
           position: relative;
         }
 

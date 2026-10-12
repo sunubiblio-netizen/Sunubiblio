@@ -192,12 +192,12 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           align-items: center;
           gap: 7px;
           padding: 6px 14px;
-          background: rgba(245, 158, 11, 0.08);
-          border: 1px solid rgba(245, 158, 11, 0.25);
+          background: #e2e8f0;
+          border: 1px solid #cbd5e1;
           border-radius: 9999px;
           font-size: 12.5px;
           font-weight: 700;
-          color: #b45309;
+          color: #334155;
           margin-bottom: 14px;
         }
 
@@ -205,14 +205,11 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           width: 7px;
           height: 7px;
           border-radius: 50%;
-          background: #f59e0b;
-          box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+          background: #475569;
         }
 
         .levels-title-accent {
-          background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+          color: #0f172a;
           display: inline-block;
         }
 
@@ -306,7 +303,7 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
         .edu-card-subtitle {
           font-size: 12.5px;
           font-weight: 600;
-          color: #b45309;
+          color: #64748b;
           margin-bottom: 10px;
         }
 
@@ -336,9 +333,8 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
         }
 
         .edu-grade-more {
-          color: #b45309;
-          background: #fef3c7;
-          border: 1px solid rgba(245, 158, 11, 0.3);
+          color: #475569;
+          background: #e2e8f0;
           font-weight: 700;
         }
 
