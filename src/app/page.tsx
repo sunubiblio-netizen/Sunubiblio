@@ -89,6 +89,7 @@ export default function HomePage() {
           display: flex;
           flex-direction: column;
           position: relative;
+          background: #ffffff !important;
         }
 
         main {
