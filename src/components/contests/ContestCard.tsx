@@ -328,13 +328,17 @@ export const ContestCard: React.FC<ContestCardProps> = ({
 
         .card-action {
           margin-top: auto;
+          display: flex;
+          justify-content: center;
+          padding-top: 6px;
         }
 
         .view-contest-btn {
-          width: 100%;
-          height: 40px;
-          padding: 0 16px;
-          font-size: 13.5px;
+          width: auto;
+          min-width: 160px;
+          height: 38px;
+          padding: 0 22px;
+          font-size: 13px;
           font-weight: 700;
           border-radius: 9999px;
           background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
@@ -344,14 +348,14 @@ export const ContestCard: React.FC<ContestCardProps> = ({
           align-items: center;
           justify-content: center;
           gap: 8px;
-          box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3) !important;
+          box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25) !important;
           cursor: pointer;
           transition: all 0.2s ease;
         }
 
         .view-contest-btn:hover {
           background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%) !important;
-          box-shadow: 0 6px 16px rgba(217, 119, 6, 0.45) !important;
+          box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4) !important;
           transform: translateY(-1px);
         }
       `}</style>

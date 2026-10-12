@@ -13,7 +13,7 @@ interface ContextualTab {
 
 interface ContextConfig {
   rootPath: string;
-  badge: string;
+  badge?: string;
   title: string;
   tabs: ContextualTab[];
 }
@@ -22,7 +22,6 @@ const CONTEXT_CONFIGS: ContextConfig[] = [
   // 1. Concours
   {
     rootPath: '/concours',
-    badge: 'Module Officiel',
     title: 'Concours & Examens',
     tabs: [
       { id: 'all', label: 'Vue d’ensemble', href: '/concours' },
@@ -118,10 +117,12 @@ export const ContextualNavigation: React.FC = () => {
     <nav className="contextual-nav-bar" aria-label={`Navigation contextuelle pour ${currentConfig.title}`}>
       <div className="container contextual-nav-container">
         {/* Badge contextuel compact */}
-        <div className="contextual-header-tag">
-          <span className="context-indicator-dot" />
-          <span className="context-badge-text">{currentConfig.badge}</span>
-        </div>
+        {currentConfig.badge && (
+          <div className="contextual-header-tag">
+            <span className="context-indicator-dot" />
+            <span className="context-badge-text">{currentConfig.badge}</span>
+          </div>
+        )}
 
         {/* Liste des onglets horizontaux avec scroll tactile sur mobile */}
         <div className="contextual-tabs-scroll">
