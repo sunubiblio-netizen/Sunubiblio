@@ -48,11 +48,11 @@ export const EducationCTA: React.FC = () => {
       <style jsx>{`
         .education-cta-section {
           padding: 40px 0 70px;
-          background: #ffffff;
+          background: transparent;
         }
 
         .cta-card {
-          background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #311042 100%);
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #334155 100%);
           border-radius: 28px;
           padding: 56px 60px;
           color: #ffffff;
@@ -78,8 +78,8 @@ export const EducationCTA: React.FC = () => {
         }
 
         .cta-badge :global(.badge-dot) {
-          background: #38bdf8;
-          box-shadow: 0 0 8px #38bdf8;
+          background: #f59e0b;
+          box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
         }
 
         .cta-title {
@@ -111,16 +111,17 @@ export const EducationCTA: React.FC = () => {
           padding: 14px 28px;
           font-size: 15px;
           font-weight: 700;
-          background: linear-gradient(135deg, #6366f1 0%, #9333ea 100%);
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
           color: #ffffff;
-          border-radius: var(--radius-md, 12px);
-          box-shadow: 0 8px 24px -4px rgba(99, 102, 241, 0.5);
+          border-radius: var(--radius-full, 9999px);
+          box-shadow: 0 8px 24px -4px rgba(217, 119, 6, 0.4);
           transition: all 0.2s ease;
         }
 
         .cta-btn:hover {
           transform: translateY(-2px);
-          box-shadow: 0 12px 28px -4px rgba(99, 102, 241, 0.65);
+          background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%);
+          box-shadow: 0 12px 28px -4px rgba(217, 119, 6, 0.55);
         }
 
         .cta-graphic {

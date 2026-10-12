@@ -181,9 +181,9 @@ export const EducationSubjectsSection: React.FC<EducationSubjectsSectionProps> =
       <style jsx>{`
         .subjects-section {
           padding: 60px 0 54px;
-          background: #f8fafc;
-          border-top: 1px solid var(--border-subtle, #e2e8f0);
-          border-bottom: 1px solid var(--border-subtle, #e2e8f0);
+          background: transparent;
+          border-top: none;
+          border-bottom: none;
         }
 
         .subjects-center-header {

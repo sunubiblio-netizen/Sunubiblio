@@ -33,14 +33,12 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
       <div className="container edu-hero-container">
         {/* Title Centered */}
         <h1 className="edu-hero-title">
-          Apprenez, progressez et préparez votre réussite
+          Votre parcours scolaire commence ici
         </h1>
 
         {/* Subtitle Centered */}
         <p className="edu-hero-subtitle">
-          Retrouvez des ressources éducatives adaptées à votre niveau, de l’école au
-          supérieur. Cours, exercices corrigés, annales et fiches de révision conformes aux
-          programmes du Sénégal.
+          Explorez les niveaux d’études, découvrez chaque matière et trouvez les ressources adaptées à vos objectifs, conformément aux programmes scolaires officiels du Sénégal.
         </p>
 
         {/* Search Bar Capsule (Identique exacte à la Bibliothèque) */}

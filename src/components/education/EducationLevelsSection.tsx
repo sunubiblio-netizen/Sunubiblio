@@ -174,7 +174,7 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
       <style jsx>{`
         .levels-section-wrap {
           padding: 64px 0 54px;
-          background: #ffffff;
+          background: transparent;
         }
 
         /* Scoped Centered Header without class conflicts */
