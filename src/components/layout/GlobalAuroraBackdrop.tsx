@@ -13,8 +13,8 @@ import { usePathname } from 'next/navigation';
 export const GlobalAuroraBackdrop: React.FC = () => {
   const pathname = usePathname();
 
-  // Ne pas afficher sur la page éducation qui demande un fond blanc pur sans halos
-  if (pathname?.startsWith('/education')) {
+  // Ne pas afficher sur les pages éducation et bibliothèque qui demandent un fond blanc pur
+  if (pathname?.startsWith('/education') || pathname?.startsWith('/bibliotheque')) {
     return null;
   }
 
