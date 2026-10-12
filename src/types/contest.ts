@@ -84,6 +84,7 @@ export interface Contest {
   resourcesCount: number;
   isPopular: boolean;
   coverGradient: string;
+  coverImage?: string;
   badgeColor: string;
   subjects: ContestSubject[];
   conditions: ContestCondition[];

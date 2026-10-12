@@ -81,7 +81,15 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         <div className="header-glow" style={{ background: contest.coverGradient }} />
         <div className="header-content">
           <div className="contest-emblem-badge">
-            <span>{contest.name}</span>
+            {contest.coverImage ? (
+              <img
+                src={contest.coverImage}
+                alt={contest.name}
+                className="detail-emblem-img"
+              />
+            ) : (
+              <span>{contest.name}</span>
+            )}
           </div>
 
           <div className="header-titles">
@@ -728,18 +736,24 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .contest-emblem-badge {
-          width: 72px;
-          height: 72px;
+          width: 80px;
+          height: 80px;
           border-radius: 18px;
-          background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
-          color: #ffffff;
-          font-size: 18px;
-          font-weight: 900;
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          padding: 8px;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
-          box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+          box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+          overflow: hidden;
+        }
+
+        .detail-emblem-img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
         }
 
         .header-titles {

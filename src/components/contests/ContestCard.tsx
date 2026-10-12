@@ -33,8 +33,24 @@ export const ContestCard: React.FC<ContestCardProps> = ({
 
   return (
     <article className="contest-card" onClick={() => onSelectContest(contest)}>
-      {/* Top Banner with gradient emblem */}
-      <div className="card-banner" style={{ background: contest.coverGradient }}>
+      {/* Top Banner with official image / emblem */}
+      <div className="card-banner">
+        {contest.coverImage ? (
+          <div className="banner-image-wrapper">
+            <img
+              src={contest.coverImage}
+              alt={contest.name}
+              className={`contest-cover-media ${contest.id === 'esp_ept' ? 'media-cover' : 'media-contain'}`}
+            />
+          </div>
+        ) : (
+          <div className="banner-fallback" style={{ background: contest.coverGradient }}>
+            <div className="emblem-box">
+              <span className="emblem-initials">{contest.name.slice(0, 3)}</span>
+            </div>
+          </div>
+        )}
+
         <div className="banner-top-meta">
           <span className="domain-pill">{getDomainLabel(contest.domain)}</span>
           <span className={`status-tag ${contest.status}`}>
@@ -42,11 +58,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({
           </span>
         </div>
 
-        {/* Center emblem */}
-        <div className="banner-emblem-wrap">
-          <div className="emblem-box">
-            <span className="emblem-initials">{contest.name.slice(0, 3)}</span>
-          </div>
+        <div className="banner-bottom-meta">
           <span className="session-tag">Session {contest.sessionYear}</span>
         </div>
       </div>
@@ -115,57 +127,105 @@ export const ContestCard: React.FC<ContestCardProps> = ({
         }
 
         .card-banner {
-          height: 124px;
-          padding: 12px 16px;
+          height: 136px;
+          padding: 10px 14px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
           position: relative;
+          background: #ffffff;
+          border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+          overflow: hidden;
+        }
+
+        .banner-image-wrapper {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 12px 16px;
+          background: #ffffff;
+        }
+
+        .contest-cover-media {
+          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .contest-card:hover .contest-cover-media {
+          transform: scale(1.05);
+        }
+
+        .contest-cover-media.media-contain {
+          max-height: 82px;
+          max-width: 84%;
+          object-fit: contain;
+          filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.04));
+        }
+
+        .contest-cover-media.media-cover {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .banner-fallback {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .banner-top-meta {
+          position: relative;
+          z-index: 2;
           display: flex;
           align-items: center;
           justify-content: space-between;
+        }
+
+        .banner-bottom-meta {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          justify-content: flex-end;
         }
 
         .domain-pill {
           font-size: 10.5px;
           font-weight: 700;
-          color: #ffffff;
-          background: rgba(0, 0, 0, 0.35);
-          backdrop-filter: blur(8px);
-          padding: 3px 8px;
+          color: #0f172a;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(10px);
+          padding: 3px 9px;
           border-radius: var(--radius-full);
+          border: 1px solid rgba(226, 232, 240, 0.95);
+          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
         }
 
         .status-tag {
           font-size: 10.5px;
           font-weight: 800;
-          padding: 3px 8px;
+          padding: 3px 9px;
           border-radius: var(--radius-full);
-          backdrop-filter: blur(8px);
+          backdrop-filter: blur(10px);
+          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
         }
 
         .status-tag.open {
-          background: rgba(16, 185, 129, 0.9);
+          background: rgba(16, 185, 129, 0.92);
           color: #ffffff;
         }
 
         .status-tag.upcoming {
-          background: rgba(59, 130, 246, 0.9);
+          background: rgba(59, 130, 246, 0.92);
           color: #ffffff;
         }
 
         .status-tag.closed {
-          background: rgba(100, 116, 139, 0.9);
+          background: rgba(100, 116, 139, 0.92);
           color: #ffffff;
-        }
-
-        .banner-emblem-wrap {
-          display: flex;
-          align-items: center;
-          gap: 10px;
         }
 
         .emblem-box {
@@ -188,10 +248,15 @@ export const ContestCard: React.FC<ContestCardProps> = ({
         }
 
         .session-tag {
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 700;
-          color: rgba(255, 255, 255, 0.9);
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+          color: #475569;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(8px);
+          padding: 2px 8px;
+          border-radius: 6px;
+          border: 1px solid rgba(226, 232, 240, 0.95);
+          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
         }
 
         /* Body */
@@ -204,9 +269,10 @@ export const ContestCard: React.FC<ContestCardProps> = ({
 
         .title-row {
           display: flex;
-          align-items: center;
+          align-items: baseline;
           justify-content: space-between;
           margin-bottom: 6px;
+          gap: 8px;
         }
 
         .contest-name {
@@ -214,6 +280,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({
           font-weight: 800;
           color: #0f172a;
           letter-spacing: -0.02em;
+          flex-shrink: 0;
         }
 
         .level-badge {
@@ -224,6 +291,9 @@ export const ContestCard: React.FC<ContestCardProps> = ({
           padding: 2px 7px;
           border-radius: 6px;
           white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 180px;
         }
 
         .contest-desc {

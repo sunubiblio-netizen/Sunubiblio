@@ -66,6 +66,7 @@ export const MOCK_CONTESTS: Contest[] = [
     resourcesCount: 284,
     isPopular: true,
     coverGradient: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
+    coverImage: '/images/concours/fastef.png',
     badgeColor: '#3b82f6',
     subjects: [
       {
@@ -241,6 +242,7 @@ export const MOCK_CONTESTS: Contest[] = [
     resourcesCount: 245,
     isPopular: true,
     coverGradient: 'linear-gradient(135deg, #311042 0%, #581c87 50%, #7e22ce 100%)',
+    coverImage: '/images/concours/ena.jpg',
     badgeColor: '#9333ea',
     subjects: [
       {
@@ -365,6 +367,7 @@ export const MOCK_CONTESTS: Contest[] = [
     resourcesCount: 196,
     isPopular: true,
     coverGradient: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)',
+    coverImage: '/images/concours/crem.jpg',
     badgeColor: '#10b981',
     subjects: [
       {
@@ -482,6 +485,7 @@ export const MOCK_CONTESTS: Contest[] = [
     resourcesCount: 142,
     isPopular: true,
     coverGradient: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)',
+    coverImage: '/images/concours/police.jpg',
     badgeColor: '#0ea5e9',
     subjects: [
       {
@@ -588,6 +592,7 @@ export const MOCK_CONTESTS: Contest[] = [
     resourcesCount: 178,
     isPopular: true,
     coverGradient: 'linear-gradient(135deg, #172554 0%, #1e40af 50%, #2563eb 100%)',
+    coverImage: '/images/concours/douane.jpg',
     badgeColor: '#2563eb',
     subjects: [
       {
@@ -694,6 +699,7 @@ export const MOCK_CONTESTS: Contest[] = [
     resourcesCount: 115,
     isPopular: true,
     coverGradient: 'linear-gradient(135deg, #831843 0%, #9d174d 50%, #be185d 100%)',
+    coverImage: '/images/concours/ems.png',
     badgeColor: '#ec4899',
     subjects: [
       {
@@ -791,6 +797,7 @@ export const MOCK_CONTESTS: Contest[] = [
     resourcesCount: 160,
     isPopular: false,
     coverGradient: 'linear-gradient(135deg, #4a044e 0%, #701a75 50%, #86198f 100%)',
+    coverImage: '/images/concours/esp.jpg',
     badgeColor: '#d946ef',
     subjects: [
       {

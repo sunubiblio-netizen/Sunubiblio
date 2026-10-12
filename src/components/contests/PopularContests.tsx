@@ -44,7 +44,14 @@ export const PopularContests: React.FC<PopularContestsProps> = ({
 
             <div className="card-top">
               <div className="card-name-row">
-                <span className="contest-short-name">{contest.name}</span>
+                <div className="short-name-group">
+                  {contest.coverImage && (
+                    <div className="popular-logo-thumb">
+                      <img src={contest.coverImage} alt={contest.name} className="popular-thumb-img" />
+                    </div>
+                  )}
+                  <span className="contest-short-name">{contest.name}</span>
+                </div>
                 <span className={`status-pill ${contest.status}`}>
                   {contest.status === 'open' ? '● Ouvert' : '○ À venir'}
                 </span>
@@ -182,6 +189,33 @@ export const PopularContests: React.FC<PopularContestsProps> = ({
           align-items: center;
           justify-content: space-between;
           margin-bottom: 6px;
+        }
+
+        .short-name-group {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .popular-logo-thumb {
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          padding: 3px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+          flex-shrink: 0;
+        }
+
+        .popular-thumb-img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
         }
 
         .contest-short-name {
