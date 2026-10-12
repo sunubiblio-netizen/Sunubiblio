@@ -88,7 +88,7 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
           position: relative;
           padding: 48px 0 36px 0;
           overflow: hidden;
-          background: linear-gradient(180deg, transparent 0%, rgba(254, 249, 195, 0.15) 70%, transparent 100%);
+          background: linear-gradient(180deg, transparent 0%, rgba(224, 242, 254, 0.3) 70%, transparent 100%);
           border-bottom: none;
         }
 
@@ -102,17 +102,17 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
         .ambient-blob {
           position: absolute;
           border-radius: 50%;
-          filter: blur(60px);
-          opacity: 0.55;
+          filter: blur(65px);
+          opacity: 0.6;
         }
 
         .blob-sun {
-          width: 520px;
+          width: 560px;
           height: 340px;
           top: -80px;
           left: 50%;
           transform: translateX(-50%);
-          background: radial-gradient(circle, rgba(254, 240, 138, 0.35) 0%, rgba(254, 249, 195, 0.2) 50%, transparent 75%);
+          background: radial-gradient(circle, rgba(186, 230, 253, 0.5) 0%, rgba(224, 242, 254, 0.25) 50%, transparent 75%);
         }
 
         .edu-hero-container {
@@ -159,8 +159,8 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
         }
 
         .edu-search-capsule:focus-within {
-          border-color: rgba(234, 179, 8, 0.5);
-          box-shadow: 0 12px 32px -4px rgba(234, 179, 8, 0.12), 0 0 0 3px rgba(254, 240, 138, 0.35);
+          border-color: rgba(56, 189, 248, 0.6);
+          box-shadow: 0 12px 32px -4px rgba(14, 165, 233, 0.14), 0 0 0 3px rgba(186, 230, 253, 0.4);
           transform: translateY(-1px);
         }
 
