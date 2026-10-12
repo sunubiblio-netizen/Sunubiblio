@@ -192,12 +192,12 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           align-items: center;
           gap: 7px;
           padding: 6px 14px;
-          background: #e2e8f0;
-          border: 1px solid #cbd5e1;
+          background: rgba(245, 158, 11, 0.08);
+          border: 1px solid rgba(245, 158, 11, 0.25);
           border-radius: 9999px;
           font-size: 12.5px;
           font-weight: 700;
-          color: #334155;
+          color: #b45309;
           margin-bottom: 14px;
         }
 
@@ -205,11 +205,14 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           width: 7px;
           height: 7px;
           border-radius: 50%;
-          background: #475569;
+          background: #f59e0b;
+          box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
         }
 
         .levels-title-accent {
-          color: #0f172a;
+          background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
           display: inline-block;
         }
 

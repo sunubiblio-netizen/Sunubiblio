@@ -237,7 +237,9 @@ export const EducationSubjectsSection: React.FC<EducationSubjectsSectionProps> =
         }
 
         .subjects-title-accent {
-          color: var(--text-heading, #0f172a);
+          background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
           display: inline-block;
         }
 
