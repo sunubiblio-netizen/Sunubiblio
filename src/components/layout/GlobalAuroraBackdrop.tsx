@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { usePathname } from 'next/navigation';
 
 /**
  * GlobalAuroraBackdrop
@@ -10,6 +11,13 @@ import React from 'react';
  * (jaune doux / crème ensoleillé), inspiré de la Bibliothèque Sunubiblio.
  */
 export const GlobalAuroraBackdrop: React.FC = () => {
+  const pathname = usePathname();
+
+  // Ne pas afficher sur la page éducation qui demande un fond blanc pur sans halos
+  if (pathname?.startsWith('/education')) {
+    return null;
+  }
+
   return (
     <div className="global-aurora-backdrop" aria-hidden="true">
       <div className="aurora-orb orb-sun-top-left" />

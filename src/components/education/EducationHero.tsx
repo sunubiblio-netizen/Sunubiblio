@@ -87,7 +87,7 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
         .edu-hero-wrapper {
           position: relative;
           padding: 48px 0 36px 0;
-          background: transparent;
+          background: #ffffff;
           border-bottom: none;
         }
 

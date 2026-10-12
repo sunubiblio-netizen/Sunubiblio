@@ -114,13 +114,14 @@ export default function EducationPage() {
           min-height: 100vh;
           display: flex;
           flex-direction: column;
-          background: #f1f5f9;
+          background: #ffffff;
           position: relative;
         }
 
         .education-main {
           flex: 1;
           position: relative;
+          background: #ffffff;
         }
       `}</style>
     </div>
