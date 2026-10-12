@@ -217,11 +217,11 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
           .lib-hero-subtitle {
             font-size: 14px;
             margin-bottom: 20px;
-          }
-
           .lib-search-capsule {
-            padding: 6px 8px 6px 14px;
-            gap: 6px;
+            padding: 5px 6px 5px 16px;
+            min-height: 50px;
+            gap: 8px;
+            border-radius: 9999px;
           }
 
           .lib-search-input {
@@ -233,8 +233,16 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
           }
 
           .lib-search-btn {
-            padding: 9px 12px;
-            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            max-width: 40px;
+            padding: 0 !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            aspect-ratio: 1 / 1;
           }
         }
       `}</style>

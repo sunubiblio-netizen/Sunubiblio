@@ -160,14 +160,15 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
         /* Search Capsule */
         .edu-search-capsule {
           width: 100%;
-          max-width: 760px;
+          max-width: 720px;
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
           background: #ffffff;
-          padding: 8px 10px 8px 18px;
-          border-radius: var(--radius-full);
-          border: 1.5px solid rgba(226, 232, 240, 0.9);
+          padding: 6px 8px 6px 22px;
+          min-height: 56px;
+          border-radius: 9999px;
+          border: 1.5px solid rgba(226, 232, 240, 0.95);
           box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.05), 0 2px 8px rgba(15, 23, 42, 0.02);
           transition: all var(--transition-normal);
         }
@@ -224,11 +225,13 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
           flex-shrink: 0;
           display: inline-flex;
           align-items: center;
+          justify-content: center;
           gap: 8px;
-          padding: 10px 24px;
+          height: 44px;
+          padding: 0 22px;
           font-size: 14px;
           font-weight: 700;
-          border-radius: var(--radius-full);
+          border-radius: 9999px;
           background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
           color: #ffffff !important;
           border: none !important;
@@ -259,8 +262,10 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
           }
 
           .edu-search-capsule {
-            padding: 6px 8px 6px 14px;
-            gap: 6px;
+            padding: 5px 6px 5px 16px;
+            min-height: 50px;
+            gap: 8px;
+            border-radius: 9999px;
           }
 
           .edu-search-input {
@@ -272,8 +277,17 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
           }
 
           .edu-search-btn {
-            padding: 9px 12px;
-            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            max-width: 40px;
+            padding: 0 !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            aspect-ratio: 1 / 1;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.32) !important;
           }
         }
       `}</style>
