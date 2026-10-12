@@ -64,7 +64,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({
 
         <div className="meta-specs">
           <div className="spec-row">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
             </svg>
@@ -85,7 +85,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({
 
         {/* Action button */}
         <div className="card-action">
-          <button type="button" className="btn-primary view-contest-btn">
+          <button type="button" className="view-contest-btn">
             <span>Voir le concours</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="5" y1="12" x2="19" y2="12" />
@@ -110,8 +110,8 @@ export const ContestCard: React.FC<ContestCardProps> = ({
 
         .contest-card:hover {
           transform: translateY(-4px);
-          border-color: rgba(99, 102, 241, 0.4);
-          box-shadow: 0 16px 36px -6px rgba(79, 70, 229, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+          border-color: rgba(245, 158, 11, 0.45);
+          box-shadow: 0 14px 32px -6px rgba(217, 119, 6, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
         }
 
         .card-banner {
@@ -262,9 +262,27 @@ export const ContestCard: React.FC<ContestCardProps> = ({
 
         .view-contest-btn {
           width: 100%;
-          padding: 10px 16px;
+          height: 40px;
+          padding: 0 16px;
           font-size: 13.5px;
-          border-radius: var(--radius-md);
+          font-weight: 700;
+          border-radius: 9999px;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+          color: #ffffff !important;
+          border: none !important;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3) !important;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .view-contest-btn:hover {
+          background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%) !important;
+          box-shadow: 0 6px 16px rgba(217, 119, 6, 0.45) !important;
+          transform: translateY(-1px);
         }
       `}</style>
     </article>

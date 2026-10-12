@@ -79,10 +79,12 @@ export const ContestGrid: React.FC<ContestGridProps> = ({
       {/* Grid Header */}
       <div className="grid-header-row">
         <div className="title-block">
-          <h2 className="main-title">Tous les concours</h2>
+          <h2 className="main-title">
+            Tous les <span className="title-accent">concours nationaux</span>
+          </h2>
           <p className="subtitle">
             <span className="count-highlight">
-              {isFiltered ? `${totalCount} concours trouvé${totalCount > 1 ? 's' : ''}` : '128 concours disponibles'}
+              {isFiltered ? `${totalCount} concours trouvé${totalCount > 1 ? 's' : ''}` : `${totalCount} concours disponibles`}
             </span>
           </p>
         </div>
@@ -149,21 +151,27 @@ export const ContestGrid: React.FC<ContestGridProps> = ({
         }
 
         .main-title {
-          font-size: 22px;
+          font-size: 24px;
           font-weight: 800;
           color: #0f172a;
           letter-spacing: -0.02em;
-          margin-bottom: 2px;
+          margin-bottom: 4px;
+        }
+
+        .title-accent {
+          background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
         }
 
         .subtitle {
-          font-size: 13.5px;
+          font-size: 14px;
           color: #64748b;
         }
 
         .count-highlight {
           font-weight: 700;
-          color: #4f46e5;
+          color: #b45309;
         }
 
         .controls-block {
@@ -245,8 +253,23 @@ export const ContestGrid: React.FC<ContestGridProps> = ({
         }
 
         .reset-cta-btn {
-          padding: 10px 22px;
+          height: 42px;
+          padding: 0 22px;
           font-size: 14px;
+          font-weight: 700;
+          border-radius: 9999px;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+          color: #ffffff !important;
+          border: none !important;
+          box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35) !important;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .reset-cta-btn:hover {
+          background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%) !important;
+          box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45) !important;
+          transform: translateY(-1px);
         }
       `}</style>
     </section>
