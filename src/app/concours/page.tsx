@@ -5,7 +5,6 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { AuthModal } from '@/components/ui/AuthModal';
 import { ContestHero } from '@/components/contests/ContestHero';
-import { PopularContests } from '@/components/contests/PopularContests';
 import { ContestFilters } from '@/components/contests/ContestFilters';
 import { ContestGrid } from '@/components/contests/ContestGrid';
 import { ContestDetailWorkspace } from '@/components/contests/ContestDetailWorkspace';
@@ -185,12 +184,6 @@ export default function ConcoursPage() {
 
             {/* Main Content Container */}
             <div id="contests-catalog-anchor" className="container catalog-container">
-              {/* Popular Contests Row */}
-              <PopularContests
-                contests={MOCK_CONTESTS}
-                onSelectContest={handleSelectContest}
-              />
-
               {/* 2-Column Layout: Sidebar Filters + Contest Grid */}
               <div className="catalog-layout">
                 <ContestFilters
