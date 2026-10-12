@@ -66,7 +66,7 @@ export const MOCK_CONTESTS: Contest[] = [
     resourcesCount: 284,
     isPopular: true,
     coverGradient: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
-    coverImage: '/images/concours/fastef.png',
+    coverImage: '/images/concours/fastef.jpg',
     badgeColor: '#3b82f6',
     subjects: [
       {
