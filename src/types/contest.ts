@@ -45,7 +45,7 @@ export interface ContestPaperResource {
   title: string;
   year: number;
   subjectName: string;
-  type: 'sujet' | 'correction' | 'fascicule';
+  type: 'sujet' | 'correction' | 'exercice' | 'fascicule' | 'qcm';
   format: 'pdf' | 'doc' | 'qcm';
   pagesCount: number;
   accessLevel: 'free' | 'subscription' | 'premium';
