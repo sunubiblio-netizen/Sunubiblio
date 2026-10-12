@@ -56,7 +56,9 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
       case 'universite':
         return (
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7H3l2-4h14l2 4" />
+            <path d="M12 3L2 8h20L12 3z" />
+            <path d="M4 10v8M8 10v8M12 10v8M16 10v8M20 10v8" />
+            <path d="M2 18h20M2 21h20" />
           </svg>
         );
       case 'formation_pro':
