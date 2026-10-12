@@ -238,7 +238,7 @@ export default function ConcoursPage() {
           min-height: 100vh;
           display: flex;
           flex-direction: column;
-          background-color: var(--bg-canvas);
+          background: #ffffff !important;
           position: relative;
         }
 
