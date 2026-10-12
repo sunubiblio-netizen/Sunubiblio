@@ -19,18 +19,7 @@ interface ContextConfig {
 }
 
 const CONTEXT_CONFIGS: ContextConfig[] = [
-  // 1. Concours
-  {
-    rootPath: '/concours',
-    title: 'Concours & Examens',
-    tabs: [
-      { id: 'all', label: 'Vue d’ensemble', href: '/concours' },
-      { id: 'annales', label: 'Annales & Sujets', href: '/concours#annales' },
-      { id: 'exercices', label: 'Exercices associés', href: '/exercices?category=concours' },
-      { id: 'calendrier', label: 'Dates & Calendrier', href: '/concours#calendrier' },
-    ],
-  },
-  // 2. Documents & Outils
+  // 1. Documents & Outils
   {
     rootPath: '/documents',
     badge: 'Boîte à Outils',
@@ -98,8 +87,8 @@ const CONTEXT_CONFIGS: ContextConfig[] = [
 export const ContextualNavigation: React.FC = () => {
   const pathname = usePathname() || '/';
 
-  // Ne pas afficher la navigation contextuelle sur /exercices
-  if (pathname.startsWith('/exercices')) {
+  // Ne pas afficher la navigation contextuelle sur /exercices ou /concours
+  if (pathname.startsWith('/exercices') || pathname.startsWith('/concours')) {
     return null;
   }
 
