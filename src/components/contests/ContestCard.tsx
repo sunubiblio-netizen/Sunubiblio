@@ -127,13 +127,13 @@ export const ContestCard: React.FC<ContestCardProps> = ({
         }
 
         .card-banner {
-          height: 136px;
+          height: 142px;
           padding: 10px 14px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
           position: relative;
-          background: #ffffff;
+          background: #f8fafc;
           border-bottom: 1px solid rgba(226, 232, 240, 0.85);
           overflow: hidden;
         }
@@ -144,23 +144,23 @@ export const ContestCard: React.FC<ContestCardProps> = ({
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 12px 16px;
-          background: #ffffff;
+          padding: 14px 18px;
+          background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
         }
 
         .contest-cover-media {
-          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .contest-card:hover .contest-cover-media {
-          transform: scale(1.05);
+          transform: scale(1.06);
         }
 
         .contest-cover-media.media-contain {
-          max-height: 82px;
-          max-width: 84%;
+          max-height: 94px;
+          max-width: 88%;
           object-fit: contain;
-          filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.04));
+          filter: drop-shadow(0 2px 8px rgba(15, 23, 42, 0.05));
         }
 
         .contest-cover-media.media-cover {
