@@ -145,51 +145,56 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
             </svg>
             <span>Retour à tous les concours</span>
           </button>
-
-          <div className="status-session-badges">
-            <span className="session-pill">Session {contest.sessionYear}</span>
-            <span className={`status-pill ${contest.status}`}>
-              {contest.status === 'open' ? '● Inscriptions ouvertes' : contest.status === 'upcoming' ? '○ Session à venir' : '✕ Fermé'}
-            </span>
-          </div>
         </div>
 
-        {/* Identity Card Bar */}
+        {/* Identity Card Bar (Cadre FASTEF compact, fluide & intelligent avec badges intégrés) */}
         <div className="contest-identity-bar">
-          <div className="identity-left">
-            <div className="contest-logo-box">
-              {contest.coverImage ? (
-                <img
-                  src={contest.coverImage}
-                  alt={contest.name}
-                  className="contest-logo-img"
-                />
-              ) : (
-                <span className="contest-logo-fallback">{contest.name.slice(0, 3)}</span>
-              )}
+          <div className="identity-main-col">
+            {/* Badges de session & statut intégrés fluidement dans le cadre */}
+            <div className="identity-pills-row">
+              <span className="session-pill">Session {contest.sessionYear}</span>
+              <span className={`status-pill ${contest.status}`}>
+                {contest.status === 'open' ? '● Inscriptions ouvertes' : contest.status === 'upcoming' ? '○ Session à venir' : '✕ Fermé'}
+              </span>
+              <span className="diploma-pill">{contest.diplomaLabel}</span>
             </div>
 
-            <div className="contest-titles">
-              <div className="title-row">
-                <h1 className="contest-name">{contest.name}</h1>
-                <span className="diploma-badge">{contest.diplomaLabel}</span>
+            {/* Rangée contenu : Logo + Titres & Organisation */}
+            <div className="identity-content-row">
+              <div className="contest-logo-box">
+                {contest.coverImage ? (
+                  <img
+                    src={contest.coverImage}
+                    alt={contest.name}
+                    className="contest-logo-img"
+                  />
+                ) : (
+                  <span className="contest-logo-fallback">{contest.name.slice(0, 3)}</span>
+                )}
               </div>
-              <p className="contest-full-name">{contest.fullName}</p>
-              <p className="contest-org-line">
-                Organisé par : <strong>{contest.organization}</strong>
-              </p>
+
+              <div className="contest-titles">
+                <h1 className="contest-name">{contest.name}</h1>
+                <p className="contest-full-name">{contest.fullName}</p>
+                <p className="contest-org-line">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 21h18M3 7v14M21 7v14M6 11h2M6 15h2M11 11h2M11 15h2M16 11h2M16 15h2M12 3 2 7h20L12 3z"/>
+                  </svg>
+                  <span>Organisé par : <strong>{contest.organization}</strong></span>
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="identity-right">
-            {/* Glass info button */}
+          {/* Bouton d'action compact : Infos & Dates */}
+          <div className="identity-action-col">
             <button
               type="button"
               className="glass-info-trigger-btn"
               onClick={() => setIsGlassModalOpen(true)}
               title="Consulter les dates, conditions et informations officielles"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="16" x2="12" y2="12" />
                 <line x1="12" y1="8" x2="12" y2="8" />
@@ -201,11 +206,16 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         </div>
       </section>
 
-      {/* 2. Direct Search Capsule (style Bibliothèque) */}
-      <section className="search-and-filters-section">
-        <div className="search-capsule-wrapper">
+      {/* 2. Direct Search Capsule (Strictement identique à la page d'accueil, au premier plan) */}
+      <section className="search-bar-stage">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+          className="hero-search-capsule"
+        >
           <div className="search-icon-wrap">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
@@ -213,8 +223,8 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
 
           <input
             type="text"
-            className="search-input"
-            placeholder={`Rechercher une annale, un corrigé, un exercice de ${contest.name} (ex: Mathématiques, Français, 2024)...`}
+            className="hero-search-input"
+            placeholder={`Rechercher une annale, un corrigé, un exercice de ${contest.name}...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label={`Rechercher dans ${contest.name}`}
@@ -223,25 +233,35 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           {searchQuery && (
             <button
               type="button"
-              className="search-clear-btn"
+              className="hero-search-clear"
               onClick={() => setSearchQuery('')}
               aria-label="Effacer la recherche"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
           )}
 
-          <div className="results-counter-chip">
-            <span>{filteredPapers.length} ressource{filteredPapers.length > 1 ? 's' : ''}</span>
-          </div>
-        </div>
+          <button
+            type="submit"
+            className="hero-search-submit"
+            aria-label="Lancer la recherche"
+          >
+            <span>Rechercher</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
+        </form>
+      </section>
 
-        {/* 3. Filter Pills Row */}
+      {/* 3. Filtres & Catégories (Sleek & responsive) */}
+      <section className="contest-filters-section">
         <div className="filters-container">
-          {/* Row A: Resource Types */}
+          {/* Row A: Resource Types (Défilement fluide) */}
           <div className="filter-pills-row">
             <button
               type="button"
@@ -305,47 +325,55 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
             )}
           </div>
 
-          {/* Row B: Subjects chips + Year Selector */}
+          {/* Row B: Matières (Track horizontal non replié) & Sélecteur d'année */}
           <div className="secondary-filters-row">
-            <div className="subjects-chips-wrap">
+            <div className="subjects-scroll-container">
               <span className="filter-label">Matière :</span>
-              <button
-                type="button"
-                className={`subject-chip ${selectedSubject === 'all' ? 'active' : ''}`}
-                onClick={() => setSelectedSubject('all')}
-              >
-                Toutes
-              </button>
-              {subjects.map((sub) => (
+              <div className="subjects-chips-track">
                 <button
-                  key={sub.id}
                   type="button"
-                  className={`subject-chip ${selectedSubject === sub.name ? 'active' : ''}`}
-                  onClick={() => setSelectedSubject(sub.name === selectedSubject ? 'all' : sub.name)}
+                  className={`subject-chip ${selectedSubject === 'all' ? 'active' : ''}`}
+                  onClick={() => setSelectedSubject('all')}
                 >
-                  {sub.name}
+                  Toutes
                 </button>
-              ))}
+                {subjects.map((sub) => (
+                  <button
+                    key={sub.id}
+                    type="button"
+                    className={`subject-chip ${selectedSubject === sub.name ? 'active' : ''}`}
+                    onClick={() => setSelectedSubject(sub.name === selectedSubject ? 'all' : sub.name)}
+                  >
+                    {sub.name}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {availableYears.length > 0 && (
-              <div className="year-selector-wrap">
-                <span className="filter-label">Session :</span>
-                <select
-                  className="year-dropdown"
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(e.target.value)}
-                  aria-label="Filtrer par année de session"
-                >
-                  <option value="all">Toutes les années</option>
-                  {availableYears.map((yr) => (
-                    <option key={yr} value={yr.toString()}>
-                      Session {yr}
-                    </option>
-                  ))}
-                </select>
+            <div className="secondary-right-meta">
+              {availableYears.length > 0 && (
+                <div className="year-selector-wrap">
+                  <span className="filter-label">Session :</span>
+                  <select
+                    className="year-dropdown"
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                    aria-label="Filtrer par année de session"
+                  >
+                    <option value="all">Toutes les années</option>
+                    {availableYears.map((yr) => (
+                      <option key={yr} value={yr.toString()}>
+                        Session {yr}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div className="results-counter-pill">
+                <span>{filteredPapers.length} ressource{filteredPapers.length > 1 ? 's' : ''}</span>
               </div>
-            )}
+            </div>
           </div>
         </div>
       </section>
@@ -709,23 +737,23 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         .contest-library-view {
           display: flex;
           flex-direction: column;
-          gap: 24px;
-          padding-bottom: 60px;
+          gap: 20px;
+          padding-bottom: 80px;
           background: #ffffff;
         }
 
-        /* 1. TOP HEADER */
+        /* 1. TOP HEADER & COMPACT IDENTITY CADRE */
         .contest-top-header {
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 12px;
         }
 
         .header-navigation-row {
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          padding-top: 8px;
+          justify-content: flex-start;
+          padding-top: 4px;
         }
 
         .back-btn {
@@ -749,27 +777,53 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           transform: translateX(-2px);
         }
 
-        .status-session-badges {
+        /* Cadre FASTEF compact, épuré & harmonieux */
+        .contest-identity-bar {
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.95);
+          border-radius: 18px;
+          padding: 16px 20px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 18px;
+          box-shadow: 0 4px 18px -2px rgba(15, 23, 42, 0.04);
+          transition: all 0.2s ease;
+        }
+
+        .identity-main-col {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          flex: 1;
+          min-width: 0;
+        }
+
+        /* Badges intégrés directement dans le cadre */
+        .identity-pills-row {
           display: flex;
           align-items: center;
           gap: 8px;
+          flex-wrap: wrap;
         }
 
         .session-pill {
-          font-size: 11.5px;
+          font-size: 11px;
           font-weight: 700;
           color: #475569;
           background: #f1f5f9;
-          padding: 4px 10px;
+          padding: 3px 9px;
           border-radius: 9999px;
           border: 1px solid #e2e8f0;
+          white-space: nowrap;
         }
 
         .status-pill {
-          font-size: 11.5px;
+          font-size: 11px;
           font-weight: 800;
-          padding: 4px 12px;
+          padding: 3px 10px;
           border-radius: 9999px;
+          white-space: nowrap;
         }
 
         .status-pill.open {
@@ -790,37 +844,35 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           border: 1px solid #cbd5e1;
         }
 
-        /* Identity Bar */
-        .contest-identity-bar {
-          background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.95);
-          border-radius: 20px;
-          padding: 20px 24px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 20px;
-          box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
+        .diploma-pill {
+          font-size: 11px;
+          font-weight: 700;
+          color: #4f46e5;
+          background: #eef2ff;
+          padding: 3px 9px;
+          border-radius: 9999px;
+          border: 1px solid rgba(199, 210, 254, 0.85);
+          white-space: nowrap;
         }
 
-        .identity-left {
+        .identity-content-row {
           display: flex;
           align-items: center;
-          gap: 20px;
+          gap: 14px;
         }
 
         .contest-logo-box {
-          width: 80px;
-          height: 80px;
-          border-radius: 16px;
+          width: 58px;
+          height: 58px;
+          border-radius: 14px;
           background: #ffffff;
           border: 1px solid rgba(226, 232, 240, 0.9);
-          padding: 8px;
+          padding: 5px;
           display: flex;
           align-items: center;
           justify-content: center;
           overflow: hidden;
-          box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
           flex-shrink: 0;
         }
 
@@ -831,7 +883,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .contest-logo-fallback {
-          font-size: 22px;
+          font-size: 18px;
           font-weight: 900;
           color: #d97706;
         }
@@ -839,161 +891,202 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         .contest-titles {
           display: flex;
           flex-direction: column;
-          gap: 4px;
-        }
-
-        .title-row {
-          display: flex;
-          align-items: baseline;
-          gap: 12px;
+          gap: 2px;
+          min-width: 0;
         }
 
         .contest-name {
-          font-size: 26px;
+          font-size: 21px;
           font-weight: 900;
           color: #0f172a;
           letter-spacing: -0.02em;
           margin: 0;
-        }
-
-        .diploma-badge {
-          font-size: 11.5px;
-          font-weight: 700;
-          color: #4f46e5;
-          background: #eef2ff;
-          padding: 3px 9px;
-          border-radius: 6px;
-          border: 1px solid rgba(199, 210, 254, 0.8);
+          line-height: 1.2;
         }
 
         .contest-full-name {
-          font-size: 14px;
+          font-size: 13px;
           color: #475569;
           font-weight: 600;
           margin: 0;
+          line-height: 1.35;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
 
         .contest-org-line {
-          font-size: 12.5px;
-          color: #64748b;
-          margin: 0;
-        }
-
-        .identity-right {
           display: flex;
           align-items: center;
+          gap: 5px;
+          font-size: 11.5px;
+          color: #64748b;
+          margin: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
-        /* Glass trigger button */
+        .contest-org-line svg {
+          flex-shrink: 0;
+          color: #94a3b8;
+        }
+
+        .identity-action-col {
+          display: flex;
+          align-items: center;
+          flex-shrink: 0;
+        }
+
+        /* Glass trigger button épuré */
         .glass-info-trigger-btn {
           display: inline-flex;
           align-items: center;
-          gap: 9px;
-          height: 44px;
-          padding: 0 20px;
-          font-size: 13.5px;
+          gap: 8px;
+          height: 38px;
+          padding: 0 16px;
+          font-size: 12.5px;
           font-weight: 700;
           color: #0f172a;
-          background: rgba(255, 255, 255, 0.85);
+          background: rgba(255, 255, 255, 0.92);
           backdrop-filter: blur(12px);
           border: 1.5px solid rgba(245, 158, 11, 0.35);
           border-radius: 9999px;
-          box-shadow: 0 4px 14px rgba(217, 119, 6, 0.12);
+          box-shadow: 0 3px 12px rgba(217, 119, 6, 0.1);
           cursor: pointer;
-          transition: all 0.25s ease;
+          transition: all 0.2s ease;
+          white-space: nowrap;
         }
 
         .glass-info-trigger-btn:hover {
           background: #ffffff;
           border-color: #f59e0b;
-          box-shadow: 0 6px 20px rgba(217, 119, 6, 0.22);
+          box-shadow: 0 5px 16px rgba(217, 119, 6, 0.2);
           transform: translateY(-1px);
         }
 
         .sparkle-chip {
-          font-size: 10px;
+          font-size: 9.5px;
           font-weight: 800;
           color: #ffffff;
           background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-          padding: 2px 7px;
+          padding: 2px 6px;
           border-radius: 9999px;
           text-transform: uppercase;
         }
 
-        /* 2. SEARCH AND FILTERS SECTION */
-        .search-and-filters-section {
-          background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.9);
-          border-radius: 20px;
-          padding: 24px;
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-          box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.03);
+        /* 2. SEARCH BAR STAGE (Au premier plan, identique à la page d'accueil) */
+        .search-bar-stage {
+          position: relative;
+          z-index: 20;
+          width: 100%;
         }
 
-        .search-capsule-wrapper {
-          position: relative;
+        .hero-search-capsule {
           display: flex;
           align-items: center;
+          width: 100%;
           background: #ffffff;
           border: 1.5px solid rgba(226, 232, 240, 0.95);
           border-radius: 9999px;
-          box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+          padding: 5px 6px 5px 20px;
+          min-height: 54px;
+          box-shadow: 0 10px 28px -4px rgba(15, 23, 42, 0.05), 0 2px 8px rgba(15, 23, 42, 0.02);
           transition: all 0.2s ease;
         }
 
-        .search-capsule-wrapper:focus-within {
-          border-color: #f59e0b;
-          box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.12);
+        .hero-search-capsule:focus-within {
+          border-color: rgba(245, 158, 11, 0.6);
+          box-shadow: 0 12px 32px -4px rgba(245, 158, 11, 0.14), 0 0 0 3px rgba(254, 240, 138, 0.35);
+          transform: translateY(-1px);
         }
 
         .search-icon-wrap {
-          padding-left: 18px;
           color: #94a3b8;
           display: flex;
           align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
         }
 
-        .search-input {
+        .hero-search-input {
           flex: 1;
-          height: 48px;
+          min-width: 0;
+          font-size: 14.5px;
+          font-weight: 500;
+          color: #0f172a;
+          background: transparent;
           border: none;
           outline: none;
-          background: transparent;
-          padding: 0 14px;
-          font-size: 14.5px;
-          color: #0f172a;
-          font-weight: 500;
+          padding: 0 12px;
         }
 
-        .search-input::placeholder {
+        .hero-search-input::placeholder {
           color: #94a3b8;
+          font-weight: 400;
         }
 
-        .search-clear-btn {
+        .hero-search-clear {
           background: transparent;
           border: none;
           color: #94a3b8;
-          padding: 8px;
-          cursor: pointer;
+          padding: 6px;
           display: flex;
           align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          border-radius: 50%;
+          transition: all 0.15s ease;
+          flex-shrink: 0;
         }
 
-        .results-counter-chip {
-          padding-right: 18px;
-          font-size: 12px;
+        .hero-search-clear:hover {
+          color: #0f172a;
+          background: #f1f5f9;
+        }
+
+        .hero-search-submit {
+          flex-shrink: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          height: 44px;
+          padding: 0 22px;
+          border-radius: 9999px;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+          color: #ffffff !important;
+          font-size: 14px;
           font-weight: 700;
-          color: #64748b;
-          white-space: nowrap;
+          border: none !important;
+          cursor: pointer;
+          box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35) !important;
+          transition: all 0.2s ease;
         }
 
-        /* 3. FILTERS ROWS */
+        .hero-search-submit:hover {
+          background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%) !important;
+          transform: translateY(-1px);
+          box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45) !important;
+        }
+
+        /* 3. FILTRES SECTION */
+        .contest-filters-section {
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          border-radius: 18px;
+          padding: 16px 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.03);
+        }
+
         .filters-container {
           display: flex;
           flex-direction: column;
-          gap: 14px;
+          gap: 12px;
         }
 
         .filter-pills-row {
@@ -1001,8 +1094,10 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           align-items: center;
           gap: 8px;
           overflow-x: auto;
+          flex-wrap: nowrap;
           padding-bottom: 2px;
           scrollbar-width: none;
+          -webkit-overflow-scrolling: touch;
         }
 
         .filter-pills-row::-webkit-scrollbar {
@@ -1013,9 +1108,9 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           display: inline-flex;
           align-items: center;
           gap: 7px;
-          height: 38px;
-          padding: 0 16px;
-          font-size: 13px;
+          height: 36px;
+          padding: 0 15px;
+          font-size: 12.5px;
           font-weight: 700;
           color: #475569;
           background: #f8fafc;
@@ -1023,6 +1118,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           border-radius: 9999px;
           cursor: pointer;
           white-space: nowrap;
+          flex-shrink: 0;
           transition: all 0.18s ease;
         }
 
@@ -1040,7 +1136,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .pill-count {
-          font-size: 11px;
+          font-size: 10.5px;
           padding: 1px 6px;
           border-radius: 9999px;
           background: rgba(0, 0, 0, 0.08);
@@ -1051,41 +1147,60 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           color: #ffffff;
         }
 
-        /* Secondary Row */
+        /* Secondary Row : Matières Track & Session */
         .secondary-filters-row {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 16px;
-          flex-wrap: wrap;
+          gap: 14px;
           padding-top: 10px;
-          border-top: 1px solid rgba(226, 232, 240, 0.65);
+          border-top: 1px solid rgba(226, 232, 240, 0.7);
         }
 
-        .subjects-chips-wrap {
+        .subjects-scroll-container {
           display: flex;
           align-items: center;
-          gap: 6px;
-          flex-wrap: wrap;
+          gap: 8px;
+          min-width: 0;
+          flex: 1;
+          overflow: hidden;
         }
 
         .filter-label {
-          font-size: 12px;
+          font-size: 11.5px;
           font-weight: 700;
           color: #64748b;
-          margin-right: 4px;
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+
+        .subjects-chips-track {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          overflow-x: auto;
+          flex-wrap: nowrap;
+          scrollbar-width: none;
+          -webkit-overflow-scrolling: touch;
+          padding: 2px 0;
+        }
+
+        .subjects-chips-track::-webkit-scrollbar {
+          display: none;
         }
 
         .subject-chip {
           height: 30px;
           padding: 0 12px;
-          font-size: 12px;
+          font-size: 11.5px;
           font-weight: 600;
           color: #475569;
           background: #f8fafc;
           border: 1px solid #e2e8f0;
           border-radius: 8px;
           cursor: pointer;
+          white-space: nowrap;
+          flex-shrink: 0;
           transition: all 0.15s ease;
         }
 
@@ -1101,16 +1216,24 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           font-weight: 700;
         }
 
+        .secondary-right-meta {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-shrink: 0;
+        }
+
         .year-selector-wrap {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 6px;
+          flex-shrink: 0;
         }
 
         .year-dropdown {
-          height: 32px;
-          padding: 0 12px;
-          font-size: 12px;
+          height: 30px;
+          padding: 0 10px;
+          font-size: 11.5px;
           font-weight: 700;
           color: #0f172a;
           background: #f8fafc;
@@ -1118,6 +1241,18 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           border-radius: 8px;
           outline: none;
           cursor: pointer;
+        }
+
+        .results-counter-pill {
+          font-size: 11.5px;
+          font-weight: 700;
+          color: #64748b;
+          background: #f1f5f9;
+          padding: 4px 10px;
+          border-radius: 9999px;
+          white-space: nowrap;
+          flex-shrink: 0;
+          border: 1px solid #e2e8f0;
         }
 
         /* 4. PAPERS GRID */
@@ -1922,23 +2057,143 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           }
         }
 
-        @media (max-width: 768px) {
-          .contest-identity-bar {
-            flex-direction: column;
-            align-items: flex-start;
+        @media (max-width: 860px) {
+          .contest-library-view {
+            gap: 16px;
+            padding-bottom: 125px !important;
           }
 
-          .identity-right {
+          .contest-identity-bar {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 16px;
+          }
+
+          .identity-main-col {
+            gap: 8px;
+          }
+
+          .identity-pills-row {
+            gap: 6px;
+          }
+
+          .session-pill,
+          .status-pill,
+          .diploma-pill {
+            font-size: 10.5px;
+            padding: 2.5px 8px;
+          }
+
+          .identity-content-row {
+            gap: 11px;
+          }
+
+          .contest-logo-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+          }
+
+          .contest-name {
+            font-size: 18px;
+          }
+
+          .contest-full-name {
+            font-size: 12px;
+            line-height: 1.3;
+          }
+
+          .contest-org-line {
+            font-size: 11px;
+          }
+
+          .identity-action-col {
             width: 100%;
           }
 
           .glass-info-trigger-btn {
             width: 100%;
             justify-content: center;
+            height: 36px;
+            font-size: 12px;
+          }
+
+          /* Search Bar Mobile */
+          .hero-search-capsule {
+            min-height: 48px;
+            padding: 4px 6px 4px 14px;
+          }
+
+          .hero-search-input {
+            font-size: 13.5px;
+            padding: 0 8px;
+          }
+
+          .hero-search-submit {
+            height: 38px;
+            padding: 0 14px;
+            font-size: 12.5px;
+            gap: 6px;
+          }
+
+          /* Filters Mobile */
+          .contest-filters-section {
+            padding: 12px 14px;
+            border-radius: 16px;
+            gap: 10px;
+          }
+
+          .filter-pill {
+            height: 34px;
+            padding: 0 12px;
+            font-size: 11.5px;
+          }
+
+          .secondary-filters-row {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+            padding-top: 8px;
+          }
+
+          .subjects-scroll-container {
+            width: 100%;
+          }
+
+          .subjects-chips-track {
+            gap: 6px;
+          }
+
+          .subject-chip {
+            height: 28px;
+            padding: 0 10px;
+            font-size: 11px;
+          }
+
+          .secondary-right-meta {
+            width: 100%;
+            justify-content: space-between;
           }
 
           .papers-grid {
             grid-template-columns: 1fr;
+            gap: 16px;
+          }
+
+          .paper-card-body {
+            padding: 14px 14px;
+          }
+
+          .consult-doc-btn {
+            height: 40px;
+            font-size: 13px;
+          }
+
+          .ai-revise-btn {
+            height: 38px;
+            font-size: 12.5px;
           }
 
           .timeline-cards-grid,

@@ -270,7 +270,12 @@ export default function ConcoursPage() {
         @media (max-width: 860px) {
           .catalog-container {
             padding-top: 12px;
-            padding-bottom: 80px;
+            padding-bottom: 90px;
+          }
+
+          .workspace-container {
+            padding-top: 12px;
+            padding-bottom: 125px;
           }
         }
       `}</style>
