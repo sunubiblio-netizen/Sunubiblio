@@ -254,7 +254,7 @@ export default function ConcoursPage() {
         }
 
         .workspace-container {
-          padding-top: 14px;
+          padding-top: 8px;
           padding-bottom: 60px;
         }
 
@@ -271,7 +271,7 @@ export default function ConcoursPage() {
           }
 
           .workspace-container {
-            padding-top: 10px;
+            padding-top: 6px;
             padding-bottom: 80px;
           }
         }
@@ -283,7 +283,7 @@ export default function ConcoursPage() {
           }
 
           .workspace-container {
-            padding-top: 6px;
+            padding-top: 2px;
             padding-bottom: 125px;
           }
         }

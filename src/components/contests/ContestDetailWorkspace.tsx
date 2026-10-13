@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Contest, ContestPaperResource } from '@/types/contest';
 
@@ -86,25 +86,49 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
   // Glass Info Modal State
   const [isGlassModalOpen, setIsGlassModalOpen] = useState(false);
 
-  // Détection du scroll pour fixer la flèche retour en position flottante sous la navbar (Option 2)
-  const [isScrolled, setIsScrolled] = useState(false);
+  // Flèche retour flottante fluide : apparaît au scroll / interaction et disparaît comme le widget de ScrollNavigation (Image 2)
+  const [isBackVisible, setIsBackVisible] = useState(true);
+  const isBackHoveredRef = useRef(false);
 
   useEffect(() => {
     let ticking = false;
+    let hideTimeout: NodeJS.Timeout | null = null;
+
+    const scheduleHide = () => {
+      if (hideTimeout) clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        if (currentScroll > 60 && !isBackHoveredRef.current) {
+          setIsBackVisible(false);
+        }
+      }, 2600);
+    };
+
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-          setIsScrolled(scrollY > 25);
+          
+          if (scrollY <= 60) {
+            setIsBackVisible(true);
+            if (hideTimeout) clearTimeout(hideTimeout);
+          } else {
+            setIsBackVisible(true);
+            scheduleHide();
+          }
           ticking = false;
         });
         ticking = true;
       }
     };
 
+    // Visible au début
+    setIsBackVisible(true);
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      if (hideTimeout) clearTimeout(hideTimeout);
     };
   }, []);
 
@@ -224,12 +248,13 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
   };
 
   const handleGoBack = () => {
+    if (onBack) {
+      onBack();
+      return;
+    }
     if (typeof window !== 'undefined' && window.history.length > 1) {
       window.history.back();
       return;
-    }
-    if (onBack) {
-      onBack();
     }
     router.push('/concours');
   };
@@ -238,23 +263,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
     <div className="contest-library-view">
       {/* 1. Header / Navigation & Contest Identity */}
       <section className="contest-top-header">
-        {/* Navigation retour : flèche circulaire qui devient flottante sous la navbar au scroll (Option 2) */}
-        <div className={`header-navigation-row ${isScrolled ? 'is-floating' : ''}`}>
-          <button
-            type="button"
-            className="back-btn-circle"
-            onClick={handleGoBack}
-            aria-label="Retour aux concours"
-            title="Retour aux concours"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Identity Card Bar (Cadre FASTEF élégant, descendu comme avant sans être touché par la flèche) */}
+        {/* Identity Card Bar (Cadre FASTEF élégant, occupant immédiatement l'espace en haut) */}
         <div className="contest-identity-bar">
           {/* Ligne 1 : Session 2025 à gauche et Inscriptions ouvertes à droite au même niveau */}
           <div className="identity-top-row">
@@ -1000,6 +1009,37 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         </div>
       )}
 
+      {/* Widget Flottant Retour Fluide (Apparaît et disparaît au scroll comme dans ScrollNavigation - Image 2) */}
+      <aside
+        aria-label="Retour aux concours"
+        className={`floating-back-widget ${isBackVisible ? 'is-visible' : ''}`}
+        onMouseEnter={() => {
+          isBackHoveredRef.current = true;
+        }}
+        onMouseLeave={() => {
+          isBackHoveredRef.current = false;
+        }}
+        onTouchStart={() => {
+          isBackHoveredRef.current = true;
+        }}
+        onTouchEnd={() => {
+          isBackHoveredRef.current = false;
+        }}
+      >
+        <button
+          type="button"
+          className="floating-back-btn"
+          onClick={handleGoBack}
+          aria-label="Retour aux concours"
+          title="Retour aux concours"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+        </button>
+      </aside>
+
       <style jsx>{`
         .contest-library-view {
           display: flex;
@@ -1013,72 +1053,83 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         .contest-top-header {
           display: flex;
           flex-direction: column;
-          gap: 8px;
-        }
-
-        .header-navigation-row {
-          display: flex;
-          align-items: center;
-          justify-content: flex-start;
+          gap: 0;
+          margin-top: 0;
           padding-top: 0;
-          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Quand on scroll : la flèche reste fixée et flottante sous la navbar (Option 2) */
-        .header-navigation-row.is-floating {
+        /* Widget Flottant Retour : Apparaît et disparaît fluidement au scroll (comme ScrollNavigation - Image 2) */
+        :global(body.modal-scroll-locked) .floating-back-widget,
+        :global(html.modal-scroll-locked) .floating-back-widget,
+        :global(body[style*="position: fixed"]) .floating-back-widget,
+        :global(body[style*="overflow: hidden"]) .floating-back-widget {
+          display: none !important;
+          opacity: 0 !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+        }
+
+        .floating-back-widget {
           position: fixed;
-          top: 72px;
-          left: 20px;
-          z-index: 999;
-          animation: floatInTop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          left: 24px;
+          bottom: 36px;
+          z-index: 9999;
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          transform: scale(0.85) translateY(10px);
+          transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s;
         }
 
-        @keyframes floatInTop {
-          from {
-            opacity: 0;
-            transform: translateY(-8px) scale(0.92);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
+        .floating-back-widget.is-visible {
+          opacity: 1;
+          visibility: visible;
+          pointer-events: auto;
+          transform: scale(1) translateY(0);
         }
 
-        .header-navigation-row.is-floating .back-btn-circle {
-          box-shadow: 0 6px 20px -2px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(0, 0, 0, 0.06);
-          background: rgba(255, 255, 255, 0.96);
-          backdrop-filter: blur(14px);
-          -webkit-backdrop-filter: blur(14px);
-          border-color: rgba(226, 232, 240, 0.95);
-        }
-
-        /* Jolie flèche retour sous forme de cercle pur et élégant au-dessus du cadre */
-        .back-btn-circle {
-          width: 38px;
-          height: 38px;
+        .floating-back-btn {
+          width: 44px;
+          height: 44px;
           border-radius: 50%;
-          background: #ffffff;
-          border: 1.5px solid rgba(226, 232, 240, 0.95);
-          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
-          color: #1e293b;
           display: flex;
           align-items: center;
           justify-content: center;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          border: 1.5px solid rgba(226, 232, 240, 0.95);
+          box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.16), 0 4px 10px rgba(0, 0, 0, 0.04);
+          color: #1e293b;
           cursor: pointer;
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          padding: 0;
+          outline: none;
           user-select: none;
         }
 
-        .back-btn-circle:hover {
-          background: #f8fafc;
+        .floating-back-btn:hover {
+          background: #ffffff;
           border-color: #cbd5e1;
           color: #0f172a;
-          transform: translateX(-3px);
-          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+          transform: translateX(-3px) scale(1.04);
+          box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.22), 0 4px 12px rgba(0, 0, 0, 0.06);
         }
 
-        .back-btn-circle:active {
-          transform: scale(0.95) translateX(-2px);
+        .floating-back-btn:active {
+          transform: scale(0.92) translateX(-1px);
+        }
+
+        @media (max-width: 860px) {
+          .floating-back-widget {
+            left: 14px;
+            bottom: calc(82px + env(safe-area-inset-bottom, 8px));
+          }
+
+          .floating-back-btn {
+            width: 42px;
+            height: 42px;
+          }
         }
 
         /* Cadre FASTEF soigné, compact & aéré */
