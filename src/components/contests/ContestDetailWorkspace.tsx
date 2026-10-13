@@ -216,27 +216,26 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
     <div className="contest-library-view">
       {/* 1. Header / Breadcrumb & Contest Identity */}
       <section className="contest-top-header">
-        {/* Navigation retour : uniquement la flèche circulaire épurée */}
-        <div className="header-navigation-row">
-          <button
-            type="button"
-            className="back-btn-circle"
-            onClick={handleGoBack}
-            aria-label="Retour à la page précédente"
-            title="Retour à la page précédente"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Identity Card Bar (Cadre FASTEF élégant, compact avec session 2025 et inscription ouverte au même niveau) */}
+        {/* Identity Card Bar (Cadre FASTEF élégant, compact et remonté avec retour intégré) */}
         <div className="contest-identity-bar">
-          {/* Ligne 1 : Session 2025 et Inscriptions ouvertes au MÊME NIVEAU */}
+          {/* Ligne 1 : Bouton retour circulaire + Session 2025 à gauche, Inscriptions ouvertes à droite */}
           <div className="identity-top-row">
-            <span className="session-pill">Session {contest.sessionYear}</span>
+            <div className="identity-top-left-group">
+              <button
+                type="button"
+                className="back-btn-circle"
+                onClick={handleGoBack}
+                aria-label="Retour à la page précédente"
+                title="Retour à la page précédente"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12" />
+                  <polyline points="12 19 5 12 12 5" />
+                </svg>
+              </button>
+
+              <span className="session-pill">Session {contest.sessionYear}</span>
+            </div>
 
             <span className={`status-pill ${contest.status}`}>
               <span className="status-dot" />
@@ -982,7 +981,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         .contest-library-view {
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 16px;
           padding-bottom: 80px;
           background: #ffffff;
         }
@@ -991,43 +990,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         .contest-top-header {
           display: flex;
           flex-direction: column;
-          gap: 12px;
-        }
-
-        .header-navigation-row {
-          display: flex;
-          align-items: center;
-          justify-content: flex-start;
-          padding-top: 4px;
-        }
-
-        /* Jolie flèche retour sous forme de cercle pur et élégant */
-        .back-btn-circle {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          background: #ffffff;
-          border: 1.5px solid rgba(226, 232, 240, 0.95);
-          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
-          color: #334155;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-          user-select: none;
-        }
-
-        .back-btn-circle:hover {
-          background: #fffbeb;
-          border-color: #f59e0b;
-          color: #d97706;
-          transform: translateX(-3px);
-          box-shadow: 0 4px 14px rgba(217, 119, 6, 0.18);
-        }
-
-        .back-btn-circle:active {
-          transform: scale(0.95) translateX(-2px);
+          gap: 0;
         }
 
         /* Cadre FASTEF soigné, compact & aéré */
@@ -1035,7 +998,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           background: #ffffff;
           border: 1.5px solid rgba(226, 232, 240, 0.95);
           border-radius: 20px;
-          padding: 16px 20px;
+          padding: 14px 18px;
           display: flex;
           flex-direction: column;
           gap: 12px;
@@ -1043,12 +1006,49 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           transition: all 0.2s ease;
         }
 
-        /* Ligne 1 : Session 2025 et Inscriptions ouvertes STRICTEMENT au MÊME NIVEAU */
+        /* Ligne 1 : Bouton retour circulaire + Session 2025 à gauche, Inscriptions ouvertes à droite */
         .identity-top-row {
           display: flex;
           align-items: center;
           justify-content: space-between;
           width: 100%;
+          gap: 10px;
+        }
+
+        .identity-top-left-group {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        /* Jolie flèche retour sous forme de cercle pur et élégant */
+        .back-btn-circle {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+          color: #334155;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          user-select: none;
+          flex-shrink: 0;
+        }
+
+        .back-btn-circle:hover {
+          background: #f8fafc;
+          border-color: #cbd5e1;
+          color: #0f172a;
+          transform: translateX(-2px);
+          box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+        }
+
+        .back-btn-circle:active {
+          transform: scale(0.95);
         }
 
         .session-pill {
@@ -1460,13 +1460,13 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .filters-main-toggle-btn.open {
-          background: #fffbeb;
-          border-color: #f59e0b;
-          box-shadow: 0 4px 14px rgba(245, 158, 11, 0.12);
+          background: #ffffff;
+          border-color: #cbd5e1;
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
         }
 
         .filters-main-toggle-btn.has-active:not(.open) {
-          border-color: #f59e0b;
+          border-color: #cbd5e1;
           background: #ffffff;
         }
 
@@ -1484,14 +1484,14 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           height: 28px;
           border-radius: 8px;
           background: #f1f5f9;
-          color: #64748b;
+          color: #475569;
           transition: all 0.2s ease;
         }
 
         .filters-main-toggle-btn.open .trigger-icon-wrap,
         .filters-main-toggle-btn.has-active .trigger-icon-wrap {
-          background: #fef3c7;
-          color: #d97706;
+          background: #f1f5f9;
+          color: #0f172a;
         }
 
         .trigger-title {
@@ -1502,7 +1502,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .filters-main-toggle-btn.open .trigger-title {
-          color: #b45309;
+          color: #0f172a;
         }
 
         .trigger-count-chip {
@@ -1516,8 +1516,8 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .filters-main-toggle-btn.open .trigger-count-chip {
-          background: #fde68a;
-          color: #92400e;
+          background: #e2e8f0;
+          color: #334155;
         }
 
         .toggle-right-group {
@@ -1531,7 +1531,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           font-weight: 800;
           padding: 2px 8px;
           border-radius: 9999px;
-          background: #f59e0b;
+          background: #0f172a;
           color: #ffffff;
           letter-spacing: 0.02em;
         }
@@ -1545,7 +1545,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
 
         .trigger-chevron.rotate {
           transform: rotate(180deg);
-          color: #d97706;
+          color: #0f172a;
         }
 
         .filter-quick-clear-btn {
@@ -2613,33 +2613,37 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
 
         @media (max-width: 860px) {
           .contest-library-view {
-            gap: 16px;
+            gap: 12px;
             padding-bottom: 125px !important;
           }
 
           .back-btn-circle {
-            width: 38px;
-            height: 38px;
+            width: 32px;
+            height: 32px;
           }
 
           .contest-identity-bar {
-            padding: 12px 14px;
+            padding: 10px 12px;
             border-radius: 16px;
-            gap: 10px;
+            gap: 9px;
           }
 
           .identity-top-row {
             gap: 8px;
           }
 
+          .identity-top-left-group {
+            gap: 7px;
+          }
+
           .session-pill {
-            font-size: 11px;
-            padding: 3px 10px;
+            font-size: 10.5px;
+            padding: 2.5px 9px;
           }
 
           .status-pill {
-            font-size: 11px;
-            padding: 3px 10px;
+            font-size: 10.5px;
+            padding: 2.5px 9px;
           }
 
           .identity-middle-row {
