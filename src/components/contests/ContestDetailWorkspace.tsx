@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { Contest, ContestPaperResource } from '@/types/contest';
 
@@ -81,6 +82,12 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
+  }, []);
+
+  // Mounted State for client-side portals
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
   // Glass Info Modal State
@@ -810,269 +817,311 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         )}
       </section>
 
-      {/* 5. Frosted Glass Info Modal (« Page Glacée ») */}
-      {isGlassModalOpen && (
+      {/* 5. Frosted Glass Info Modal (« Page Glacée ») - Style flottant fluide identique à l'Image 2 */}
+      {mounted && isGlassModalOpen && typeof document !== 'undefined' && createPortal(
         <div
-          className="glass-modal-backdrop"
+          className="sunu-glass-panel-overlay"
           onClick={() => setIsGlassModalOpen(false)}
           role="dialog"
           aria-modal="true"
           aria-labelledby="glass-modal-title"
+          style={{ zIndex: 999990 }}
         >
           <div
-            className="glass-modal-card"
+            className="sunu-glass-floating-panel"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Poignée de glissement sur mobile (Sheet pill) */}
-            <div className="sheet-drag-pill mobile-only" aria-hidden="true" />
-
-            {/* Ambient Aurora glow inside the glass card */}
+            {/* Ambient subtle glow */}
             <div className="glass-ambient-aura" />
 
-            {/* Modal Header */}
-            <div className="glass-modal-header">
-              <div className="glass-header-left">
-                <div className="glass-logo-box">
-                  {contest.coverImage ? (
-                    <img src={contest.coverImage} alt={contest.name} className="glass-logo-img" />
-                  ) : (
-                    <span className="glass-logo-fallback">{contest.name.slice(0, 3)}</span>
-                  )}
-                </div>
-                <div className="glass-header-text">
-                  <div className="glass-pill-badge">
-                    <span className="pulse-dot" />
-                    <span>Fiche officielle &amp; Calendrier</span>
-                  </div>
-                  <h2 id="glass-modal-title" className="glass-title">{contest.name}</h2>
-                  <p className="glass-subtitle">{contest.fullName}</p>
-                </div>
+            {/* En-tête Glassmorphism épuré (identique à l'Image 2) */}
+            <div className="glass-panel-header">
+              <div className="header-title-box">
+                <span className="header-sparkle-dot" aria-hidden="true" />
+                <h2 id="glass-modal-title" className="header-heading">
+                  Fiche {contest.name}
+                </h2>
+                <span className="header-session-badge">{contest.sessionYear}</span>
               </div>
 
-              <div className="glass-header-actions">
-                <button
-                  type="button"
-                  className="toggle-all-sections-btn"
-                  onClick={toggleAllModalSections}
-                  title={areAllSectionsOpen ? 'Tout replier' : 'Tout déplier'}
-                >
-                  <span>{areAllSectionsOpen ? 'Tout replier' : 'Tout déplier'}</span>
-                </button>
-
-                <button
-                  type="button"
-                  className="glass-close-btn"
-                  onClick={() => setIsGlassModalOpen(false)}
-                  aria-label="Fermer la fiche d'informations"
-                  title="Fermer"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            {/* Modal Body avec sections accordéons ouvrables et fermables à volonté */}
-            <div className="glass-modal-body">
-              {/* 1. Calendrier & Statut (Accordéon) */}
-              <div className={`glass-accordion-card ${modalSectionsOpen.calendar ? 'is-open' : 'is-closed'}`}>
-                <button
-                  type="button"
-                  className="glass-accordion-trigger"
-                  onClick={() => toggleModalSection('calendar')}
-                  aria-expanded={modalSectionsOpen.calendar}
-                >
-                  <div className="trigger-title-group">
-                    <span className="trigger-icon">📅</span>
-                    <span className="trigger-title-text">Calendrier de la session {contest.sessionYear}</span>
-                  </div>
-                  <div className="trigger-right-group">
-                    <span className={`trigger-status-badge ${contest.status}`}>
-                      {contest.status === 'open' ? 'Inscriptions en cours' : contest.status === 'upcoming' ? 'Session à venir' : 'Clôturé'}
-                    </span>
-                    <span className={`accordion-chevron ${modalSectionsOpen.calendar ? 'rotate' : ''}`}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </span>
-                  </div>
-                </button>
-
-                {modalSectionsOpen.calendar && (
-                  <div className="glass-accordion-body">
-                    <div className="timeline-cards-grid">
-                      <div className="timeline-card">
-                        <span className="t-label">Statut officiel</span>
-                        <span className={`t-val status ${contest.status}`}>
-                          {contest.status === 'open' ? 'Inscriptions en cours' : contest.status === 'upcoming' ? 'Session à venir' : 'Inscriptions clôturées'}
-                        </span>
-                      </div>
-
-                      <div className="timeline-card">
-                        <span className="t-label">Date limite de dépôt</span>
-                        <span className="t-val highlight">
-                          {contest.applicationDeadline || 'Non communiquée'}
-                        </span>
-                      </div>
-
-                      <div className="timeline-card">
-                        <span className="t-label">Date des épreuves écrites</span>
-                        <span className="t-val highlight">
-                          {contest.examDate || 'À fixer par arrêté ministériel'}
-                        </span>
-                      </div>
-
-                      <div className="timeline-card">
-                        <span className="t-label">Niveau d’entrée requis</span>
-                        <span className="t-val">
-                          {contest.diplomaLabel}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* 2. Présentation du Concours & Missions (Accordéon) */}
-              <div className={`glass-accordion-card ${modalSectionsOpen.presentation ? 'is-open' : 'is-closed'}`}>
-                <button
-                  type="button"
-                  className="glass-accordion-trigger"
-                  onClick={() => toggleModalSection('presentation')}
-                  aria-expanded={modalSectionsOpen.presentation}
-                >
-                  <div className="trigger-title-group">
-                    <span className="trigger-icon">🏛️</span>
-                    <span className="trigger-title-text">Présentation &amp; Missions</span>
-                  </div>
-                  <div className="trigger-right-group">
-                    {contest.organization && (
-                      <span className="trigger-meta-pill desktop-only">{contest.organization}</span>
-                    )}
-                    <span className={`accordion-chevron ${modalSectionsOpen.presentation ? 'rotate' : ''}`}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </span>
-                  </div>
-                </button>
-
-                {modalSectionsOpen.presentation && (
-                  <div className="glass-accordion-body">
-                    <p className="description-text">
-                      {contest.longDescription}
-                    </p>
-                    {contest.organization && (
-                      <div className="org-chip">
-                        <span>Organisme de tutelle :</span>
-                        <strong>{contest.organization}</strong>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* 3. Conditions d'accès officielles & Éligibilité (Accordéon) */}
-              {conditions.length > 0 && (
-                <div className={`glass-accordion-card ${modalSectionsOpen.conditions ? 'is-open' : 'is-closed'}`}>
-                  <button
-                    type="button"
-                    className="glass-accordion-trigger"
-                    onClick={() => toggleModalSection('conditions')}
-                    aria-expanded={modalSectionsOpen.conditions}
-                  >
-                    <div className="trigger-title-group">
-                      <span className="trigger-icon">📜</span>
-                      <span className="trigger-title-text">Conditions d’accès &amp; Éligibilité</span>
-                    </div>
-                    <div className="trigger-right-group">
-                      <span className="trigger-count-badge">{conditions.length} critère{conditions.length > 1 ? 's' : ''}</span>
-                      <span className={`accordion-chevron ${modalSectionsOpen.conditions ? 'rotate' : ''}`}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                      </span>
-                    </div>
-                  </button>
-
-                  {modalSectionsOpen.conditions && (
-                    <div className="glass-accordion-body">
-                      <div className="conditions-list">
-                        {conditions.map((cond) => (
-                          <div key={cond.id} className="condition-row">
-                            <div className="cond-check">✓</div>
-                            <div className="cond-content">
-                              <strong className="cond-title">{cond.title}</strong>
-                              <p className="cond-desc">{cond.description}</p>
-                            </div>
-                            {cond.isMandatory && (
-                              <span className="mandatory-pill">Obligatoire</span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* 4. Matières évaluées au concours (Accordéon) */}
-              {subjects.length > 0 && (
-                <div className={`glass-accordion-card ${modalSectionsOpen.subjects ? 'is-open' : 'is-closed'}`}>
-                  <button
-                    type="button"
-                    className="glass-accordion-trigger"
-                    onClick={() => toggleModalSection('subjects')}
-                    aria-expanded={modalSectionsOpen.subjects}
-                  >
-                    <div className="trigger-title-group">
-                      <span className="trigger-icon">📚</span>
-                      <span className="trigger-title-text">Matières évaluées au concours</span>
-                    </div>
-                    <div className="trigger-right-group">
-                      <span className="trigger-count-badge">{subjects.length} matière{subjects.length > 1 ? 's' : ''}</span>
-                      <span className={`accordion-chevron ${modalSectionsOpen.subjects ? 'rotate' : ''}`}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                      </span>
-                    </div>
-                  </button>
-
-                  {modalSectionsOpen.subjects && (
-                    <div className="glass-accordion-body">
-                      <div className="subjects-chips-grid">
-                        {subjects.map((sub) => (
-                          <div key={sub.id} className="subject-box">
-                            <strong className="sub-title">{sub.name}</strong>
-                            <p className="sub-desc">{sub.description}</p>
-                            <span className="sub-count">{sub.resourcesCount} ressources disponibles</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Modal Footer */}
-            <div className="glass-modal-footer">
-              <span className="footer-note">
-                Toutes les annales, corrigés et fascicules ci-dessous sont conformes au programme officiel.
-              </span>
               <button
                 type="button"
-                className="close-glass-action-btn"
+                className="glass-close-btn"
+                onClick={() => setIsGlassModalOpen(false)}
+                aria-label="Fermer la fiche d'informations"
+                title="Fermer"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Corps défilable : Sections organisées en cartes accordéons compactes et fluides (Image 2) */}
+            <div className="glass-panel-scroll-body" tabIndex={0}>
+              <div className="glass-accordions-stack">
+                {/* 1. Calendrier & Dates */}
+                <div className={`sunu-filter-accordion-item ${modalSectionsOpen.calendar ? 'is-open' : ''}`}>
+                  <button
+                    type="button"
+                    className="accordion-header-btn"
+                    onClick={() => toggleModalSection('calendar')}
+                    aria-expanded={modalSectionsOpen.calendar}
+                  >
+                    <div className="header-left">
+                      <span
+                        className="accordion-chevron"
+                        style={{
+                          transform: modalSectionsOpen.calendar ? 'rotate(90deg)' : 'rotate(0deg)',
+                        }}
+                      >
+                        ›
+                      </span>
+                      <span className="section-svg-icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                          <line x1="16" y1="2" x2="16" y2="6" />
+                          <line x1="8" y1="2" x2="8" y2="6" />
+                          <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                      </span>
+                      <span className="accordion-title">Calendrier &amp; Dates</span>
+                    </div>
+                    <div className="header-right">
+                      <span className={`status-pill ${contest.status}`}>
+                        {contest.status === 'open' ? 'Inscriptions en cours' : contest.status === 'upcoming' ? 'Session à venir' : 'Clôturé'}
+                      </span>
+                    </div>
+                  </button>
+
+                  {modalSectionsOpen.calendar && (
+                    <div className="accordion-body-collapse">
+                      <div className="compact-timeline-grid">
+                        <div className="compact-info-row">
+                          <span className="info-row-label">Statut officiel</span>
+                          <span className={`info-row-val status ${contest.status}`}>
+                            {contest.status === 'open' ? 'Inscriptions en cours' : contest.status === 'upcoming' ? 'Session à venir' : 'Inscriptions clôturées'}
+                          </span>
+                        </div>
+                        <div className="compact-info-row">
+                          <span className="info-row-label">Date limite de dépôt</span>
+                          <span className="info-row-val highlight">
+                            {contest.applicationDeadline || 'Non communiquée'}
+                          </span>
+                        </div>
+                        <div className="compact-info-row">
+                          <span className="info-row-label">Épreuves écrites</span>
+                          <span className="info-row-val highlight">
+                            {contest.examDate || 'À fixer par arrêté ministériel'}
+                          </span>
+                        </div>
+                        <div className="compact-info-row">
+                          <span className="info-row-label">Niveau d’entrée requis</span>
+                          <span className="info-row-val">
+                            {contest.diplomaLabel}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 2. Présentation du Concours & Missions */}
+                <div className={`sunu-filter-accordion-item ${modalSectionsOpen.presentation ? 'is-open' : ''}`}>
+                  <button
+                    type="button"
+                    className="accordion-header-btn"
+                    onClick={() => toggleModalSection('presentation')}
+                    aria-expanded={modalSectionsOpen.presentation}
+                  >
+                    <div className="header-left">
+                      <span
+                        className="accordion-chevron"
+                        style={{
+                          transform: modalSectionsOpen.presentation ? 'rotate(90deg)' : 'rotate(0deg)',
+                        }}
+                      >
+                        ›
+                      </span>
+                      <span className="section-svg-icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                        </svg>
+                      </span>
+                      <span className="accordion-title">Présentation &amp; Missions</span>
+                    </div>
+                    <div className="header-right">
+                      {contest.organization ? (
+                        <span className="current-value-badge" title={contest.organization}>
+                          {contest.organization.length > 16 ? `${contest.organization.slice(0, 14)}…` : contest.organization}
+                        </span>
+                      ) : (
+                        <span className="current-value-badge">Détails</span>
+                      )}
+                    </div>
+                  </button>
+
+                  {modalSectionsOpen.presentation && (
+                    <div className="accordion-body-collapse">
+                      <p className="compact-description-text">
+                        {contest.longDescription}
+                      </p>
+                      {contest.organization && (
+                        <div className="compact-org-chip">
+                          <span className="org-label">Organisme de tutelle :</span>
+                          <span className="org-name">{contest.organization}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. Conditions d'accès officielles & Éligibilité */}
+                {conditions.length > 0 && (
+                  <div className={`sunu-filter-accordion-item ${modalSectionsOpen.conditions ? 'is-open' : ''}`}>
+                    <button
+                      type="button"
+                      className="accordion-header-btn"
+                      onClick={() => toggleModalSection('conditions')}
+                      aria-expanded={modalSectionsOpen.conditions}
+                    >
+                      <div className="header-left">
+                        <span
+                          className="accordion-chevron"
+                          style={{
+                            transform: modalSectionsOpen.conditions ? 'rotate(90deg)' : 'rotate(0deg)',
+                          }}
+                        >
+                          ›
+                        </span>
+                        <span className="section-svg-icon">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                          </svg>
+                        </span>
+                        <span className="accordion-title">Conditions d’accès</span>
+                      </div>
+                      <div className="header-right">
+                        <span className="current-value-badge">
+                          {conditions.length} critère{conditions.length > 1 ? 's' : ''}
+                        </span>
+                      </div>
+                    </button>
+
+                    {modalSectionsOpen.conditions && (
+                      <div className="accordion-body-collapse">
+                        <div className="compact-conditions-list">
+                          {conditions.map((cond) => (
+                            <div key={cond.id} className="compact-condition-row">
+                              <span className="cond-check-bullet">✓</span>
+                              <div className="cond-text-group">
+                                <div className="cond-title-line">
+                                  <strong className="cond-title">{cond.title}</strong>
+                                  {cond.isMandatory && (
+                                    <span className="cond-mandatory-tag">Obligatoire</span>
+                                  )}
+                                </div>
+                                <p className="cond-desc">{cond.description}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* 4. Matières évaluées au concours */}
+                {subjects.length > 0 && (
+                  <div className={`sunu-filter-accordion-item ${modalSectionsOpen.subjects ? 'is-open' : ''}`}>
+                    <button
+                      type="button"
+                      className="accordion-header-btn"
+                      onClick={() => toggleModalSection('subjects')}
+                      aria-expanded={modalSectionsOpen.subjects}
+                    >
+                      <div className="header-left">
+                        <span
+                          className="accordion-chevron"
+                          style={{
+                            transform: modalSectionsOpen.subjects ? 'rotate(90deg)' : 'rotate(0deg)',
+                          }}
+                        >
+                          ›
+                        </span>
+                        <span className="section-svg-icon">
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                          </svg>
+                        </span>
+                        <span className="accordion-title">Matières évaluées</span>
+                      </div>
+                      <div className="header-right">
+                        <span className="current-value-badge">
+                          {subjects.length} matière{subjects.length > 1 ? 's' : ''}
+                        </span>
+                      </div>
+                    </button>
+
+                    {modalSectionsOpen.subjects && (
+                      <div className="accordion-body-collapse">
+                        <div className="compact-subjects-list">
+                          {subjects.map((sub) => (
+                            <div key={sub.id} className="compact-subject-row">
+                              <div className="subject-info-cluster">
+                                <strong className="subject-title">{sub.name}</strong>
+                                {sub.description && (
+                                  <p className="subject-desc">{sub.description}</p>
+                                )}
+                              </div>
+                              <span className="subject-count-tag">
+                                {sub.resourcesCount} doc{sub.resourcesCount > 1 ? 's' : ''}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Pied de panneau avec actions équilibrées (comme l'Image 2) */}
+            <div className="glass-panel-footer">
+              <button
+                type="button"
+                className="glass-reset-btn"
+                onClick={toggleAllModalSections}
+              >
+                {areAllSectionsOpen ? 'Tout replier' : 'Tout déplier'}
+              </button>
+              <button
+                type="button"
+                className="glass-apply-btn"
                 onClick={() => setIsGlassModalOpen(false)}
               >
                 Fermer la fiche
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* 6. Active Document Reader / Preview Modal */}
@@ -2369,534 +2418,536 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           cursor: pointer;
         }
 
-        /* 5. FROSTED GLASS MODAL (« Page Glacée / Fiche Officielle ») */
-        .glass-modal-backdrop {
+        /* 5. FROSTED GLASS MODAL (« Fiche Officielle Flottante » - STYLE IDENTIQUE À L'IMAGE 2) */
+        .glass-modal-backdrop,
+        .sunu-glass-panel-overlay {
           position: fixed;
           inset: 0;
           z-index: 100000;
-          background: rgba(15, 23, 42, 0.65);
-          backdrop-filter: blur(14px);
-          -webkit-backdrop-filter: blur(14px);
+          background: rgba(15, 23, 42, 0.48);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 24px;
-          animation: fadeIn 0.2s ease-out;
+          padding: max(14px, env(safe-area-inset-top, 14px)) 14px max(14px, env(safe-area-inset-bottom, 14px)) 14px;
+          animation: overlayFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+          touch-action: none;
+          overscroll-behavior: none;
         }
 
-        .glass-modal-card {
+        @keyframes overlayFadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        .sunu-glass-floating-panel {
           position: relative;
-          background: #ffffff;
-          border: 1.5px solid rgba(226, 232, 240, 0.95);
-          border-radius: 24px;
-          box-shadow: 0 25px 60px -10px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(226, 232, 240, 0.6);
           width: 100%;
-          max-width: 760px;
-          max-height: 88vh;
+          max-width: 440px;
+          max-height: min(720px, calc(100dvh - 28px));
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border: 1px solid rgba(255, 255, 255, 0.7);
+          border-radius: 24px;
+          box-shadow: 0 24px 55px -12px rgba(15, 23, 42, 0.28),
+            0 0 0 1px rgba(99, 102, 241, 0.08);
           display: flex;
           flex-direction: column;
           overflow: hidden;
-          animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+          overscroll-behavior: contain;
+          user-select: none;
+          animation: glassPop 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        .sheet-drag-pill {
-          display: none;
+        @keyframes glassPop {
+          from {
+            opacity: 0;
+            transform: scale(0.96) translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
         }
 
         .glass-ambient-aura {
           position: absolute;
           top: -100px;
           right: -100px;
-          width: 320px;
-          height: 320px;
+          width: 300px;
+          height: 300px;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(245, 158, 11, 0.12) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
           pointer-events: none;
         }
 
-        .glass-modal-header {
-          padding: 20px 24px;
-          border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+        .glass-panel-header {
+          position: relative;
+          z-index: 2;
+          padding: 14px 18px;
+          border-bottom: 1px solid rgba(226, 232, 240, 0.75);
+          background: rgba(248, 250, 255, 0.65);
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 16px;
-          background: rgba(255, 255, 255, 0.98);
-          position: sticky;
-          top: 0;
-          z-index: 20;
+          user-select: none;
         }
 
-        .glass-header-left {
+        .header-title-box {
           display: flex;
           align-items: center;
-          gap: 14px;
-          min-width: 0;
+          gap: 8px;
         }
 
-        .glass-logo-box {
-          width: 56px;
-          height: 56px;
-          border-radius: 14px;
-          background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.9);
-          padding: 5px;
+        .header-sparkle-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+          box-shadow: 0 0 8px rgba(79, 70, 229, 0.4);
+        }
+
+        .header-heading {
+          font-size: 1.05rem;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0;
+          letter-spacing: -0.01em;
+        }
+
+        .header-session-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 2px 8px;
+          border-radius: 9999px;
+          background: #eef2ff;
+          color: #4f46e5;
+          font-size: 11px;
+          font-weight: 700;
+        }
+
+        .glass-close-btn {
+          width: 30px;
+          height: 30px;
+          border-radius: 9px;
+          background: rgba(241, 245, 249, 0.85);
+          color: #64748b;
+          border: none;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
-          flex-shrink: 0;
+          cursor: pointer;
+          transition: all 0.15s ease;
         }
 
-        .glass-logo-img {
-          max-width: 100%;
-          max-height: 100%;
-          object-fit: contain;
+        .glass-close-btn:hover {
+          background: #fee2e2;
+          color: #ef4444;
         }
 
-        .glass-logo-fallback {
-          font-size: 18px;
-          font-weight: 900;
-          color: #d97706;
+        .glass-panel-scroll-body {
+          position: relative;
+          z-index: 1;
+          flex: 1;
+          overflow-y: auto;
+          padding: 14px 18px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          touch-action: pan-y;
+          overscroll-behavior: contain;
+          -webkit-overflow-scrolling: touch;
         }
 
-        .glass-header-text {
+        .glass-panel-scroll-body::-webkit-scrollbar {
+          width: 5px;
+        }
+
+        .glass-panel-scroll-body::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 9999px;
+        }
+
+        .glass-accordions-stack {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        /* LIGNES ACCORDÉONS (STYLE FILTERACCORDION - IMAGE 2) */
+        .sunu-filter-accordion-item {
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.85);
+          border-radius: 14px;
+          overflow: hidden;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .sunu-filter-accordion-item.is-open {
+          border-color: rgba(99, 102, 241, 0.38);
+          box-shadow: 0 4px 16px -2px rgba(99, 102, 241, 0.08);
+        }
+
+        .accordion-header-btn {
+          width: 100%;
+          min-height: 48px;
+          padding: 10px 14px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          font-family: inherit;
+          text-align: left;
+          user-select: none;
+          transition: background 0.15s ease;
+        }
+
+        .accordion-header-btn:hover {
+          background: rgba(248, 250, 252, 0.8);
+        }
+
+        .header-left {
+          display: flex;
+          align-items: center;
+          gap: 9px;
+          flex: 1;
           min-width: 0;
         }
 
-        .glass-pill-badge {
+        .accordion-chevron {
+          font-size: 16px;
+          font-weight: 700;
+          color: #6366f1;
+          width: 14px;
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          font-size: 10.5px;
-          font-weight: 800;
-          color: #b45309;
-          background: #fef3c7;
-          padding: 2px 8px;
-          border-radius: 9999px;
-          margin-bottom: 2px;
-          text-transform: uppercase;
-          letter-spacing: 0.02em;
+          justify-content: center;
+          transition: transform 0.2s ease;
+          line-height: 1;
         }
 
-        .pulse-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: #d97706;
+        .section-svg-icon {
+          color: #4f46e5;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
         }
 
-        .glass-title {
-          font-size: 20px;
-          font-weight: 900;
+        .accordion-title {
+          font-size: 13.5px;
+          font-weight: 700;
           color: #0f172a;
-          margin: 0;
-          letter-spacing: -0.02em;
-          line-height: 1.2;
-        }
-
-        .glass-subtitle {
-          font-size: 12.5px;
-          color: #475569;
-          font-weight: 600;
-          margin: 0;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
 
-        .glass-header-actions {
+        .header-right {
           display: flex;
           align-items: center;
-          gap: 10px;
+          margin-left: 8px;
           flex-shrink: 0;
         }
 
-        .toggle-all-sections-btn {
-          height: 34px;
-          padding: 0 12px;
+        .current-value-badge {
+          background: #ede9fe;
+          color: #4f46e5;
           font-size: 11.5px;
           font-weight: 700;
-          color: #334155;
-          background: #f1f5f9;
-          border: 1px solid #e2e8f0;
-          border-radius: 9999px;
-          cursor: pointer;
-          transition: all 0.15s ease;
+          padding: 3px 9px;
+          border-radius: 999px;
+          max-width: 130px;
           white-space: nowrap;
-        }
-
-        .toggle-all-sections-btn:hover {
-          background: #e2e8f0;
-          color: #0f172a;
-        }
-
-        .glass-close-btn {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          background: #f1f5f9;
-          border: 1px solid #e2e8f0;
-          color: #475569;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.15s ease;
-          flex-shrink: 0;
-        }
-
-        .glass-close-btn:hover {
-          background: #e2e8f0;
-          color: #0f172a;
-        }
-
-        .glass-modal-body {
-          padding: 20px 24px;
-          overflow-y: auto;
-          -webkit-overflow-scrolling: touch;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          flex: 1;
-        }
-
-        /* ACCORDIONS DANS LA MODALE */
-        .glass-accordion-card {
-          background: #ffffff;
-          border: 1.5px solid #e2e8f0;
-          border-radius: 16px;
           overflow: hidden;
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-          box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.04);
+          text-overflow: ellipsis;
         }
 
-        .glass-accordion-card.is-open {
-          border-color: rgba(217, 119, 6, 0.35);
-          box-shadow: 0 4px 14px -2px rgba(217, 119, 6, 0.08);
-        }
-
-        .glass-accordion-trigger {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 14px 18px;
-          background: #ffffff;
-          border: none;
-          cursor: pointer;
-          text-align: left;
-          transition: background 0.15s ease;
-          user-select: none;
-          gap: 12px;
-        }
-
-        .glass-accordion-trigger:hover {
-          background: #f8fafc;
-        }
-
-        .trigger-title-group {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          min-width: 0;
-        }
-
-        .trigger-icon {
-          font-size: 18px;
-          line-height: 1;
-          flex-shrink: 0;
-        }
-
-        .trigger-title-text {
-          font-size: 14px;
-          font-weight: 800;
-          color: #0f172a;
-          letter-spacing: -0.01em;
-        }
-
-        .trigger-right-group {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          flex-shrink: 0;
-        }
-
-        .trigger-status-badge {
+        .status-pill {
           font-size: 11px;
-          font-weight: 800;
-          padding: 2.5px 8px;
-          border-radius: 9999px;
+          font-weight: 700;
+          padding: 3px 9px;
+          border-radius: 999px;
           white-space: nowrap;
         }
 
-        .trigger-status-badge.open {
+        .status-pill.open {
           background: #ecfdf5;
           color: #059669;
           border: 1px solid #a7f3d0;
         }
 
-        .trigger-status-badge.upcoming {
+        .status-pill.upcoming {
           background: #fef3c7;
           color: #b45309;
           border: 1px solid #fde68a;
         }
 
-        .trigger-status-badge.closed {
+        .status-pill.closed {
           background: #f1f5f9;
           color: #64748b;
           border: 1px solid #cbd5e1;
         }
 
-        .trigger-count-badge {
-          font-size: 11px;
-          font-weight: 700;
-          color: #4f46e5;
-          background: #eef2ff;
-          border: 1px solid #c7d2fe;
-          padding: 2px 8px;
-          border-radius: 9999px;
-          white-space: nowrap;
+        .accordion-body-collapse {
+          border-top: 1px solid rgba(226, 232, 240, 0.7);
+          padding: 10px 14px 14px 14px;
+          background: #ffffff;
+          animation: accordionExpand 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .trigger-meta-pill {
+        @keyframes accordionExpand {
+          from {
+            opacity: 0;
+            transform: translateY(-4px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        /* Timeline grid */
+        .compact-timeline-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .compact-info-row {
+          background: #f8fafc;
+          border: 1px solid #eef2f6;
+          border-radius: 10px;
+          padding: 8px 12px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+        }
+
+        .info-row-label {
           font-size: 11px;
           font-weight: 600;
           color: #64748b;
-          background: #f1f5f9;
-          padding: 2px 8px;
-          border-radius: 9999px;
-          max-width: 180px;
+          white-space: nowrap;
+        }
+
+        .info-row-val {
+          font-size: 12.5px;
+          font-weight: 700;
+          color: #0f172a;
+          text-align: right;
+        }
+
+        .info-row-val.highlight {
+          color: #4f46e5;
+        }
+
+        .info-row-val.status.open {
+          color: #059669;
+        }
+
+        .info-row-val.status.upcoming {
+          color: #b45309;
+        }
+
+        .info-row-val.status.closed {
+          color: #64748b;
+        }
+
+        .compact-description-text {
+          font-size: 12.5px;
+          line-height: 1.55;
+          color: #334155;
+          margin: 0;
+        }
+
+        .compact-org-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 11.5px;
+          color: #475569;
+          background: #f8fafc;
+          padding: 5px 10px;
+          border-radius: 8px;
+          border: 1px solid #e2e8f0;
+          margin-top: 8px;
+        }
+
+        .compact-org-chip .org-label {
+          font-weight: 600;
+          color: #64748b;
+        }
+
+        .compact-org-chip .org-name {
+          font-weight: 700;
+          color: #0f172a;
+        }
+
+        .compact-conditions-list {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .compact-condition-row {
+          background: #f8fafc;
+          border: 1px solid #eef2f6;
+          border-radius: 10px;
+          padding: 8px 10px;
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+        }
+
+        .cond-check-bullet {
+          color: #10b981;
+          font-weight: 800;
+          font-size: 13px;
+          line-height: 1.2;
+        }
+
+        .cond-text-group {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .cond-title-line {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          flex-wrap: wrap;
+        }
+
+        .cond-title {
+          font-size: 12.5px;
+          font-weight: 700;
+          color: #0f172a;
+        }
+
+        .cond-mandatory-tag {
+          font-size: 9.5px;
+          font-weight: 700;
+          color: #dc2626;
+          background: #fee2e2;
+          padding: 1px 6px;
+          border-radius: 999px;
+        }
+
+        .cond-desc {
+          font-size: 11.5px;
+          color: #64748b;
+          margin: 2px 0 0 0;
+          line-height: 1.35;
+        }
+
+        .compact-subjects-list {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .compact-subject-row {
+          background: #f8fafc;
+          border: 1px solid #eef2f6;
+          border-radius: 10px;
+          padding: 8px 10px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+        }
+
+        .subject-info-cluster {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .subject-title {
+          font-size: 12.5px;
+          font-weight: 700;
+          color: #0f172a;
+          display: block;
+        }
+
+        .subject-desc {
+          font-size: 11px;
+          color: #64748b;
+          margin: 1px 0 0 0;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
 
-        .accordion-chevron {
-          width: 28px;
-          height: 28px;
-          border-radius: 50%;
-          background: #f1f5f9;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #64748b;
-          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.15s, color 0.15s;
+        .subject-count-tag {
+          font-size: 10.5px;
+          font-weight: 700;
+          color: #4f46e5;
+          background: #eef2ff;
+          padding: 2px 8px;
+          border-radius: 999px;
+          white-space: nowrap;
           flex-shrink: 0;
         }
 
-        .glass-accordion-trigger:hover .accordion-chevron {
+        /* PIED DE PANNEAU MODAL (IDENTIQUE À FILTERGLASSPANEL - IMAGE 2) */
+        .glass-panel-footer {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 18px max(14px, env(safe-area-inset-bottom, 14px)) 18px;
+          background: rgba(255, 255, 255, 0.85);
+          border-top: 1px solid rgba(226, 232, 240, 0.7);
+          user-select: none;
+        }
+
+        .glass-reset-btn {
+          flex: 1;
+          height: 42px;
+          border-radius: 12px;
+          background: #f1f5f9;
+          border: none;
+          font-size: 13px;
+          font-weight: 600;
+          color: #475569;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .glass-reset-btn:hover {
           background: #e2e8f0;
           color: #0f172a;
         }
 
-        .accordion-chevron.rotate {
-          transform: rotate(180deg);
-          background: #fef3c7;
-          color: #d97706;
-        }
-
-        .glass-accordion-body {
-          padding: 0 18px 16px 18px;
-          border-top: 1px solid #f1f5f9;
-          margin-top: 2px;
-          animation: fadeIn 0.2s ease-out;
-        }
-
-        .timeline-cards-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 10px;
-          padding-top: 12px;
-        }
-
-        .timeline-card {
-          background: #f8fafc;
-          border: 1px solid rgba(226, 232, 240, 0.9);
+        .glass-apply-btn {
+          flex: 2;
+          height: 42px;
           border-radius: 12px;
-          padding: 12px 14px;
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        .t-label {
-          font-size: 10.5px;
-          font-weight: 700;
-          color: #64748b;
-          text-transform: uppercase;
-          letter-spacing: 0.02em;
-        }
-
-        .t-val {
-          font-size: 13.5px;
-          font-weight: 800;
-          color: #0f172a;
-        }
-
-        .t-val.highlight {
-          color: #d97706;
-        }
-
-        .t-val.status.open {
-          color: #059669;
-        }
-
-        .t-val.status.upcoming {
-          color: #b45309;
-        }
-
-        .description-text {
-          font-size: 13.5px;
-          color: #334155;
-          line-height: 1.55;
-          margin: 0;
-          padding-top: 12px;
-        }
-
-        .org-chip {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 12px;
-          color: #475569;
-          background: #f8fafc;
-          padding: 6px 12px;
-          border-radius: 8px;
-          border: 1px solid #e2e8f0;
-          width: fit-content;
-          margin-top: 12px;
-        }
-
-        /* Conditions */
-        .conditions-list {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          padding-top: 12px;
-        }
-
-        .condition-row {
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-          border-radius: 10px;
-          padding: 10px 14px;
-          display: flex;
-          align-items: flex-start;
-          gap: 10px;
-        }
-
-        .cond-check {
-          color: #10b981;
-          font-weight: 900;
-          font-size: 14px;
-          line-height: 1.4;
-        }
-
-        .cond-content {
-          flex: 1;
-        }
-
-        .cond-title {
-          font-size: 13px;
-          font-weight: 800;
-          color: #0f172a;
-          display: block;
-          margin-bottom: 2px;
-        }
-
-        .cond-desc {
-          font-size: 12px;
-          color: #64748b;
-          margin: 0;
-          line-height: 1.4;
-        }
-
-        .mandatory-pill {
-          font-size: 10px;
-          font-weight: 800;
-          color: #b45309;
-          background: #fef3c7;
-          padding: 2px 6px;
-          border-radius: 4px;
-        }
-
-        /* Subjects chips grid */
-        .subjects-chips-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 10px;
-          padding-top: 12px;
-        }
-
-        .subject-box {
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-          border-radius: 10px;
-          padding: 10px 12px;
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-        }
-
-        .sub-title {
-          font-size: 13px;
-          font-weight: 800;
-          color: #0f172a;
-        }
-
-        .sub-desc {
-          font-size: 11.5px;
-          color: #64748b;
-          margin: 0;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        .sub-count {
-          font-size: 10.5px;
-          font-weight: 700;
-          color: #4f46e5;
-          margin-top: 4px;
-        }
-
-        .glass-modal-footer {
-          padding: 14px 24px;
-          background: rgba(248, 250, 252, 0.98);
-          border-top: 1px solid #e2e8f0;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 16px;
-          position: sticky;
-          bottom: 0;
-          z-index: 20;
-        }
-
-        .footer-note {
-          font-size: 11.5px;
-          color: #64748b;
-          font-style: italic;
-        }
-
-        .close-glass-action-btn {
-          height: 38px;
-          padding: 0 20px;
-          font-size: 13px;
-          font-weight: 700;
-          background: #0f172a;
-          color: #ffffff;
+          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
           border: none;
-          border-radius: 9999px;
+          font-size: 13px;
+          font-weight: 700;
+          color: #ffffff;
           cursor: pointer;
-          transition: background 0.15s ease;
-          flex-shrink: 0;
+          transition: all 0.15s ease;
+          box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
         }
 
-        .close-glass-action-btn:hover {
-          background: #1e293b;
+        .glass-apply-btn:hover {
+          opacity: 0.95;
+          transform: translateY(-1px);
         }
 
         /* 6. READER PREVIEW MODAL */
@@ -3065,115 +3116,31 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
             gap: 6px;
           }
 
-          /* MODALE FICHE OFFICIELLE SUR MOBILE (< 860px) - BOTTOM SHEET ULTRA FLUIDE */
-          .glass-modal-backdrop {
-            align-items: flex-end !important;
-            justify-content: center !important;
-            padding: 0 !important;
-            background: rgba(15, 23, 42, 0.72) !important;
+          /* MODALE FICHE FLOTTANTE SUR MOBILE (< 860px) - RESTE FLUIDE ET CENTRÉE COMME L'IMAGE 2 */
+          .sunu-glass-panel-overlay {
+            padding: 12px !important;
           }
 
-          .glass-modal-card {
-            width: 100% !important;
-            max-width: 100% !important;
-            max-height: 92dvh !important;
-            border-radius: 24px 24px 0 0 !important;
-            margin: 0 !important;
-            border-left: none !important;
-            border-right: none !important;
-            border-bottom: none !important;
-            box-shadow: 0 -12px 40px rgba(15, 23, 42, 0.35) !important;
+          .sunu-glass-floating-panel {
+            max-width: 440px !important;
+            max-height: min(690px, calc(100dvh - 24px)) !important;
+            border-radius: 22px !important;
           }
 
-          .sheet-drag-pill {
-            display: block !important;
-            width: 38px;
-            height: 4.5px;
-            border-radius: 9999px;
-            background: #cbd5e1;
-            margin: 8px auto 2px auto;
-            flex-shrink: 0;
+          .glass-panel-header {
+            padding: 12px 16px !important;
           }
 
-          .glass-modal-header {
-            padding: 10px 16px 12px 16px !important;
-            gap: 10px !important;
+          .header-heading {
+            font-size: 0.98rem !important;
           }
 
-          .glass-logo-box {
-            width: 44px !important;
-            height: 44px !important;
-            border-radius: 10px !important;
-          }
-
-          .glass-title {
-            font-size: 17px !important;
-          }
-
-          .glass-subtitle {
-            font-size: 11px !important;
-            max-width: 170px !important;
-          }
-
-          .glass-header-actions {
-            gap: 6px !important;
-          }
-
-          .toggle-all-sections-btn {
-            height: 30px !important;
-            padding: 0 9px !important;
-            font-size: 10.5px !important;
-          }
-
-          .glass-close-btn {
-            width: 32px !important;
-            height: 32px !important;
-          }
-
-          .glass-modal-body {
-            padding: 12px 14px !important;
-            gap: 10px !important;
-          }
-
-          .glass-accordion-trigger {
+          .glass-panel-scroll-body {
             padding: 12px 14px !important;
           }
 
-          .trigger-title-text {
-            font-size: 13px !important;
-          }
-
-          .glass-accordion-body {
-            padding: 0 14px 14px 14px !important;
-          }
-
-          .timeline-cards-grid {
-            grid-template-columns: 1fr !important;
-            gap: 8px !important;
-          }
-
-          .subjects-chips-grid {
-            grid-template-columns: 1fr !important;
-            gap: 8px !important;
-          }
-
-          .glass-modal-footer {
-            padding: 12px 16px calc(14px + env(safe-area-inset-bottom, 12px)) 16px !important;
-            flex-direction: column !important;
-            gap: 8px !important;
-            text-align: center !important;
-          }
-
-          .footer-note {
-            font-size: 10.5px !important;
-            line-height: 1.35 !important;
-          }
-
-          .close-glass-action-btn {
-            width: 100% !important;
-            height: 44px !important;
-            font-size: 13.5px !important;
-            border-radius: 12px !important;
+          .glass-panel-footer {
+            padding: 10px 14px max(12px, env(safe-area-inset-bottom, 12px)) 14px !important;
           }
 
           .contest-identity-bar {
