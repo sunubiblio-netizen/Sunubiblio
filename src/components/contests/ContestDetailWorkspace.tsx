@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Contest, ContestPaperResource } from '@/types/contest';
 
@@ -24,6 +24,64 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
   const [selectedType, setSelectedType] = useState<ResourceTypeFilter>('all');
   const [selectedSubject, setSelectedSubject] = useState<string>('all');
   const [selectedYear, setSelectedYear] = useState<string>('all');
+
+  // Collapsible Filter Drawer (Fermé par défaut à l'arrivée sur la page)
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+
+  // Custom Dropdowns Menu Open States
+  const [isSubjectDropdownOpen, setIsSubjectDropdownOpen] = useState(false);
+  const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
+
+  const subjectDropdownRef = useRef<HTMLDivElement>(null);
+  const yearDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Mouse Drag-to-Scroll State for fluid horizontal tabs pushing
+  const pillsContainerRef = useRef<HTMLDivElement>(null);
+  const [isDraggingPills, setIsDraggingPills] = useState(false);
+  const [dragStartX, setDragStartX] = useState(0);
+  const [dragScrollLeft, setDragScrollLeft] = useState(0);
+
+  const handlePillsMouseDown = (e: React.MouseEvent) => {
+    if (!pillsContainerRef.current) return;
+    setIsDraggingPills(true);
+    setDragStartX(e.pageX - pillsContainerRef.current.offsetLeft);
+    setDragScrollLeft(pillsContainerRef.current.scrollLeft);
+  };
+
+  const handlePillsMouseLeaveOrUp = () => {
+    setIsDraggingPills(false);
+  };
+
+  const handlePillsMouseMove = (e: React.MouseEvent) => {
+    if (!isDraggingPills || !pillsContainerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - pillsContainerRef.current.offsetLeft;
+    const walk = (x - dragStartX) * 1.5;
+    pillsContainerRef.current.scrollLeft = dragScrollLeft - walk;
+  };
+
+  // Fermeture des menus déroulants lors d'un clic extérieur
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        subjectDropdownRef.current &&
+        !subjectDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsSubjectDropdownOpen(false);
+      }
+      if (
+        yearDropdownRef.current &&
+        !yearDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsYearDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Glass Info Modal State
   const [isGlassModalOpen, setIsGlassModalOpen] = useState(false);
@@ -133,6 +191,16 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
     }
   };
 
+  const hasActiveAdvancedFilters = selectedSubject !== 'all' || selectedYear !== 'all';
+  const hasAnyFilter = hasActiveAdvancedFilters || selectedType !== 'all' || searchQuery.trim() !== '';
+
+  const handleClearAllFilters = () => {
+    setSelectedSubject('all');
+    setSelectedYear('all');
+    setSelectedType('all');
+    setSearchQuery('');
+  };
+
   const handleGoBack = () => {
     if (typeof window !== 'undefined' && window.history.length > 1) {
       window.history.back();
@@ -148,44 +216,38 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
     <div className="contest-library-view">
       {/* 1. Header / Breadcrumb & Contest Identity */}
       <section className="contest-top-header">
+        {/* Navigation retour : uniquement la flèche circulaire épurée */}
         <div className="header-navigation-row">
           <button
             type="button"
-            className="back-btn"
+            className="back-btn-circle"
             onClick={handleGoBack}
             aria-label="Retour à la page précédente"
+            title="Retour à la page précédente"
           >
-            <span className="back-btn-icon-circle">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="19" y1="12" x2="5" y2="12" />
-                <polyline points="12 19 5 12 12 5" />
-              </svg>
-            </span>
-            <span className="back-btn-label">Retour aux concours</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
           </button>
         </div>
 
-        {/* Identity Card Bar (Cadre FASTEF élégant, compact avec statut à droite) */}
+        {/* Identity Card Bar (Cadre FASTEF élégant, compact avec session 2025 et inscription ouverte au même niveau) */}
         <div className="contest-identity-bar">
-          {/* Ligne 1 : Badges d'information à gauche, Statut poussé à droite */}
+          {/* Ligne 1 : Session 2025 et Inscriptions ouvertes au MÊME NIVEAU */}
           <div className="identity-top-row">
-            <div className="top-pills-left">
-              <span className="session-pill">Session {contest.sessionYear}</span>
-              <span className="diploma-pill">{contest.diplomaLabel}</span>
-            </div>
+            <span className="session-pill">Session {contest.sessionYear}</span>
 
-            <div className="top-status-right">
-              <span className={`status-pill ${contest.status}`}>
-                <span className="status-dot" />
-                <span>
-                  {contest.status === 'open'
-                    ? 'Inscriptions ouvertes'
-                    : contest.status === 'upcoming'
-                    ? 'Session à venir'
-                    : 'Fermé'}
-                </span>
+            <span className={`status-pill ${contest.status}`}>
+              <span className="status-dot" />
+              <span>
+                {contest.status === 'open'
+                  ? 'Inscriptions ouvertes'
+                  : contest.status === 'upcoming'
+                  ? 'Session à venir'
+                  : 'Fermé'}
               </span>
-            </div>
+            </span>
           </div>
 
           {/* Ligne 2 : Logo officiel & Titres institutionnels */}
@@ -203,7 +265,10 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
             </div>
 
             <div className="contest-titles">
-              <h1 className="contest-name">{contest.name}</h1>
+              <div className="contest-title-header">
+                <h1 className="contest-name">{contest.name}</h1>
+                <span className="diploma-pill">{contest.diplomaLabel}</span>
+              </div>
               <p className="contest-full-name">{contest.fullName}</p>
               <p className="contest-org-line">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -286,10 +351,19 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         </form>
       </section>
 
-      {/* 3. Filtre épuré & agréable (Non surchargé, apaisant, facile à comprendre) */}
+      {/* 3. Filtres interactifs : Onglets défilables de manière fluide + tiroir de filtres repliable */}
       <section className="contest-filters-section">
-        {/* Row A: Les types essentiels (Pilules simples et nettes) */}
-        <div className="filter-pills-row">
+        {/* Row A: Les types essentiels (Pilules défilables / poussables de manière ultra fluide) */}
+        <div
+          ref={pillsContainerRef}
+          className="filter-pills-row"
+          onMouseDown={handlePillsMouseDown}
+          onMouseLeave={handlePillsMouseLeaveOrUp}
+          onMouseUp={handlePillsMouseLeaveOrUp}
+          onMouseMove={handlePillsMouseMove}
+          role="region"
+          aria-label="Types de ressources défilables"
+        >
           <button
             type="button"
             className={`filter-pill ${selectedType === 'all' ? 'active' : ''}`}
@@ -355,84 +429,194 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           )}
         </div>
 
-        {/* Row B: 2 Menus déroulants épurés côte-à-côte (Matière & Session) */}
-        <div className="filter-dropdowns-row">
-          <div className="filter-select-group">
-            <label htmlFor="subject-select" className="filter-select-label">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+        {/* Row B: Barre de contrôle des filtres (Bouton d'ouverture/fermeture + Réinitialiser) */}
+        <div className="filter-controls-bar">
+          <button
+            type="button"
+            className={`filter-toggle-btn ${isFilterPanelOpen ? 'open' : ''} ${hasActiveAdvancedFilters ? 'has-active' : ''}`}
+            onClick={() => {
+              setIsFilterPanelOpen((prev) => !prev);
+              setIsSubjectDropdownOpen(false);
+              setIsYearDropdownOpen(false);
+            }}
+            aria-expanded={isFilterPanelOpen}
+          >
+            <span className="toggle-icon-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <line x1="4" y1="21" x2="4" y2="14" />
+                <line x1="4" y1="10" x2="4" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12" y2="3" />
+                <line x1="20" y1="21" x2="20" y2="16" />
+                <line x1="20" y1="12" x2="20" y2="3" />
+                <line x1="1" y1="14" x2="7" y2="14" />
+                <line x1="9" y1="8" x2="15" y2="8" />
+                <line x1="17" y1="16" x2="23" y2="16" />
               </svg>
-              <span>Matière :</span>
-            </label>
-            <select
-              id="subject-select"
-              className="filter-select-dropdown"
-              value={selectedSubject}
-              onChange={(e) => setSelectedSubject(e.target.value)}
-              aria-label="Filtrer par matière"
-            >
-              <option value="all">Toutes</option>
-              {subjects.map((sub) => (
-                <option key={sub.id} value={sub.name}>
-                  {sub.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {availableYears.length > 0 && (
-            <div className="filter-select-group">
-              <label htmlFor="year-select" className="filter-select-label">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-                <span>Session :</span>
-              </label>
-              <select
-                id="year-select"
-                className="filter-select-dropdown"
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                aria-label="Filtrer par année de session"
-              >
-                <option value="all">Toutes</option>
-                {availableYears.map((yr) => (
-                  <option key={yr} value={yr.toString()}>
-                    {yr}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
-
-        {/* Ligne informative dynamique uniquement si un filtre est actif */}
-        {(selectedSubject !== 'all' || selectedYear !== 'all' || selectedType !== 'all' || searchQuery.trim() !== '') && (
-          <div className="filter-active-reset-row">
-            <span className="active-count-text">
-              {filteredPapers.length} ressource{filteredPapers.length > 1 ? 's' : ''} trouvée{filteredPapers.length > 1 ? 's' : ''}
             </span>
+            <span className="toggle-btn-label">
+              {isFilterPanelOpen ? 'Fermer les filtres' : 'Filtrer par matière & session'}
+            </span>
+            {hasActiveAdvancedFilters && (
+              <span className="toggle-active-badge">
+                {(selectedSubject !== 'all' ? 1 : 0) + (selectedYear !== 'all' ? 1 : 0)}
+              </span>
+            )}
+            <span className={`toggle-chevron ${isFilterPanelOpen ? 'rotate' : ''}`}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </span>
+          </button>
+
+          {hasAnyFilter && (
             <button
               type="button"
-              className="btn-clear-filters"
-              onClick={() => {
-                setSelectedSubject('all');
-                setSelectedYear('all');
-                setSelectedType('all');
-                setSearchQuery('');
-              }}
+              className="filter-quick-clear-btn"
+              onClick={handleClearAllFilters}
               title="Réinitialiser tous les filtres"
             >
-              <span>Effacer les filtres</span>
+              <span>Effacer</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
+          )}
+        </div>
+
+        {/* Row C: Panneau déroulant personnalisé (Fermé par défaut, ouvert au clic) */}
+        {isFilterPanelOpen && (
+          <div className="custom-dropdowns-panel">
+            {/* Custom Dropdown Matière */}
+            <div className={`custom-dropdown-container ${isSubjectDropdownOpen ? 'menu-open' : ''}`} ref={subjectDropdownRef}>
+              <span className="custom-dropdown-field-label">Matière</span>
+              <button
+                type="button"
+                className={`custom-dropdown-trigger ${selectedSubject !== 'all' ? 'active-value' : ''}`}
+                onClick={() => {
+                  setIsSubjectDropdownOpen((prev) => !prev);
+                  setIsYearDropdownOpen(false);
+                }}
+                aria-expanded={isSubjectDropdownOpen}
+              >
+                <span className="dropdown-trigger-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  </svg>
+                </span>
+                <span className="dropdown-trigger-text">
+                  {selectedSubject === 'all' ? 'Toutes les matières' : selectedSubject}
+                </span>
+                <span className={`dropdown-trigger-arrow ${isSubjectDropdownOpen ? 'open' : ''}`}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </span>
+              </button>
+
+              {isSubjectDropdownOpen && (
+                <div className="custom-dropdown-menu">
+                  <button
+                    type="button"
+                    className={`custom-dropdown-item ${selectedSubject === 'all' ? 'selected' : ''}`}
+                    onClick={() => {
+                      setSelectedSubject('all');
+                      setIsSubjectDropdownOpen(false);
+                    }}
+                  >
+                    <span>Toutes les matières</span>
+                    {selectedSubject === 'all' && (
+                      <span className="item-check">✓</span>
+                    )}
+                  </button>
+                  {subjects.map((sub) => (
+                    <button
+                      key={sub.id}
+                      type="button"
+                      className={`custom-dropdown-item ${selectedSubject === sub.name ? 'selected' : ''}`}
+                      onClick={() => {
+                        setSelectedSubject(sub.name);
+                        setIsSubjectDropdownOpen(false);
+                      }}
+                    >
+                      <span>{sub.name}</span>
+                      {selectedSubject === sub.name && (
+                        <span className="item-check">✓</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Custom Dropdown Session */}
+            {availableYears.length > 0 && (
+              <div className={`custom-dropdown-container ${isYearDropdownOpen ? 'menu-open' : ''}`} ref={yearDropdownRef}>
+                <span className="custom-dropdown-field-label">Session (Année)</span>
+                <button
+                  type="button"
+                  className={`custom-dropdown-trigger ${selectedYear !== 'all' ? 'active-value' : ''}`}
+                  onClick={() => {
+                    setIsYearDropdownOpen((prev) => !prev);
+                    setIsSubjectDropdownOpen(false);
+                  }}
+                  aria-expanded={isYearDropdownOpen}
+                >
+                  <span className="dropdown-trigger-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                  </span>
+                  <span className="dropdown-trigger-text">
+                    {selectedYear === 'all' ? 'Toutes les sessions' : `Session ${selectedYear}`}
+                  </span>
+                  <span className={`dropdown-trigger-arrow ${isYearDropdownOpen ? 'open' : ''}`}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </span>
+                </button>
+
+                {isYearDropdownOpen && (
+                  <div className="custom-dropdown-menu">
+                    <button
+                      type="button"
+                      className={`custom-dropdown-item ${selectedYear === 'all' ? 'selected' : ''}`}
+                      onClick={() => {
+                        setSelectedYear('all');
+                        setIsYearDropdownOpen(false);
+                      }}
+                    >
+                      <span>Toutes les sessions</span>
+                      {selectedYear === 'all' && (
+                        <span className="item-check">✓</span>
+                      )}
+                    </button>
+                    {availableYears.map((yr) => (
+                      <button
+                        key={yr}
+                        type="button"
+                        className={`custom-dropdown-item ${selectedYear === yr.toString() ? 'selected' : ''}`}
+                        onClick={() => {
+                          setSelectedYear(yr.toString());
+                          setIsYearDropdownOpen(false);
+                        }}
+                      >
+                        <span>Session {yr}</span>
+                        {selectedYear === yr.toString() && (
+                          <span className="item-check">✓</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </section>
@@ -815,62 +999,33 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           padding-top: 4px;
         }
 
-        /* Jolie flèche retour sous forme de capsule épurée et moderne */
-        .back-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
+        /* Jolie flèche retour sous forme de cercle pur et élégant */
+        .back-btn-circle {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
           background: #ffffff;
           border: 1.5px solid rgba(226, 232, 240, 0.95);
-          cursor: pointer;
-          padding: 5px 16px 5px 6px;
-          border-radius: 9999px;
-          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-          user-select: none;
-        }
-
-        .back-btn-icon-circle {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
           color: #334155;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: all 0.2s ease;
-          flex-shrink: 0;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          user-select: none;
         }
 
-        .back-btn-label {
-          font-size: 13px;
-          font-weight: 700;
-          color: #334155;
-          letter-spacing: -0.01em;
-          transition: all 0.2s ease;
-        }
-
-        .back-btn:hover {
-          background: #ffffff;
-          border-color: #cbd5e1;
-          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
-          transform: translateX(-3px);
-        }
-
-        .back-btn:hover .back-btn-icon-circle {
-          background: #fef3c7;
+        .back-btn-circle:hover {
+          background: #fffbeb;
           border-color: #f59e0b;
           color: #d97706;
+          transform: translateX(-3px);
+          box-shadow: 0 4px 14px rgba(217, 119, 6, 0.18);
         }
 
-        .back-btn:hover .back-btn-label {
-          color: #d97706;
-        }
-
-        .back-btn:active {
-          transform: scale(0.97) translateX(-2px);
+        .back-btn-circle:active {
+          transform: scale(0.95) translateX(-2px);
         }
 
         /* Cadre FASTEF soigné, compact & aéré */
@@ -886,38 +1041,119 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           transition: all 0.2s ease;
         }
 
-        /* Ligne 1 : Badges d'information à gauche, Statut poussé à droite */
+        /* Ligne 1 : Session 2025 et Inscriptions ouvertes STRICTEMENT au MÊME NIVEAU */
         .identity-top-row {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 12px;
           width: 100%;
         }
 
-        .top-pills-left {
+        .session-pill {
+          font-size: 11.5px;
+          font-weight: 700;
+          color: #475569;
+          background: #f1f5f9;
+          padding: 3.5px 11px;
+          border-radius: 9999px;
+          border: 1px solid #e2e8f0;
+          white-space: nowrap;
+          line-height: 1.2;
+        }
+
+        .status-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 11.5px;
+          font-weight: 800;
+          padding: 3.5px 12px;
+          border-radius: 9999px;
+          white-space: nowrap;
+          line-height: 1.2;
+        }
+
+        .status-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: currentColor;
+        }
+
+        .status-pill.open {
+          background: #ecfdf5;
+          color: #059669;
+          border: 1px solid #a7f3d0;
+          box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+        }
+
+        .status-pill.upcoming {
+          background: #fef3c7;
+          color: #b45309;
+          border: 1px solid #fde68a;
+        }
+
+        .status-pill.closed {
+          background: #f1f5f9;
+          color: #64748b;
+          border: 1px solid #cbd5e1;
+        }
+
+        /* Ligne 2 : Logo & Identité */
+        .identity-middle-row {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+        }
+
+        .contest-logo-box {
+          width: 54px;
+          height: 54px;
+          border-radius: 14px;
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          padding: 5px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+          flex-shrink: 0;
+        }
+
+        .contest-logo-img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+        }
+
+        .contest-logo-fallback {
+          font-size: 18px;
+          font-weight: 900;
+          color: #d97706;
+        }
+
+        .contest-titles {
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+          min-width: 0;
+        }
+
+        .contest-title-header {
           display: flex;
           align-items: center;
           gap: 8px;
           flex-wrap: wrap;
         }
 
-        .top-status-right {
-          display: flex;
-          align-items: center;
-          margin-left: auto;
-          flex-shrink: 0;
-        }
-
-        .session-pill {
-          font-size: 11px;
-          font-weight: 700;
-          color: #475569;
-          background: #f1f5f9;
-          padding: 3px 10px;
-          border-radius: 9999px;
-          border: 1px solid #e2e8f0;
-          white-space: nowrap;
+        .contest-name {
+          font-size: 20px;
+          font-weight: 900;
+          color: #0f172a;
+          letter-spacing: -0.02em;
+          margin: 0;
+          line-height: 1.2;
         }
 
         .diploma-pill {
@@ -925,7 +1161,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           font-weight: 700;
           color: #4f46e5;
           background: #eef2ff;
-          padding: 3px 10px;
+          padding: 2.5px 9px;
           border-radius: 9999px;
           border: 1px solid rgba(199, 210, 254, 0.85);
           white-space: nowrap;
@@ -1185,28 +1421,38 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45) !important;
         }
 
-        /* 3. FILTRE ÉPURÉ & AÉRÉ (Pas surchargé, apaisant, compréhensible) */
+        /* 3. FILTRES AVEC TIROIR REPLIABLE & ONGLETS DÉFILABLES FLUIDES */
         .contest-filters-section {
           background: #ffffff;
           border: 1px solid rgba(226, 232, 240, 0.9);
           border-radius: 18px;
-          padding: 14px 18px;
+          padding: 14px 16px;
           display: flex;
           flex-direction: column;
           gap: 12px;
           box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.03);
         }
 
-        /* Row A : Pilules simples & nettes */
+        /* Row A : Pilules poussables et défilables de manière fluide */
         .filter-pills-row {
           display: flex;
           align-items: center;
           gap: 8px;
           overflow-x: auto;
+          overflow-y: hidden;
           flex-wrap: nowrap;
-          padding-bottom: 2px;
+          padding: 2px 2px 4px 2px;
           scrollbar-width: none;
+          -ms-overflow-style: none;
           -webkit-overflow-scrolling: touch;
+          touch-action: pan-x;
+          scroll-behavior: smooth;
+          cursor: grab;
+          user-select: none;
+        }
+
+        .filter-pills-row:active {
+          cursor: grabbing;
         }
 
         .filter-pills-row::-webkit-scrollbar {
@@ -1219,7 +1465,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           gap: 6px;
           height: 35px;
           padding: 0 14px;
-          font-size: 12.5px;
+          font-size: 12px;
           font-weight: 700;
           color: #475569;
           background: #f8fafc;
@@ -1256,91 +1502,237 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           color: #ffffff;
         }
 
-        /* Row B : 2 Menus déroulants épurés côte-à-côte (Matière & Session) */
-        .filter-dropdowns-row {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 12px;
-          padding-top: 10px;
-          border-top: 1px solid rgba(226, 232, 240, 0.7);
-        }
-
-        .filter-select-group {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-          border-radius: 12px;
-          padding: 6px 12px;
-          transition: all 0.15s ease;
-          min-width: 0;
-        }
-
-        .filter-select-group:focus-within {
-          border-color: #f59e0b;
-          background: #ffffff;
-          box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
-        }
-
-        .filter-select-label {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          font-size: 11.5px;
-          font-weight: 700;
-          color: #64748b;
-          white-space: nowrap;
-          flex-shrink: 0;
-          cursor: pointer;
-        }
-
-        .filter-select-label svg {
-          color: #94a3b8;
-        }
-
-        .filter-select-dropdown {
-          width: 100%;
-          min-width: 0;
-          height: 24px;
-          background: transparent;
-          border: none;
-          outline: none;
-          font-size: 12px;
-          font-weight: 700;
-          color: #0f172a;
-          cursor: pointer;
-        }
-
-        /* Ligne de réinitialisation dynamique */
-        .filter-active-reset-row {
+        /* Row B : Barre de contrôle des filtres (Bouton d'ouverture/fermeture + Réinitialiser) */
+        .filter-controls-bar {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding-top: 8px;
-          border-top: 1px dashed rgba(226, 232, 240, 0.8);
-          animation: fadeIn 0.2s ease-out;
+          gap: 10px;
+          padding-top: 4px;
         }
 
-        .active-count-text {
-          font-size: 11.5px;
+        .filter-toggle-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          height: 35px;
+          padding: 0 14px;
+          font-size: 12px;
           font-weight: 700;
-          color: #64748b;
+          color: #475569;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 9999px;
+          cursor: pointer;
+          transition: all 0.2s ease;
         }
 
-        .btn-clear-filters {
+        .filter-toggle-btn:hover {
+          background: #f1f5f9;
+          border-color: #cbd5e1;
+          color: #0f172a;
+        }
+
+        .filter-toggle-btn.open {
+          background: #fef3c7;
+          border-color: #f59e0b;
+          color: #b45309;
+        }
+
+        .filter-toggle-btn.has-active {
+          border-color: #f59e0b;
+        }
+
+        .toggle-icon-wrap {
+          display: flex;
+          align-items: center;
+          color: currentColor;
+        }
+
+        .toggle-btn-label {
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .toggle-active-badge {
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: #f59e0b;
+          color: #ffffff;
+          font-size: 10px;
+          font-weight: 800;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .toggle-chevron {
+          display: inline-flex;
+          align-items: center;
+          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .toggle-chevron.rotate {
+          transform: rotate(180deg);
+        }
+
+        .filter-quick-clear-btn {
           display: inline-flex;
           align-items: center;
           gap: 5px;
           font-size: 11.5px;
           font-weight: 700;
-          color: #b45309;
-          background: #fef3c7;
-          border: 1px solid #fde68a;
-          padding: 3px 10px;
-          border-radius: 9999px;
+          color: #94a3b8;
+          background: transparent;
+          border: none;
           cursor: pointer;
+          padding: 4px 8px;
+          border-radius: 9999px;
           transition: all 0.15s ease;
+        }
+
+        .filter-quick-clear-btn:hover {
+          color: #dc2626;
+          background: #fee2e2;
+        }
+
+        /* Row C : Panneau déroulant des filtres personnalisés */
+        .custom-dropdowns-panel {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+          padding-top: 10px;
+          border-top: 1px dashed rgba(226, 232, 240, 0.9);
+          animation: fadeIn 0.2s ease-out;
+        }
+
+        .custom-dropdown-container {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+        }
+
+        .custom-dropdown-container.menu-open {
+          z-index: 60;
+        }
+
+        .custom-dropdown-field-label {
+          font-size: 11px;
+          font-weight: 700;
+          color: #64748b;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+        }
+
+        .custom-dropdown-trigger {
+          width: 100%;
+          height: 38px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          padding: 0 12px;
+          background: #f8fafc;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 12px;
+          font-size: 12px;
+          font-weight: 700;
+          color: #334155;
+          cursor: pointer;
+          transition: all 0.18s ease;
+          text-align: left;
+        }
+
+        .custom-dropdown-trigger:hover {
+          background: #ffffff;
+          border-color: #cbd5e1;
+        }
+
+        .custom-dropdown-trigger.active-value {
+          border-color: #f59e0b;
+          background: #ffffff;
+          color: #0f172a;
+        }
+
+        .dropdown-trigger-icon {
+          color: #94a3b8;
+          display: flex;
+          align-items: center;
+          flex-shrink: 0;
+        }
+
+        .dropdown-trigger-text {
+          flex: 1;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .dropdown-trigger-arrow {
+          color: #94a3b8;
+          display: flex;
+          align-items: center;
+          transition: transform 0.2s ease;
+          flex-shrink: 0;
+        }
+
+        .dropdown-trigger-arrow.open {
+          transform: rotate(180deg);
+        }
+
+        .custom-dropdown-menu {
+          position: absolute;
+          top: calc(100% + 6px);
+          left: 0;
+          right: 0;
+          background: #ffffff;
+          border: 1.5px solid rgba(226, 232, 240, 0.95);
+          border-radius: 14px;
+          padding: 6px;
+          box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.15), 0 4px 10px rgba(15, 23, 42, 0.05);
+          z-index: 100;
+          max-height: 220px;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+          animation: fadeIn 0.15s ease-out;
+        }
+
+        .custom-dropdown-item {
+          width: 100%;
+          padding: 8px 10px;
+          border-radius: 8px;
+          border: none;
+          background: transparent;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          font-size: 12px;
+          font-weight: 600;
+          color: #334155;
+          cursor: pointer;
+          text-align: left;
+          transition: all 0.15s ease;
+        }
+
+        .custom-dropdown-item:hover {
+          background: #f1f5f9;
+          color: #0f172a;
+        }
+
+        .custom-dropdown-item.selected {
+          background: #fef3c7;
+          color: #b45309;
+          font-weight: 700;
+        }
+
+        .item-check {
+          color: #d97706;
+          font-weight: 800;
         }
 
         .btn-clear-filters:hover {
@@ -2156,13 +2548,9 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
             padding-bottom: 125px !important;
           }
 
-          .back-btn-icon-circle {
-            width: 32px;
-            height: 32px;
-          }
-
-          .back-btn-label {
-            font-size: 12.5px;
+          .back-btn-circle {
+            width: 38px;
+            height: 38px;
           }
 
           .contest-identity-bar {
@@ -2175,15 +2563,14 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
             gap: 8px;
           }
 
-          .session-pill,
-          .diploma-pill {
-            font-size: 10.5px;
-            padding: 2.5px 8px;
+          .session-pill {
+            font-size: 11px;
+            padding: 3px 10px;
           }
 
           .status-pill {
-            font-size: 10.5px;
-            padding: 2.5px 9px;
+            font-size: 11px;
+            padding: 3px 10px;
           }
 
           .identity-middle-row {
@@ -2198,6 +2585,11 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
 
           .contest-name {
             font-size: 18px;
+          }
+
+          .diploma-pill {
+            font-size: 10.5px;
+            padding: 2px 8px;
           }
 
           .contest-full-name {
@@ -2247,23 +2639,15 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
             font-size: 11.5px;
           }
 
-          .filter-dropdowns-row {
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            padding-top: 8px;
-          }
-
-          .filter-select-group {
-            padding: 4px 8px;
-            border-radius: 10px;
-          }
-
-          .filter-select-label {
-            font-size: 11px;
-          }
-
-          .filter-select-dropdown {
+          .filter-toggle-btn {
+            height: 33px;
+            padding: 0 12px;
             font-size: 11.5px;
+          }
+
+          .custom-dropdowns-panel {
+            grid-template-columns: 1fr;
+            gap: 10px;
           }
 
           .papers-grid {
