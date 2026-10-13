@@ -93,18 +93,29 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
   // Glass Info Modal State
   const [isGlassModalOpen, setIsGlassModalOpen] = useState(false);
 
-  // État d'ouverture/fermeture des sections accordéon de la fiche officielle
+  // État d'ouverture/fermeture des sections accordéon de la fiche officielle (toutes repliées/fermées de base)
   const [modalSectionsOpen, setModalSectionsOpen] = useState<{
     calendar: boolean;
     presentation: boolean;
     conditions: boolean;
     subjects: boolean;
   }>({
-    calendar: true,       // Ouvert par défaut
-    presentation: true,   // Ouvert par défaut
-    conditions: false,    // Replié par défaut
-    subjects: false,      // Replié par défaut
+    calendar: false,      // Replié de base
+    presentation: false,  // Replié de base
+    conditions: false,    // Replié de base
+    subjects: false,      // Replié de base
   });
+
+  const handleOpenGlassModal = () => {
+    // Dès qu'on clique, toutes les sections sont systématiquement repliées / fermées de base
+    setModalSectionsOpen({
+      calendar: false,
+      presentation: false,
+      conditions: false,
+      subjects: false,
+    });
+    setIsGlassModalOpen(true);
+  };
 
   const toggleModalSection = (key: 'calendar' | 'presentation' | 'conditions' | 'subjects') => {
     setModalSectionsOpen((prev) => ({
@@ -373,7 +384,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
             <button
               type="button"
               className="glass-info-trigger-btn"
-              onClick={() => setIsGlassModalOpen(true)}
+              onClick={handleOpenGlassModal}
               title="Consulter les dates, conditions et informations officielles"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -962,13 +973,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
                       <span className="accordion-title">Présentation &amp; Missions</span>
                     </div>
                     <div className="header-right">
-                      {contest.organization ? (
-                        <span className="current-value-badge" title={contest.organization}>
-                          {contest.organization.length > 16 ? `${contest.organization.slice(0, 14)}…` : contest.organization}
-                        </span>
-                      ) : (
-                        <span className="current-value-badge">Détails</span>
-                      )}
+                      <span className="current-value-badge">Missions</span>
                     </div>
                   </button>
 
@@ -2483,7 +2488,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           width: 300px;
           height: 300px;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
           pointer-events: none;
         }
 
@@ -2509,8 +2514,8 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           width: 8px;
           height: 8px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-          box-shadow: 0 0 8px rgba(79, 70, 229, 0.4);
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
         }
 
         .header-heading {
@@ -2527,10 +2532,11 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           justify-content: center;
           padding: 2px 8px;
           border-radius: 9999px;
-          background: #eef2ff;
-          color: #4f46e5;
+          background: #fef3c7;
+          color: #b45309;
+          border: 1px solid #fde68a;
           font-size: 11px;
-          font-weight: 700;
+          font-weight: 800;
         }
 
         .glass-close-btn {
@@ -2581,7 +2587,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           gap: 8px;
         }
 
-        /* LIGNES ACCORDÉONS (STYLE FILTERACCORDION - IMAGE 2) */
+        /* LIGNES ACCORDÉONS (STYLE FILTERACCORDION - ADAPTÉ SUNUBIBLIO) */
         .sunu-filter-accordion-item {
           background: #ffffff;
           border: 1px solid rgba(226, 232, 240, 0.85);
@@ -2591,8 +2597,8 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .sunu-filter-accordion-item.is-open {
-          border-color: rgba(99, 102, 241, 0.38);
-          box-shadow: 0 4px 16px -2px rgba(99, 102, 241, 0.08);
+          border-color: rgba(245, 158, 11, 0.45);
+          box-shadow: 0 4px 16px -2px rgba(245, 158, 11, 0.1);
         }
 
         .accordion-header-btn {
@@ -2626,21 +2632,30 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         .accordion-chevron {
           font-size: 16px;
           font-weight: 700;
-          color: #6366f1;
+          color: #64748b;
           width: 14px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          transition: transform 0.2s ease;
+          transition: transform 0.2s ease, color 0.15s ease;
           line-height: 1;
         }
 
+        .sunu-filter-accordion-item.is-open .accordion-chevron {
+          color: #d97706;
+        }
+
         .section-svg-icon {
-          color: #4f46e5;
+          color: #0f172a;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
+          transition: color 0.15s ease;
+        }
+
+        .sunu-filter-accordion-item.is-open .section-svg-icon {
+          color: #d97706;
         }
 
         .accordion-title {
@@ -2660,9 +2675,10 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .current-value-badge {
-          background: #ede9fe;
-          color: #4f46e5;
-          font-size: 11.5px;
+          background: #f1f5f9;
+          color: #475569;
+          border: 1px solid #e2e8f0;
+          font-size: 11px;
           font-weight: 700;
           padding: 3px 9px;
           border-radius: 999px;
@@ -2749,7 +2765,8 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .info-row-val.highlight {
-          color: #4f46e5;
+          color: #d97706;
+          font-weight: 800;
         }
 
         .info-row-val.status.open {
@@ -2892,15 +2909,16 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         .subject-count-tag {
           font-size: 10.5px;
           font-weight: 700;
-          color: #4f46e5;
-          background: #eef2ff;
+          color: #b45309;
+          background: #fef3c7;
+          border: 1px solid #fde68a;
           padding: 2px 8px;
           border-radius: 999px;
           white-space: nowrap;
           flex-shrink: 0;
         }
 
-        /* PIED DE PANNEAU MODAL (IDENTIQUE À FILTERGLASSPANEL - IMAGE 2) */
+        /* PIED DE PANNEAU MODAL (SUNUBIBLIO NAVY & SLATE) */
         .glass-panel-footer {
           position: relative;
           z-index: 2;
@@ -2918,10 +2936,10 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           height: 42px;
           border-radius: 12px;
           background: #f1f5f9;
-          border: none;
+          border: 1px solid #e2e8f0;
           font-size: 13px;
-          font-weight: 600;
-          color: #475569;
+          font-weight: 700;
+          color: #334155;
           cursor: pointer;
           transition: all 0.15s ease;
         }
@@ -2935,18 +2953,18 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           flex: 2;
           height: 42px;
           border-radius: 12px;
-          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
           border: none;
           font-size: 13px;
           font-weight: 700;
           color: #ffffff;
           cursor: pointer;
           transition: all 0.15s ease;
-          box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.22);
         }
 
         .glass-apply-btn:hover {
-          opacity: 0.95;
+          background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
           transform: translateY(-1px);
         }
 
