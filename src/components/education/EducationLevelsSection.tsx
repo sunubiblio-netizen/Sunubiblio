@@ -98,7 +98,7 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
             return (
               <div
                 key={level.id}
-                className={`edu-card ${isSelected ? 'edu-card-active' : ''}`}
+                className={`edu-card ${isSelected ? 'edu-card-active' : ''} ${level.image ? 'has-banner' : ''}`}
                 onClick={() => handleCardClick(level.id)}
                 role="button"
                 tabIndex={0}
@@ -111,60 +111,74 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
                 aria-pressed={isSelected}
                 aria-label={`Sélectionner le niveau ${level.title}`}
               >
-                {/* Top Row: Icon + Badge */}
-                <div className="edu-card-top">
-                  <div
-                    className="edu-card-icon"
-                    style={{
-                      background: level.iconBg,
-                      color: level.iconColor,
-                    }}
-                  >
-                    {getLevelIcon(level.id)}
+                {/* Image illustrative en arrière-plan avec fondu dégradé doux (conserve la taille originale) */}
+                {level.image && (
+                  <div className="edu-card-backdrop" aria-hidden="true">
+                    <img
+                      src={level.image}
+                      alt=""
+                      className="edu-backdrop-img"
+                    />
+                    <div className="edu-backdrop-gradient" />
+                  </div>
+                )}
+
+                <div className="edu-card-body">
+                  {/* Top Row: Icon + Badge */}
+                  <div className="edu-card-top">
+                    <div
+                      className="edu-card-icon"
+                      style={{
+                        background: level.iconBg,
+                        color: level.iconColor,
+                      }}
+                    >
+                      {getLevelIcon(level.id)}
+                    </div>
+
+                    <span
+                      className="edu-card-badge"
+                      style={{
+                        color: level.iconColor,
+                        background: level.iconBg,
+                      }}
+                    >
+                      {level.badge}
+                    </span>
                   </div>
 
-                  <span
-                    className="edu-card-badge"
-                    style={{
-                      color: level.iconColor,
-                      background: level.iconBg,
-                    }}
-                  >
-                    {level.badge}
-                  </span>
-                </div>
+                  {/* Card Title & Subtitle */}
+                  <h3 className="edu-card-title">{level.title}</h3>
+                  <div className="edu-card-subtitle">{level.subtitle}</div>
 
-                {/* Card Title & Subtitle */}
-                <h3 className="edu-card-title">{level.title}</h3>
-                <div className="edu-card-subtitle">{level.subtitle}</div>
+                  {/* Description */}
+                  <p className="edu-card-desc">{level.description}</p>
 
-                {/* Description */}
-                <p className="edu-card-desc">{level.description}</p>
+                  {/* Grades Preview Pills */}
+                  <div className="edu-grades-row">
+                    {level.grades.slice(0, 3).map((g) => (
+                      <span key={g} className="edu-grade-pill">
+                        {g}
+                      </span>
+                    ))}
+                    {level.grades.length > 3 && (
+                      <span className="edu-grade-pill edu-grade-more">
+                        +{level.grades.length - 3}
+                      </span>
+                    )}
+                  </div>
 
-                {/* Grades Preview Pills */}
-                <div className="edu-grades-row">
-                  {level.grades.slice(0, 3).map((g) => (
-                    <span key={g} className="edu-grade-pill">
-                      {g}
+                  {/* Card Footer Action */}
+                  <div className="edu-card-footer">
+                    <span className="edu-action-label">
+                      {isSelected ? '✓ Niveau actif (Afficher)' : 'Explorer les ressources'}
                     </span>
-                  ))}
-                  {level.grades.length > 3 && (
-                    <span className="edu-grade-pill edu-grade-more">
-                      +{level.grades.length - 3}
-                    </span>
-                  )}
-                </div>
-
-                {/* Card Footer Action */}
-                <div className="edu-card-footer">
-                  <span className="edu-action-label">
-                    {isSelected ? '✓ Niveau actif (Afficher)' : 'Explorer les ressources'}
-                  </span>
-                  <div className="edu-action-arrow">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                      <polyline points="12 5 19 12 12 19" />
-                    </svg>
+                    <div className="edu-action-arrow">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                        <polyline points="12 5 19 12 12 19" />
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -253,6 +267,63 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           box-shadow: 0 4px 14px rgba(15, 23, 42, 0.03);
           outline: none;
           position: relative;
+          overflow: hidden;
+        }
+
+        .edu-card-backdrop {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 135px;
+          overflow: hidden;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .edu-backdrop-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center 20%;
+          display: block;
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.9) 35%, rgba(0, 0, 0, 0) 100%);
+          mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.9) 35%, rgba(0, 0, 0, 0) 100%);
+        }
+
+        .edu-backdrop-gradient {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.05) 0%,
+            rgba(255, 255, 255, 0.25) 35%,
+            rgba(255, 255, 255, 0.85) 75%,
+            #ffffff 100%
+          );
+        }
+
+        .edu-card-active .edu-backdrop-gradient {
+          background: linear-gradient(
+            to bottom,
+            rgba(255, 253, 250, 0.05) 0%,
+            rgba(255, 253, 250, 0.25) 35%,
+            rgba(255, 253, 250, 0.85) 75%,
+            #fffdfa 100%
+          );
+        }
+
+        .edu-card:hover .edu-backdrop-img {
+          transform: scale(1.06);
+        }
+
+        .edu-card-body {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          flex-direction: column;
+          flex: 1;
         }
 
         .edu-card:hover {
@@ -282,6 +353,8 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           align-items: center;
           justify-content: center;
           transition: transform 0.2s ease;
+          border: 1.5px solid rgba(255, 255, 255, 0.95);
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
         }
 
         .edu-card:hover .edu-card-icon {
@@ -295,6 +368,8 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           border-radius: 9999px;
           text-transform: uppercase;
           letter-spacing: 0.04em;
+          border: 1px solid rgba(255, 255, 255, 0.85);
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
         }
 
         .edu-card-title {

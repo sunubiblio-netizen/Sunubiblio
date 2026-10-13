@@ -24,6 +24,7 @@ export interface EducationLevelCard {
   iconColor: string;
   badge: string;
   isAvailable: boolean;
+  image?: string;
 }
 
 /** Entité Domaine (ex: Informatique & Numérique, Sciences & Mathématiques, etc.) */

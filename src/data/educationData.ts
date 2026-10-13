@@ -28,6 +28,7 @@ export const EDUCATION_LEVELS: EducationLevelCard[] = [
     iconColor: '#d97706',
     badge: 'Éveil',
     isAvailable: true,
+    image: '/images/education/prescolaire.jpg',
   },
   {
     id: 'primaire',
@@ -42,6 +43,7 @@ export const EDUCATION_LEVELS: EducationLevelCard[] = [
     iconColor: '#b45309',
     badge: 'Fondamental',
     isAvailable: true,
+    image: '/images/education/primaire.jpg',
   },
   {
     id: 'college',
