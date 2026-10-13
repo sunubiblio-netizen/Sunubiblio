@@ -86,6 +86,28 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
   // Glass Info Modal State
   const [isGlassModalOpen, setIsGlassModalOpen] = useState(false);
 
+  // Floating Back Button State (Pastille autonome au scroll style ScrollNavigation)
+  const [isFloatingBackVisible, setIsFloatingBackVisible] = useState(false);
+
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+          setIsFloatingBackVisible(scrollY > 220);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   // Active Document Reader Modal (preview)
   const [activeReadingPaper, setActiveReadingPaper] = useState<ContestPaperResource | null>(null);
 
@@ -214,28 +236,29 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
 
   return (
     <div className="contest-library-view">
-      {/* 1. Header / Breadcrumb & Contest Identity */}
+      {/* 1. Header / Navigation & Contest Identity */}
       <section className="contest-top-header">
-        {/* Identity Card Bar (Cadre FASTEF élégant, compact et remonté avec retour intégré) */}
-        <div className="contest-identity-bar">
-          {/* Ligne 1 : Bouton retour circulaire + Session 2025 à gauche, Inscriptions ouvertes à droite */}
-          <div className="identity-top-row">
-            <div className="identity-top-left-group">
-              <button
-                type="button"
-                className="back-btn-circle"
-                onClick={handleGoBack}
-                aria-label="Retour à la page précédente"
-                title="Retour à la page précédente"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="19" y1="12" x2="5" y2="12" />
-                  <polyline points="12 19 5 12 12 5" />
-                </svg>
-              </button>
+        {/* Navigation retour : uniquement la flèche circulaire épurée bien séparée au-dessus */}
+        <div className="header-navigation-row">
+          <button
+            type="button"
+            className="back-btn-circle"
+            onClick={handleGoBack}
+            aria-label="Retour aux concours"
+            title="Retour aux concours"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+          </button>
+        </div>
 
-              <span className="session-pill">Session {contest.sessionYear}</span>
-            </div>
+        {/* Identity Card Bar (Cadre FASTEF élégant, descendu comme avant sans être touché par la flèche) */}
+        <div className="contest-identity-bar">
+          {/* Ligne 1 : Session 2025 à gauche et Inscriptions ouvertes à droite au même niveau */}
+          <div className="identity-top-row">
+            <span className="session-pill">Session {contest.sessionYear}</span>
 
             <span className={`status-pill ${contest.status}`}>
               <span className="status-dot" />
@@ -977,6 +1000,25 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         </div>
       )}
 
+      {/* Widget Flottant Retour autonome au scroll (exactement dans le style de ScrollNavigation) */}
+      <aside
+        className={`floating-back-navigation ${isFloatingBackVisible ? 'is-visible' : ''}`}
+        aria-label="Retour rapide aux concours"
+      >
+        <button
+          type="button"
+          className="floating-back-card-btn"
+          onClick={handleGoBack}
+          aria-label="Retour aux concours"
+          title="Retour aux concours"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+        </button>
+      </aside>
+
       <style jsx>{`
         .contest-library-view {
           display: flex;
@@ -986,49 +1028,78 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           background: #ffffff;
         }
 
+        /* Widget Flottant Retour autonome (symétrique au scroll de droite, style ScrollNavigation) */
+        .floating-back-navigation {
+          position: fixed;
+          left: 16px;
+          bottom: calc(78px + env(safe-area-inset-bottom, 8px));
+          z-index: 95;
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          transform: scale(0.85) translateY(8px);
+          transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+        }
+
+        .floating-back-navigation.is-visible {
+          opacity: 1;
+          visibility: visible;
+          pointer-events: auto;
+          transform: scale(1) translateY(0);
+        }
+
+        .floating-back-card-btn {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.16), 0 3px 8px rgba(0, 0, 0, 0.04);
+          color: #334155;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          outline: none;
+        }
+
+        .floating-back-card-btn:hover {
+          background: #ffffff;
+          border-color: #cbd5e1;
+          color: #0f172a;
+          box-shadow: 0 14px 30px -4px rgba(15, 23, 42, 0.22);
+          transform: translateY(-2px);
+        }
+
+        .floating-back-card-btn:active {
+          transform: scale(0.92);
+        }
+
         /* 1. TOP HEADER & COMPACT IDENTITY CADRE */
         .contest-top-header {
           display: flex;
           flex-direction: column;
-          gap: 0;
-        }
-
-        /* Cadre FASTEF soigné, compact & aéré */
-        .contest-identity-bar {
-          background: #ffffff;
-          border: 1.5px solid rgba(226, 232, 240, 0.95);
-          border-radius: 20px;
-          padding: 14px 18px;
-          display: flex;
-          flex-direction: column;
           gap: 12px;
-          box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
-          transition: all 0.2s ease;
         }
 
-        /* Ligne 1 : Bouton retour circulaire + Session 2025 à gauche, Inscriptions ouvertes à droite */
-        .identity-top-row {
+        .header-navigation-row {
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          width: 100%;
-          gap: 10px;
+          justify-content: flex-start;
+          padding-top: 2px;
         }
 
-        .identity-top-left-group {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        /* Jolie flèche retour sous forme de cercle pur et élégant */
+        /* Jolie flèche retour sous forme de cercle pur et élégant au-dessus du cadre */
         .back-btn-circle {
-          width: 36px;
-          height: 36px;
+          width: 38px;
+          height: 38px;
           border-radius: 50%;
           background: #ffffff;
-          border: 1.5px solid #e2e8f0;
-          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+          border: 1.5px solid rgba(226, 232, 240, 0.95);
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
           color: #334155;
           display: flex;
           align-items: center;
@@ -1036,19 +1107,39 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           cursor: pointer;
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
           user-select: none;
-          flex-shrink: 0;
         }
 
         .back-btn-circle:hover {
           background: #f8fafc;
           border-color: #cbd5e1;
           color: #0f172a;
-          transform: translateX(-2px);
-          box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+          transform: translateX(-3px);
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
         }
 
         .back-btn-circle:active {
-          transform: scale(0.95);
+          transform: scale(0.95) translateX(-2px);
+        }
+
+        /* Cadre FASTEF soigné, compact & aéré */
+        .contest-identity-bar {
+          background: #ffffff;
+          border: 1.5px solid rgba(226, 232, 240, 0.95);
+          border-radius: 20px;
+          padding: 16px 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
+          transition: all 0.2s ease;
+        }
+
+        /* Ligne 1 : Session 2025 et Inscriptions ouvertes STRICTEMENT au MÊME NIVEAU */
+        .identity-top-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
         }
 
         .session-pill {
@@ -2613,37 +2704,52 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
 
         @media (max-width: 860px) {
           .contest-library-view {
-            gap: 12px;
+            gap: 16px;
             padding-bottom: 125px !important;
           }
 
+          .header-navigation-row {
+            padding-top: 0;
+          }
+
           .back-btn-circle {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
+          }
+
+          .floating-back-navigation {
+            left: 12px;
+            bottom: calc(78px + env(safe-area-inset-bottom, 8px));
+          }
+
+          .floating-back-card-btn {
+            width: 36px;
+            height: 36px;
+          }
+
+          .floating-back-card-btn svg {
+            width: 16px;
+            height: 16px;
           }
 
           .contest-identity-bar {
-            padding: 10px 12px;
+            padding: 12px 14px;
             border-radius: 16px;
-            gap: 9px;
+            gap: 10px;
           }
 
           .identity-top-row {
             gap: 8px;
           }
 
-          .identity-top-left-group {
-            gap: 7px;
-          }
-
           .session-pill {
-            font-size: 10.5px;
-            padding: 2.5px 9px;
+            font-size: 11px;
+            padding: 3px 10px;
           }
 
           .status-pill {
-            font-size: 10.5px;
-            padding: 2.5px 9px;
+            font-size: 11px;
+            padding: 3px 10px;
           }
 
           .identity-middle-row {
