@@ -19,8 +19,7 @@ export const EDUCATION_LEVELS: EducationLevelCard[] = [
     id: 'prescolaire',
     title: 'Préscolaire',
     subtitle: 'Petite, Moyenne & Grande section',
-    description:
-      'Éveil global, motricité, découverte du langage, comptines et premières notions préparatoires à l’école élémentaire.',
+    description: 'Éveil global, motricité et découverte du langage.',
     slug: 'prescolaire',
     grades: ['Petite Section', 'Moyenne Section', 'Grande Section'],
     route: '/education/prescolaire',
@@ -29,13 +28,13 @@ export const EDUCATION_LEVELS: EducationLevelCard[] = [
     badge: 'Éveil',
     isAvailable: true,
     image: '/images/education/prescolaire.jpg',
+    imagePosition: '18% 18%',
   },
   {
     id: 'primaire',
     title: 'Primaire',
     subtitle: 'Du CI au CM2 (CFEE)',
-    description:
-      'Socle fondamental : lecture, écriture, calcul, éducation civique et préparation au concours d’entrée en 6e et au CFEE.',
+    description: 'Apprentissage fondamental : lecture, écriture et calcul.',
     slug: 'primaire',
     grades: ['CI', 'CP', 'CE1', 'CE2', 'CM1', 'CM2 / CFEE'],
     route: '/education/primaire',
@@ -44,13 +43,13 @@ export const EDUCATION_LEVELS: EducationLevelCard[] = [
     badge: 'Fondamental',
     isAvailable: true,
     image: '/images/education/primaire.jpg',
+    imagePosition: 'center 15%',
   },
   {
     id: 'college',
     title: 'Collège',
     subtitle: 'De la 6e à la 3e (BFEM)',
-    description:
-      'Matières scientifiques et littéraires approfondies, exercices corrigés et entraînement complet aux épreuves du BFEM.',
+    description: 'Cours, exercices et préparation au BFEM.',
     slug: 'college',
     grades: ['6e', '5e', '4e', '3e / BFEM'],
     route: '/education/college',
@@ -58,13 +57,14 @@ export const EDUCATION_LEVELS: EducationLevelCard[] = [
     iconColor: '#92400e',
     badge: 'Moyen',
     isAvailable: true,
+    image: '/images/education/college.jpg',
+    imagePosition: 'center 48%',
   },
   {
     id: 'lycee',
     title: 'Lycée',
     subtitle: 'Seconde, Première & Terminale',
-    description:
-      'Filières S1, S2, L1, L2, G, T : cours d’excellence, résumés, annales officielles et fiches méthodologiques pour le Baccalauréat.',
+    description: 'Filières d’excellence et préparation au Bac.',
     slug: 'lycee',
     grades: ['Seconde', 'Première', 'Terminale (Bac)'],
     route: '/education/lycee',
@@ -72,13 +72,14 @@ export const EDUCATION_LEVELS: EducationLevelCard[] = [
     iconColor: '#d97706',
     badge: 'Secondaire',
     isAvailable: true,
+    image: '/images/education/lycee.jpg',
+    imagePosition: 'center 30%',
   },
   {
     id: 'universite',
     title: 'Université',
     subtitle: 'Licence, Master & Doctorat (LMD)',
-    description:
-      '9 grands domaines universitaires, fascicules de travaux dirigés, cours magistraux, thèses et manuels spécialisés.',
+    description: '9 grands domaines universitaires et filières LMD.',
     slug: 'universite',
     grades: ['Licence 1', 'Licence 2', 'Licence 3', 'Master', 'Doctorat'],
     route: '/education/universite',
@@ -86,13 +87,14 @@ export const EDUCATION_LEVELS: EducationLevelCard[] = [
     iconColor: '#b45309',
     badge: 'Supérieur',
     isAvailable: true,
+    image: '/images/education/universite.jpg',
+    imagePosition: 'center 16%',
   },
   {
     id: 'formation_pro',
     title: 'Formation Professionnelle',
     subtitle: 'CAP, BEP, BTS & Certifications',
-    description:
-      'Filières techniques et professionnelles : gestion, informatique, électromécanique, bâtiment et métiers d’avenir.',
+    description: 'Filières techniques, métiers d’avenir et certifications.',
     slug: 'formation-professionnelle',
     grades: ['CAP', 'BEP', 'BTS', 'Licence Pro'],
     route: '/education/formation-professionnelle',
@@ -100,6 +102,8 @@ export const EDUCATION_LEVELS: EducationLevelCard[] = [
     iconColor: '#ea580c',
     badge: 'Professionnel',
     isAvailable: true,
+    image: '/images/education/formation_pro.jpg',
+    imagePosition: '78% 20%',
   },
 ];
 

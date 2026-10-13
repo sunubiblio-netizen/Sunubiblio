@@ -118,6 +118,7 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
                       src={level.image}
                       alt=""
                       className="edu-backdrop-img"
+                      style={level.imagePosition ? { objectPosition: level.imagePosition } : undefined}
                     />
                     <div className="edu-backdrop-gradient" />
                   </div>
@@ -128,27 +129,45 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
                   <div className="edu-card-top">
                     <div
                       className="edu-card-icon"
-                      style={{
-                        background: level.iconBg,
-                        color: level.iconColor,
-                      }}
+                      style={
+                        level.image
+                          ? {
+                              background: 'transparent',
+                              color: '#ffffff',
+                              boxShadow: 'none',
+                            }
+                          : {
+                              background: level.iconBg,
+                              color: level.iconColor,
+                            }
+                      }
                     >
                       {getLevelIcon(level.id)}
                     </div>
 
                     <span
                       className="edu-card-badge"
-                      style={{
-                        color: level.iconColor,
-                        background: level.iconBg,
-                      }}
+                      style={
+                        level.image
+                          ? {
+                              background: 'transparent',
+                              color: '#ffffff',
+                              boxShadow: 'none',
+                            }
+                          : {
+                              color: level.iconColor,
+                              background: level.iconBg,
+                            }
+                      }
                     >
                       {level.badge}
                     </span>
                   </div>
 
                   {/* Card Title & Subtitle */}
-                  <h3 className="edu-card-title">{level.title}</h3>
+                  <div className="edu-card-title-wrap">
+                    <h3 className="edu-card-title">{level.title}</h3>
+                  </div>
                   <div className="edu-card-subtitle">{level.subtitle}</div>
 
                   {/* Description */}
@@ -275,7 +294,7 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           top: 0;
           left: 0;
           right: 0;
-          height: 135px;
+          height: 205px;
           overflow: hidden;
           pointer-events: none;
           z-index: 0;
@@ -288,8 +307,20 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           object-position: center 20%;
           display: block;
           transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-          -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.9) 35%, rgba(0, 0, 0, 0) 100%);
-          mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.9) 35%, rgba(0, 0, 0, 0) 100%);
+          -webkit-mask-image: linear-gradient(
+            to bottom,
+            #000000 0%,
+            #000000 68%,
+            rgba(0, 0, 0, 0.25) 88%,
+            transparent 100%
+          );
+          mask-image: linear-gradient(
+            to bottom,
+            #000000 0%,
+            #000000 68%,
+            rgba(0, 0, 0, 0.25) 88%,
+            transparent 100%
+          );
         }
 
         .edu-backdrop-gradient {
@@ -297,25 +328,33 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           inset: 0;
           background: linear-gradient(
             to bottom,
-            rgba(255, 255, 255, 0.05) 0%,
-            rgba(255, 255, 255, 0.25) 35%,
-            rgba(255, 255, 255, 0.85) 75%,
+            rgba(0, 0, 0, 0.3) 0%,
+            rgba(0, 0, 0, 0.05) 18%,
+            transparent 32%,
+            rgba(241, 245, 249, 0.4) 48%,
+            rgba(248, 250, 252, 0.88) 68%,
+            rgba(255, 255, 255, 0.98) 88%,
             #ffffff 100%
           );
         }
 
         .edu-card-active .edu-backdrop-gradient {
+          position: absolute;
+          inset: 0;
           background: linear-gradient(
             to bottom,
-            rgba(255, 253, 250, 0.05) 0%,
-            rgba(255, 253, 250, 0.25) 35%,
-            rgba(255, 253, 250, 0.85) 75%,
+            rgba(0, 0, 0, 0.3) 0%,
+            rgba(0, 0, 0, 0.05) 18%,
+            transparent 32%,
+            rgba(241, 245, 249, 0.4) 48%,
+            rgba(255, 253, 250, 0.88) 68%,
+            rgba(255, 253, 250, 0.98) 88%,
             #fffdfa 100%
           );
         }
 
         .edu-card:hover .edu-backdrop-img {
-          transform: scale(1.06);
+          transform: scale(1.04);
         }
 
         .edu-card-body {
@@ -342,7 +381,11 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 16px;
+          margin-bottom: 14px;
+        }
+
+        .has-banner .edu-card-top {
+          margin-bottom: 58px;
         }
 
         .edu-card-icon {
@@ -353,46 +396,105 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           align-items: center;
           justify-content: center;
           transition: transform 0.2s ease;
-          border: 1.5px solid rgba(255, 255, 255, 0.95);
-          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+          border: none;
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+        }
+
+        .has-banner .edu-card-icon {
+          width: 26px;
+          height: 26px;
+          background: transparent !important;
+          box-shadow: none !important;
+          border-radius: 0;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+        }
+
+        .has-banner .edu-card-icon svg {
+          width: 22px;
+          height: 22px;
         }
 
         .edu-card:hover .edu-card-icon {
-          transform: scale(1.08);
+          transform: scale(1.06);
         }
 
         .edu-card-badge {
           font-size: 11px;
           font-weight: 700;
-          padding: 3px 10px;
-          border-radius: 9999px;
+          padding: 6px 12px;
+          border-radius: 8px;
           text-transform: uppercase;
           letter-spacing: 0.04em;
+          border: none;
+          box-shadow: 0 2px 10px rgba(15, 23, 42, 0.1);
+        }
+
+        .has-banner .edu-card-badge {
+          background: transparent !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.06em;
+          text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .edu-card-title-wrap {
+          display: inline-flex;
+          align-items: center;
+          align-self: flex-start;
+          background: rgba(255, 255, 255, 0.72);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
           border: 1px solid rgba(255, 255, 255, 0.85);
-          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+          border-radius: 9px;
+          padding: 2px 10px;
+          margin: 0 0 5px -2px;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+          transition: all 0.25s ease;
+        }
+
+        .edu-card:hover .edu-card-title-wrap {
+          background: rgba(255, 255, 255, 0.9);
+          border-color: rgba(245, 158, 11, 0.35);
+          box-shadow: 0 4px 12px rgba(217, 119, 6, 0.08);
         }
 
         .edu-card-title {
-          font-size: 19px;
-          font-weight: 700;
-          color: #0f172a;
-          margin: 0 0 4px 0;
-          letter-spacing: -0.015em;
+          font-size: 20px;
+          font-weight: 800;
+          color: #b45309;
+          background: linear-gradient(135deg, #9a3412 0%, #d97706 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          margin: 0;
+          letter-spacing: -0.025em;
+          line-height: 1.25;
+          transition: all 0.25s ease;
+        }
+
+        .edu-card:hover .edu-card-title {
+          background: linear-gradient(135deg, #ea580c 0%, #f59e0b 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
         }
 
         .edu-card-subtitle {
           font-size: 12.5px;
           font-weight: 600;
-          color: #64748b;
-          margin-bottom: 10px;
+          color: #475569;
+          margin-bottom: 6px;
+          letter-spacing: -0.01em;
         }
 
         .edu-card-desc {
           font-size: 13px;
-          line-height: 1.55;
+          line-height: 1.45;
           color: #64748b;
-          margin: 0 0 16px 0;
-          flex-grow: 1;
+          margin: 0 0 14px 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .edu-grades-row {
@@ -400,7 +502,7 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
           align-items: center;
           gap: 6px;
           flex-wrap: wrap;
-          margin-bottom: 18px;
+          margin-bottom: 12px;
         }
 
         .edu-grade-pill {
