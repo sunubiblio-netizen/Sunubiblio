@@ -86,8 +86,8 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
   // Glass Info Modal State
   const [isGlassModalOpen, setIsGlassModalOpen] = useState(false);
 
-  // Floating Back Button State (Pastille autonome au scroll style ScrollNavigation)
-  const [isFloatingBackVisible, setIsFloatingBackVisible] = useState(false);
+  // Détection du scroll pour fixer la flèche retour en position flottante sous la navbar (Option 2)
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     let ticking = false;
@@ -95,7 +95,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-          setIsFloatingBackVisible(scrollY > 220);
+          setIsScrolled(scrollY > 25);
           ticking = false;
         });
         ticking = true;
@@ -238,8 +238,8 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
     <div className="contest-library-view">
       {/* 1. Header / Navigation & Contest Identity */}
       <section className="contest-top-header">
-        {/* Navigation retour : uniquement la flèche circulaire épurée bien séparée au-dessus */}
-        <div className="header-navigation-row">
+        {/* Navigation retour : flèche circulaire qui devient flottante sous la navbar au scroll (Option 2) */}
+        <div className={`header-navigation-row ${isScrolled ? 'is-floating' : ''}`}>
           <button
             type="button"
             className="back-btn-circle"
@@ -1000,25 +1000,6 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         </div>
       )}
 
-      {/* Widget Flottant Retour autonome au scroll (exactement dans le style de ScrollNavigation) */}
-      <aside
-        className={`floating-back-navigation ${isFloatingBackVisible ? 'is-visible' : ''}`}
-        aria-label="Retour rapide aux concours"
-      >
-        <button
-          type="button"
-          className="floating-back-card-btn"
-          onClick={handleGoBack}
-          aria-label="Retour aux concours"
-          title="Retour aux concours"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button>
-      </aside>
-
       <style jsx>{`
         .contest-library-view {
           display: flex;
@@ -1028,68 +1009,47 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           background: #ffffff;
         }
 
-        /* Widget Flottant Retour autonome (symétrique au scroll de droite, style ScrollNavigation) */
-        .floating-back-navigation {
-          position: fixed;
-          left: 16px;
-          bottom: calc(78px + env(safe-area-inset-bottom, 8px));
-          z-index: 95;
-          opacity: 0;
-          visibility: hidden;
-          pointer-events: none;
-          transform: scale(0.85) translateY(8px);
-          transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
-        }
-
-        .floating-back-navigation.is-visible {
-          opacity: 1;
-          visibility: visible;
-          pointer-events: auto;
-          transform: scale(1) translateY(0);
-        }
-
-        .floating-back-card-btn {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.94);
-          backdrop-filter: blur(14px);
-          -webkit-backdrop-filter: blur(14px);
-          border: 1px solid rgba(226, 232, 240, 0.9);
-          box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.16), 0 3px 8px rgba(0, 0, 0, 0.04);
-          color: #334155;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-          outline: none;
-        }
-
-        .floating-back-card-btn:hover {
-          background: #ffffff;
-          border-color: #cbd5e1;
-          color: #0f172a;
-          box-shadow: 0 14px 30px -4px rgba(15, 23, 42, 0.22);
-          transform: translateY(-2px);
-        }
-
-        .floating-back-card-btn:active {
-          transform: scale(0.92);
-        }
-
         /* 1. TOP HEADER & COMPACT IDENTITY CADRE */
         .contest-top-header {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 8px;
         }
 
         .header-navigation-row {
           display: flex;
           align-items: center;
           justify-content: flex-start;
-          padding-top: 2px;
+          padding-top: 0;
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Quand on scroll : la flèche reste fixée et flottante sous la navbar (Option 2) */
+        .header-navigation-row.is-floating {
+          position: fixed;
+          top: 72px;
+          left: 20px;
+          z-index: 999;
+          animation: floatInTop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes floatInTop {
+          from {
+            opacity: 0;
+            transform: translateY(-8px) scale(0.92);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        .header-navigation-row.is-floating .back-btn-circle {
+          box-shadow: 0 6px 20px -2px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(0, 0, 0, 0.06);
+          background: rgba(255, 255, 255, 0.96);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          border-color: rgba(226, 232, 240, 0.95);
         }
 
         /* Jolie flèche retour sous forme de cercle pur et élégant au-dessus du cadre */
@@ -1100,7 +1060,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           background: #ffffff;
           border: 1.5px solid rgba(226, 232, 240, 0.95);
           box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
-          color: #334155;
+          color: #1e293b;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -2704,32 +2664,26 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
 
         @media (max-width: 860px) {
           .contest-library-view {
-            gap: 16px;
+            gap: 12px;
             padding-bottom: 125px !important;
+          }
+
+          .contest-top-header {
+            gap: 6px;
           }
 
           .header-navigation-row {
             padding-top: 0;
           }
 
+          .header-navigation-row.is-floating {
+            top: 86px;
+            left: 14px;
+          }
+
           .back-btn-circle {
             width: 36px;
             height: 36px;
-          }
-
-          .floating-back-navigation {
-            left: 12px;
-            bottom: calc(78px + env(safe-area-inset-bottom, 8px));
-          }
-
-          .floating-back-card-btn {
-            width: 36px;
-            height: 36px;
-          }
-
-          .floating-back-card-btn svg {
-            width: 16px;
-            height: 16px;
           }
 
           .contest-identity-bar {
