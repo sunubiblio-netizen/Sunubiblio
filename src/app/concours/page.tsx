@@ -108,7 +108,8 @@ export default function ConcoursPage() {
   }, [filters]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    const syncContestFromUrl = () => {
+      if (typeof window === 'undefined') return;
       const params = new URLSearchParams(window.location.search);
       const contestParam = params.get('id') || params.get('concours');
       if (contestParam) {
@@ -117,11 +118,17 @@ export default function ConcoursPage() {
             c.id.toLowerCase() === contestParam.toLowerCase() ||
             c.slug.toLowerCase().includes(contestParam.toLowerCase())
         );
-        if (found) {
-          setSelectedContest(found);
-        }
+        setSelectedContest(found || null);
+      } else {
+        setSelectedContest(null);
       }
-    }
+    };
+
+    syncContestFromUrl();
+    window.addEventListener('popstate', syncContestFromUrl);
+    return () => {
+      window.removeEventListener('popstate', syncContestFromUrl);
+    };
   }, []);
 
   const scrollToCatalog = () => {
@@ -136,7 +143,7 @@ export default function ConcoursPage() {
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
       url.searchParams.set('id', contest.id);
-      window.history.pushState({}, '', url.toString());
+      window.history.pushState({ contestId: contest.id }, '', url.toString());
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -145,9 +152,11 @@ export default function ConcoursPage() {
     setSelectedContest(null);
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
-      url.searchParams.delete('id');
-      url.searchParams.delete('concours');
-      window.history.pushState({}, '', url.toString());
+      if (url.searchParams.has('id') || url.searchParams.has('concours')) {
+        url.searchParams.delete('id');
+        url.searchParams.delete('concours');
+        window.history.replaceState({}, '', url.toString());
+      }
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
