@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Contest } from '@/types/contest';
+import { CountryFlag } from './CountryFlag';
 
 interface ContestCardProps {
   contest: Contest;
@@ -66,7 +67,10 @@ export const ContestCard: React.FC<ContestCardProps> = ({
       {/* Body */}
       <div className="card-body">
         <div className="title-row">
-          <h3 className="contest-name">{contest.name}</h3>
+          <div className="contest-title-cluster">
+            <h3 className="contest-name">{contest.name}</h3>
+            <CountryFlag country={contest.country} size="sm" />
+          </div>
           <span className="level-badge">{contest.diplomaLabel}</span>
         </div>
 
@@ -269,10 +273,18 @@ export const ContestCard: React.FC<ContestCardProps> = ({
 
         .title-row {
           display: flex;
-          align-items: baseline;
+          align-items: center;
           justify-content: space-between;
           margin-bottom: 6px;
           gap: 8px;
+        }
+
+        .contest-title-cluster {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          min-width: 0;
+          flex-shrink: 0;
         }
 
         .contest-name {
@@ -280,6 +292,8 @@ export const ContestCard: React.FC<ContestCardProps> = ({
           font-weight: 800;
           color: #0f172a;
           letter-spacing: -0.02em;
+          margin: 0;
+          line-height: 1.2;
           flex-shrink: 0;
         }
 

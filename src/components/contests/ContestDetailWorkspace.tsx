@@ -4,6 +4,7 @@ import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { Contest, ContestPaperResource } from '@/types/contest';
+import { CountryFlag } from './CountryFlag';
 
 interface ContestDetailWorkspaceProps {
   contest: Contest;
@@ -334,7 +335,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
       <section className="contest-top-header">
         {/* Identity Card Bar (Cadre FASTEF élégant, occupant immédiatement l'espace en haut) */}
         <div className="contest-identity-bar">
-          {/* Ligne 1 : Session 2025 à gauche et Inscriptions ouvertes à droite au même niveau */}
+          {/* Ligne 1 : Session 2025 et Inscriptions ouvertes au même niveau */}
           <div className="identity-top-row">
             <span className="session-pill">Session {contest.sessionYear}</span>
 
@@ -366,7 +367,10 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
 
             <div className="contest-titles">
               <div className="contest-title-header">
-                <h1 className="contest-name">{contest.name}</h1>
+                <div className="contest-title-flag-group">
+                  <h1 className="contest-name">{contest.name}</h1>
+                  <CountryFlag country={contest.country} size="sm" />
+                </div>
                 <span className="diploma-pill">{contest.diplomaLabel}</span>
               </div>
               <p className="contest-full-name">{contest.fullName}</p>
@@ -417,7 +421,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           <input
             type="text"
             className="hero-search-input"
-            placeholder={`Rechercher une annale, un corrigé, un exercice de ${contest.name}...`}
+            placeholder="Rechercher une annale, un sujet, un corrigé..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label={`Rechercher dans ${contest.name}`}
@@ -484,11 +488,27 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
               {hasActiveAdvancedFilters && (
                 <span className="filter-active-indicator">Actifs</span>
               )}
-              <span className={`trigger-chevron ${isFilterPanelOpen ? 'rotate' : ''}`}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </span>
+              {isFilterPanelOpen ? (
+                <div className="trigger-close-icons-wrapper" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <span className="trigger-close-icon" title="Fermer les filtres" aria-label="Fermer les filtres">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </span>
+                  <span className="trigger-chevron rotate" title="Replier les filtres">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </span>
+                </div>
+              ) : (
+                <span className="trigger-chevron">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </span>
+              )}
             </div>
           </button>
 
@@ -617,6 +637,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
                   </span>
                 </button>
 
+                {/* Custom Dropdown Menu in-situ avec défilement fluide et z-index au premier plan */}
                 {isSubjectDropdownOpen && (
                   <div className="custom-dropdown-menu">
                     <button
@@ -683,6 +704,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
                     </span>
                   </button>
 
+                  {/* Dropdown Menu Session in-situ */}
                   {isYearDropdownOpen && (
                     <div className="custom-dropdown-menu">
                       <button
@@ -718,6 +740,33 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
                   )}
                 </div>
               )}
+            </div>
+
+            {/* Pied de filtre : Bouton de fermeture d'accès direct avec croix & flèche en gris sobre */}
+            <div className="filters-bottom-collapse-row">
+              <button
+                type="button"
+                className="filters-bottom-collapse-btn"
+                onClick={() => {
+                  setIsFilterPanelOpen(false);
+                  setIsSubjectDropdownOpen(false);
+                  setIsYearDropdownOpen(false);
+                }}
+                title="Fermer les filtres"
+              >
+                <span className="collapse-btn-icon">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </span>
+                <span>Fermer les filtres</span>
+                <span className="collapse-btn-icon">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="18 15 12 9 6 15" />
+                  </svg>
+                </span>
+              </button>
             </div>
           </div>
         )}
@@ -1280,7 +1329,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           position: fixed;
           left: 24px;
           bottom: 36px;
-          z-index: 9999;
+          z-index: 50;
           opacity: 0;
           visibility: hidden;
           pointer-events: none;
@@ -1447,8 +1496,9 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         .contest-titles {
           display: flex;
           flex-direction: column;
-          gap: 3px;
+          gap: 4px;
           min-width: 0;
+          flex: 1;
         }
 
         .contest-title-header {
@@ -1456,6 +1506,13 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           align-items: center;
           gap: 8px;
           flex-wrap: wrap;
+        }
+
+        .contest-title-flag-group {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          flex-shrink: 0;
         }
 
         .contest-name {
@@ -1475,7 +1532,10 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           padding: 2.5px 9px;
           border-radius: 9999px;
           border: 1px solid rgba(199, 210, 254, 0.85);
-          white-space: nowrap;
+          white-space: normal;
+          line-height: 1.35;
+          max-width: 100%;
+          word-break: break-word;
         }
 
         .status-pill {
@@ -1734,6 +1794,8 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
 
         /* 3. SECTION FILTRES REPLIABLE (Ouverture / Fermeture complète à volonté) */
         .contest-filters-stage {
+          position: relative;
+          z-index: 60;
           display: flex;
           flex-direction: column;
           gap: 12px;
@@ -1845,16 +1907,23 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           letter-spacing: 0.02em;
         }
 
-        .trigger-chevron {
+        .trigger-chevron,
+        .trigger-close-icon {
           display: flex;
           align-items: center;
+          justify-content: center;
           color: #94a3b8;
           transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
         }
 
         .trigger-chevron.rotate {
           transform: rotate(180deg);
-          color: #0f172a;
+          color: #94a3b8;
+        }
+
+        .filters-main-toggle-btn:hover .trigger-chevron,
+        .filters-main-toggle-btn:hover .trigger-close-icon {
+          color: #475569;
         }
 
         .filter-quick-clear-btn {
@@ -1896,6 +1965,8 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .contest-filters-section {
+          position: relative;
+          z-index: 70;
           background: #ffffff;
           border: 1px solid rgba(226, 232, 240, 0.95);
           border-radius: 18px;
@@ -1975,8 +2046,10 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           color: #ffffff;
         }
 
-        /* Row C : Panneau déroulant des filtres personnalisés */
+        /* Row B : Panneau déroulant des filtres personnalisés */
         .custom-dropdowns-panel {
+          position: relative;
+          z-index: 80;
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 12px;
@@ -1993,7 +2066,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .custom-dropdown-container.menu-open {
-          z-index: 60;
+          z-index: 999;
         }
 
         .custom-dropdown-field-label {
@@ -2069,10 +2142,12 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           border: 1.5px solid rgba(226, 232, 240, 0.95);
           border-radius: 14px;
           padding: 6px;
-          box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.15), 0 4px 10px rgba(15, 23, 42, 0.05);
-          z-index: 100;
-          max-height: 220px;
+          box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.18), 0 4px 12px rgba(15, 23, 42, 0.08);
+          z-index: 9999;
+          max-height: 240px;
           overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
           display: flex;
           flex-direction: column;
           gap: 3px;
@@ -2113,6 +2188,51 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           font-weight: 800;
         }
 
+        /* Pied de filtre : Bouton de fermeture d'accès direct avec croix & flèche en gris sobre */
+        .filters-bottom-collapse-row {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding-top: 10px;
+          margin-top: 2px;
+          border-top: 1px dashed rgba(226, 232, 240, 0.9);
+        }
+
+        .filters-bottom-collapse-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          height: 36px;
+          padding: 0 16px;
+          border-radius: 9999px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          color: #64748b;
+          font-size: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.18s ease;
+        }
+
+        .filters-bottom-collapse-btn:hover {
+          background: #f1f5f9;
+          border-color: #cbd5e1;
+          color: #0f172a;
+          transform: translateY(-1px);
+        }
+
+        .collapse-btn-icon {
+          display: flex;
+          align-items: center;
+          color: #94a3b8;
+          transition: color 0.18s ease;
+        }
+
+        .filters-bottom-collapse-btn:hover .collapse-btn-icon {
+          color: #475569;
+        }
+
         .btn-clear-filters:hover {
           background: #fde68a;
           color: #92400e;
@@ -2120,6 +2240,8 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
 
         /* 4. PAPERS GRID */
         .papers-grid-section {
+          position: relative;
+          z-index: 10;
           display: flex;
           flex-direction: column;
         }
@@ -3165,6 +3287,8 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
             padding: 12px 14px;
             border-radius: 16px;
             gap: 10px;
+            overflow: hidden;
+            box-sizing: border-box;
           }
 
           .identity-top-row {
@@ -3183,30 +3307,65 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
 
           .identity-middle-row {
             gap: 11px;
+            align-items: flex-start;
           }
 
           .contest-logo-box {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             border-radius: 12px;
+            flex-shrink: 0;
+            margin-top: 2px;
+          }
+
+          .contest-titles {
+            min-width: 0;
+            flex: 1;
+            overflow: hidden;
+          }
+
+          .contest-title-header {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+            width: 100%;
+          }
+
+          .contest-title-flag-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
           }
 
           .contest-name {
-            font-size: 18px;
+            font-size: 17px;
+            line-height: 1.2;
           }
 
           .diploma-pill {
-            font-size: 10.5px;
-            padding: 2px 8px;
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 6px;
+            white-space: normal;
+            line-height: 1.35;
+            max-width: 100%;
+            word-break: break-word;
+            display: inline-block;
           }
 
           .contest-full-name {
-            font-size: 12px;
-            line-height: 1.3;
+            font-size: 11.5px;
+            line-height: 1.35;
+            margin: 2px 0 0 0;
+            color: #475569;
           }
 
           .contest-org-line {
             font-size: 10.5px;
+            line-height: 1.35;
+            white-space: normal;
+            margin-top: 3px;
           }
 
           .identity-bottom-row .glass-info-trigger-btn {
@@ -3270,6 +3429,10 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           .custom-dropdowns-panel {
             grid-template-columns: 1fr;
             gap: 10px;
+          }
+
+          .custom-dropdown-menu {
+            max-height: 200px;
           }
 
           .papers-grid {
