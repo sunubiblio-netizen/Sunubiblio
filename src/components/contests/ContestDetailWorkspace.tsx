@@ -351,122 +351,45 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         </form>
       </section>
 
-      {/* 3. Filtres interactifs : Onglets défilables de manière fluide + tiroir de filtres repliable */}
-      <section className="contest-filters-section">
-        {/* Row A: Les types essentiels (Pilules défilables / poussables de manière ultra fluide) */}
-        <div
-          ref={pillsContainerRef}
-          className="filter-pills-row"
-          onMouseDown={handlePillsMouseDown}
-          onMouseLeave={handlePillsMouseLeaveOrUp}
-          onMouseUp={handlePillsMouseLeaveOrUp}
-          onMouseMove={handlePillsMouseMove}
-          role="region"
-          aria-label="Types de ressources défilables"
-        >
+      {/* 3. Section Filtres globale : Déclencheur visible pour ouvrir / fermer TOUTE la section encadrée */}
+      <section className="contest-filters-stage">
+        {/* Barre de contrôle principale : Permet d'ouvrir et de fermer toute la section de filtres */}
+        <div className="filters-stage-toggle-row">
           <button
             type="button"
-            className={`filter-pill ${selectedType === 'all' ? 'active' : ''}`}
-            onClick={() => setSelectedType('all')}
-          >
-            <span>Tout voir</span>
-            <span className="pill-count">{counts.all}</span>
-          </button>
-
-          {counts.sujet > 0 && (
-            <button
-              type="button"
-              className={`filter-pill ${selectedType === 'sujet' ? 'active' : ''}`}
-              onClick={() => setSelectedType('sujet')}
-            >
-              <span>Sujets</span>
-              <span className="pill-count">{counts.sujet}</span>
-            </button>
-          )}
-
-          {counts.correction > 0 && (
-            <button
-              type="button"
-              className={`filter-pill ${selectedType === 'correction' ? 'active' : ''}`}
-              onClick={() => setSelectedType('correction')}
-            >
-              <span>Corrigés</span>
-              <span className="pill-count">{counts.correction}</span>
-            </button>
-          )}
-
-          {counts.exercice > 0 && (
-            <button
-              type="button"
-              className={`filter-pill ${selectedType === 'exercice' ? 'active' : ''}`}
-              onClick={() => setSelectedType('exercice')}
-            >
-              <span>Exercices</span>
-              <span className="pill-count">{counts.exercice}</span>
-            </button>
-          )}
-
-          {counts.fascicule > 0 && (
-            <button
-              type="button"
-              className={`filter-pill ${selectedType === 'fascicule' ? 'active' : ''}`}
-              onClick={() => setSelectedType('fascicule')}
-            >
-              <span>Fascicules</span>
-              <span className="pill-count">{counts.fascicule}</span>
-            </button>
-          )}
-
-          {counts.qcm > 0 && (
-            <button
-              type="button"
-              className={`filter-pill ${selectedType === 'qcm' ? 'active' : ''}`}
-              onClick={() => setSelectedType('qcm')}
-            >
-              <span>QCM</span>
-              <span className="pill-count">{counts.qcm}</span>
-            </button>
-          )}
-        </div>
-
-        {/* Row B: Barre de contrôle des filtres (Bouton d'ouverture/fermeture + Réinitialiser) */}
-        <div className="filter-controls-bar">
-          <button
-            type="button"
-            className={`filter-toggle-btn ${isFilterPanelOpen ? 'open' : ''} ${hasActiveAdvancedFilters ? 'has-active' : ''}`}
+            className={`filters-main-toggle-btn ${isFilterPanelOpen ? 'open' : ''} ${hasAnyFilter ? 'has-active' : ''}`}
             onClick={() => {
               setIsFilterPanelOpen((prev) => !prev);
               setIsSubjectDropdownOpen(false);
               setIsYearDropdownOpen(false);
             }}
             aria-expanded={isFilterPanelOpen}
+            title={isFilterPanelOpen ? 'Fermer la section des filtres' : 'Ouvrir les filtres et catégories'}
           >
-            <span className="toggle-icon-wrap">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <line x1="4" y1="21" x2="4" y2="14" />
-                <line x1="4" y1="10" x2="4" y2="3" />
-                <line x1="12" y1="21" x2="12" y2="12" />
-                <line x1="12" y1="8" x2="12" y2="3" />
-                <line x1="20" y1="21" x2="20" y2="16" />
-                <line x1="20" y1="12" x2="20" y2="3" />
-                <line x1="1" y1="14" x2="7" y2="14" />
-                <line x1="9" y1="8" x2="15" y2="8" />
-                <line x1="17" y1="16" x2="23" y2="16" />
-              </svg>
-            </span>
-            <span className="toggle-btn-label">
-              {isFilterPanelOpen ? 'Fermer les filtres' : 'Filtrer par matière & session'}
-            </span>
-            {hasActiveAdvancedFilters && (
-              <span className="toggle-active-badge">
-                {(selectedSubject !== 'all' ? 1 : 0) + (selectedYear !== 'all' ? 1 : 0)}
+            <div className="toggle-left-group">
+              <span className="trigger-icon-wrap">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                </svg>
               </span>
-            )}
-            <span className={`toggle-chevron ${isFilterPanelOpen ? 'rotate' : ''}`}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </span>
+              <span className="trigger-title">
+                {isFilterPanelOpen ? 'Fermer les filtres' : 'Filtrer les annales & matières'}
+              </span>
+              <span className="trigger-count-chip">
+                {filteredPapers.length} document{filteredPapers.length > 1 ? 's' : ''}
+              </span>
+            </div>
+
+            <div className="toggle-right-group">
+              {hasActiveAdvancedFilters && (
+                <span className="filter-active-indicator">Actifs</span>
+              )}
+              <span className={`trigger-chevron ${isFilterPanelOpen ? 'rotate' : ''}`}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </span>
+            </div>
           </button>
 
           {hasAnyFilter && (
@@ -485,130 +408,142 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           )}
         </div>
 
-        {/* Row C: Panneau déroulant personnalisé (Fermé par défaut, ouvert au clic) */}
+        {/* TOUTE LA SECTION ENCADRÉE (Ouvrable et fermable à volonté, fermée par défaut) */}
         {isFilterPanelOpen && (
-          <div className="custom-dropdowns-panel">
-            {/* Custom Dropdown Matière */}
-            <div className={`custom-dropdown-container ${isSubjectDropdownOpen ? 'menu-open' : ''}`} ref={subjectDropdownRef}>
-              <span className="custom-dropdown-field-label">Matière</span>
+          <div className="contest-filters-section animate-slide-down">
+            {/* Row A: Les types essentiels (Pilules défilables / poussables de manière ultra fluide) */}
+            <div
+              ref={pillsContainerRef}
+              className="filter-pills-row"
+              onMouseDown={handlePillsMouseDown}
+              onMouseLeave={handlePillsMouseLeaveOrUp}
+              onMouseUp={handlePillsMouseLeaveOrUp}
+              onMouseMove={handlePillsMouseMove}
+              role="region"
+              aria-label="Types de ressources défilables"
+            >
               <button
                 type="button"
-                className={`custom-dropdown-trigger ${selectedSubject !== 'all' ? 'active-value' : ''}`}
-                onClick={() => {
-                  setIsSubjectDropdownOpen((prev) => !prev);
-                  setIsYearDropdownOpen(false);
-                }}
-                aria-expanded={isSubjectDropdownOpen}
+                className={`filter-pill ${selectedType === 'all' ? 'active' : ''}`}
+                onClick={() => setSelectedType('all')}
               >
-                <span className="dropdown-trigger-icon">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                  </svg>
-                </span>
-                <span className="dropdown-trigger-text">
-                  {selectedSubject === 'all' ? 'Toutes les matières' : selectedSubject}
-                </span>
-                <span className={`dropdown-trigger-arrow ${isSubjectDropdownOpen ? 'open' : ''}`}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </span>
+                <span>Tout voir</span>
+                <span className="pill-count">{counts.all}</span>
               </button>
 
-              {isSubjectDropdownOpen && (
-                <div className="custom-dropdown-menu">
-                  <button
-                    type="button"
-                    className={`custom-dropdown-item ${selectedSubject === 'all' ? 'selected' : ''}`}
-                    onClick={() => {
-                      setSelectedSubject('all');
-                      setIsSubjectDropdownOpen(false);
-                    }}
-                  >
-                    <span>Toutes les matières</span>
-                    {selectedSubject === 'all' && (
-                      <span className="item-check">✓</span>
-                    )}
-                  </button>
-                  {subjects.map((sub) => (
-                    <button
-                      key={sub.id}
-                      type="button"
-                      className={`custom-dropdown-item ${selectedSubject === sub.name ? 'selected' : ''}`}
-                      onClick={() => {
-                        setSelectedSubject(sub.name);
-                        setIsSubjectDropdownOpen(false);
-                      }}
-                    >
-                      <span>{sub.name}</span>
-                      {selectedSubject === sub.name && (
-                        <span className="item-check">✓</span>
-                      )}
-                    </button>
-                  ))}
-                </div>
+              {counts.sujet > 0 && (
+                <button
+                  type="button"
+                  className={`filter-pill ${selectedType === 'sujet' ? 'active' : ''}`}
+                  onClick={() => setSelectedType('sujet')}
+                >
+                  <span>Sujets</span>
+                  <span className="pill-count">{counts.sujet}</span>
+                </button>
+              )}
+
+              {counts.correction > 0 && (
+                <button
+                  type="button"
+                  className={`filter-pill ${selectedType === 'correction' ? 'active' : ''}`}
+                  onClick={() => setSelectedType('correction')}
+                >
+                  <span>Corrigés</span>
+                  <span className="pill-count">{counts.correction}</span>
+                </button>
+              )}
+
+              {counts.exercice > 0 && (
+                <button
+                  type="button"
+                  className={`filter-pill ${selectedType === 'exercice' ? 'active' : ''}`}
+                  onClick={() => setSelectedType('exercice')}
+                >
+                  <span>Exercices</span>
+                  <span className="pill-count">{counts.exercice}</span>
+                </button>
+              )}
+
+              {counts.fascicule > 0 && (
+                <button
+                  type="button"
+                  className={`filter-pill ${selectedType === 'fascicule' ? 'active' : ''}`}
+                  onClick={() => setSelectedType('fascicule')}
+                >
+                  <span>Fascicules</span>
+                  <span className="pill-count">{counts.fascicule}</span>
+                </button>
+              )}
+
+              {counts.qcm > 0 && (
+                <button
+                  type="button"
+                  className={`filter-pill ${selectedType === 'qcm' ? 'active' : ''}`}
+                  onClick={() => setSelectedType('qcm')}
+                >
+                  <span>QCM</span>
+                  <span className="pill-count">{counts.qcm}</span>
+                </button>
               )}
             </div>
 
-            {/* Custom Dropdown Session */}
-            {availableYears.length > 0 && (
-              <div className={`custom-dropdown-container ${isYearDropdownOpen ? 'menu-open' : ''}`} ref={yearDropdownRef}>
-                <span className="custom-dropdown-field-label">Session (Année)</span>
+            {/* Row B: Panneau des menus déroulants personnalisés (Matière & Session) */}
+            <div className="custom-dropdowns-panel">
+              {/* Custom Dropdown Matière */}
+              <div className={`custom-dropdown-container ${isSubjectDropdownOpen ? 'menu-open' : ''}`} ref={subjectDropdownRef}>
+                <span className="custom-dropdown-field-label">Matière</span>
                 <button
                   type="button"
-                  className={`custom-dropdown-trigger ${selectedYear !== 'all' ? 'active-value' : ''}`}
+                  className={`custom-dropdown-trigger ${selectedSubject !== 'all' ? 'active-value' : ''}`}
                   onClick={() => {
-                    setIsYearDropdownOpen((prev) => !prev);
-                    setIsSubjectDropdownOpen(false);
+                    setIsSubjectDropdownOpen((prev) => !prev);
+                    setIsYearDropdownOpen(false);
                   }}
-                  aria-expanded={isYearDropdownOpen}
+                  aria-expanded={isSubjectDropdownOpen}
                 >
                   <span className="dropdown-trigger-icon">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                      <line x1="16" y1="2" x2="16" y2="6" />
-                      <line x1="8" y1="2" x2="8" y2="6" />
-                      <line x1="3" y1="10" x2="21" y2="10" />
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                     </svg>
                   </span>
                   <span className="dropdown-trigger-text">
-                    {selectedYear === 'all' ? 'Toutes les sessions' : `Session ${selectedYear}`}
+                    {selectedSubject === 'all' ? 'Toutes les matières' : selectedSubject}
                   </span>
-                  <span className={`dropdown-trigger-arrow ${isYearDropdownOpen ? 'open' : ''}`}>
+                  <span className={`dropdown-trigger-arrow ${isSubjectDropdownOpen ? 'open' : ''}`}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <polyline points="6 9 12 15 18 9" />
                     </svg>
                   </span>
                 </button>
 
-                {isYearDropdownOpen && (
+                {isSubjectDropdownOpen && (
                   <div className="custom-dropdown-menu">
                     <button
                       type="button"
-                      className={`custom-dropdown-item ${selectedYear === 'all' ? 'selected' : ''}`}
+                      className={`custom-dropdown-item ${selectedSubject === 'all' ? 'selected' : ''}`}
                       onClick={() => {
-                        setSelectedYear('all');
-                        setIsYearDropdownOpen(false);
+                        setSelectedSubject('all');
+                        setIsSubjectDropdownOpen(false);
                       }}
                     >
-                      <span>Toutes les sessions</span>
-                      {selectedYear === 'all' && (
+                      <span>Toutes les matières</span>
+                      {selectedSubject === 'all' && (
                         <span className="item-check">✓</span>
                       )}
                     </button>
-                    {availableYears.map((yr) => (
+                    {subjects.map((sub) => (
                       <button
-                        key={yr}
+                        key={sub.id}
                         type="button"
-                        className={`custom-dropdown-item ${selectedYear === yr.toString() ? 'selected' : ''}`}
+                        className={`custom-dropdown-item ${selectedSubject === sub.name ? 'selected' : ''}`}
                         onClick={() => {
-                          setSelectedYear(yr.toString());
-                          setIsYearDropdownOpen(false);
+                          setSelectedSubject(sub.name);
+                          setIsSubjectDropdownOpen(false);
                         }}
                       >
-                        <span>Session {yr}</span>
-                        {selectedYear === yr.toString() && (
+                        <span>{sub.name}</span>
+                        {selectedSubject === sub.name && (
                           <span className="item-check">✓</span>
                         )}
                       </button>
@@ -616,7 +551,74 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
                   </div>
                 )}
               </div>
-            )}
+
+              {/* Custom Dropdown Session */}
+              {availableYears.length > 0 && (
+                <div className={`custom-dropdown-container ${isYearDropdownOpen ? 'menu-open' : ''}`} ref={yearDropdownRef}>
+                  <span className="custom-dropdown-field-label">Session (Année)</span>
+                  <button
+                    type="button"
+                    className={`custom-dropdown-trigger ${selectedYear !== 'all' ? 'active-value' : ''}`}
+                    onClick={() => {
+                      setIsYearDropdownOpen((prev) => !prev);
+                      setIsSubjectDropdownOpen(false);
+                    }}
+                    aria-expanded={isYearDropdownOpen}
+                  >
+                    <span className="dropdown-trigger-icon">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                      </svg>
+                    </span>
+                    <span className="dropdown-trigger-text">
+                      {selectedYear === 'all' ? 'Toutes les sessions' : `Session ${selectedYear}`}
+                    </span>
+                    <span className={`dropdown-trigger-arrow ${isYearDropdownOpen ? 'open' : ''}`}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </span>
+                  </button>
+
+                  {isYearDropdownOpen && (
+                    <div className="custom-dropdown-menu">
+                      <button
+                        type="button"
+                        className={`custom-dropdown-item ${selectedYear === 'all' ? 'selected' : ''}`}
+                        onClick={() => {
+                          setSelectedYear('all');
+                          setIsYearDropdownOpen(false);
+                        }}
+                      >
+                        <span>Toutes les sessions</span>
+                        {selectedYear === 'all' && (
+                          <span className="item-check">✓</span>
+                        )}
+                      </button>
+                      {availableYears.map((yr) => (
+                        <button
+                          key={yr}
+                          type="button"
+                          className={`custom-dropdown-item ${selectedYear === yr.toString() ? 'selected' : ''}`}
+                          onClick={() => {
+                            setSelectedYear(yr.toString());
+                            setIsYearDropdownOpen(false);
+                          }}
+                        >
+                          <span>Session {yr}</span>
+                          {selectedYear === yr.toString() && (
+                            <span className="item-check">✓</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </section>
@@ -1421,16 +1423,178 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45) !important;
         }
 
-        /* 3. FILTRES AVEC TIROIR REPLIABLE & ONGLETS DÉFILABLES FLUIDES */
+        /* 3. SECTION FILTRES REPLIABLE (Ouverture / Fermeture complète à volonté) */
+        .contest-filters-stage {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .filters-stage-toggle-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          width: 100%;
+        }
+
+        .filters-main-toggle-btn {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          height: 44px;
+          padding: 0 16px;
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 14px;
+          box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.04);
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .filters-main-toggle-btn:hover {
+          border-color: #cbd5e1;
+          background: #f8fafc;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+        }
+
+        .filters-main-toggle-btn.open {
+          background: #fffbeb;
+          border-color: #f59e0b;
+          box-shadow: 0 4px 14px rgba(245, 158, 11, 0.12);
+        }
+
+        .filters-main-toggle-btn.has-active:not(.open) {
+          border-color: #f59e0b;
+          background: #ffffff;
+        }
+
+        .toggle-left-group {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .trigger-icon-wrap {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 28px;
+          height: 28px;
+          border-radius: 8px;
+          background: #f1f5f9;
+          color: #64748b;
+          transition: all 0.2s ease;
+        }
+
+        .filters-main-toggle-btn.open .trigger-icon-wrap,
+        .filters-main-toggle-btn.has-active .trigger-icon-wrap {
+          background: #fef3c7;
+          color: #d97706;
+        }
+
+        .trigger-title {
+          font-size: 13px;
+          font-weight: 700;
+          color: #0f172a;
+          letter-spacing: -0.01em;
+        }
+
+        .filters-main-toggle-btn.open .trigger-title {
+          color: #b45309;
+        }
+
+        .trigger-count-chip {
+          font-size: 11px;
+          font-weight: 700;
+          padding: 2px 8px;
+          border-radius: 9999px;
+          background: #f1f5f9;
+          color: #64748b;
+          transition: all 0.2s ease;
+        }
+
+        .filters-main-toggle-btn.open .trigger-count-chip {
+          background: #fde68a;
+          color: #92400e;
+        }
+
+        .toggle-right-group {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .filter-active-indicator {
+          font-size: 10.5px;
+          font-weight: 800;
+          padding: 2px 8px;
+          border-radius: 9999px;
+          background: #f59e0b;
+          color: #ffffff;
+          letter-spacing: 0.02em;
+        }
+
+        .trigger-chevron {
+          display: flex;
+          align-items: center;
+          color: #94a3b8;
+          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+        }
+
+        .trigger-chevron.rotate {
+          transform: rotate(180deg);
+          color: #d97706;
+        }
+
+        .filter-quick-clear-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          height: 44px;
+          padding: 0 14px;
+          font-size: 12px;
+          font-weight: 700;
+          color: #dc2626;
+          background: #fef2f2;
+          border: 1.5px solid #fee2e2;
+          border-radius: 14px;
+          cursor: pointer;
+          white-space: nowrap;
+          transition: all 0.15s ease;
+        }
+
+        .filter-quick-clear-btn:hover {
+          background: #fee2e2;
+          border-color: #fca5a5;
+          transform: translateY(-1px);
+        }
+
+        @keyframes slideDownFilters {
+          from {
+            opacity: 0;
+            transform: translateY(-8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-slide-down {
+          animation: slideDownFilters 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
         .contest-filters-section {
           background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.9);
+          border: 1px solid rgba(226, 232, 240, 0.95);
           border-radius: 18px;
           padding: 14px 16px;
           display: flex;
           flex-direction: column;
           gap: 12px;
-          box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.03);
+          box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.05), 0 2px 6px rgba(15, 23, 42, 0.02);
         }
 
         /* Row A : Pilules poussables et défilables de manière fluide */
@@ -1500,101 +1664,6 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         .filter-pill.active .pill-count {
           background: rgba(255, 255, 255, 0.25);
           color: #ffffff;
-        }
-
-        /* Row B : Barre de contrôle des filtres (Bouton d'ouverture/fermeture + Réinitialiser) */
-        .filter-controls-bar {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 10px;
-          padding-top: 4px;
-        }
-
-        .filter-toggle-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          height: 35px;
-          padding: 0 14px;
-          font-size: 12px;
-          font-weight: 700;
-          color: #475569;
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-          border-radius: 9999px;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .filter-toggle-btn:hover {
-          background: #f1f5f9;
-          border-color: #cbd5e1;
-          color: #0f172a;
-        }
-
-        .filter-toggle-btn.open {
-          background: #fef3c7;
-          border-color: #f59e0b;
-          color: #b45309;
-        }
-
-        .filter-toggle-btn.has-active {
-          border-color: #f59e0b;
-        }
-
-        .toggle-icon-wrap {
-          display: flex;
-          align-items: center;
-          color: currentColor;
-        }
-
-        .toggle-btn-label {
-          font-size: 12px;
-          font-weight: 700;
-        }
-
-        .toggle-active-badge {
-          width: 18px;
-          height: 18px;
-          border-radius: 50%;
-          background: #f59e0b;
-          color: #ffffff;
-          font-size: 10px;
-          font-weight: 800;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .toggle-chevron {
-          display: inline-flex;
-          align-items: center;
-          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .toggle-chevron.rotate {
-          transform: rotate(180deg);
-        }
-
-        .filter-quick-clear-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          font-size: 11.5px;
-          font-weight: 700;
-          color: #94a3b8;
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          padding: 4px 8px;
-          border-radius: 9999px;
-          transition: all 0.15s ease;
-        }
-
-        .filter-quick-clear-btn:hover {
-          color: #dc2626;
-          background: #fee2e2;
         }
 
         /* Row C : Panneau déroulant des filtres personnalisés */
@@ -2627,6 +2696,26 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           }
 
           /* Filters Mobile */
+          .filters-main-toggle-btn {
+            height: 40px;
+            padding: 0 12px;
+          }
+
+          .trigger-title {
+            font-size: 12px;
+          }
+
+          .trigger-count-chip {
+            font-size: 10px;
+            padding: 1px 6px;
+          }
+
+          .filter-quick-clear-btn {
+            height: 40px;
+            padding: 0 10px;
+            font-size: 11px;
+          }
+
           .contest-filters-section {
             padding: 12px 14px;
             border-radius: 16px;
@@ -2634,12 +2723,6 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           }
 
           .filter-pill {
-            height: 33px;
-            padding: 0 12px;
-            font-size: 11.5px;
-          }
-
-          .filter-toggle-btn {
             height: 33px;
             padding: 0 12px;
             font-size: 11.5px;
