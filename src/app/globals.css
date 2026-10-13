@@ -1524,8 +1524,13 @@ input {
   .mobile-bottom-nav-root {
     display: block !important;
   }
-  .mobile-bottom-nav-root.is-hidden-on-player {
+  .mobile-bottom-nav-root.is-hidden-on-player,
+  body.modal-scroll-locked .mobile-bottom-nav-root,
+  html.modal-scroll-locked .mobile-bottom-nav-root {
     display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
   }
   .mobile-bottom-nav-root {
     position: fixed !important;

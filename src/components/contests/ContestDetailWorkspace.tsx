@@ -86,6 +86,42 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
   // Glass Info Modal State
   const [isGlassModalOpen, setIsGlassModalOpen] = useState(false);
 
+  // État d'ouverture/fermeture des sections accordéon de la fiche officielle
+  const [modalSectionsOpen, setModalSectionsOpen] = useState<{
+    calendar: boolean;
+    presentation: boolean;
+    conditions: boolean;
+    subjects: boolean;
+  }>({
+    calendar: true,       // Ouvert par défaut
+    presentation: true,   // Ouvert par défaut
+    conditions: false,    // Replié par défaut
+    subjects: false,      // Replié par défaut
+  });
+
+  const toggleModalSection = (key: 'calendar' | 'presentation' | 'conditions' | 'subjects') => {
+    setModalSectionsOpen((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
+  const areAllSectionsOpen =
+    modalSectionsOpen.calendar &&
+    modalSectionsOpen.presentation &&
+    modalSectionsOpen.conditions &&
+    modalSectionsOpen.subjects;
+
+  const toggleAllModalSections = () => {
+    const nextState = !areAllSectionsOpen;
+    setModalSectionsOpen({
+      calendar: nextState,
+      presentation: nextState,
+      conditions: nextState,
+      subjects: nextState,
+    });
+  };
+
   // Flèche retour flottante fluide : apparaît au scroll / interaction et disparaît comme le widget de ScrollNavigation (Image 2)
   const [isBackVisible, setIsBackVisible] = useState(true);
   const isBackHoveredRef = useRef(false);
@@ -134,6 +170,21 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
 
   // Active Document Reader Modal (preview)
   const [activeReadingPaper, setActiveReadingPaper] = useState<ContestPaperResource | null>(null);
+
+  // Verrouillage du défilement et masquage des éléments flottants lorsque la modale est active
+  useEffect(() => {
+    if (isGlassModalOpen || activeReadingPaper) {
+      document.body.classList.add('modal-scroll-locked');
+      document.documentElement.classList.add('modal-scroll-locked');
+    } else {
+      document.body.classList.remove('modal-scroll-locked');
+      document.documentElement.classList.remove('modal-scroll-locked');
+    }
+    return () => {
+      document.body.classList.remove('modal-scroll-locked');
+      document.documentElement.classList.remove('modal-scroll-locked');
+    };
+  }, [isGlassModalOpen, activeReadingPaper]);
 
   const subjects = contest.subjects || [];
   const papers = contest.papers || [];
@@ -772,6 +823,9 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
             className="glass-modal-card"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Poignée de glissement sur mobile (Sheet pill) */}
+            <div className="sheet-drag-pill mobile-only" aria-hidden="true" />
+
             {/* Ambient Aurora glow inside the glass card */}
             <div className="glass-ambient-aura" />
 
@@ -785,124 +839,221 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
                     <span className="glass-logo-fallback">{contest.name.slice(0, 3)}</span>
                   )}
                 </div>
-                <div>
+                <div className="glass-header-text">
                   <div className="glass-pill-badge">
                     <span className="pulse-dot" />
-                    <span>Fiche officielle & Calendrier</span>
+                    <span>Fiche officielle &amp; Calendrier</span>
                   </div>
                   <h2 id="glass-modal-title" className="glass-title">{contest.name}</h2>
                   <p className="glass-subtitle">{contest.fullName}</p>
                 </div>
               </div>
 
-              <button
-                type="button"
-                className="glass-close-btn"
-                onClick={() => setIsGlassModalOpen(false)}
-                aria-label="Fermer la fiche d'informations"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
+              <div className="glass-header-actions">
+                <button
+                  type="button"
+                  className="toggle-all-sections-btn"
+                  onClick={toggleAllModalSections}
+                  title={areAllSectionsOpen ? 'Tout replier' : 'Tout déplier'}
+                >
+                  <span>{areAllSectionsOpen ? 'Tout replier' : 'Tout déplier'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="glass-close-btn"
+                  onClick={() => setIsGlassModalOpen(false)}
+                  aria-label="Fermer la fiche d'informations"
+                  title="Fermer"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
-            {/* Modal Body */}
+            {/* Modal Body avec sections accordéons ouvrables et fermables à volonté */}
             <div className="glass-modal-body">
-              {/* Calendrier & Statut */}
-              <div className="glass-section-box">
-                <h3 className="section-heading">
-                  <span className="icon">📅</span>
-                  <span>Calendrier de la session {contest.sessionYear}</span>
-                </h3>
-
-                <div className="timeline-cards-grid">
-                  <div className="timeline-card">
-                    <span className="t-label">Statut officiel</span>
-                    <span className={`t-val status ${contest.status}`}>
-                      {contest.status === 'open' ? 'Inscriptions en cours' : contest.status === 'upcoming' ? 'Session à venir' : 'Inscriptions clôturées'}
+              {/* 1. Calendrier & Statut (Accordéon) */}
+              <div className={`glass-accordion-card ${modalSectionsOpen.calendar ? 'is-open' : 'is-closed'}`}>
+                <button
+                  type="button"
+                  className="glass-accordion-trigger"
+                  onClick={() => toggleModalSection('calendar')}
+                  aria-expanded={modalSectionsOpen.calendar}
+                >
+                  <div className="trigger-title-group">
+                    <span className="trigger-icon">📅</span>
+                    <span className="trigger-title-text">Calendrier de la session {contest.sessionYear}</span>
+                  </div>
+                  <div className="trigger-right-group">
+                    <span className={`trigger-status-badge ${contest.status}`}>
+                      {contest.status === 'open' ? 'Inscriptions en cours' : contest.status === 'upcoming' ? 'Session à venir' : 'Clôturé'}
+                    </span>
+                    <span className={`accordion-chevron ${modalSectionsOpen.calendar ? 'rotate' : ''}`}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
                     </span>
                   </div>
+                </button>
 
-                  <div className="timeline-card">
-                    <span className="t-label">Date limite de dépôt</span>
-                    <span className="t-val highlight">
-                      {contest.applicationDeadline || 'Non communiquée'}
-                    </span>
-                  </div>
-
-                  <div className="timeline-card">
-                    <span className="t-label">Date des épreuves écrites</span>
-                    <span className="t-val highlight">
-                      {contest.examDate || 'À fixer par arrêté ministériel'}
-                    </span>
-                  </div>
-
-                  <div className="timeline-card">
-                    <span className="t-label">Niveau d’entrée requis</span>
-                    <span className="t-val">
-                      {contest.diplomaLabel}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Présentation du Concours */}
-              <div className="glass-section-box">
-                <h3 className="section-heading">
-                  <span className="icon">🏛️</span>
-                  <span>Présentation & Missions</span>
-                </h3>
-                <p className="description-text">
-                  {contest.longDescription}
-                </p>
-                <div className="org-chip">
-                  <span>Organisme de tutelle :</span>
-                  <strong>{contest.organization}</strong>
-                </div>
-              </div>
-
-              {/* Conditions d'accès officielles */}
-              {conditions.length > 0 && (
-                <div className="glass-section-box">
-                  <h3 className="section-heading">
-                    <span className="icon">📜</span>
-                    <span>Conditions d’accès & Éligibilité</span>
-                  </h3>
-                  <div className="conditions-list">
-                    {conditions.map((cond) => (
-                      <div key={cond.id} className="condition-row">
-                        <div className="cond-check">✓</div>
-                        <div className="cond-content">
-                          <strong className="cond-title">{cond.title}</strong>
-                          <p className="cond-desc">{cond.description}</p>
-                        </div>
-                        {cond.isMandatory && (
-                          <span className="mandatory-pill">Obligatoire</span>
-                        )}
+                {modalSectionsOpen.calendar && (
+                  <div className="glass-accordion-body">
+                    <div className="timeline-cards-grid">
+                      <div className="timeline-card">
+                        <span className="t-label">Statut officiel</span>
+                        <span className={`t-val status ${contest.status}`}>
+                          {contest.status === 'open' ? 'Inscriptions en cours' : contest.status === 'upcoming' ? 'Session à venir' : 'Inscriptions clôturées'}
+                        </span>
                       </div>
-                    ))}
+
+                      <div className="timeline-card">
+                        <span className="t-label">Date limite de dépôt</span>
+                        <span className="t-val highlight">
+                          {contest.applicationDeadline || 'Non communiquée'}
+                        </span>
+                      </div>
+
+                      <div className="timeline-card">
+                        <span className="t-label">Date des épreuves écrites</span>
+                        <span className="t-val highlight">
+                          {contest.examDate || 'À fixer par arrêté ministériel'}
+                        </span>
+                      </div>
+
+                      <div className="timeline-card">
+                        <span className="t-label">Niveau d’entrée requis</span>
+                        <span className="t-val">
+                          {contest.diplomaLabel}
+                        </span>
+                      </div>
+                    </div>
                   </div>
+                )}
+              </div>
+
+              {/* 2. Présentation du Concours & Missions (Accordéon) */}
+              <div className={`glass-accordion-card ${modalSectionsOpen.presentation ? 'is-open' : 'is-closed'}`}>
+                <button
+                  type="button"
+                  className="glass-accordion-trigger"
+                  onClick={() => toggleModalSection('presentation')}
+                  aria-expanded={modalSectionsOpen.presentation}
+                >
+                  <div className="trigger-title-group">
+                    <span className="trigger-icon">🏛️</span>
+                    <span className="trigger-title-text">Présentation &amp; Missions</span>
+                  </div>
+                  <div className="trigger-right-group">
+                    {contest.organization && (
+                      <span className="trigger-meta-pill desktop-only">{contest.organization}</span>
+                    )}
+                    <span className={`accordion-chevron ${modalSectionsOpen.presentation ? 'rotate' : ''}`}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </span>
+                  </div>
+                </button>
+
+                {modalSectionsOpen.presentation && (
+                  <div className="glass-accordion-body">
+                    <p className="description-text">
+                      {contest.longDescription}
+                    </p>
+                    {contest.organization && (
+                      <div className="org-chip">
+                        <span>Organisme de tutelle :</span>
+                        <strong>{contest.organization}</strong>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* 3. Conditions d'accès officielles & Éligibilité (Accordéon) */}
+              {conditions.length > 0 && (
+                <div className={`glass-accordion-card ${modalSectionsOpen.conditions ? 'is-open' : 'is-closed'}`}>
+                  <button
+                    type="button"
+                    className="glass-accordion-trigger"
+                    onClick={() => toggleModalSection('conditions')}
+                    aria-expanded={modalSectionsOpen.conditions}
+                  >
+                    <div className="trigger-title-group">
+                      <span className="trigger-icon">📜</span>
+                      <span className="trigger-title-text">Conditions d’accès &amp; Éligibilité</span>
+                    </div>
+                    <div className="trigger-right-group">
+                      <span className="trigger-count-badge">{conditions.length} critère{conditions.length > 1 ? 's' : ''}</span>
+                      <span className={`accordion-chevron ${modalSectionsOpen.conditions ? 'rotate' : ''}`}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      </span>
+                    </div>
+                  </button>
+
+                  {modalSectionsOpen.conditions && (
+                    <div className="glass-accordion-body">
+                      <div className="conditions-list">
+                        {conditions.map((cond) => (
+                          <div key={cond.id} className="condition-row">
+                            <div className="cond-check">✓</div>
+                            <div className="cond-content">
+                              <strong className="cond-title">{cond.title}</strong>
+                              <p className="cond-desc">{cond.description}</p>
+                            </div>
+                            {cond.isMandatory && (
+                              <span className="mandatory-pill">Obligatoire</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
-              {/* Matières au programme */}
+              {/* 4. Matières évaluées au concours (Accordéon) */}
               {subjects.length > 0 && (
-                <div className="glass-section-box">
-                  <h3 className="section-heading">
-                    <span className="icon">📚</span>
-                    <span>Matières évaluées au concours</span>
-                  </h3>
-                  <div className="subjects-chips-grid">
-                    {subjects.map((sub) => (
-                      <div key={sub.id} className="subject-box">
-                        <strong className="sub-title">{sub.name}</strong>
-                        <p className="sub-desc">{sub.description}</p>
-                        <span className="sub-count">{sub.resourcesCount} ressources disponibles</span>
+                <div className={`glass-accordion-card ${modalSectionsOpen.subjects ? 'is-open' : 'is-closed'}`}>
+                  <button
+                    type="button"
+                    className="glass-accordion-trigger"
+                    onClick={() => toggleModalSection('subjects')}
+                    aria-expanded={modalSectionsOpen.subjects}
+                  >
+                    <div className="trigger-title-group">
+                      <span className="trigger-icon">📚</span>
+                      <span className="trigger-title-text">Matières évaluées au concours</span>
+                    </div>
+                    <div className="trigger-right-group">
+                      <span className="trigger-count-badge">{subjects.length} matière{subjects.length > 1 ? 's' : ''}</span>
+                      <span className={`accordion-chevron ${modalSectionsOpen.subjects ? 'rotate' : ''}`}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      </span>
+                    </div>
+                  </button>
+
+                  {modalSectionsOpen.subjects && (
+                    <div className="glass-accordion-body">
+                      <div className="subjects-chips-grid">
+                        {subjects.map((sub) => (
+                          <div key={sub.id} className="subject-box">
+                            <strong className="sub-title">{sub.name}</strong>
+                            <p className="sub-desc">{sub.description}</p>
+                            <span className="sub-count">{sub.resourcesCount} ressources disponibles</span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -1058,11 +1209,13 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           padding-top: 0;
         }
 
-        /* Widget Flottant Retour : Apparaît et disparaît fluidement au scroll (comme ScrollNavigation - Image 2) */
+        /* Masquage des éléments fixes / flottants quand la modale est ouverte */
         :global(body.modal-scroll-locked) .floating-back-widget,
         :global(html.modal-scroll-locked) .floating-back-widget,
         :global(body[style*="position: fixed"]) .floating-back-widget,
-        :global(body[style*="overflow: hidden"]) .floating-back-widget {
+        :global(body[style*="overflow: hidden"]) .floating-back-widget,
+        :global(body.modal-scroll-locked) :global(.mobile-bottom-nav-root),
+        :global(html.modal-scroll-locked) :global(.mobile-bottom-nav-root) {
           display: none !important;
           opacity: 0 !important;
           visibility: hidden !important;
@@ -2216,13 +2369,14 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           cursor: pointer;
         }
 
-        /* 5. FROSTED GLASS MODAL (« Page Glacée ») */
+        /* 5. FROSTED GLASS MODAL (« Page Glacée / Fiche Officielle ») */
         .glass-modal-backdrop {
           position: fixed;
           inset: 0;
-          z-index: 9999;
-          background: rgba(15, 23, 42, 0.45);
-          backdrop-filter: blur(16px);
+          z-index: 100000;
+          background: rgba(15, 23, 42, 0.65);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -2232,11 +2386,10 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
 
         .glass-modal-card {
           position: relative;
-          background: rgba(255, 255, 255, 0.94);
-          backdrop-filter: blur(28px);
-          border: 1.5px solid rgba(255, 255, 255, 0.9);
+          background: #ffffff;
+          border: 1.5px solid rgba(226, 232, 240, 0.95);
           border-radius: 24px;
-          box-shadow: 0 25px 60px -10px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(226, 232, 240, 0.5);
+          box-shadow: 0 25px 60px -10px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(226, 232, 240, 0.6);
           width: 100%;
           max-width: 760px;
           max-height: 88vh;
@@ -2246,6 +2399,10 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        .sheet-drag-pill {
+          display: none;
+        }
+
         .glass-ambient-aura {
           position: absolute;
           top: -100px;
@@ -2253,32 +2410,37 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           width: 320px;
           height: 320px;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(245, 158, 11, 0.12) 0%, transparent 70%);
           pointer-events: none;
         }
 
         .glass-modal-header {
-          padding: 24px 28px;
-          border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+          padding: 20px 24px;
+          border-bottom: 1px solid rgba(226, 232, 240, 0.9);
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           justify-content: space-between;
           gap: 16px;
+          background: rgba(255, 255, 255, 0.98);
+          position: sticky;
+          top: 0;
+          z-index: 20;
         }
 
         .glass-header-left {
           display: flex;
           align-items: center;
-          gap: 18px;
+          gap: 14px;
+          min-width: 0;
         }
 
         .glass-logo-box {
-          width: 64px;
-          height: 64px;
+          width: 56px;
+          height: 56px;
           border-radius: 14px;
           background: #ffffff;
           border: 1px solid rgba(226, 232, 240, 0.9);
-          padding: 6px;
+          padding: 5px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -2298,17 +2460,23 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           color: #d97706;
         }
 
+        .glass-header-text {
+          min-width: 0;
+        }
+
         .glass-pill-badge {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          font-size: 11px;
-          font-weight: 700;
+          font-size: 10.5px;
+          font-weight: 800;
           color: #b45309;
           background: #fef3c7;
           padding: 2px 8px;
           border-radius: 9999px;
-          margin-bottom: 4px;
+          margin-bottom: 2px;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
         }
 
         .pulse-dot {
@@ -2319,18 +2487,48 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .glass-title {
-          font-size: 22px;
+          font-size: 20px;
           font-weight: 900;
           color: #0f172a;
           margin: 0;
           letter-spacing: -0.02em;
+          line-height: 1.2;
         }
 
         .glass-subtitle {
-          font-size: 13px;
+          font-size: 12.5px;
           color: #475569;
           font-weight: 600;
           margin: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .glass-header-actions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-shrink: 0;
+        }
+
+        .toggle-all-sections-btn {
+          height: 34px;
+          padding: 0 12px;
+          font-size: 11.5px;
+          font-weight: 700;
+          color: #334155;
+          background: #f1f5f9;
+          border: 1px solid #e2e8f0;
+          border-radius: 9999px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          white-space: nowrap;
+        }
+
+        .toggle-all-sections-btn:hover {
+          background: #e2e8f0;
+          color: #0f172a;
         }
 
         .glass-close-btn {
@@ -2345,6 +2543,7 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           justify-content: center;
           cursor: pointer;
           transition: all 0.15s ease;
+          flex-shrink: 0;
         }
 
         .glass-close-btn:hover {
@@ -2353,37 +2552,166 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .glass-modal-body {
-          padding: 24px 28px;
+          padding: 20px 24px;
           overflow-y: auto;
-          display: flex;
-          flex-direction: column;
-          gap: 22px;
-        }
-
-        .glass-section-box {
+          -webkit-overflow-scrolling: touch;
           display: flex;
           flex-direction: column;
           gap: 12px;
+          flex: 1;
         }
 
-        .section-heading {
-          font-size: 15px;
+        /* ACCORDIONS DANS LA MODALE */
+        .glass-accordion-card {
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 16px;
+          overflow: hidden;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.04);
+        }
+
+        .glass-accordion-card.is-open {
+          border-color: rgba(217, 119, 6, 0.35);
+          box-shadow: 0 4px 14px -2px rgba(217, 119, 6, 0.08);
+        }
+
+        .glass-accordion-trigger {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 14px 18px;
+          background: #ffffff;
+          border: none;
+          cursor: pointer;
+          text-align: left;
+          transition: background 0.15s ease;
+          user-select: none;
+          gap: 12px;
+        }
+
+        .glass-accordion-trigger:hover {
+          background: #f8fafc;
+        }
+
+        .trigger-title-group {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          min-width: 0;
+        }
+
+        .trigger-icon {
+          font-size: 18px;
+          line-height: 1;
+          flex-shrink: 0;
+        }
+
+        .trigger-title-text {
+          font-size: 14px;
           font-weight: 800;
           color: #0f172a;
-          margin: 0;
+          letter-spacing: -0.01em;
+        }
+
+        .trigger-right-group {
           display: flex;
           align-items: center;
           gap: 8px;
+          flex-shrink: 0;
+        }
+
+        .trigger-status-badge {
+          font-size: 11px;
+          font-weight: 800;
+          padding: 2.5px 8px;
+          border-radius: 9999px;
+          white-space: nowrap;
+        }
+
+        .trigger-status-badge.open {
+          background: #ecfdf5;
+          color: #059669;
+          border: 1px solid #a7f3d0;
+        }
+
+        .trigger-status-badge.upcoming {
+          background: #fef3c7;
+          color: #b45309;
+          border: 1px solid #fde68a;
+        }
+
+        .trigger-status-badge.closed {
+          background: #f1f5f9;
+          color: #64748b;
+          border: 1px solid #cbd5e1;
+        }
+
+        .trigger-count-badge {
+          font-size: 11px;
+          font-weight: 700;
+          color: #4f46e5;
+          background: #eef2ff;
+          border: 1px solid #c7d2fe;
+          padding: 2px 8px;
+          border-radius: 9999px;
+          white-space: nowrap;
+        }
+
+        .trigger-meta-pill {
+          font-size: 11px;
+          font-weight: 600;
+          color: #64748b;
+          background: #f1f5f9;
+          padding: 2px 8px;
+          border-radius: 9999px;
+          max-width: 180px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .accordion-chevron {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: #f1f5f9;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #64748b;
+          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.15s, color 0.15s;
+          flex-shrink: 0;
+        }
+
+        .glass-accordion-trigger:hover .accordion-chevron {
+          background: #e2e8f0;
+          color: #0f172a;
+        }
+
+        .accordion-chevron.rotate {
+          transform: rotate(180deg);
+          background: #fef3c7;
+          color: #d97706;
+        }
+
+        .glass-accordion-body {
+          padding: 0 18px 16px 18px;
+          border-top: 1px solid #f1f5f9;
+          margin-top: 2px;
+          animation: fadeIn 0.2s ease-out;
         }
 
         .timeline-cards-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 12px;
+          gap: 10px;
+          padding-top: 12px;
         }
 
         .timeline-card {
-          background: #ffffff;
+          background: #f8fafc;
           border: 1px solid rgba(226, 232, 240, 0.9);
           border-radius: 12px;
           padding: 12px 14px;
@@ -2393,14 +2721,15 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .t-label {
-          font-size: 11px;
+          font-size: 10.5px;
           font-weight: 700;
           color: #64748b;
           text-transform: uppercase;
+          letter-spacing: 0.02em;
         }
 
         .t-val {
-          font-size: 14px;
+          font-size: 13.5px;
           font-weight: 800;
           color: #0f172a;
         }
@@ -2422,19 +2751,21 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           color: #334155;
           line-height: 1.55;
           margin: 0;
+          padding-top: 12px;
         }
 
         .org-chip {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          font-size: 12.5px;
+          font-size: 12px;
           color: #475569;
           background: #f8fafc;
           padding: 6px 12px;
           border-radius: 8px;
           border: 1px solid #e2e8f0;
           width: fit-content;
+          margin-top: 12px;
         }
 
         /* Conditions */
@@ -2442,10 +2773,11 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           display: flex;
           flex-direction: column;
           gap: 8px;
+          padding-top: 12px;
         }
 
         .condition-row {
-          background: #ffffff;
+          background: #f8fafc;
           border: 1px solid #e2e8f0;
           border-radius: 10px;
           padding: 10px 14px;
@@ -2494,10 +2826,11 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           display: grid;
           grid-template-columns: repeat(2, 1fr);
           gap: 10px;
+          padding-top: 12px;
         }
 
         .subject-box {
-          background: #ffffff;
+          background: #f8fafc;
           border: 1px solid #e2e8f0;
           border-radius: 10px;
           padding: 10px 12px;
@@ -2530,17 +2863,20 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
         }
 
         .glass-modal-footer {
-          padding: 16px 28px;
-          background: rgba(248, 250, 252, 0.9);
+          padding: 14px 24px;
+          background: rgba(248, 250, 252, 0.98);
           border-top: 1px solid #e2e8f0;
           display: flex;
           align-items: center;
           justify-content: space-between;
           gap: 16px;
+          position: sticky;
+          bottom: 0;
+          z-index: 20;
         }
 
         .footer-note {
-          font-size: 12px;
+          font-size: 11.5px;
           color: #64748b;
           font-style: italic;
         }
@@ -2555,6 +2891,12 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           border: none;
           border-radius: 9999px;
           cursor: pointer;
+          transition: background 0.15s ease;
+          flex-shrink: 0;
+        }
+
+        .close-glass-action-btn:hover {
+          background: #1e293b;
         }
 
         /* 6. READER PREVIEW MODAL */
@@ -2723,18 +3065,115 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
             gap: 6px;
           }
 
-          .header-navigation-row {
-            padding-top: 0;
+          /* MODALE FICHE OFFICIELLE SUR MOBILE (< 860px) - BOTTOM SHEET ULTRA FLUIDE */
+          .glass-modal-backdrop {
+            align-items: flex-end !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            background: rgba(15, 23, 42, 0.72) !important;
           }
 
-          .header-navigation-row.is-floating {
-            top: 86px;
-            left: 14px;
+          .glass-modal-card {
+            width: 100% !important;
+            max-width: 100% !important;
+            max-height: 92dvh !important;
+            border-radius: 24px 24px 0 0 !important;
+            margin: 0 !important;
+            border-left: none !important;
+            border-right: none !important;
+            border-bottom: none !important;
+            box-shadow: 0 -12px 40px rgba(15, 23, 42, 0.35) !important;
           }
 
-          .back-btn-circle {
-            width: 36px;
-            height: 36px;
+          .sheet-drag-pill {
+            display: block !important;
+            width: 38px;
+            height: 4.5px;
+            border-radius: 9999px;
+            background: #cbd5e1;
+            margin: 8px auto 2px auto;
+            flex-shrink: 0;
+          }
+
+          .glass-modal-header {
+            padding: 10px 16px 12px 16px !important;
+            gap: 10px !important;
+          }
+
+          .glass-logo-box {
+            width: 44px !important;
+            height: 44px !important;
+            border-radius: 10px !important;
+          }
+
+          .glass-title {
+            font-size: 17px !important;
+          }
+
+          .glass-subtitle {
+            font-size: 11px !important;
+            max-width: 170px !important;
+          }
+
+          .glass-header-actions {
+            gap: 6px !important;
+          }
+
+          .toggle-all-sections-btn {
+            height: 30px !important;
+            padding: 0 9px !important;
+            font-size: 10.5px !important;
+          }
+
+          .glass-close-btn {
+            width: 32px !important;
+            height: 32px !important;
+          }
+
+          .glass-modal-body {
+            padding: 12px 14px !important;
+            gap: 10px !important;
+          }
+
+          .glass-accordion-trigger {
+            padding: 12px 14px !important;
+          }
+
+          .trigger-title-text {
+            font-size: 13px !important;
+          }
+
+          .glass-accordion-body {
+            padding: 0 14px 14px 14px !important;
+          }
+
+          .timeline-cards-grid {
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+          }
+
+          .subjects-chips-grid {
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+          }
+
+          .glass-modal-footer {
+            padding: 12px 16px calc(14px + env(safe-area-inset-bottom, 12px)) 16px !important;
+            flex-direction: column !important;
+            gap: 8px !important;
+            text-align: center !important;
+          }
+
+          .footer-note {
+            font-size: 10.5px !important;
+            line-height: 1.35 !important;
+          }
+
+          .close-glass-action-btn {
+            width: 100% !important;
+            height: 44px !important;
+            font-size: 13.5px !important;
+            border-radius: 12px !important;
           }
 
           .contest-identity-bar {
