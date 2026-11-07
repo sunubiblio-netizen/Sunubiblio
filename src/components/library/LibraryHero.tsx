@@ -20,72 +20,96 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
   };
 
   return (
-    <section className="lib-hero-wrapper">
-      <div className="container lib-hero-container">
-        {/* Pill Badge matching Image 2 */}
-        <div className="lib-hero-badge">
-          <span className="badge-pulse-dot" />
-          <span>Bibliothèque numérique universelle</span>
-        </div>
-
-        {/* Title with warm golden-amber gradient accent */}
-        <h1 className="lib-hero-title">
-          Explorez la <span className="lib-title-accent">bibliothèque</span> Sunubiblio
-        </h1>
-
-        {/* Catchy subtitle */}
-        <p className="lib-hero-subtitle">
-          Découvrez des milliers d’ouvrages, cours, annales et documents certifiés conformes pour enrichir vos connaissances et progresser à votre rythme.
-        </p>
-
-        {/* Search Bar Capsule */}
-        <form onSubmit={handleSubmit} className="lib-search-capsule">
-          <div className="lib-search-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
+    <>
+      <section className="lib-hero-wrapper">
+        <div className="container lib-hero-container">
+          {/* Pill Badge matching Image 2 */}
+          <div className="lib-hero-badge">
+            <span className="badge-pulse-dot" />
+            <span>Bibliothèque numérique universelle</span>
           </div>
-          <input
-            type="text"
-            className="lib-search-input"
-            placeholder="Rechercher par titre, auteur, matière..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            aria-label="Rechercher dans la bibliothèque"
-          />
-          {query && (
-            <button
-              type="button"
-              className="lib-search-clear"
-              onClick={() => {
-                setQuery('');
-                onSearch('');
-              }}
-              aria-label="Effacer la recherche"
-            >
+
+          {/* Title with warm golden-amber gradient accent */}
+          <h1 className="lib-hero-title">
+            Explorez la <span className="lib-title-accent">bibliothèque</span> Sunubiblio
+          </h1>
+
+          {/* Catchy subtitle */}
+          <p className="lib-hero-subtitle">
+            Découvrez des milliers d’ouvrages, cours, annales et documents certifiés conformes pour enrichir vos connaissances et progresser à votre rythme.
+          </p>
+        </div>
+      </section>
+
+      {/* Search Bar Capsule (Sticky au défilement en haut de l'écran) */}
+      <div className="lib-search-sticky-stage">
+        <div className="container lib-search-sticky-container">
+          <form onSubmit={handleSubmit} className="lib-search-capsule">
+            <div className="lib-search-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              className="lib-search-input"
+              placeholder="Rechercher par titre, auteur, matière..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Rechercher dans la bibliothèque"
+            />
+            {query && (
+              <button
+                type="button"
+                className="lib-search-clear"
+                onClick={() => {
+                  setQuery('');
+                  onSearch('');
+                }}
+                aria-label="Effacer la recherche"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            )}
+            <button type="submit" className="lib-search-btn">
+              <span>Rechercher</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
               </svg>
             </button>
-          )}
-          <button type="submit" className="lib-search-btn">
-            <span>Rechercher</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </button>
-        </form>
+          </form>
+        </div>
       </div>
 
       <style jsx>{`
         .lib-hero-wrapper {
           position: relative;
-          padding: 48px 0 36px 0;
+          padding: 48px 0 18px 0;
           background: #ffffff;
           border-bottom: none;
+        }
+
+        .lib-search-sticky-stage {
+          position: sticky;
+          top: 73px;
+          z-index: 80;
+          width: 100%;
+          padding: 8px 0 18px 0;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+
+        .lib-search-sticky-container {
+          display: flex;
+          justify-content: center;
+          max-width: 920px;
+          margin: 0 auto;
         }
 
         .lib-hero-container {
@@ -141,7 +165,7 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
           color: #64748b;
           line-height: 1.55;
           max-width: 680px;
-          margin-bottom: 28px;
+          margin-bottom: 0;
         }
 
         /* Search Capsule */
@@ -233,9 +257,19 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
           transform: translateY(-1px);
         }
 
+        @media (max-width: 860px) {
+          .lib-search-sticky-stage {
+            top: calc(87px + env(safe-area-inset-top, 0px));
+          }
+        }
+
         @media (max-width: 640px) {
           .lib-hero-wrapper {
-            padding: 28px 0 20px 0;
+            padding: 28px 0 10px 0;
+          }
+
+          .lib-search-sticky-stage {
+            padding: 6px 0 12px 0;
           }
 
           .lib-hero-badge {
@@ -251,7 +285,7 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
 
           .lib-hero-subtitle {
             font-size: 14px;
-            margin-bottom: 20px;
+            margin-bottom: 0;
           }
 
           .lib-search-capsule {
@@ -283,6 +317,6 @@ export const LibraryHero: React.FC<LibraryHeroProps> = ({
           }
         }
       `}</style>
-    </section>
+    </>
   );
 };

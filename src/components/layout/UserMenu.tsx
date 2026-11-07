@@ -4,13 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { MOCK_PROFILE_USER } from '@/data/mockProfileData';
-import {
-  IconProfil,
-  IconCommunaute,
-  IconPublications,
-  IconGroupes,
-  IconDiscussions,
-} from './app-launcher/AppLauncherIcons';
 
 interface UserMenuProps {
   onOpenAuth?: (mode: 'login' | 'register') => void;
@@ -210,89 +203,6 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                   onClick={() => setIsOpen(false)}
                 >
                   {currentUser.isGoldMember ? 'Gérer' : 'Découvrir'}
-                </Link>
-              </div>
-            </div>
-
-            {/* ZONE CENTRALE DÉFILABLE (Mon Profil + Communauté) */}
-            <div className="user-drawer-body">
-              {/* Section : MON PROFIL */}
-              <div className="user-menu-section">
-                <span className="user-section-title">Mon Profil</span>
-
-                <Link
-                  href="/profil"
-                  className="user-menu-link-item"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <div className="user-menu-icon-wrap">
-                    <IconProfil size={20} className="user-menu-vector-icon" />
-                  </div>
-                  <span className="user-menu-item-text">Voir mon profil</span>
-                  <svg className="user-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </Link>
-              </div>
-
-              {/* Section : COMMUNAUTÉ */}
-              <div className="user-menu-section">
-                <span className="user-section-title">Communauté</span>
-
-                <Link
-                  href="/communaute"
-                  className="user-menu-link-item"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <div className="user-menu-icon-wrap">
-                    <IconCommunaute size={20} className="user-menu-vector-icon" />
-                  </div>
-                  <span className="user-menu-item-text">Communauté</span>
-                  <svg className="user-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </Link>
-
-                <Link
-                  href="/publications"
-                  className="user-menu-link-item"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <div className="user-menu-icon-wrap">
-                    <IconPublications size={20} className="user-menu-vector-icon" />
-                  </div>
-                  <span className="user-menu-item-text">Publications</span>
-                  <svg className="user-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </Link>
-
-                <Link
-                  href="/groupes"
-                  className="user-menu-link-item"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <div className="user-menu-icon-wrap">
-                    <IconGroupes size={20} className="user-menu-vector-icon" />
-                  </div>
-                  <span className="user-menu-item-text">Groupes</span>
-                  <svg className="user-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </Link>
-
-                <Link
-                  href="/discussions"
-                  className="user-menu-link-item"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <div className="user-menu-icon-wrap">
-                    <IconDiscussions size={20} className="user-menu-vector-icon" />
-                  </div>
-                  <span className="user-menu-item-text">Messages</span>
-                  <svg className="user-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
                 </Link>
               </div>
             </div>

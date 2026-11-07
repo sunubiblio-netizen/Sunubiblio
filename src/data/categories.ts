@@ -81,16 +81,6 @@ export const CATEGORIES: CategoryItem[] = [
     href: '/exercices',
     icon: 'clipboard-check',
   },
-  {
-    id: 'communaute',
-    title: 'Communauté',
-    subtitle: 'Échangez, partagez, progressez',
-    iconBg: 'rgba(217, 70, 239, 0.08)',
-    iconColor: '#d946ef',
-    borderColor: 'rgba(217, 70, 239, 0.2)',
-    href: '/communaute',
-    icon: 'users',
-  },
 ];
 
 export const POPULAR_TAGS = [

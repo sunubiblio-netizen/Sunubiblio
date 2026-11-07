@@ -24,77 +24,101 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
   };
 
   return (
-    <section className="edu-hero-wrapper">
-      {/* Visual background accents harmonisés blanc et ambre doux (identique à la Bibliothèque) */}
-      <div className="edu-hero-ambient" aria-hidden="true">
-        <div className="ambient-blob blob-sun" />
-      </div>
-
-      <div className="container edu-hero-container">
-        {/* Badge officiel harmonisé */}
-        <div className="edu-hero-badge">
-          <span className="badge-pulse-dot" />
-          <span>Programmes officiels du Sénégal</span>
+    <>
+      <section className="edu-hero-wrapper">
+        {/* Visual background accents harmonisés blanc et ambre doux (identique à la Bibliothèque) */}
+        <div className="edu-hero-ambient" aria-hidden="true">
+          <div className="ambient-blob blob-sun" />
         </div>
 
-        {/* Title Centered & Harmonisé */}
-        <h1 className="edu-hero-title">
-          Votre <span className="edu-title-accent">parcours scolaire</span> commence ici
-        </h1>
-
-        {/* Subtitle Centered */}
-        <p className="edu-hero-subtitle">
-          Explorez les niveaux d’études, découvrez chaque matière et trouvez les ressources adaptées à vos objectifs, conformément aux programmes scolaires officiels du Sénégal.
-        </p>
-
-        {/* Search Bar Capsule */}
-        <form onSubmit={handleSubmit} className="edu-search-capsule">
-          <div className="edu-search-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
+        <div className="container edu-hero-container">
+          {/* Badge officiel harmonisé */}
+          <div className="edu-hero-badge">
+            <span className="badge-pulse-dot" />
+            <span>Programmes officiels du Sénégal</span>
           </div>
-          <input
-            type="text"
-            className="edu-search-input"
-            placeholder="Rechercher..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            aria-label="Rechercher dans les ressources éducatives"
-          />
-          {query && (
-            <button
-              type="button"
-              className="edu-search-clear"
-              onClick={() => {
-                setQuery('');
-                onSearch('');
-              }}
-              aria-label="Effacer la recherche"
-            >
+
+          {/* Title Centered & Harmonisé */}
+          <h1 className="edu-hero-title">
+            Votre <span className="edu-title-accent">parcours scolaire</span> commence ici
+          </h1>
+
+          {/* Subtitle Centered */}
+          <p className="edu-hero-subtitle">
+            Explorez les niveaux d’études, découvrez chaque matière et trouvez les ressources adaptées à vos objectifs, conformément aux programmes scolaires officiels du Sénégal.
+          </p>
+        </div>
+      </section>
+
+      {/* Search Bar Capsule (Sticky au défilement en haut de l'écran) */}
+      <div className="edu-search-sticky-stage">
+        <div className="container edu-search-sticky-container">
+          <form onSubmit={handleSubmit} className="edu-search-capsule">
+            <div className="edu-search-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              className="edu-search-input"
+              placeholder="Rechercher..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Rechercher dans les ressources éducatives"
+            />
+            {query && (
+              <button
+                type="button"
+                className="edu-search-clear"
+                onClick={() => {
+                  setQuery('');
+                  onSearch('');
+                }}
+                aria-label="Effacer la recherche"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            )}
+            <button type="submit" className="edu-search-btn">
+              <span>Rechercher</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
               </svg>
             </button>
-          )}
-          <button type="submit" className="edu-search-btn">
-            <span>Rechercher</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </button>
-        </form>
+          </form>
+        </div>
       </div>
 
       <style jsx>{`
         .edu-hero-wrapper {
           position: relative;
-          padding: 48px 0 36px 0;
+          padding: 48px 0 18px 0;
           background: #ffffff;
           border-bottom: none;
+        }
+
+        .edu-search-sticky-stage {
+          position: sticky;
+          top: 73px;
+          z-index: 80;
+          width: 100%;
+          padding: 8px 0 18px 0;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+
+        .edu-search-sticky-container {
+          display: flex;
+          justify-content: center;
+          max-width: 920px;
+          margin: 0 auto;
         }
 
         .edu-hero-ambient {
@@ -154,7 +178,7 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
           color: #64748b;
           line-height: 1.55;
           max-width: 680px;
-          margin-bottom: 28px;
+          margin-bottom: 0;
         }
 
         /* Search Capsule */
@@ -246,9 +270,19 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
           transform: translateY(-1px);
         }
 
+        @media (max-width: 860px) {
+          .edu-search-sticky-stage {
+            top: calc(87px + env(safe-area-inset-top, 0px));
+          }
+        }
+
         @media (max-width: 640px) {
           .edu-hero-wrapper {
-            padding: 24px 0 20px 0;
+            padding: 24px 0 10px 0;
+          }
+
+          .edu-search-sticky-stage {
+            padding: 6px 0 12px 0;
           }
 
           .edu-hero-title {
@@ -258,7 +292,7 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
 
           .edu-hero-subtitle {
             font-size: 14px;
-            margin-bottom: 20px;
+            margin-bottom: 0;
           }
 
           .edu-search-capsule {
@@ -291,6 +325,6 @@ export const EducationHero: React.FC<EducationHeroProps> = ({
           }
         }
       `}</style>
-    </section>
+    </>
   );
 };

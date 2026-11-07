@@ -85,6 +85,7 @@ export interface Contest {
   isPopular: boolean;
   coverGradient: string;
   coverImage?: string;
+  imagePosition?: string;
   badgeColor: string;
   subjects: ContestSubject[];
   conditions: ContestCondition[];

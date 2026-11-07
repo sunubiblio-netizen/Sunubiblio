@@ -138,8 +138,8 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
   }, [filters, categoryOptions, formatOptions, yearOptions, onFilterChange]);
 
   return (
-    <div className="doc-unified-filters-wrapper">
-      {/* Barre de recherche */}
+    <>
+      {/* Barre de recherche sticky */}
       <div className="doc-search-bar">
         <div className="search-input-wrapper">
           <svg
@@ -174,48 +174,50 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
         </div>
       </div>
 
-      {/* Barre unifiée de filtres compacts */}
-      <FilterBar
-        mainFilters={[
-          {
-            id: 'doc-category',
-            label: 'Catégorie',
-            value: filters.category,
-            options: categoryOptions,
-            onChange: (val) => onFilterChange({ category: val as DocumentCategory, page: 1 }),
-            placeholder: 'Toutes catégories',
-            enableSearch: categories.length > 5,
-            searchPlaceholder: 'Filtrer les catégories...',
-          },
-          {
-            id: 'doc-format',
-            label: 'Format',
-            value: filters.format,
-            options: formatOptions,
-            onChange: (val) => onFilterChange({ format: val as DocumentFormat | 'all', page: 1 }),
-            placeholder: 'Tous formats',
-          },
-          {
-            id: 'doc-year',
-            label: 'Année',
-            value: String(filters.year),
-            options: yearOptions,
-            onChange: (val) => onFilterChange({ year: val === 'all' ? 'all' : Number(val), page: 1 }),
-            placeholder: 'Toutes années',
-          },
-        ]}
-        sort={{
-          value: filters.sortBy,
-          onChange: (val) => onFilterChange({ sortBy: val as DocumentFilterState['sortBy'], page: 1 }),
-          options: sortOptions,
-        }}
-        totalResults={totalResults}
-        resultsLabel={totalResults <= 1 ? 'document trouvé' : 'documents trouvés'}
-        activeChips={activeChips}
-        onResetAll={activeChips.length > 0 ? onResetFilters : undefined}
-        mobileSections={mobileSections}
-        mobileTitle="Filtres documents"
-      />
+      <div className="doc-unified-filters-wrapper">
+        {/* Barre unifiée de filtres compacts */}
+        <FilterBar
+          mainFilters={[
+            {
+              id: 'doc-category',
+              label: 'Catégorie',
+              value: filters.category,
+              options: categoryOptions,
+              onChange: (val) => onFilterChange({ category: val as DocumentCategory, page: 1 }),
+              placeholder: 'Toutes catégories',
+              enableSearch: categories.length > 5,
+              searchPlaceholder: 'Filtrer les catégories...',
+            },
+            {
+              id: 'doc-format',
+              label: 'Format',
+              value: filters.format,
+              options: formatOptions,
+              onChange: (val) => onFilterChange({ format: val as DocumentFormat | 'all', page: 1 }),
+              placeholder: 'Tous formats',
+            },
+            {
+              id: 'doc-year',
+              label: 'Année',
+              value: String(filters.year),
+              options: yearOptions,
+              onChange: (val) => onFilterChange({ year: val === 'all' ? 'all' : Number(val), page: 1 }),
+              placeholder: 'Toutes années',
+            },
+          ]}
+          sort={{
+            value: filters.sortBy,
+            onChange: (val) => onFilterChange({ sortBy: val as DocumentFilterState['sortBy'], page: 1 }),
+            options: sortOptions,
+          }}
+          totalResults={totalResults}
+          resultsLabel={totalResults <= 1 ? 'document trouvé' : 'documents trouvés'}
+          activeChips={activeChips}
+          onResetAll={activeChips.length > 0 ? onResetFilters : undefined}
+          mobileSections={mobileSections}
+          mobileTitle="Filtres documents"
+        />
+      </div>
 
       <style jsx>{`
         .doc-unified-filters-wrapper {
@@ -223,7 +225,20 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
         }
 
         .doc-search-bar {
-          margin-bottom: 12px;
+          position: sticky;
+          top: 118px;
+          z-index: 80;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          padding: 8px 0 10px 0;
+          margin-bottom: 6px;
+        }
+
+        @media (max-width: 860px) {
+          .doc-search-bar {
+            top: calc(128px + env(safe-area-inset-top, 0px));
+          }
         }
 
         .search-input-wrapper {
@@ -280,6 +295,6 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
           color: #ffffff;
         }
       `}</style>
-    </div>
+    </>
   );
 };

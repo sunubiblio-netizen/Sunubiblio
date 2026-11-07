@@ -33,8 +33,20 @@ export const ContestCard: React.FC<ContestCardProps> = ({
   };
 
   return (
-    <article className="contest-card" onClick={() => onSelectContest(contest)}>
-      {/* Top Banner with official image / emblem */}
+    <article
+      className="contest-card"
+      onClick={() => onSelectContest(contest)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelectContest(contest);
+        }
+      }}
+      aria-label={`Sélectionner le concours ${contest.name}`}
+    >
+      {/* SECTION 1 : Zone Image 100% pure et dégagée (sans flou ni badges par-dessus) */}
       <div className="card-banner">
         {contest.coverImage ? (
           <div className="banner-image-wrapper">
@@ -51,21 +63,19 @@ export const ContestCard: React.FC<ContestCardProps> = ({
             </div>
           </div>
         )}
+      </div>
 
-        <div className="banner-top-meta">
-          <span className="domain-pill">{getDomainLabel(contest.domain)}</span>
+      {/* SECTION 2 : Zone Informations bien séparée sous l'image */}
+      <div className="card-body">
+        {/* Catégorie & Statut rangés proprement dans la section infos */}
+        <div className="info-meta-top">
+          <span className="domain-text">{getDomainLabel(contest.domain)}</span>
           <span className={`status-tag ${contest.status}`}>
             {contest.status === 'open' ? '● En cours' : contest.status === 'upcoming' ? '○ À venir' : '✕ Fermé'}
           </span>
         </div>
 
-        <div className="banner-bottom-meta">
-          <span className="session-tag">Session {contest.sessionYear}</span>
-        </div>
-      </div>
-
-      {/* Body */}
-      <div className="card-body">
+        {/* Nom du concours + Drapeau + Diplôme */}
         <div className="title-row">
           <div className="contest-title-cluster">
             <h3 className="contest-name">{contest.name}</h3>
@@ -74,10 +84,12 @@ export const ContestCard: React.FC<ContestCardProps> = ({
           <span className="level-badge">{contest.diplomaLabel}</span>
         </div>
 
+        {/* Description complète */}
         <p className="contest-desc" title={contest.fullName}>
           {contest.fullName}
         </p>
 
+        {/* Ressources & Dates d'épreuves */}
         <div className="meta-specs">
           <div className="spec-row">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2">
@@ -99,72 +111,73 @@ export const ContestCard: React.FC<ContestCardProps> = ({
           )}
         </div>
 
-        {/* Action button */}
-        <div className="card-action">
-          <button type="button" className="view-contest-btn">
-            <span>Voir le concours</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+        {/* Bouton d'action */}
+        <div className="card-footer">
+          <span className="view-action-label">Voir le concours</span>
+          <div className="view-action-arrow">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
-          </button>
+          </div>
         </div>
       </div>
 
       <style jsx>{`
         .contest-card {
           background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.85);
-          border-radius: var(--radius-xl);
+          border: 1.5px solid rgba(226, 232, 240, 0.9);
+          border-radius: 18px;
           overflow: hidden;
           display: flex;
           flex-direction: column;
-          box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.03);
-          transition: all var(--transition-normal);
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.03);
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
           cursor: pointer;
+          outline: none;
         }
 
         .contest-card:hover {
           transform: translateY(-4px);
           border-color: rgba(245, 158, 11, 0.45);
-          box-shadow: 0 14px 32px -6px rgba(217, 119, 6, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+          box-shadow: 0 16px 32px -8px rgba(217, 119, 6, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
         }
 
+        /* SECTION 1 : Zone Image pure et séparée */
         .card-banner {
-          height: 142px;
-          padding: 10px 14px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
+          height: 165px;
           position: relative;
-          background: #f8fafc;
+          background: #ffffff;
           border-bottom: 1px solid rgba(226, 232, 240, 0.85);
           overflow: hidden;
+          flex-shrink: 0;
         }
 
         .banner-image-wrapper {
-          position: absolute;
-          inset: 0;
+          width: 100%;
+          height: 100%;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 14px 18px;
-          background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+          padding: 14px 20px;
+          background: #ffffff;
         }
 
         .contest-cover-media {
           transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          display: block;
         }
 
         .contest-card:hover .contest-cover-media {
-          transform: scale(1.06);
+          transform: scale(1.04);
         }
 
         .contest-cover-media.media-contain {
-          max-height: 94px;
-          max-width: 88%;
+          max-height: 136px;
+          max-width: 92%;
+          width: auto;
+          height: auto;
           object-fit: contain;
-          filter: drop-shadow(0 2px 8px rgba(15, 23, 42, 0.05));
         }
 
         .contest-cover-media.media-cover {
@@ -174,147 +187,122 @@ export const ContestCard: React.FC<ContestCardProps> = ({
         }
 
         .banner-fallback {
-          position: absolute;
-          inset: 0;
+          width: 100%;
+          height: 100%;
           display: flex;
           align-items: center;
           justify-content: center;
         }
 
-        .banner-top-meta {
-          position: relative;
-          z-index: 2;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-
-        .banner-bottom-meta {
-          position: relative;
-          z-index: 2;
-          display: flex;
-          justify-content: flex-end;
-        }
-
-        .domain-pill {
-          font-size: 10.5px;
-          font-weight: 700;
-          color: #0f172a;
-          background: rgba(255, 255, 255, 0.94);
-          backdrop-filter: blur(10px);
-          padding: 3px 9px;
-          border-radius: var(--radius-full);
-          border: 1px solid rgba(226, 232, 240, 0.95);
-          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
-        }
-
-        .status-tag {
-          font-size: 10.5px;
-          font-weight: 800;
-          padding: 3px 9px;
-          border-radius: var(--radius-full);
-          backdrop-filter: blur(10px);
-          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
-        }
-
-        .status-tag.open {
-          background: rgba(16, 185, 129, 0.92);
-          color: #ffffff;
-        }
-
-        .status-tag.upcoming {
-          background: rgba(59, 130, 246, 0.92);
-          color: #ffffff;
-        }
-
-        .status-tag.closed {
-          background: rgba(100, 116, 139, 0.92);
-          color: #ffffff;
-        }
-
         .emblem-box {
-          width: 44px;
-          height: 44px;
+          width: 48px;
+          height: 48px;
           border-radius: 12px;
-          background: rgba(255, 255, 255, 0.15);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.3);
+          background: rgba(255, 255, 255, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.35);
           display: flex;
           align-items: center;
           justify-content: center;
         }
 
         .emblem-initials {
-          font-size: 14px;
+          font-size: 15px;
           font-weight: 900;
           color: #ffffff;
           letter-spacing: 0.05em;
         }
 
-        .session-tag {
-          font-size: 11px;
-          font-weight: 700;
-          color: #475569;
-          background: rgba(255, 255, 255, 0.94);
-          backdrop-filter: blur(8px);
-          padding: 2px 8px;
-          border-radius: 6px;
-          border: 1px solid rgba(226, 232, 240, 0.95);
-          box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
-        }
-
-        /* Body */
+        /* SECTION 2 : Zone Informations */
         .card-body {
-          padding: 18px 20px;
+          padding: 18px 20px 20px;
           display: flex;
           flex-direction: column;
           flex: 1;
+          background: #ffffff;
+        }
+
+        .info-meta-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          margin-bottom: 8px;
+        }
+
+        .domain-text {
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          color: #64748b;
+        }
+
+        .status-tag {
+          font-size: 10.5px;
+          font-weight: 800;
+          padding: 2px 9px;
+          border-radius: 9999px;
+        }
+
+        .status-tag.open {
+          background: rgba(16, 185, 129, 0.12);
+          color: #059669;
+        }
+
+        .status-tag.upcoming {
+          background: rgba(59, 130, 246, 0.12);
+          color: #2563eb;
+        }
+
+        .status-tag.closed {
+          background: rgba(100, 116, 139, 0.12);
+          color: #475569;
         }
 
         .title-row {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 6px;
           gap: 8px;
+          flex-wrap: wrap;
+          margin-bottom: 8px;
         }
 
         .contest-title-cluster {
           display: inline-flex;
           align-items: center;
-          gap: 7px;
-          min-width: 0;
-          flex-shrink: 0;
+          gap: 8px;
         }
 
         .contest-name {
-          font-size: 19px;
+          font-size: 20px;
           font-weight: 800;
           color: #0f172a;
-          letter-spacing: -0.02em;
           margin: 0;
+          letter-spacing: -0.02em;
           line-height: 1.2;
-          flex-shrink: 0;
+          transition: color 0.2s ease;
+        }
+
+        .contest-card:hover .contest-name {
+          color: #d97706;
         }
 
         .level-badge {
           font-size: 11px;
           font-weight: 700;
-          color: #4f46e5;
-          background: #eef2ff;
-          padding: 2px 7px;
+          color: #b45309;
+          background: rgba(245, 158, 11, 0.1);
+          border: 1px solid rgba(245, 158, 11, 0.22);
+          padding: 2px 8px;
           border-radius: 6px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 180px;
         }
 
         .contest-desc {
           font-size: 13px;
-          color: #64748b;
           line-height: 1.45;
-          margin-bottom: 14px;
+          color: #64748b;
+          margin: 0 0 14px 0;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
@@ -326,51 +314,62 @@ export const ContestCard: React.FC<ContestCardProps> = ({
           display: flex;
           flex-direction: column;
           gap: 6px;
-          margin-bottom: 18px;
-          padding-top: 10px;
-          border-top: 1px solid rgba(226, 232, 240, 0.65);
+          margin-bottom: 16px;
+          padding: 10px 12px;
+          background: #f8fafc;
+          border-radius: 10px;
+          border: 1px solid #f1f5f9;
         }
 
         .spec-row {
           display: flex;
           align-items: center;
           gap: 8px;
+        }
+
+        .spec-text {
           font-size: 12px;
-          color: #475569;
           font-weight: 600;
+          color: #475569;
         }
 
-        .card-action {
-          margin-top: auto;
+        .card-footer {
           display: flex;
-          justify-content: center;
-          padding-top: 6px;
+          align-items: center;
+          justify-content: space-between;
+          padding-top: 14px;
+          border-top: 1px solid #f1f5f9;
+          margin-top: auto;
         }
 
-        .view-contest-btn {
-          width: auto;
-          min-width: 160px;
-          height: 38px;
-          padding: 0 22px;
+        .view-action-label {
           font-size: 13px;
           font-weight: 700;
-          border-radius: 9999px;
-          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
-          color: #ffffff !important;
-          border: none !important;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25) !important;
-          cursor: pointer;
-          transition: all 0.2s ease;
+          color: #0f172a;
+          transition: color 0.15s ease;
         }
 
-        .view-contest-btn:hover {
-          background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%) !important;
-          box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4) !important;
-          transform: translateY(-1px);
+        .contest-card:hover .view-action-label {
+          color: #d97706;
+        }
+
+        .view-action-arrow {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: rgba(245, 158, 11, 0.12);
+          color: #d97706;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .contest-card:hover .view-action-arrow {
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          color: #ffffff;
+          box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+          transform: translateX(3px);
         }
       `}</style>
     </article>

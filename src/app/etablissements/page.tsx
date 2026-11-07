@@ -62,34 +62,38 @@ export default function EtablissementsPage() {
               <p className="etab-subtitle">
                 Explorez les universités, grandes écoles et instituts de formation. Consultez les bourses, inscriptions en cours, portes ouvertes et programmes certifiés.
               </p>
-
-              {/* Barre de recherche */}
-              <div className="etab-search-box">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="search-icon">
-                  <circle cx="11" cy="11" r="8" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Rechercher une école, université, diplôme ou formation..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="etab-search-input"
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    className="search-clear-btn"
-                    onClick={() => setSearchQuery('')}
-                    aria-label="Effacer la recherche"
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
             </div>
           </div>
         </section>
+
+        {/* Barre de recherche sticky */}
+        <div className="etab-search-sticky-stage">
+          <div className="container etab-search-sticky-inner">
+            <div className="etab-search-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="search-icon">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Rechercher une école, université, diplôme ou formation..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="etab-search-input"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  className="search-clear-btn"
+                  onClick={() => setSearchQuery('')}
+                  aria-label="Effacer la recherche"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
 
         {/* 8 Composantes en Barres de Filtres Clés */}
         <section className="etab-filters-section">
@@ -349,9 +353,31 @@ export default function EtablissementsPage() {
 
         .etab-hero {
           background: linear-gradient(180deg, #f0fdf4 0%, #f8fafc 100%);
-          border-bottom: 1px solid #e2e8f0;
-          padding: 56px 0 40px;
+          border-bottom: none;
+          padding: 56px 0 12px;
           text-align: center;
+        }
+
+        .etab-search-sticky-stage {
+          position: sticky;
+          top: 73px;
+          z-index: 80;
+          background: rgba(248, 250, 252, 0.94);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          padding: 10px 0 18px 0;
+          border-bottom: 1px solid #e2e8f0;
+        }
+
+        .etab-search-sticky-inner {
+          display: flex;
+          justify-content: center;
+        }
+
+        @media (max-width: 860px) {
+          .etab-search-sticky-stage {
+            top: calc(87px + env(safe-area-inset-top, 0px));
+          }
         }
 
         .etab-hero-inner {
@@ -399,7 +425,7 @@ export default function EtablissementsPage() {
         .etab-subtitle {
           font-size: 1rem;
           color: #475569;
-          margin: 0 0 28px;
+          margin: 0 0 12px;
           line-height: 1.6;
         }
 

@@ -3,5 +3,8 @@
   "antigravity.agent.autoAcceptChanges": true,
   "antigravity.agent.reviewPolicy": "always-proceed",
   "antigravity.agent.toolExecutionPolicy": "always-proceed",
-  "chat.tools.autoAccept": true
+  "chat.tools.autoAccept": true,
+  "terminal.integrated.env.windows": {
+    "PATH": "${env:PATH};C:\\Program Files\\nodejs;C:\\Users\\Petit fall\\AppData\\Roaming\\npm"
+  }
 }

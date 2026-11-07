@@ -36,7 +36,8 @@ export const ProfessorHero: React.FC<ProfessorHeroProps> = ({
   };
 
   return (
-    <section className="professors-hero-section">
+    <>
+    <section className="professors-hero-section" style={{ borderBottom: 'none', paddingBottom: '12px' }}>
       <div className="container professors-hero-container">
         {/* Badge d'en-tête */}
         <div className="professors-hero-badge-wrap">
@@ -52,12 +53,16 @@ export const ProfessorHero: React.FC<ProfessorHeroProps> = ({
         <h1 className="professors-hero-title">
           Trouver un professeur
         </h1>
-        <p className="professors-hero-subtitle">
+        <p className="professors-hero-subtitle" style={{ marginBottom: '12px' }}>
           Trouvez un enseignant ou formateur selon votre matière, votre niveau et votre mode d’apprentissage.
         </p>
+      </div>
+    </section>
 
-        {/* Grande barre de recherche */}
-        <div className="professors-search-box-wrap">
+    {/* Grande barre de recherche sticky */}
+    <div className="professors-search-sticky-stage">
+      <div className="container professors-hero-container">
+        <div className="professors-search-box-wrap" style={{ marginBottom: 0 }}>
           <form className="professors-search-box" onSubmit={handleSearchSubmit} role="search">
             <div className="professors-search-leading-icon" aria-hidden="true">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -100,7 +105,11 @@ export const ProfessorHero: React.FC<ProfessorHeroProps> = ({
             </button>
           </form>
         </div>
+      </div>
+    </div>
 
+    <div className="professors-hero-bottom-section">
+      <div className="container professors-hero-container">
         {/* Suggestions rapides & CTA Enseignant */}
         <div className="professors-hero-footer">
           <div className="quick-tags-group">
@@ -134,6 +143,31 @@ export const ProfessorHero: React.FC<ProfessorHeroProps> = ({
           </button>
         </div>
       </div>
-    </section>
+    </div>
+
+    <style jsx>{`
+      .professors-search-sticky-stage {
+        position: sticky;
+        top: 73px;
+        z-index: 80;
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 10px 0 12px 0;
+      }
+
+      .professors-hero-bottom-section {
+        padding: 8px 0 36px 0;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+        text-align: center;
+      }
+
+      @media (max-width: 860px) {
+        .professors-search-sticky-stage {
+          top: calc(87px + env(safe-area-inset-top, 0px));
+        }
+      }
+    `}</style>
+    </>
   );
 };

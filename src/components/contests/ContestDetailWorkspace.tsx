@@ -1697,11 +1697,17 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           text-transform: uppercase;
         }
 
-        /* 2. SEARCH BAR STAGE (Au premier plan, identique à la page d'accueil) */
+        /* 2. SEARCH BAR STAGE (Au premier plan, sticky au défilement en haut de l'écran) */
         .search-bar-stage {
-          position: relative;
-          z-index: 20;
+          position: sticky;
+          top: 73px;
+          z-index: 80;
           width: 100%;
+          padding: 6px 0;
+          margin: -6px 0;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
         }
 
         .hero-search-capsule {
@@ -3376,6 +3382,10 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           }
 
           /* Search Bar Mobile */
+          .search-bar-stage {
+            top: calc(87px + env(safe-area-inset-top, 0px));
+          }
+
           .hero-search-capsule {
             min-height: 48px;
             padding: 4px 6px 4px 14px;

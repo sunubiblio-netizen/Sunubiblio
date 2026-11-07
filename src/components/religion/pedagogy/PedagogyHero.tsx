@@ -43,6 +43,7 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
   ];
 
   return (
+    <>
     <div className="pedagogy-hero-wrapper">
       {/* Ambient blobs */}
       <div className="hero-blob-1" />
@@ -80,8 +81,12 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
           <h1 className="pedagogy-title">{hero.title}</h1>
           <p className="pedagogy-subtitle">{hero.subtitle}</p>
         </div>
+      </div>
+    </div>
 
-        {/* Search */}
+    {/* Sticky Search Bar Stage */}
+    <div className="pedagogy-search-sticky-stage">
+      <div className="container">
         <div className="hero-search-wrapper">
           <ReligionContextualSearch
             traditionSlug={traditionSlug}
@@ -94,7 +99,11 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
             onApplyGlobalSearch={onApplyGlobalSearch}
           />
         </div>
+      </div>
+    </div>
 
+    <div className="pedagogy-toc-wrapper">
+      <div className="container">
         {/* Floating Table of Contents Bar */}
         <div className="pedagogy-toc-bar">
           <div className="toc-inner">
@@ -149,14 +158,31 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
           </div>
         </div>
       </div>
+    </div>
 
       <style jsx>{`
         .pedagogy-hero-wrapper {
           position: relative;
           background: linear-gradient(160deg, #f8fafc 0%, #eef2ff 55%, #f8fafc 100%);
-          border-bottom: 1px solid rgba(226, 232, 240, 0.9);
-          padding: 22px 0 0 0;
+          border-bottom: none;
+          padding: 22px 0 8px 0;
           overflow: hidden;
+        }
+
+        .pedagogy-search-sticky-stage {
+          position: sticky;
+          top: 118px;
+          z-index: 80;
+          background: rgba(244, 246, 254, 0.94);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          padding: 8px 0 10px 0;
+        }
+
+        .pedagogy-toc-wrapper {
+          background: linear-gradient(180deg, rgba(244, 246, 254, 0.94) 0%, #f8fafc 100%);
+          border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+          padding-top: 8px;
         }
 
         .hero-blob-1 {
@@ -251,7 +277,7 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
         .pedagogy-hero-content {
           text-align: center;
           max-width: 680px;
-          margin: 0 auto 20px auto;
+          margin: 0 auto 12px auto;
         }
 
         .hero-badge-pill {
@@ -295,7 +321,7 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
 
         /* Search wrapper */
         .hero-search-wrapper {
-          margin-bottom: 18px;
+          margin-bottom: 0;
         }
 
         /* Table of Contents Bar */
@@ -409,6 +435,12 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
           transform: translateY(-1px);
         }
 
+        @media (max-width: 860px) {
+          .pedagogy-search-sticky-stage {
+            top: calc(128px + env(safe-area-inset-top, 0px));
+          }
+        }
+
         @media (max-width: 768px) {
           .pedagogy-hero-wrapper { padding-top: 14px; }
           .container { padding: 0 14px; }
@@ -422,11 +454,11 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
 
           .pedagogy-back-btn { font-size: 12px; padding: 5px 12px; }
 
-          .pedagogy-hero-content { margin-bottom: 14px; }
+          .pedagogy-hero-content { margin-bottom: 8px; }
 
           .hero-badge-pill { font-size: 11px; padding: 4px 12px; margin-bottom: 10px; }
 
-          .hero-search-wrapper { margin-bottom: 12px; }
+          .hero-search-wrapper { margin-bottom: 0; }
 
           .pedagogy-toc-bar { padding: 9px 14px; border-radius: 12px 12px 0 0; }
           .toc-title { display: none; }
@@ -438,6 +470,6 @@ export const PedagogyHero: React.FC<PedagogyHeroProps> = ({
           .pedagogy-title { font-size: 22px; }
         }
       `}</style>
-    </div>
+    </>
   );
 };

@@ -297,6 +297,24 @@ export default function MarketplacePage() {
 
       <Footer />
       <AuthModal isOpen={authOpen} initialMode={authMode} onClose={() => setAuthOpen(false)} />
+
+      <style jsx>{`
+        .marketplace-search-row {
+          position: sticky;
+          top: 118px;
+          z-index: 80;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          padding: 8px 0 12px 0;
+        }
+
+        @media (max-width: 860px) {
+          .marketplace-search-row {
+            top: calc(128px + env(safe-area-inset-top, 0px));
+          }
+        }
+      `}</style>
     </div>
   );
 }

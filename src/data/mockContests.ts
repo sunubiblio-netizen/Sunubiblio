@@ -66,7 +66,8 @@ export const MOCK_CONTESTS: Contest[] = [
     resourcesCount: 284,
     isPopular: true,
     coverGradient: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
-    coverImage: '/images/concours/fastef.jpg',
+    coverImage: '/images/concours/fastef.png',
+    imagePosition: 'center 30%',
     badgeColor: '#3b82f6',
     subjects: [
       {
@@ -288,7 +289,8 @@ export const MOCK_CONTESTS: Contest[] = [
     resourcesCount: 245,
     isPopular: true,
     coverGradient: 'linear-gradient(135deg, #311042 0%, #581c87 50%, #7e22ce 100%)',
-    coverImage: '/images/concours/ena.jpg',
+    coverImage: '/images/concours/ena.png',
+    imagePosition: 'center 35%',
     badgeColor: '#9333ea',
     subjects: [
       {
@@ -414,6 +416,7 @@ export const MOCK_CONTESTS: Contest[] = [
     isPopular: true,
     coverGradient: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)',
     coverImage: '/images/concours/crem.jpg',
+    imagePosition: 'center 35%',
     badgeColor: '#10b981',
     subjects: [
       {
@@ -532,6 +535,7 @@ export const MOCK_CONTESTS: Contest[] = [
     isPopular: true,
     coverGradient: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)',
     coverImage: '/images/concours/police.jpg',
+    imagePosition: 'center 25%',
     badgeColor: '#0ea5e9',
     subjects: [
       {
@@ -639,6 +643,7 @@ export const MOCK_CONTESTS: Contest[] = [
     isPopular: true,
     coverGradient: 'linear-gradient(135deg, #172554 0%, #1e40af 50%, #2563eb 100%)',
     coverImage: '/images/concours/douane.jpg',
+    imagePosition: 'center 20%',
     badgeColor: '#2563eb',
     subjects: [
       {
@@ -746,6 +751,7 @@ export const MOCK_CONTESTS: Contest[] = [
     isPopular: true,
     coverGradient: 'linear-gradient(135deg, #831843 0%, #9d174d 50%, #be185d 100%)',
     coverImage: '/images/concours/ems.png',
+    imagePosition: 'center 20%',
     badgeColor: '#ec4899',
     subjects: [
       {
@@ -844,6 +850,7 @@ export const MOCK_CONTESTS: Contest[] = [
     isPopular: false,
     coverGradient: 'linear-gradient(135deg, #4a044e 0%, #701a75 50%, #86198f 100%)',
     coverImage: '/images/concours/esp.jpg',
+    imagePosition: 'center 20%',
     badgeColor: '#d946ef',
     subjects: [
       {

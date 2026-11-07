@@ -34,6 +34,7 @@ export const ReligionHero: React.FC<ReligionHeroProps> = ({
   };
 
   return (
+    <>
     <section className="lib-hero-wrapper religion-hero-wrapper">
       {/* Abstract visual background accents matching Sunubiblio brand */}
       <div className="lib-hero-ambient" aria-hidden="true">
@@ -57,7 +58,12 @@ export const ReligionHero: React.FC<ReligionHeroProps> = ({
         <p className="lib-hero-subtitle">
           Explorez les grandes traditions spirituelles du monde et découvrez les ressources religieuses et spirituelles du Sénégal.
         </p>
+      </div>
+    </section>
 
+    {/* Sticky Search Bar Stage */}
+    <div className="religion-search-sticky-stage">
+      <div className="container religion-search-sticky-inner">
         {/* Big Search Bar Capsule */}
         <form onSubmit={handleSubmit} className="lib-search-capsule">
           <div className="lib-search-icon">
@@ -98,7 +104,11 @@ export const ReligionHero: React.FC<ReligionHeroProps> = ({
             </svg>
           </button>
         </form>
+      </div>
+    </div>
 
+    <div className="religion-hero-bottom-section">
+      <div className="container lib-hero-container">
         {/* Popular Tags Row */}
         <div className="popular-row">
           <span className="popular-label">Suggestions :</span>
@@ -139,13 +149,38 @@ export const ReligionHero: React.FC<ReligionHeroProps> = ({
           </div>
         </div>
       </div>
+    </div>
 
       <style jsx>{`
         .religion-hero-wrapper {
           position: relative;
-          padding: 48px 0 36px 0;
+          padding: 48px 0 8px 0;
           overflow: hidden;
           background: linear-gradient(180deg, rgba(248, 250, 252, 0.6) 0%, rgba(250, 248, 255, 0.95) 100%);
+          border-bottom: none;
+        }
+
+        .religion-search-sticky-stage {
+          position: sticky;
+          top: 118px;
+          z-index: 80;
+          background: rgba(250, 248, 255, 0.94);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          padding: 10px 0 12px 0;
+        }
+
+        .religion-search-sticky-inner {
+          display: flex;
+          justify-content: center;
+          max-width: 920px;
+          margin: 0 auto;
+        }
+
+        .religion-hero-bottom-section {
+          position: relative;
+          background: rgba(250, 248, 255, 0.95);
+          padding: 8px 0 36px 0;
           border-bottom: 1px solid rgba(226, 232, 240, 0.75);
         }
 
@@ -229,7 +264,7 @@ export const ReligionHero: React.FC<ReligionHeroProps> = ({
           color: #64748b;
           line-height: 1.55;
           max-width: 720px;
-          margin-bottom: 28px;
+          margin-bottom: 14px;
         }
 
         .lib-search-capsule {
@@ -243,7 +278,7 @@ export const ReligionHero: React.FC<ReligionHeroProps> = ({
           padding: 6px 8px 6px 20px;
           box-shadow: 0 10px 30px -4px rgba(79, 70, 229, 0.08), 0 2px 8px rgba(15, 23, 42, 0.03);
           transition: all 0.25s ease;
-          margin-bottom: 18px;
+          margin-bottom: 0;
         }
 
         .lib-search-capsule:focus-within {
@@ -377,9 +412,23 @@ export const ReligionHero: React.FC<ReligionHeroProps> = ({
           flex-shrink: 0;
         }
 
+        @media (max-width: 860px) {
+          .religion-search-sticky-stage {
+            top: calc(128px + env(safe-area-inset-top, 0px));
+          }
+        }
+
         @media (max-width: 640px) {
           .religion-hero-wrapper {
-            padding: 32px 0 24px 0;
+            padding: 32px 0 4px 0;
+          }
+
+          .religion-search-sticky-stage {
+            padding: 6px 0 10px 0;
+          }
+
+          .religion-hero-bottom-section {
+            padding: 6px 0 24px 0;
           }
 
           .lib-search-capsule {
@@ -402,6 +451,6 @@ export const ReligionHero: React.FC<ReligionHeroProps> = ({
           }
         }
       `}</style>
-    </section>
+    </>
   );
 };

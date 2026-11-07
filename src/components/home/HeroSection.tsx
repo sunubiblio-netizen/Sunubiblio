@@ -18,27 +18,33 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
   };
 
   return (
-    <section className="hero-section">
-      <div className="container hero-container">
-        <div className="hero-content">
-          {/* Pill Badge matching Image 2 */}
-          <div className="hero-badge-pill">
-            <span className="badge-pulse-dot" />
-            <span>La plateforme universelle du savoir</span>
+    <>
+      <section className="hero-section">
+        <div className="container hero-container">
+          <div className="hero-content">
+            {/* Pill Badge matching Image 2 */}
+            <div className="hero-badge-pill">
+              <span className="badge-pulse-dot" />
+              <span>La plateforme universelle du savoir</span>
+            </div>
+
+            {/* Centered Title with warm golden-amber gradient accent */}
+            <h1 className="hero-title">
+              La bibliothèque numérique<br />de <span className="hero-title-accent">l’excellence</span>
+            </h1>
+
+            {/* Subtitle / Description */}
+            <p className="hero-description">
+              Accédez à des milliers de ressources éducatives, de concours,
+              d’exercices et de documents certifiés conformes pour réussir vos études et atteindre vos objectifs.
+            </p>
           </div>
+        </div>
+      </section>
 
-          {/* Centered Title with warm golden-amber gradient accent */}
-          <h1 className="hero-title">
-            La bibliothèque numérique<br />de <span className="hero-title-accent">l’excellence</span>
-          </h1>
-
-          {/* Subtitle / Description */}
-          <p className="hero-description">
-            Accédez à des milliers de ressources éducatives, de concours,
-            d’exercices et de documents certifiés conformes pour réussir vos études et atteindre vos objectifs.
-          </p>
-
-          {/* Search Bar Capsule matching Image 2 */}
+      {/* Search Bar Capsule (Sticky au défilement en haut de l'écran) */}
+      <div className="hero-search-sticky-stage">
+        <div className="container hero-search-sticky-container">
           <form onSubmit={handleSubmit} className="hero-search-capsule">
             <div className="search-icon-wrap">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -85,11 +91,30 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
       <style jsx>{`
         .hero-section {
           padding-top: 48px;
-          padding-bottom: 36px;
+          padding-bottom: 18px;
           background: #ffffff;
           border-bottom: none;
           position: relative;
           width: 100%;
+          overflow: visible;
+        }
+
+        .hero-search-sticky-stage {
+          position: sticky;
+          top: 73px;
+          z-index: 80;
+          width: 100%;
+          padding: 8px 0 18px 0;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+
+        .hero-search-sticky-container {
+          display: flex;
+          justify-content: center;
+          max-width: 920px;
+          margin: 0 auto;
         }
 
         .hero-container {
@@ -154,7 +179,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           font-size: clamp(15px, 2vw, 17px);
           line-height: 1.55;
           color: #64748b;
-          margin-bottom: 28px;
+          margin-bottom: 0;
           font-weight: 400;
           text-align: center;
           max-width: 680px;
@@ -249,9 +274,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45) !important;
         }
 
+        @media (max-width: 860px) {
+          .hero-search-sticky-stage {
+            top: calc(87px + env(safe-area-inset-top, 0px));
+          }
+        }
+
         @media (max-width: 640px) {
           .hero-section {
-            padding: 28px 0 20px 0;
+            padding: 28px 0 10px 0;
+          }
+
+          .hero-search-sticky-stage {
+            padding: 6px 0 12px 0;
           }
 
           .hero-badge-pill {
@@ -267,7 +302,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
 
           .hero-description {
             font-size: 14px;
-            margin-bottom: 20px;
+            margin-bottom: 0;
           }
 
           .hero-search-capsule {
@@ -299,6 +334,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           }
         }
       `}</style>
-    </section>
+    </>
   );
 };

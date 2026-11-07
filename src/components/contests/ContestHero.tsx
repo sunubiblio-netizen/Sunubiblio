@@ -22,6 +22,7 @@ export const ContestHero: React.FC<ContestHeroProps> = ({
   };
 
   return (
+    <>
     <section className="contest-hero-wrapper">
       <div className="container contest-hero-container">
         {/* Pill Badge matching Image 2 */}
@@ -40,7 +41,12 @@ export const ContestHero: React.FC<ContestHeroProps> = ({
           Retrouvez les programmes officiels, annales, corrections détaillées,
           fascicules méthodologiques et QCM interactifs pour réussir vos concours au Sénégal.
         </p>
+      </div>
+    </section>
 
+    {/* Sticky Search Bar Stage */}
+    <div className="contest-search-sticky-stage">
+      <div className="container contest-search-sticky-inner">
         {/* Universal Search Capsule */}
         <form onSubmit={handleSubmit} className="contest-search-capsule">
           <div className="search-icon-wrap">
@@ -81,7 +87,11 @@ export const ContestHero: React.FC<ContestHeroProps> = ({
             </svg>
           </button>
         </form>
+      </div>
+    </div>
 
+    <div className="contest-popular-wrapper">
+      <div className="container contest-hero-container">
         {/* Popular Contests Tags */}
         <div className="popular-contests-row">
           <span className="popular-label">Concours populaires :</span>
@@ -102,13 +112,36 @@ export const ContestHero: React.FC<ContestHeroProps> = ({
           </div>
         </div>
       </div>
+    </div>
 
       <style jsx>{`
         .contest-hero-wrapper {
           position: relative;
-          padding: 48px 0 36px 0;
+          padding: 48px 0 8px 0;
           background: #ffffff;
           border-bottom: none;
+        }
+
+        .contest-search-sticky-stage {
+          position: sticky;
+          top: 73px;
+          z-index: 80;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          padding: 10px 0 12px 0;
+        }
+
+        .contest-search-sticky-inner {
+          display: flex;
+          justify-content: center;
+          max-width: 920px;
+          margin: 0 auto;
+        }
+
+        .contest-popular-wrapper {
+          background: #ffffff;
+          padding: 10px 0 36px 0;
         }
 
         .contest-hero-container {
@@ -165,7 +198,7 @@ export const ContestHero: React.FC<ContestHeroProps> = ({
           color: #64748b;
           line-height: 1.55;
           max-width: 680px;
-          margin-bottom: 28px;
+          margin-bottom: 16px;
         }
 
         /* Search Capsule */
@@ -182,7 +215,7 @@ export const ContestHero: React.FC<ContestHeroProps> = ({
           border: 1.5px solid rgba(226, 232, 240, 0.95);
           box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.05), 0 2px 8px rgba(15, 23, 42, 0.02);
           transition: all 0.2s ease;
-          margin-bottom: 22px;
+          margin-bottom: 0;
         }
 
         .contest-search-capsule:focus-within {
@@ -299,9 +332,23 @@ export const ContestHero: React.FC<ContestHeroProps> = ({
           transform: translateY(-1px);
         }
 
+        @media (max-width: 860px) {
+          .contest-search-sticky-stage {
+            top: calc(87px + env(safe-area-inset-top, 0px));
+          }
+        }
+
         @media (max-width: 640px) {
           .contest-hero-wrapper {
-            padding: 28px 0 20px 0;
+            padding: 28px 0 4px 0;
+          }
+
+          .contest-search-sticky-stage {
+            padding: 6px 0 10px 0;
+          }
+
+          .contest-popular-wrapper {
+            padding: 6px 0 20px 0;
           }
 
           .contest-badge-pill {
@@ -317,7 +364,7 @@ export const ContestHero: React.FC<ContestHeroProps> = ({
 
           .contest-hero-subtitle {
             font-size: 14px;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
           }
 
           .contest-search-capsule {
@@ -325,7 +372,7 @@ export const ContestHero: React.FC<ContestHeroProps> = ({
             min-height: 50px;
             gap: 8px;
             border-radius: 9999px;
-            margin-bottom: 16px;
+            margin-bottom: 0;
           }
 
           .contest-search-input {
@@ -354,6 +401,6 @@ export const ContestHero: React.FC<ContestHeroProps> = ({
           }
         }
       `}</style>
-    </section>
+    </>
   );
 };
