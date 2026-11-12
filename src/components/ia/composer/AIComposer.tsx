@@ -52,6 +52,17 @@ export const AIComposer: React.FC<AIComposerProps> = ({
     }
   }, [initialMode]);
 
+  // Curseur de saisie toujours actif : Focus initial et maintien après chaque réponse
+  useEffect(() => {
+    textareaRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (!disabled) {
+      textareaRef.current?.focus();
+    }
+  }, [disabled]);
+
   // Dynamic textarea auto-height adjustment
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -130,6 +141,10 @@ export const AIComposer: React.FC<AIComposerProps> = ({
     setAttachments([]);
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
+      // Garder le curseur de saisie immédiatement dans la boîte de dialogue
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 0);
     }
   };
 
@@ -173,7 +188,7 @@ export const AIComposer: React.FC<AIComposerProps> = ({
       />
 
       {/* Main Composer Container Card */}
-      <div className="ai-composer-card">
+      <div className="ai-composer-card" onClick={() => textareaRef.current?.focus()}>
         {/* Error notification if any */}
         {errorMessage && (
           <div className="composer-error-alert" role="alert">
@@ -201,9 +216,9 @@ export const AIComposer: React.FC<AIComposerProps> = ({
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             rows={1}
-            disabled={disabled}
             className="composer-textarea"
             aria-label="Zone de saisie de votre message pour l'IA"
+            autoFocus
           />
         </div>
 
