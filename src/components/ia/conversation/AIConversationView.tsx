@@ -16,6 +16,7 @@ interface AIConversationViewProps {
   }) => void;
   onResetChat: () => void;
   onRetryLast?: () => void;
+  onEditMessage?: (messageId: string, newContent: string) => void;
 }
 
 export const AIConversationView: React.FC<AIConversationViewProps> = ({
@@ -24,6 +25,7 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
   onSendMessage,
   onResetChat,
   onRetryLast,
+  onEditMessage,
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -46,6 +48,7 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
               key={msg.id}
               message={msg}
               onRetry={msg.role === 'assistant' ? onRetryLast : undefined}
+              onEdit={msg.role === 'user' ? (newContent) => onEditMessage?.(msg.id, newContent) : undefined}
             />
           ))}
 
@@ -85,8 +88,8 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
           height: calc(100vh - 120px);
           display: flex;
           flex-direction: column;
-          align-items: center;
-          overflow: hidden;
+          overflow-y: auto;
+          overflow-x: hidden;
         }
 
         @media (max-width: 768px) {
@@ -96,19 +99,17 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
         }
 
         /* -------------------------------------------------------------
-           CENTERED COLUMN (Strictly 800px max, only this area scrolls)
+           CENTERED COLUMN (Strictly centered inside full-width scrollable container)
         ------------------------------------------------------------- */
         .conversation-column {
           width: 100%;
-          max-width: 800px;
+          max-width: 820px;
           margin: 0 auto;
-          padding: 8px 16px;
+          padding: 16px 20px;
           min-width: 0;
           display: flex;
           flex-direction: column;
           flex: 1;
-          overflow-y: auto;
-          overflow-x: hidden;
         }
 
         .conversation-toolbar {

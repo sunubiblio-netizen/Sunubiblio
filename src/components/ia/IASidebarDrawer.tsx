@@ -796,30 +796,39 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 8px;
+          gap: 9px;
           width: 100%;
-          height: 38px;
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
+          height: 42px;
+          background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%);
+          border: 1.5px solid #f59e0b;
           border-radius: 9999px;
           font-size: 13px;
-          font-weight: 700;
-          color: #0f172a;
+          font-weight: 800;
+          color: #92400e;
           text-decoration: none;
           cursor: pointer;
-          transition: all 0.18s ease;
-          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+          transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 2px 8px rgba(245, 158, 11, 0.18);
+          position: relative;
+          overflow: hidden;
         }
 
         .sidebar-offer-action-btn:hover {
-          background: #f8fafc;
-          border-color: #cbd5e1;
-          transform: translateY(-1px);
-          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          color: #ffffff;
+          border-color: #d97706;
+          transform: translateY(-1.5px);
+          box-shadow: 0 6px 16px rgba(245, 158, 11, 0.32);
+        }
+
+        .sidebar-offer-action-btn:hover .gift-symbol {
+          transform: scale(1.15) rotate(-6deg);
         }
 
         .gift-symbol {
-          font-size: 14px;
+          font-size: 15px;
+          transition: transform 0.2s ease;
+          filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
         }
       `}</style>
     </>

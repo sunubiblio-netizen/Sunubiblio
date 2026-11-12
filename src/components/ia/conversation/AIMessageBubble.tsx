@@ -6,14 +6,20 @@ import { AIMessage } from '@/types/ai';
 interface AIMessageBubbleProps {
   message: AIMessage;
   onRetry?: () => void;
+  onEdit?: (newContent: string) => void;
 }
 
 export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
   message,
   onRetry,
+  onEdit,
 }) => {
   const [copied, setCopied] = useState(false);
   const [copiedCodeIdx, setCopiedCodeIdx] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editDraft, setEditDraft] = useState(message.content);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
   const isUser = message.role === 'user';
 
   const handleCopyText = () => {
@@ -329,65 +335,102 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
             </div>
           )}
 
-          <div className="user-bubble">
-            <p className="user-text-content">{message.content}</p>
-          </div>
+          {isEditing ? (
+            /* CANVA D'ÉDITION DU MESSAGE UTILISATEUR (Image 3 ChatGPT) */
+            <div className="user-edit-canva-box">
+              <textarea
+                value={editDraft}
+                onChange={(e) => setEditDraft(e.target.value)}
+                className="edit-canva-textarea"
+                rows={Math.max(2, editDraft.split('\n').length)}
+                autoFocus
+              />
+              <div className="edit-canva-footer-row">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditDraft(message.content);
+                    setIsEditing(false);
+                  }}
+                  className="btn-canva-cancel"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (editDraft.trim() && onEdit) {
+                      onEdit(editDraft.trim());
+                      setIsEditing(false);
+                    }
+                  }}
+                  className="btn-canva-send"
+                >
+                  Envoyer
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="user-bubble">
+              <p className="user-text-content">{message.content}</p>
+            </div>
+          )}
 
           {/* 3 icônes d'actions discrètes au survol sous le message utilisateur (Copier, Partager, Modifier) */}
-          <div className="user-message-actions-row">
-            <button
-              type="button"
-              onClick={handleCopyText}
-              className="btn-user-action-icon"
-              title="Copier le message"
-              aria-label="Copier"
-            >
-              {copied ? (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.4">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-              ) : (
+          {!isEditing && (
+            <div className="user-message-actions-row">
+              <button
+                type="button"
+                onClick={handleCopyText}
+                className="btn-user-action-icon"
+                title="Copier le message"
+                aria-label="Copier"
+              >
+                {copied ? (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.4">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsShareModalOpen(true)}
+                className="btn-user-action-icon"
+                title="Partager le prompt"
+                aria-label="Partager"
+              >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  <circle cx="18" cy="5" r="3"></circle>
+                  <circle cx="6" cy="12" r="3"></circle>
+                  <circle cx="18" cy="19" r="3"></circle>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                 </svg>
-              )}
-            </button>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                if (typeof window !== 'undefined' && navigator.clipboard) {
-                  navigator.clipboard.writeText(message.content);
-                  alert('Texte copié pour partage');
-                }
-              }}
-              className="btn-user-action-icon"
-              title="Partager le message"
-              aria-label="Partager"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="18" cy="5" r="3"></circle>
-                <circle cx="6" cy="12" r="3"></circle>
-                <circle cx="18" cy="19" r="3"></circle>
-                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-              </svg>
-            </button>
-
-            <button
-              type="button"
-              onClick={onRetry}
-              className="btn-user-action-icon"
-              title="Modifier et renvoyer"
-              aria-label="Modifier"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 20h9"></path>
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-              </svg>
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setEditDraft(message.content);
+                  setIsEditing(true);
+                }}
+                className="btn-user-action-icon"
+                title="Modifier le message"
+                aria-label="Modifier"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         /* ASSISTANT MESSAGE: Natural text flow, ChatGPT pure style without Assistant banner */
@@ -493,6 +536,91 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
                 </svg>
               </button>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Modale Partager le prompt (Exactement comme Image 4 de ChatGPT) */}
+      {isShareModalOpen && (
+        <div className="share-prompt-overlay" onClick={() => setIsShareModalOpen(false)}>
+          <div className="share-prompt-dialog" onClick={(e) => e.stopPropagation()}>
+            <div className="share-dialog-header">
+              <h3 className="share-dialog-title">Partager le prompt</h3>
+              <button
+                type="button"
+                onClick={() => setIsShareModalOpen(false)}
+                className="share-dialog-close-btn"
+                title="Fermer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="share-preview-card">
+              <div className="share-preview-bubble">
+                <span>{message.content}</span>
+              </div>
+            </div>
+
+            <div className="share-link-info-row">
+              <span className="globe-icon">🌐</span>
+              <div className="share-link-texts">
+                <span className="share-link-heading">Partager un lien public vers ce prompt</span>
+                <span className="share-link-sub">
+                  Toute personne disposant de ce lien peut accéder à ce prompt.{' '}
+                  <span className="share-link-more">En savoir plus</span>
+                </span>
+              </div>
+            </div>
+
+            <div className="share-destinations-grid">
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== 'undefined' && navigator.clipboard) {
+                    navigator.clipboard.writeText(`${window.location.origin}/ia?prompt=${encodeURIComponent(message.content)}`);
+                    setShareCopied(true);
+                    setTimeout(() => setShareCopied(false), 2000);
+                  }
+                }}
+                className="share-destination-btn"
+              >
+                <div className="share-dest-icon-wrap">
+                  {shareCopied ? '✓' : '🔗'}
+                </div>
+                <span>{shareCopied ? 'Copié !' : 'Copier le lien'}</span>
+              </button>
+
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(message.content + ' — sur SunuIA')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="share-destination-btn"
+              >
+                <div className="share-dest-icon-wrap">𝕏</div>
+                <span>X</span>
+              </a>
+
+              <a
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : 'https://sunubiblio.sn')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="share-destination-btn"
+              >
+                <div className="share-dest-icon-wrap">in</div>
+                <span>LinkedIn</span>
+              </a>
+
+              <a
+                href={`https://reddit.com/submit?title=${encodeURIComponent(message.content)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="share-destination-btn"
+              >
+                <div className="share-dest-icon-wrap">🔴</div>
+                <span>Reddit</span>
+              </a>
+            </div>
           </div>
         </div>
       )}
@@ -968,6 +1096,247 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
           .source-title {
             max-width: 160px;
           }
+        }
+
+        /* CANVA D'ÉDITION DU MESSAGE UTILISATEUR (Image 3 ChatGPT) */
+        .user-edit-canva-box {
+          width: 100%;
+          min-width: min(100%, 500px);
+          background: #f4f4f4;
+          border-radius: 18px;
+          padding: 14px 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .edit-canva-textarea {
+          width: 100%;
+          background: transparent;
+          border: none;
+          outline: none;
+          font-family: inherit;
+          font-size: 15px;
+          line-height: 1.5;
+          color: #0f172a;
+          resize: none;
+          padding: 0;
+        }
+
+        .edit-canva-footer-row {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          gap: 8px;
+        }
+
+        .btn-canva-cancel {
+          padding: 6px 14px;
+          border-radius: 9999px;
+          border: 1px solid #d1d5db;
+          background: #ffffff;
+          font-size: 13px;
+          font-weight: 600;
+          color: #475569;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .btn-canva-cancel:hover {
+          background: #f1f5f9;
+          color: #0f172a;
+        }
+
+        .btn-canva-send {
+          padding: 7px 18px;
+          border-radius: 9999px;
+          border: none;
+          background: #0d0d0d;
+          font-size: 13px;
+          font-weight: 700;
+          color: #ffffff;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .btn-canva-send:hover {
+          background: #262626;
+          transform: translateY(-1px);
+        }
+
+        /* MODALE PARTAGER LE PROMPT (Image 4 ChatGPT) */
+        .share-prompt-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(15, 23, 42, 0.45);
+          backdrop-filter: blur(4px);
+          z-index: 2000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 16px;
+          animation: shareFadeIn 0.18s ease-out;
+        }
+
+        .share-prompt-dialog {
+          width: 100%;
+          max-width: 520px;
+          background: #ffffff;
+          border-radius: 20px;
+          box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.22);
+          padding: 24px 24px 20px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+          animation: shareScaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .share-dialog-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .share-dialog-title {
+          font-size: 18px;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0;
+        }
+
+        .share-dialog-close-btn {
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: transparent;
+          border: none;
+          border-radius: 50%;
+          color: #64748b;
+          font-size: 15px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .share-dialog-close-btn:hover {
+          background: #f1f5f9;
+          color: #0f172a;
+        }
+
+        .share-preview-card {
+          width: 100%;
+          min-height: 140px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 14px;
+          padding: 16px;
+          display: flex;
+          align-items: flex-start;
+          justify-content: flex-end;
+        }
+
+        .share-preview-bubble {
+          background: #f0f4f9;
+          color: #0f172a;
+          padding: 8px 16px;
+          border-radius: 18px;
+          border-bottom-right-radius: 4px;
+          font-size: 14px;
+          font-weight: 500;
+          max-width: 85%;
+          word-break: break-word;
+        }
+
+        .share-link-info-row {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+        }
+
+        .globe-icon {
+          font-size: 18px;
+          line-height: 1.2;
+        }
+
+        .share-link-texts {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .share-link-heading {
+          font-size: 13.5px;
+          font-weight: 700;
+          color: #0f172a;
+        }
+
+        .share-link-sub {
+          font-size: 12px;
+          color: #64748b;
+        }
+
+        .share-link-more {
+          text-decoration: underline;
+          cursor: pointer;
+        }
+
+        .share-destinations-grid {
+          display: flex;
+          align-items: center;
+          justify-content: space-around;
+          padding-top: 8px;
+          border-top: 1px solid #f1f5f9;
+        }
+
+        .share-destination-btn {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 6px;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          text-decoration: none;
+          color: #334155;
+          font-size: 11.5px;
+          font-weight: 600;
+          transition: transform 0.15s ease;
+        }
+
+        .share-destination-btn:hover {
+          transform: translateY(-2px);
+          color: #0f172a;
+        }
+
+        .share-dest-icon-wrap {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: #f1f5f9;
+          border: 1px solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+          font-weight: 700;
+          color: #0f172a;
+          transition: background 0.15s ease;
+        }
+
+        .share-destination-btn:hover .share-dest-icon-wrap {
+          background: #e2e8f0;
+        }
+
+        @keyframes shareFadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes shareScaleUp {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
         }
 
         @keyframes messageFadeIn {

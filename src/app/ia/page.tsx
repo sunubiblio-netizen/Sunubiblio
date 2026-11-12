@@ -207,6 +207,53 @@ export default function IAPage() {
     setIsSidebarOpen(false);
   };
 
+  // Modifier un message utilisateur et relancer la réponse IA (Canva d'édition Image 3)
+  const handleEditMessage = async (messageId: string, newContent: string) => {
+    const msgIndex = messages.findIndex((m) => m.id === messageId);
+    if (msgIndex === -1) return;
+
+    const targetMsg = messages[msgIndex];
+    const updatedUserMsg: AIMessage = {
+      ...targetMsg,
+      content: newContent,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    // Conserver les messages jusqu'au message modifié
+    const trimmedMessages = [...messages.slice(0, msgIndex), updatedUserMsg];
+    setMessages(trimmedMessages);
+    setIsLoading(true);
+
+    try {
+      const aiResponse = await AIService.processRequest({
+        content: newContent,
+        mode: targetMsg.mode || activeMode,
+        attachments: targetMsg.attachments || [],
+        isWebSearch: !!targetMsg.isWebSearch,
+      });
+
+      const finalMessages = [...trimmedMessages, aiResponse];
+      setMessages(finalMessages);
+
+      if (activeThreadId) {
+        setThreads((prev) =>
+          prev.map((t) => (t.id === activeThreadId ? { ...t, messages: finalMessages } : t))
+        );
+      }
+    } catch {
+      const errorMsg: AIMessage = {
+        id: 'msg-err-' + Date.now(),
+        role: 'assistant',
+        content: "Une erreur temporaire est survenue. Veuillez réessayer.",
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        status: 'error',
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Select tool from sidebar
   const handleSelectToolFromSidebar = (mode: AIMode) => {
     setActiveMode(mode);
@@ -334,6 +381,7 @@ export default function IAPage() {
               onSendMessage={handleSendMessage}
               onResetChat={handleResetChat}
               onRetryLast={handleRetryLast}
+              onEditMessage={handleEditMessage}
             />
           </div>
         )}
@@ -539,6 +587,9 @@ export default function IAPage() {
           flex: 1;
           display: flex;
           flex-direction: column;
+          width: 100%;
+          min-height: 0;
+          overflow: hidden;
         }
 
         @media (max-width: 860px) {
