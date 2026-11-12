@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { EducationCycleDetails, EducationDocumentItem } from '@/data/educationCyclesData';
 
@@ -98,6 +97,66 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
   const [activeReadingDoc, setActiveReadingDoc] = useState<EducationDocumentItem | null>(null);
 
+  // Flèche retour flottante fluide en bas à gauche (Identique à FASTEF / Concours)
+  const [isBackVisible, setIsBackVisible] = useState(true);
+  const isBackHoveredRef = useRef(false);
+
+  useEffect(() => {
+    let ticking = false;
+    let hideTimeout: NodeJS.Timeout | null = null;
+
+    const scheduleHide = () => {
+      if (hideTimeout) clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        if (currentScroll > 60 && !isBackHoveredRef.current) {
+          setIsBackVisible(false);
+        }
+      }, 2600);
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+
+          if (scrollY <= 60) {
+            setIsBackVisible(true);
+            if (hideTimeout) clearTimeout(hideTimeout);
+          } else {
+            setIsBackVisible(true);
+            scheduleHide();
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    setIsBackVisible(true);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (hideTimeout) clearTimeout(hideTimeout);
+    };
+  }, []);
+
+  // Verrouillage du défilement et masquage des éléments flottants lorsque la modale est active
+  useEffect(() => {
+    if (isGuideModalOpen || activeReadingDoc) {
+      document.body.classList.add('modal-scroll-locked');
+      document.documentElement.classList.add('modal-scroll-locked');
+    } else {
+      document.body.classList.remove('modal-scroll-locked');
+      document.documentElement.classList.remove('modal-scroll-locked');
+    }
+    return () => {
+      document.body.classList.remove('modal-scroll-locked');
+      document.documentElement.classList.remove('modal-scroll-locked');
+    };
+  }, [isGuideModalOpen, activeReadingDoc]);
+
   // Filtered documents
   const filteredDocs = useMemo(() => {
     return cycle.documents.filter((doc) => {
@@ -161,70 +220,6 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
 
   return (
     <div className="edu-cycle-view">
-      {/* 0. Breadcrumb Nav : Bouton retour moderne, élégant et stylisé */}
-      <div className="container breadcrumb-container">
-        <Link
-          href="/education"
-          className="back-catalog-link"
-          title="Revenir au choix de tous les niveaux scolaires et universitaires"
-          style={{
-            display: 'inline-flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: '10px',
-            padding: '7px 18px 7px 10px',
-            borderRadius: '9999px',
-            backgroundColor: '#ffffff',
-            border: '1.5px solid #e2e8f0',
-            color: '#1e293b',
-            fontSize: '13px',
-            fontWeight: 700,
-            textDecoration: 'none',
-            whiteSpace: 'nowrap',
-            boxShadow: '0 2px 10px -2px rgba(15, 23, 42, 0.06)',
-          }}
-        >
-          <span
-            className="back-link-icon-wrap"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '28px',
-              height: '28px',
-              borderRadius: '50%',
-              backgroundColor: '#f1f5f9',
-              color: '#475569',
-              flexShrink: 0,
-            }}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-          </span>
-          <span className="back-link-text" style={{ display: 'inline-block', lineHeight: 1 }}>
-            Retour aux cycles d’éducation
-          </span>
-          <span
-            className="back-link-badge"
-            style={{
-              display: 'inline-block',
-              fontSize: '11px',
-              fontWeight: 800,
-              color: '#b45309',
-              backgroundColor: '#fef3c7',
-              padding: '3px 9px',
-              borderRadius: '9999px',
-              lineHeight: 1.1,
-              marginLeft: '2px',
-            }}
-          >
-            6 cycles
-          </span>
-        </Link>
-      </div>
-
       {/* 1. Header / Navigation & Cycle Identity (Strictement Calqué sur l'Image 2 FASTEF) */}
       <section className="cycle-top-header">
         <div className="container">
@@ -929,12 +924,43 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
         </div>
       )}
 
+      {/* Widget Flottant Retour Fluide en bas à gauche (Identique à Image 2 FASTEF) */}
+      <aside
+        aria-label="Retour aux cycles d'éducation"
+        className={`floating-back-widget ${isBackVisible ? 'is-visible' : ''}`}
+        onMouseEnter={() => {
+          isBackHoveredRef.current = true;
+        }}
+        onMouseLeave={() => {
+          isBackHoveredRef.current = false;
+        }}
+        onTouchStart={() => {
+          isBackHoveredRef.current = true;
+        }}
+        onTouchEnd={() => {
+          isBackHoveredRef.current = false;
+        }}
+      >
+        <button
+          type="button"
+          className="floating-back-btn"
+          onClick={() => router.push('/education')}
+          aria-label="Retour aux cycles d'éducation"
+          title="Retour aux cycles d'éducation"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+        </button>
+      </aside>
+
       {/* Styles Scoped Fidèles à l'Image 2 FASTEF */}
       <style jsx>{`
         .edu-cycle-view {
           min-height: 100vh;
-          background: #f8fafc;
-          padding: 24px 0 80px;
+          background: #ffffff;
+          padding: 16px 0 80px;
           color: #0f172a;
         }
 
@@ -944,75 +970,80 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           padding: 0 20px;
         }
 
-        .breadcrumb-container {
-          margin-bottom: 14px;
+        /* Masquage des éléments fixes / flottants quand la modale est ouverte */
+        :global(body.modal-scroll-locked) .floating-back-widget,
+        :global(html.modal-scroll-locked) .floating-back-widget,
+        :global(body[style*="position: fixed"]) .floating-back-widget,
+        :global(body[style*="overflow: hidden"]) .floating-back-widget,
+        :global(body.modal-scroll-locked) :global(.mobile-bottom-nav-root),
+        :global(html.modal-scroll-locked) :global(.mobile-bottom-nav-root) {
+          display: none !important;
+          opacity: 0 !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+        }
+
+        .floating-back-widget {
+          position: fixed;
+          left: 24px;
+          bottom: 36px;
+          z-index: 50;
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          transform: scale(0.85) translateY(10px);
+          transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s;
+        }
+
+        .floating-back-widget.is-visible {
+          opacity: 1;
+          visibility: visible;
+          pointer-events: auto;
+          transform: scale(1) translateY(0);
+        }
+
+        .floating-back-btn {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
           display: flex;
           align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          border: 1.5px solid rgba(226, 232, 240, 0.95);
+          box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.16), 0 4px 10px rgba(0, 0, 0, 0.04);
+          color: #1e293b;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          padding: 0;
+          outline: none;
+          user-select: none;
         }
 
-        .back-catalog-link {
-          display: inline-flex !important;
-          flex-direction: row !important;
-          align-items: center !important;
-          vertical-align: middle !important;
-          gap: 10px !important;
-          padding: 6px 16px 6px 8px !important;
-          border-radius: 9999px !important;
-          background: #ffffff !important;
-          border: 1.5px solid #e2e8f0 !important;
-          color: #1e293b !important;
-          font-size: 13px !important;
-          font-weight: 700 !important;
-          text-decoration: none !important;
-          white-space: nowrap !important;
-          line-height: 1 !important;
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-          box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.05) !important;
+        .floating-back-btn:hover {
+          background: #ffffff;
+          border-color: #cbd5e1;
+          color: #0f172a;
+          transform: translateX(-3px) scale(1.04);
+          box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.22), 0 4px 12px rgba(0, 0, 0, 0.06);
         }
 
-        .back-link-icon-wrap {
-          display: inline-flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          width: 28px !important;
-          height: 28px !important;
-          border-radius: 50% !important;
-          background: #f1f5f9 !important;
-          color: #475569 !important;
-          flex-shrink: 0 !important;
-          transition: all 0.2s ease !important;
+        .floating-back-btn:active {
+          transform: scale(0.92) translateX(-1px);
         }
 
-        .back-link-text {
-          display: inline-block !important;
-          letter-spacing: -0.01em !important;
-          line-height: 1.2 !important;
-        }
+        @media (max-width: 860px) {
+          .floating-back-widget {
+            left: 14px;
+            bottom: calc(82px + env(safe-area-inset-bottom, 8px));
+          }
 
-        .back-link-badge {
-          display: inline-block !important;
-          font-size: 11px !important;
-          font-weight: 800 !important;
-          color: #b45309 !important;
-          background: #fef3c7 !important;
-          padding: 3px 8px !important;
-          border-radius: 9999px !important;
-          line-height: 1.1 !important;
-          margin-left: 2px !important;
-        }
-
-        .back-catalog-link:hover {
-          color: #0f172a !important;
-          border-color: #f59e0b !important;
-          background: #ffffff !important;
-          box-shadow: 0 4px 14px -2px rgba(245, 158, 11, 0.25) !important;
-          transform: translateY(-1px) !important;
-        }
-
-        .back-catalog-link:hover .back-link-icon-wrap {
-          background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important;
-          color: #ffffff !important;
-          transform: translateX(-2px) !important;
+          .floating-back-btn {
+            width: 42px;
+            height: 42px;
+          }
         }
 
         /* 1. Cycle Identity Bar (Copie exacte et soignée de FASTEF) */
@@ -1217,82 +1248,108 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           text-transform: uppercase;
         }
 
-        /* 2. Direct Search Capsule (Fidèle à l'Image 2) */
+        /* 2. Direct Search Capsule (Sticky au défilement en haut, fidèle à FASTEF / Concours) */
         .search-bar-stage {
-          padding: 24px 0 16px;
+          position: sticky;
+          top: 73px;
+          z-index: 80;
+          width: 100%;
+          padding: 12px 0;
+          margin: 4px 0;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
         }
 
         .hero-search-capsule {
           position: relative;
           display: flex;
           align-items: center;
+          width: 100%;
           background: #ffffff;
-          border: 1.5px solid #e2e8f0;
-          border-radius: 999px;
-          padding: 6px 8px 6px 20px;
-          box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+          border: 1.5px solid rgba(226, 232, 240, 0.95);
+          border-radius: 9999px;
+          padding: 5px 6px 5px 20px;
+          min-height: 52px;
+          box-shadow: 0 10px 28px -4px rgba(15, 23, 42, 0.05), 0 2px 8px rgba(15, 23, 42, 0.02);
           transition: all 0.2s ease;
+          box-sizing: border-box;
         }
 
         .hero-search-capsule:focus-within {
-          border-color: #f59e0b;
-          box-shadow: 0 10px 30px rgba(245, 158, 11, 0.15);
+          border-color: rgba(245, 158, 11, 0.6);
+          box-shadow: 0 12px 32px -4px rgba(245, 158, 11, 0.14), 0 0 0 3px rgba(254, 240, 138, 0.35);
+          transform: translateY(-1px);
         }
 
         .search-icon-wrap {
           color: #94a3b8;
           display: flex;
           align-items: center;
-          margin-right: 12px;
+          justify-content: center;
+          flex-shrink: 0;
         }
 
         .hero-search-input {
           flex: 1;
+          min-width: 0;
           border: none;
           outline: none;
-          font-size: 14.5px;
+          font-size: 14px;
+          font-weight: 500;
           color: #0f172a;
           background: transparent;
+          padding: 0 12px;
         }
 
         .hero-search-input::placeholder {
           color: #94a3b8;
+          font-weight: 400;
         }
 
         .hero-search-clear {
-          background: #f1f5f9;
+          background: transparent;
           border: none;
-          color: #64748b;
-          width: 24px;
-          height: 24px;
+          color: #94a3b8;
+          padding: 6px;
           border-radius: 50%;
           cursor: pointer;
-          margin-right: 10px;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 11px;
+          font-size: 12px;
+          flex-shrink: 0;
+          transition: all 0.15s ease;
+        }
+
+        .hero-search-clear:hover {
+          color: #0f172a;
+          background: #f1f5f9;
         }
 
         .hero-search-submit {
+          flex-shrink: 0;
           display: inline-flex;
           align-items: center;
+          justify-content: center;
           gap: 8px;
-          background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+          height: 42px;
+          padding: 0 20px;
+          border-radius: 9999px;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
           color: #ffffff;
-          border: none;
-          border-radius: 999px;
-          padding: 10px 22px;
           font-size: 13.5px;
           font-weight: 700;
+          border: none;
           cursor: pointer;
-          box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+          box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
           transition: all 0.2s ease;
         }
 
         .hero-search-submit:hover {
+          background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%);
           transform: translateY(-1px);
-          box-shadow: 0 6px 18px rgba(245, 158, 11, 0.4);
+          box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45);
         }
 
         /* 3. Filter Strip Bar (Fidèle à l'Image 2 FASTEF & CREM) */
@@ -2451,6 +2508,177 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           font-size: 12px;
           color: #64748b;
           margin: 2px 0 0 0;
+        }
+
+        /* =============================================================
+           MOBILE ADAPTATION (< 860px) — CALQUÉE SUR L'IMAGE 2 FASTEF
+        ============================================================= */
+        @media (max-width: 860px) {
+          .edu-cycle-view {
+            padding: 10px 0 125px !important;
+          }
+
+          .container {
+            padding: 0 14px;
+          }
+
+          .cycle-identity-bar {
+            padding: 12px 14px;
+            border-radius: 16px;
+            gap: 10px;
+            overflow: hidden;
+            box-sizing: border-box;
+          }
+
+          .identity-top-row {
+            gap: 6px;
+            flex-wrap: wrap;
+          }
+
+          .session-pill {
+            font-size: 10.5px;
+            padding: 3px 9px;
+            max-width: 100%;
+          }
+
+          .status-pill {
+            font-size: 10.5px;
+            padding: 3px 9px;
+            max-width: 100%;
+            white-space: normal;
+            line-height: 1.25;
+          }
+
+          .identity-middle-row {
+            gap: 11px;
+            align-items: flex-start;
+          }
+
+          .cycle-logo-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            flex-shrink: 0;
+            margin-top: 2px;
+          }
+
+          .cycle-titles {
+            min-width: 0;
+            flex: 1;
+            overflow: hidden;
+          }
+
+          .cycle-title-header {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+            width: 100%;
+          }
+
+          .cycle-title-flag-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+          }
+
+          .cycle-name {
+            font-size: 17px;
+            line-height: 1.2;
+          }
+
+          .diploma-pill {
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 6px;
+            white-space: normal;
+            line-height: 1.35;
+            max-width: 100%;
+            word-break: break-word;
+            display: inline-block;
+          }
+
+          .cycle-full-name {
+            font-size: 11.5px;
+            line-height: 1.35;
+            margin: 2px 0 0 0;
+            color: #475569;
+          }
+
+          .cycle-org-line {
+            font-size: 10.5px;
+            line-height: 1.35;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+            margin-top: 3px;
+            align-items: flex-start;
+          }
+
+          .cycle-org-line svg {
+            flex-shrink: 0;
+            margin-top: 2px;
+          }
+
+          .identity-bottom-row .glass-info-trigger-btn {
+            width: 100%;
+            justify-content: center;
+            height: 36px;
+            font-size: 11.5px;
+            padding: 0 10px;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+
+          /* Sticky Search Bar Mobile (reste intact en haut au défilement comme Concours) */
+          .search-bar-stage {
+            top: calc(87px + env(safe-area-inset-top, 0px));
+            padding: 8px 0;
+            margin: 0;
+          }
+
+          .hero-search-capsule {
+            min-height: 48px;
+            padding: 4px 6px 4px 14px;
+          }
+
+          .hero-search-input {
+            font-size: 13.5px;
+            padding: 0 8px;
+          }
+
+          .hero-search-submit {
+            width: 38px !important;
+            height: 38px !important;
+            padding: 0 !important;
+            border-radius: 50% !important;
+            justify-content: center !important;
+          }
+
+          .hero-search-submit span {
+            display: none !important;
+          }
+
+          /* Filters Mobile */
+          .filter-stage {
+            padding: 6px 0 14px;
+          }
+
+          .filters-main-toggle-btn {
+            min-height: 42px;
+            height: 42px;
+            padding: 0 12px;
+            border-radius: 14px;
+          }
+
+          .trigger-title {
+            font-size: 12px;
+          }
+
+          .trigger-count-chip {
+            font-size: 10px;
+            padding: 1px 6px;
+          }
         }
       `}</style>
     </div>
