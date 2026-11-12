@@ -1,253 +1,206 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
+import React, { useMemo } from 'react';
+import { AIMode } from '@/types/ai';
 
 interface IAHeroCenteredProps {
   onNewChat?: () => void;
   isConversationActive?: boolean;
+  onSelectOption?: (mode: AIMode) => void;
+  userName?: string;
+  isSubscriber?: boolean;
 }
 
 export const IAHeroCentered: React.FC<IAHeroCenteredProps> = ({
-  onNewChat,
-  isConversationActive = false
+  isConversationActive = false,
+  onSelectOption,
+  userName = 'Petit Fall',
+  isSubscriber = false,
 }) => {
-  return (
-    <header className="ia-header-centered-root">
-      <div className="container">
-        {/* Bloc Titre STRICTEMENT CENTRÉ */}
-        <div className="hero-center-box">
-          <div className="ai-badge-pill">
-            <span className="badge-sparkle-dot"></span>
-            <span>Assistant Intelligent Sunubiblio</span>
-          </div>
+  if (isConversationActive) {
+    return null;
+  }
 
-          <h1 className="main-title">
-            Assistant <span className="gradient-ai-text">IA</span>
+  // Salutation dynamique selon l'heure locale
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    return hour >= 18 || hour < 5 ? 'Bonsoir' : 'Bonjour';
+  }, []);
+
+  const minimalistActions = [
+    {
+      id: 'resumer',
+      mode: 'resumer' as AIMode,
+      label: 'Résumer un cours ou un document',
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="16" y1="13" x2="8" y2="13" />
+          <line x1="16" y1="17" x2="8" y2="17" />
+          <polyline points="10 9 9 9 8 9" />
+        </svg>
+      ),
+    },
+    {
+      id: 'expliquer',
+      mode: 'expliquer' as AIMode,
+      label: 'Expliquer une notion pas à pas',
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+      ),
+    },
+    {
+      id: 'qcm',
+      mode: 'qcm' as AIMode,
+      label: 'Générer un QCM d’entraînement',
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+      ),
+    },
+    {
+      id: 'antiplagiat',
+      mode: 'antiplagiat' as AIMode,
+      label: 'Vérification antiplagiat',
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          <path d="m11 8 2 2-4 4" />
+        </svg>
+      ),
+    },
+  ];
+
+  return (
+    <header className="chatgpt-style-hero">
+      <div className="container">
+        {/* Titre central sobre et aéré */}
+        <div className="chatgpt-welcome-center">
+          <h1 className="chatgpt-greeting-heading">
+            {isSubscriber && userName
+              ? `${greeting} ${userName}, que souhaitez-vous réviser ?`
+              : `${greeting}, que souhaitez-vous réviser ?`}
           </h1>
 
-          <p className="main-subtitle">
-            Votre tuteur intelligent pour résumer, comprendre et apprendre
-          </p>
-
-          {!isConversationActive && (
-            <>
-              <p className="main-description">
-                Analysez vos cours, vulgarisez des concepts complexes et obtenez des explications claires et fiables.
-              </p>
-
-              {/* Les 3 Options Clés Demandées : 1. Résumer, 2. Expliquer, 3. Assistant général */}
-              <div className="ai-three-options-grid">
-                <Link href="/ia/resumer" className="ai-option-card">
-                  <div className="option-icon-wrap icon-resumer">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="21" y1="10" x2="3" y2="10" />
-                      <line x1="21" y1="6" x2="3" y2="6" />
-                      <line x1="21" y1="14" x2="3" y2="14" />
-                      <line x1="21" y1="18" x2="13" y2="18" />
-                    </svg>
-                  </div>
-                  <div className="option-text-meta">
-                    <span className="option-number">Option 1</span>
-                    <h2 className="option-title">1. Résumer</h2>
-                    <p className="option-desc">Synthèse automatique de cours et longs documents</p>
-                  </div>
-                </Link>
-
-                <Link href="/ia/expliquer" className="ai-option-card">
-                  <div className="option-icon-wrap icon-expliquer">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="12" y1="16" x2="12" y2="12" />
-                      <line x1="12" y1="8" x2="12.01" y2="8" />
-                    </svg>
-                  </div>
-                  <div className="option-text-meta">
-                    <span className="option-number">Option 2</span>
-                    <h2 className="option-title">2. Expliquer</h2>
-                    <p className="option-desc">Pédagogie pas-à-pas et vulgarisation adaptée</p>
-                  </div>
-                </Link>
-
-                <Link href="/ia/assistant" className="ai-option-card">
-                  <div className="option-icon-wrap icon-general">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                    </svg>
-                  </div>
-                  <div className="option-text-meta">
-                    <span className="option-number">Option 3</span>
-                    <h2 className="option-title">3. Assistant général</h2>
-                    <p className="option-desc">Dialogue libre et tuteur interactif continu</p>
-                  </div>
-                </Link>
-              </div>
-            </>
-          )}
+          {/* 4 Actions rapides minimalistes à la ligne, calquées sur ChatGPT */}
+          <div className="chatgpt-minimalist-actions">
+            {minimalistActions.map((action) => (
+              <button
+                key={action.id}
+                type="button"
+                onClick={() => onSelectOption && onSelectOption(action.mode)}
+                className="minimalist-action-row"
+              >
+                <span className="action-row-icon">{action.icon}</span>
+                <span className="action-row-label">{action.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       <style jsx>{`
-        .ia-header-centered-root {
-          padding: ${isConversationActive ? '28px 0 16px 0' : '44px 0 20px 0'};
+        .chatgpt-style-hero {
+          width: 100%;
+          padding: 30px 0 10px 0;
           position: relative;
-          text-align: center;
-          background: linear-gradient(180deg, #f8faff 0%, #ffffff 100%);
-          border-bottom: ${isConversationActive ? '1px solid rgba(226, 232, 240, 0.7)' : 'none'};
-          transition: all 0.3s ease;
+          background: transparent;
         }
 
-        .hero-center-box {
-          max-width: 860px;
+        .chatgpt-welcome-center {
+          max-width: 680px;
           margin: 0 auto;
           display: flex;
           flex-direction: column;
           align-items: center;
           text-align: center;
+          padding: 0 16px;
         }
 
-        .ai-badge-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 6px 16px;
-          background: rgba(99, 102, 241, 0.08);
-          border: 1px solid rgba(99, 102, 241, 0.2);
-          border-radius: 9999px;
-          color: #4f46e5;
-          font-size: 13px;
-          font-weight: 700;
-          letter-spacing: 0.02em;
-          margin-bottom: 14px;
-        }
-
-        .badge-sparkle-dot {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: #6366f1;
-          box-shadow: 0 0 10px #6366f1;
-        }
-
-        .main-title {
-          font-size: clamp(32px, 4.5vw, 46px);
-          font-weight: 900;
-          color: #0f172a;
-          line-height: 1.15;
-          margin: 0 0 10px 0;
-          letter-spacing: -0.025em;
-          text-align: center;
-          width: 100%;
-        }
-
-        .gradient-ai-text {
-          background: linear-gradient(135deg, #3b82f6 0%, #6366f1 45%, #ec4899 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-
-        .main-subtitle {
-          font-size: clamp(16px, 2.4vw, 20px);
+        .chatgpt-greeting-heading {
+          font-size: clamp(23px, 3.8vw, 32px);
           font-weight: 600;
-          color: #475569;
-          margin: 0 0 10px 0;
-          line-height: 1.4;
-          text-align: center;
-          width: 100%;
+          color: #1e293b;
+          letter-spacing: -0.015em;
+          margin: 0 0 32px 0;
+          line-height: 1.3;
         }
 
-        .main-description {
-          font-size: 15px;
-          color: #64748b;
-          line-height: 1.6;
-          margin: 0 auto 22px;
-          max-width: 620px;
-          text-align: center;
-        }
-
-        .ai-three-options-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 14px;
-          width: 100%;
-          margin-top: 8px;
-          margin-bottom: 24px;
-          text-align: left;
-        }
-
-        .ai-option-card {
-          text-decoration: none;
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          border-radius: 14px;
-          padding: 16px 18px;
+        .chatgpt-minimalist-actions {
           display: flex;
-          align-items: flex-start;
+          flex-direction: column;
+          gap: 12px;
+          width: 100%;
+          max-width: 440px;
+          margin: 0 auto 16px auto;
+        }
+
+        .minimalist-action-row {
+          display: flex;
+          align-items: center;
           gap: 14px;
-          box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .ai-option-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 24px -4px rgba(99, 102, 241, 0.15);
-          border-color: #a5b4fc;
-        }
-
-        .option-icon-wrap {
-          width: 42px;
-          height: 42px;
+          padding: 10px 14px;
+          background: transparent;
+          border: none;
           border-radius: 12px;
+          color: #475569;
+          font-size: 15px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.18s ease;
+          text-align: left;
+          width: 100%;
+          font-family: inherit;
+        }
+
+        .minimalist-action-row:hover {
+          background: #f8fafc;
+          color: #0f172a;
+          transform: translateX(4px);
+        }
+
+        .action-row-icon {
+          color: #64748b;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
+          transition: color 0.18s ease;
         }
 
-        .icon-resumer {
-          background: #fffbeb;
+        .minimalist-action-row:hover .action-row-icon {
           color: #d97706;
         }
 
-        .icon-expliquer {
-          background: #fdf2f8;
-          color: #db2777;
-        }
-
-        .icon-general {
-          background: #f5f3ff;
-          color: #7c3aed;
-        }
-
-        .option-text-meta {
+        .action-row-label {
           flex: 1;
         }
 
-        .option-number {
-          font-size: 0.6875rem;
-          font-weight: 700;
-          text-transform: uppercase;
-          color: #6366f1;
-          letter-spacing: 0.04em;
-        }
+        @media (max-width: 640px) {
+          .chatgpt-style-hero {
+            padding-top: 16px;
+          }
 
-        .option-title {
-          font-size: 0.9375rem;
-          font-weight: 800;
-          color: #0f172a;
-          margin: 2px 0;
-        }
+          .chatgpt-greeting-heading {
+            margin-bottom: 22px;
+            font-size: 21px;
+          }
 
-        .option-desc {
-          font-size: 0.75rem;
-          color: #64748b;
-          line-height: 1.4;
-          margin: 0;
-        }
+          .chatgpt-minimalist-actions {
+            gap: 10px;
+          }
 
-        @media (max-width: 768px) {
-          .ai-three-options-grid {
-            grid-template-columns: 1fr;
+          .minimalist-action-row {
+            font-size: 14px;
+            padding: 8px 10px;
           }
         }
       `}</style>

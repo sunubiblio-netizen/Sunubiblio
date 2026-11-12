@@ -54,9 +54,17 @@ export default function EducationPage() {
       level: prev.level === levelId ? 'all' : levelId,
     }));
     if (levelId !== 'all') {
-      router.push(`/bibliotheque?cycle=${encodeURIComponent(levelId)}`);
+      const slugMap: Record<EducationCycleId, string> = {
+        prescolaire: 'prescolaire',
+        primaire: 'primaire',
+        college: 'college',
+        lycee: 'lycee',
+        universite: 'universite',
+        formation_pro: 'formation-professionnelle',
+      };
+      router.push(`/education/${slugMap[levelId] || levelId}`);
     } else {
-      router.push('/bibliotheque');
+      router.push('/education');
     }
   };
 

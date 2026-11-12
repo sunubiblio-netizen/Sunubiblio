@@ -2,14 +2,10 @@
 
 import React, { useState } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
 import { IAHeroCentered } from '@/components/ia/IAHeroCentered';
 import { AIComposer } from '@/components/ia/composer/AIComposer';
-import { AISuggestions } from '@/components/ia/AISuggestions';
-import { AIToolShortcuts } from '@/components/ia/AIToolShortcuts';
 import { AIConversationView } from '@/components/ia/conversation/AIConversationView';
-import { IADocumentsSection } from '@/components/ia/IADocumentsSection';
-import { IAHistory } from '@/components/ia/IAHistory';
+import { IASidebarDrawer } from '@/components/ia/IASidebarDrawer';
 import { AIMessage, AIMode, AIAttachment } from '@/types/ai';
 import { AIService } from '@/services/aiService';
 
@@ -18,6 +14,8 @@ export default function IAPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [activeMode, setActiveMode] = useState<AIMode>('assistant');
   const [composerKey, setComposerKey] = useState(0); // to reset or prefill composer
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSubscriber] = useState(false); // Mode d'abonnement (false = Offre gratuite, true = SunuIA Pro)
 
   const isConversationActive = messages.length > 0;
 
@@ -87,6 +85,30 @@ export default function IAPage() {
     setIsLoading(false);
     setActiveMode('assistant');
     setComposerKey((prev) => prev + 1);
+    setIsSidebarOpen(false);
+  };
+
+  // Select tool from sidebar
+  const handleSelectToolFromSidebar = (mode: AIMode) => {
+    setActiveMode(mode);
+    setIsSidebarOpen(false);
+    const promptsMap: Record<string, string> = {
+      resumer: 'Fais-moi un résumé clair et concis en extrayant les points clés de ce cours.',
+      expliquer: 'Explique-moi ce concept pas à pas avec des exemples simples et concrets.',
+      qcm: 'Génère 10 questions à choix multiples (QCM) avec correction détaillée pour m’évaluer.',
+      exercices: 'Donne-moi 3 exercices d’entraînement progressifs conformes au programme.',
+      corriger: 'Analyse et corrige ce devoir en m’indiquant les points forts et erreurs.',
+      antiplagiat: 'Vérifie si ce texte présente des passages similaires au fonds documentaire.',
+    };
+
+    if (promptsMap[mode]) {
+      handleSendMessage({
+        content: promptsMap[mode],
+        mode,
+        attachments: [],
+        isWebSearch: false,
+      });
+    }
   };
 
   // Retry last assistant message
@@ -104,18 +126,79 @@ export default function IAPage() {
   };
 
   return (
-    <div className="ia-page-wrapper">
+    <div className={`ia-page-wrapper ${isSidebarOpen ? 'has-sidebar-open' : ''}`}>
       <Navbar />
 
+      {/* Menu Déroulant / Volet latéral rétractable comme ChatGPT */}
+      <IASidebarDrawer
+        isOpen={isSidebarOpen}
+        onToggle={() => setIsSidebarOpen((prev) => !prev)}
+        onNewChat={handleResetChat}
+        onSelectToolMode={handleSelectToolFromSidebar}
+      />
+
+      {/* Topbar Permanente Fixe (Toujours intacte et visible au même endroit, comme ChatGPT) */}
+      <header className="ia-top-toolbar-bar" aria-label="En-tête de session SunuIA">
+        <div className="toolbar-left-group">
+          <button
+            type="button"
+            onClick={() => setIsSidebarOpen((prev) => !prev)}
+            className={`sidebar-floating-toggle-btn ${isSidebarOpen ? 'active' : ''}`}
+            title={isSidebarOpen ? 'Fermer le menu' : 'Ouvrir le menu latéral'}
+            aria-label="Ouvrir le menu latéral"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M9 3v18" />
+            </svg>
+            <span className="toggle-label desktop-only">Menu SunuIA</span>
+          </button>
+
+          {isConversationActive && (
+            <button
+              type="button"
+              onClick={handleResetChat}
+              className="new-chat-top-pill"
+              title="Démarrer une nouvelle discussion"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              <span>Nouveau chat</span>
+            </button>
+          )}
+        </div>
+
+        {/* Badge d'offre sobre sans chiffre visible (quota généreux automatique) */}
+        <div className="toolbar-right-group">
+          {isSubscriber ? (
+            <div className="top-subscription-badge pro" title="Formule illimitée active">
+              <span className="star-icon">★</span>
+              <span>SunuIA Pro</span>
+            </div>
+          ) : (
+            <div className="top-subscription-badge free" title="Formule gratuite active">
+              <span className="gift-icon">🎁</span>
+              <span>Offre gratuite</span>
+            </div>
+          )}
+        </div>
+      </header>
+
       <main className="ia-main-content">
-        {/* En-tête avec titre STRICTEMENT CENTRÉ sur tous les écrans */}
-        <IAHeroCentered
-          onNewChat={handleResetChat}
-          isConversationActive={isConversationActive}
-        />
+        {/* En-tête de bienvenue (Masqué automatiquement dès que la discussion commence) */}
+        {!isConversationActive && (
+          <IAHeroCentered
+            onNewChat={handleResetChat}
+            isConversationActive={isConversationActive}
+            onSelectOption={(mode) => handleSelectToolFromSidebar(mode)}
+            isSubscriber={isSubscriber}
+          />
+        )}
 
         {!isConversationActive ? (
-          /* Vue d'accueil IA : Composer centralisé, Suggestions, Outils et Documents */
+          /* Vue d'accueil IA épurée style ChatGPT : Composer positionné bas et centré */
           <div className="ia-home-workspace">
             <section className="composer-hero-section">
               <div className="container">
@@ -124,72 +207,206 @@ export default function IAPage() {
                     key={composerKey}
                     onSendMessage={handleSendMessage}
                     initialMode={activeMode}
-                    placeholder="Posez une question, collez un cours ou demandez un résumé à l'IA..."
+                    placeholder="Demander à SunuIA..."
                   />
-
-                  {/* Suggestions sous la barre */}
-                  <AISuggestions onSelectSuggestion={handleSelectSuggestion} />
                 </div>
               </div>
             </section>
-
-            {/* Outils IA Spécialisés présentés sous forme de raccourcis élégants */}
-            <AIToolShortcuts />
-
-            {/* Section documents Sunubiblio */}
-            <IADocumentsSection />
-
-            {/* Historique et activité */}
-            <IAHistory />
           </div>
         ) : (
-          /* Vue conversationnelle active */
-          <AIConversationView
-            messages={messages}
-            isLoading={isLoading}
-            onSendMessage={handleSendMessage}
-            onResetChat={handleResetChat}
-            onRetryLast={handleRetryLast}
-          />
+          /* Vue conversationnelle active 100% immersive comme ChatGPT */
+          <div className="ia-active-chat-wrapper">
+            <AIConversationView
+              messages={messages}
+              isLoading={isLoading}
+              onSendMessage={handleSendMessage}
+              onResetChat={handleResetChat}
+              onRetryLast={handleRetryLast}
+            />
+          </div>
         )}
       </main>
-
-      {/* Le footer classique ne s'affiche que sur la page d'accueil IA pour ne pas polluer l'espace conversationnel */}
-      {!isConversationActive && <Footer />}
 
       <style jsx>{`
         .ia-page-wrapper {
           min-height: 100vh;
           display: flex;
           flex-direction: column;
+          background: #ffffff !important;
+          position: relative;
+        }
+
+        /* Topbar Permanente Fixe */
+        .ia-top-toolbar-bar {
+          position: sticky;
+          top: 72px; /* Sous la navbar */
+          z-index: 95;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 8px 20px;
+          background: rgba(255, 255, 255, 0.96);
+          backdrop-filter: blur(8px);
+          border-bottom: 1px solid rgba(241, 245, 249, 0.9);
+        }
+
+        .toolbar-left-group {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .toolbar-right-group {
+          display: flex;
+          align-items: center;
+        }
+
+        .top-subscription-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 12px;
+          border-radius: 9999px;
+          font-size: 12px;
+          font-weight: 700;
+          user-select: none;
+          transition: all 0.18s ease;
+        }
+
+        .top-subscription-badge.free {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          color: #475569;
+        }
+
+        .top-subscription-badge.free:hover {
+          background: #fffbeb;
+          border-color: #f59e0b;
+          color: #b45309;
+        }
+
+        .top-subscription-badge.pro {
+          background: #fffbeb;
+          border: 1.5px solid #f59e0b;
+          color: #b45309;
+          box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+        }
+
+        .star-icon {
+          color: #f59e0b;
+          font-size: 13px;
+        }
+
+        .gift-icon {
+          font-size: 13px;
+        }
+
+        .sidebar-floating-toggle-btn {
+          height: 36px;
+          padding: 0 10px;
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
           background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          border-radius: 10px;
+          color: #475569;
+          font-size: 12.5px;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+          transition: all 0.18s ease;
+        }
+
+        .sidebar-floating-toggle-btn:hover,
+        .sidebar-floating-toggle-btn.active {
+          background: #fffbeb;
+          border-color: #f59e0b;
+          color: #b45309;
+          box-shadow: 0 3px 10px rgba(245, 158, 11, 0.15);
+        }
+
+        .new-chat-top-pill {
+          height: 36px;
+          padding: 0 12px;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          border-radius: 9999px;
+          color: #0f172a;
+          font-size: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+          transition: all 0.18s ease;
+        }
+
+        .new-chat-top-pill:hover {
+          background: #f8fafc;
+          border-color: #cbd5e1;
+          transform: translateY(-1px);
+        }
+
+        .desktop-only {
+          display: inline-block;
+        }
+
+        @media (max-width: 640px) {
+          .desktop-only {
+            display: none;
+          }
+          .ia-top-toolbar-bar {
+            top: 60px;
+            padding: 6px 12px;
+          }
+          .sidebar-floating-toggle-btn {
+            height: 34px;
+            padding: 0 8px;
+          }
+          .top-subscription-badge {
+            padding: 4px 10px;
+            font-size: 11.5px;
+          }
         }
 
         .ia-main-content {
           flex: 1;
           display: flex;
           flex-direction: column;
+          justify-content: space-between;
+          padding-bottom: 24px;
         }
 
         .ia-home-workspace {
           display: flex;
           flex-direction: column;
+          width: 100%;
         }
 
         .composer-hero-section {
-          padding: 10px 0 40px 0;
+          padding: 8px 0 16px 0;
           position: relative;
+          width: 100%;
         }
 
         .composer-container-block {
           display: flex;
           flex-direction: column;
           align-items: center;
+          width: 100%;
+        }
+
+        .ia-active-chat-wrapper {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
         }
 
         @media (max-width: 860px) {
-          .composer-hero-section {
-            padding-bottom: 30px;
+          .ia-main-content {
+            padding-bottom: 16px;
           }
         }
       `}</style>

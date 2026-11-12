@@ -13,13 +13,14 @@ import { usePathname } from 'next/navigation';
 export const GlobalAuroraBackdrop: React.FC = () => {
   const pathname = usePathname();
 
-  // Ne pas afficher sur accueil, éducation, bibliothèque et concours qui demandent un fond blanc pur
+  // Ne pas afficher sur accueil, éducation, bibliothèque, concours et admin qui demandent un fond propre
   if (
     !pathname ||
     pathname === '/' ||
     pathname.startsWith('/education') ||
     pathname.startsWith('/bibliotheque') ||
-    pathname.startsWith('/concours')
+    pathname.startsWith('/concours') ||
+    pathname.startsWith('/admin')
   ) {
     return null;
   }

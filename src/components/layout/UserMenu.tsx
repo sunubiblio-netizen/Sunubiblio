@@ -205,6 +205,31 @@ export const UserMenu: React.FC<UserMenuProps> = ({
                   {currentUser.isGoldMember ? 'Gérer' : 'Découvrir'}
                 </Link>
               </div>
+
+              {/* Accès rapide au Tableau de Bord Administrateur Pro */}
+              <Link
+                href="/admin"
+                onClick={() => setIsOpen(false)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginTop: '10px',
+                  padding: '10px 14px',
+                  borderRadius: '12px',
+                  background: '#0f172a',
+                  color: '#ffffff',
+                  textDecoration: 'none',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                }}
+              >
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <span>⚡</span>
+                  <span>Tableau de bord Admin (Pro)</span>
+                </span>
+                <span style={{ color: '#fbbf24', fontSize: '14px' }}>→</span>
+              </Link>
             </div>
 
             {/* ZONE BASSE DU DRAWER (Fixée tout en bas avec Déconnexion) */}

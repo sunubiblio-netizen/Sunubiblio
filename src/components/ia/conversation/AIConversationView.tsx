@@ -39,29 +39,6 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
     <div className="ai-workspace-conversation">
       {/* Centered Conversation Container (Max-Width: 800px) */}
       <div className="conversation-column">
-        {/* Discrete Session Toolbar */}
-        <div className="conversation-toolbar">
-          <div className="session-status-badge">
-            <span className="live-status-dot" aria-hidden="true" />
-            <span className="session-title">Session de travail active</span>
-          </div>
-
-          <div className="session-actions">
-            <button
-              type="button"
-              onClick={onResetChat}
-              className="btn-new-chat-session"
-              aria-label="Démarrer une nouvelle discussion"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              <span>Nouvelle discussion</span>
-            </button>
-          </div>
-        </div>
-
         {/* Message Stream */}
         <div className="conversation-stream">
           {messages.map((msg) => (
@@ -204,13 +181,13 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
           width: 28px;
           height: 28px;
           border-radius: 8px;
-          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+          background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
           color: #ffffff;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
-          box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+          box-shadow: 0 2px 6px rgba(245, 158, 11, 0.28);
         }
 
         .thinking-content {
@@ -230,8 +207,8 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
           align-items: center;
           gap: 6px;
           padding: 6px 12px;
-          background: #f8faff;
-          border: 1px solid rgba(226, 232, 240, 0.9);
+          background: #fffbeb;
+          border: 1px solid rgba(245, 158, 11, 0.25);
           border-radius: 9999px;
         }
 
@@ -239,7 +216,7 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
           width: 6px;
           height: 6px;
           border-radius: 50%;
-          background: #6366f1;
+          background: #f59e0b;
           animation: dotBounce 1.4s infinite ease-in-out both;
         }
 

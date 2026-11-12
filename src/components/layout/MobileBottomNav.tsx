@@ -13,10 +13,12 @@ export const MobileBottomNav: React.FC = () => {
       ? pathname.slice(0, -1)
       : pathname;
 
-  // Masquer la navigation mobile inférieure pendant le passage d'un test spécifique ou dans les discussions
+  // Masquer la navigation mobile inférieure pendant le passage d'un test spécifique, dans les discussions, sur la page admin ou sur la page IA
   const isExercisePlayer = cleanPath.startsWith('/exercices/') && cleanPath !== '/exercices';
   const isDiscussions = cleanPath.startsWith('/discussions');
-  const shouldHideBottomNav = isExercisePlayer || isDiscussions;
+  const isAdmin = cleanPath.startsWith('/admin');
+  const isIA = cleanPath === '/ia' || cleanPath.startsWith('/ia');
+  const shouldHideBottomNav = isExercisePlayer || isDiscussions || isAdmin || isIA;
 
   // Determine active route
   const isHome = cleanPath === '/' || cleanPath === '';

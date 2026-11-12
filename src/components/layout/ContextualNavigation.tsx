@@ -87,8 +87,8 @@ const CONTEXT_CONFIGS: ContextConfig[] = [
 export const ContextualNavigation: React.FC = () => {
   const pathname = usePathname() || '/';
 
-  // Ne pas afficher la navigation contextuelle sur /exercices ou /concours
-  if (pathname.startsWith('/exercices') || pathname.startsWith('/concours')) {
+  // Ne pas afficher la navigation contextuelle sur /exercices, /concours ou /ia
+  if (pathname.startsWith('/exercices') || pathname.startsWith('/concours') || pathname.startsWith('/ia')) {
     return null;
   }
 

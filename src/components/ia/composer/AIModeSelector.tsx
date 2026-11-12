@@ -212,12 +212,12 @@ export const AIModeSelector: React.FC<AIModeSelectorProps> = ({
           gap: 6px;
           height: 34px;
           padding: 0 12px;
-          background: rgba(99, 102, 241, 0.06);
-          border: 1px solid rgba(99, 102, 241, 0.18);
+          background: rgba(245, 158, 11, 0.08);
+          border: 1.5px solid rgba(245, 158, 11, 0.28);
           border-radius: 9999px;
-          color: #4f46e5;
+          color: #b45309;
           font-size: 13px;
-          font-weight: 600;
+          font-weight: 700;
           cursor: pointer;
           transition: all 0.2s ease;
           user-select: none;
@@ -225,13 +225,15 @@ export const AIModeSelector: React.FC<AIModeSelectorProps> = ({
 
         .mode-btn-trigger:hover,
         .mode-btn-trigger.active {
-          background: rgba(99, 102, 241, 0.12);
-          border-color: #6366f1;
+          background: rgba(245, 158, 11, 0.16);
+          border-color: #f59e0b;
+          color: #92400e;
         }
 
         .mode-icon {
           display: flex;
           align-items: center;
+          color: #d97706;
         }
 
         .mode-label {
@@ -239,7 +241,7 @@ export const AIModeSelector: React.FC<AIModeSelectorProps> = ({
         }
 
         .chevron-icon {
-          color: #818cf8;
+          color: #d97706;
           transition: transform 0.2s ease;
         }
 
@@ -253,9 +255,9 @@ export const AIModeSelector: React.FC<AIModeSelectorProps> = ({
           left: 0;
           width: 310px;
           background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.9);
+          border: 1px solid rgba(226, 232, 240, 0.95);
           border-radius: 18px;
-          box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.12);
+          box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.12), 0 4px 12px rgba(245, 158, 11, 0.08);
           padding: 8px;
           z-index: 1000;
           animation: popoverFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -293,19 +295,20 @@ export const AIModeSelector: React.FC<AIModeSelectorProps> = ({
         }
 
         .mode-item:hover {
-          background: #f8faff;
+          background: #fefce8;
         }
 
         .mode-item.selected {
-          background: rgba(99, 102, 241, 0.08);
+          background: #fef3c7;
         }
 
         .item-icon-box {
           width: 28px;
           height: 28px;
           border-radius: 8px;
-          background: #eef2ff;
-          color: #4f46e5;
+          background: #fffbeb;
+          color: #d97706;
+          border: 1px solid rgba(245, 158, 11, 0.2);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -349,9 +352,10 @@ export const AIModeSelector: React.FC<AIModeSelectorProps> = ({
         }
 
         .check-mark {
-          color: #4f46e5;
+          color: #d97706;
           display: flex;
           align-items: center;
+          font-weight: 800;
         }
 
         @keyframes popoverFade {

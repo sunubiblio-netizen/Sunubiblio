@@ -114,6 +114,8 @@ export interface EducationResource {
   accessStatus: EducationAccessStatus;
   requiredPlan?: string;
   coverGradient: string;
+  coverImage?: string;
+  author?: string;
   downloadsCount?: number;
   pagesCount?: number;
   featured?: boolean;

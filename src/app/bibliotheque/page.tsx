@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { AuthModal } from '@/components/ui/AuthModal';
@@ -10,6 +10,11 @@ import { ResourceGrid } from '@/components/library/ResourceGrid';
 import { ResourceDetailModal } from '@/components/library/ResourceDetailModal';
 import { MOCK_RESOURCES } from '@/data/mockLibrary';
 import { FilterState, Resource } from '@/types/library';
+import {
+  getPublishedAdminItems,
+  mapAdminItemToLibraryResource,
+  ADMIN_CATALOG_UPDATED_EVENT,
+} from '@/lib/adminCatalogStore';
 
 const INITIAL_FILTERS: FilterState = {
   searchQuery: '',
@@ -35,6 +40,21 @@ export default function LibraryPage() {
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [favorites, setFavorites] = useState<string[]>([]);
   const [onlyFavorites, setOnlyFavorites] = useState(false);
+  const [adminResources, setAdminResources] = useState<Resource[]>([]);
+
+  useEffect(() => {
+    const syncAdminCatalog = () => {
+      const items = getPublishedAdminItems().map(mapAdminItemToLibraryResource);
+      setAdminResources(items);
+    };
+    syncAdminCatalog();
+    window.addEventListener(ADMIN_CATALOG_UPDATED_EVENT, syncAdminCatalog);
+    return () => window.removeEventListener(ADMIN_CATALOG_UPDATED_EVENT, syncAdminCatalog);
+  }, []);
+
+  const allLibraryResources = useMemo(() => {
+    return [...adminResources, ...MOCK_RESOURCES];
+  }, [adminResources]);
 
   const handleOpenAuth = (mode: 'login' | 'register') => {
     setAuthMode(mode);
@@ -91,7 +111,7 @@ export default function LibraryPage() {
 
   // Client-side filtering & sorting engine (simulating PostgreSQL query)
   const filteredAndSortedResources = useMemo(() => {
-    return MOCK_RESOURCES.filter((res) => {
+    return allLibraryResources.filter((res) => {
       // Favorites filter
       if (onlyFavorites && !favorites.includes(res.id)) {
         return false;
@@ -177,7 +197,7 @@ export default function LibraryPage() {
       if (!a.featured && b.featured) return 1;
       return b.rating - a.rating;
     });
-  }, [filters, onlyFavorites, favorites]);
+  }, [allLibraryResources, filters, onlyFavorites, favorites]);
 
   // Paginated slice
   const paginatedResources = useMemo(() => {

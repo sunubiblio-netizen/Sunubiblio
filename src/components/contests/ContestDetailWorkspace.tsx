@@ -796,83 +796,122 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           </div>
         ) : (
           <div className="papers-grid">
-            {filteredPapers.map((paper) => (
-              <article key={paper.id} className="paper-card">
-                {/* Top Media / Book Representation */}
-                <div className="paper-cover-top">
-                  <div className="cover-spine" />
-                  <div className="cover-badge-row">
-                    <span className={`paper-type-badge ${getTypeBadgeClass(paper.type)}`}>
-                      {getTypeLabel(paper.type)}
-                    </span>
-                    <span className="paper-year-pill">Session {paper.year}</span>
-                  </div>
+            {filteredPapers.map((paper) => {
+              const coverGradient =
+                paper.type === 'sujet'
+                  ? 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #1d4ed8 100%)'
+                  : paper.type === 'correction'
+                  ? 'linear-gradient(135deg, #064e3b 0%, #10b981 50%, #047857 100%)'
+                  : paper.type === 'fascicule'
+                  ? 'linear-gradient(135deg, #4c1d95 0%, #8b5cf6 50%, #6d28d9 100%)'
+                  : 'linear-gradient(135deg, #78350f 0%, #f59e0b 50%, #b45309 100%)';
 
-                  <div className="cover-center-motif">
-                    <div className="motif-icon">
-                      {paper.type === 'correction' ? '✓' : paper.type === 'exercice' ? '📝' : paper.type === 'fascicule' ? '📖' : paper.type === 'qcm' ? '🎯' : '📄'}
+              return (
+                <article
+                  key={paper.id}
+                  className="paper-card"
+                  onClick={() => handleConsultPaper(paper)}
+                >
+                  {/* Visual Cover Top Banner with Upright Book Silhouette */}
+                  <div className="book-card-banner">
+                    {/* Top Row : Catégorie Badge & Session */}
+                    <div className="banner-top-row">
+                      <span className={`banner-category-badge ${getTypeBadgeClass(paper.type)}`}>
+                        {getTypeLabel(paper.type).toUpperCase()}
+                      </span>
+                      <span className="banner-session-tag">Session {paper.year}</span>
                     </div>
-                    <span className="motif-sub">{paper.subjectName}</span>
-                  </div>
 
-                  <div className="cover-footer-meta">
-                    <span className="format-badge">{paper.format.toUpperCase()} • {paper.pagesCount} pages</span>
-                    {paper.accessLevel === 'free' ? (
-                      <span className="access-tag free">Gratuit</span>
-                    ) : (
-                      <span className="access-tag premium">★ Premium</span>
-                    )}
-                  </div>
-                </div>
+                    {/* Upright Book 3D Silhouette */}
+                    <div className="book-silhouette-stage">
+                      <div
+                        className="book-3d-volume"
+                        style={{ background: coverGradient }}
+                      >
+                        <div className="book-spine-crease" />
+                        <div className="book-pages-edge" />
+                        <div className="book-texture-dots" />
 
-                {/* Card Body */}
-                <div className="paper-card-body">
-                  <h3 className="paper-title" title={paper.title}>
-                    {paper.title}
-                  </h3>
-
-                  <div className="paper-meta-details">
-                    <div className="detail-item">
-                      <span className="detail-label">Matière :</span>
-                      <span className="detail-value">{paper.subjectName}</span>
-                    </div>
-                    {paper.authorOrSource && (
-                      <div className="detail-item">
-                        <span className="detail-label">Source :</span>
-                        <span className="detail-value">{paper.authorOrSource}</span>
+                        {/* Icône emblème au centre de la couverture */}
+                        <div className="book-center-emblem">
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.95)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                          </svg>
+                        </div>
                       </div>
-                    )}
+                    </div>
+
+                    {/* Floating Rating Pill (★ 4.9) */}
+                    <div className="cover-rating-pill">
+                      <svg width="10.5" height="10.5" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="1">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                      <span className="cover-rating-num">4.9</span>
+                    </div>
+
+                    {/* Hover Action Overlay : Bouton Consulter visible à l'effleurement */}
+                    <div className="cover-hover-action">
+                      <button
+                        type="button"
+                        className="hover-view-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleConsultPaper(paper);
+                        }}
+                      >
+                        <span>Consulter</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                          <polyline points="12 5 19 12 12 19" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
 
-                  {/* Actions */}
-                  <div className="paper-actions">
-                    <button
-                      type="button"
-                      className="consult-doc-btn"
-                      onClick={() => handleConsultPaper(paper)}
-                    >
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
-                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                        <circle cx="12" cy="12" r="3" />
-                      </svg>
-                      <span>Consulter</span>
-                    </button>
+                  {/* Card Content & Essentials (Épuré & Calqué sur Bibliothèque & Éducation) */}
+                  <div className="paper-card-body">
+                    {/* Titre du document */}
+                    <h3 className="paper-title" title={paper.title}>
+                      {paper.title}
+                    </h3>
 
+                    {/* Source & Matière */}
+                    <p className="paper-author-line" title={`${paper.authorOrSource || contest.name} · ${paper.subjectName}`}>
+                      <span className="author-source">{paper.authorOrSource || contest.name}</span>
+                      <span className="subject-dot"> · {paper.subjectName}</span>
+                    </p>
+
+                    {/* Essentials Footer: Format/Pages à gauche & Accès à droite */}
+                    <div className="paper-essentials-footer">
+                      <span className="format-badge-chip">
+                        {paper.format.toUpperCase()} • {paper.pagesCount} P.
+                      </span>
+
+                      <span className={`access-pill-badge access-${paper.accessLevel}`}>
+                        {paper.accessLevel === 'free' ? 'Gratuit' : '★ Premium'}
+                      </span>
+                    </div>
+
+                    {/* Bouton secondaire d'entraînement IA */}
                     <button
                       type="button"
-                      className="ai-revise-btn"
-                      onClick={() => handleOpenAiRevision(paper)}
+                      className="card-ai-revise-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenAiRevision(paper);
+                      }}
                       title="S'entraîner et poser des questions avec l'assistant IA"
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
                         <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
                       </svg>
                       <span>Réviser avec l’IA</span>
                     </button>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
       </section>
@@ -2244,268 +2283,404 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           color: #92400e;
         }
 
-        /* 4. PAPERS GRID */
+        /* 4. PAPERS GRID (Cartes Livres 3D avec Effleurement comme Bibliothèque) */
         .papers-grid-section {
           position: relative;
           z-index: 10;
           display: flex;
           flex-direction: column;
+          width: 100%;
         }
 
         .papers-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 22px;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 20px;
+          width: 100%;
+          box-sizing: border-box;
         }
 
+        @media (max-width: 1180px) {
+          .papers-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+        }
+
+        @media (max-width: 860px) {
+          .papers-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+          }
+        }
+
+        @media (max-width: 520px) {
+          .papers-grid {
+            grid-template-columns: minmax(0, 1fr);
+          }
+        }
+
+        /* Carte Livre Élégante inspirée de la Bibliothèque */
         .paper-card {
           background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.9);
-          border-radius: 18px;
+          border: 1px solid rgba(226, 232, 240, 0.95);
+          border-radius: 16px;
           overflow: hidden;
           display: flex;
           flex-direction: column;
-          box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.03);
-          transition: all 0.25s ease;
+          box-shadow: 0 2px 10px -2px rgba(15, 23, 42, 0.04);
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+          cursor: pointer;
+          position: relative;
+          box-sizing: border-box;
+          min-width: 0;
+          max-width: 100%;
         }
 
         .paper-card:hover {
           transform: translateY(-4px);
-          border-color: rgba(245, 158, 11, 0.45);
-          box-shadow: 0 14px 30px -4px rgba(217, 119, 6, 0.12), 0 4px 12px rgba(15, 23, 42, 0.04);
+          border-color: rgba(245, 158, 11, 0.5);
+          box-shadow: 0 14px 30px -6px rgba(217, 119, 6, 0.16), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
         }
 
-        /* Book cover top presentation */
-        .paper-cover-top {
-          height: 140px;
+        /* Bannière supérieure de la couverture */
+        .book-card-banner {
           position: relative;
-          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-          border-bottom: 1px solid #e2e8f0;
-          padding: 12px 14px;
+          background: linear-gradient(180deg, #f8fafc 0%, #edf2f7 100%);
+          border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+          padding: 12px 12px 14px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
+          overflow: hidden;
+          height: 184px;
         }
 
-        .cover-spine {
-          position: absolute;
-          left: 0;
-          top: 0;
-          bottom: 0;
-          width: 5px;
-          background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
-        }
-
-        .cover-badge-row {
+        .banner-top-row {
+          position: relative;
+          z-index: 2;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding-left: 6px;
+          width: 100%;
+          gap: 6px;
         }
 
-        .paper-type-badge {
-          font-size: 10px;
+        .banner-category-badge {
+          font-size: 9px;
           font-weight: 800;
-          padding: 3px 9px;
+          letter-spacing: 0.05em;
+          background: rgba(255, 255, 255, 0.95);
+          color: #475569;
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+          padding: 2.5px 8px;
           border-radius: 9999px;
           text-transform: uppercase;
-          letter-spacing: 0.04em;
+          white-space: nowrap;
         }
 
-        .type-badge-sujet {
-          background: #dbeafe;
+        .banner-category-badge.type-badge-sujet {
+          background: #eff6ff;
           color: #1d4ed8;
+          border-color: #bfdbfe;
         }
 
-        .type-badge-correction {
-          background: #dcfce7;
+        .banner-category-badge.type-badge-correction {
+          background: #f0fdf4;
           color: #15803d;
+          border-color: #bbf7d0;
         }
 
-        .type-badge-exercice {
-          background: #ede9fe;
+        .banner-category-badge.type-badge-exercice {
+          background: #f5f3ff;
           color: #6d28d9;
+          border-color: #ddd6fe;
         }
 
-        .type-badge-fascicule {
-          background: #fef3c7;
+        .banner-category-badge.type-badge-fascicule {
+          background: #fffbeb;
           color: #b45309;
+          border-color: #fde68a;
         }
 
-        .type-badge-qcm {
-          background: #fae8ff;
+        .banner-category-badge.type-badge-qcm {
+          background: #fdf4ff;
           color: #a21caf;
+          border-color: #f5d0fe;
         }
 
-        .type-badge-default {
-          background: #f1f5f9;
-          color: #475569;
-        }
-
-        .paper-year-pill {
-          font-size: 11px;
-          font-weight: 700;
-          color: #475569;
-          background: #ffffff;
-          padding: 2px 8px;
-          border-radius: 6px;
-          border: 1px solid #e2e8f0;
-        }
-
-        .cover-center-motif {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding-left: 6px;
-        }
-
-        .motif-icon {
-          font-size: 24px;
-        }
-
-        .motif-sub {
-          font-size: 12px;
-          font-weight: 700;
-          color: #334155;
-          display: -webkit-box;
-          -webkit-line-clamp: 1;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        .cover-footer-meta {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding-left: 6px;
-        }
-
-        .format-badge {
+        .banner-session-tag {
           font-size: 10.5px;
           font-weight: 700;
           color: #64748b;
-        }
-
-        .access-tag {
-          font-size: 10px;
-          font-weight: 800;
+          background: rgba(255, 255, 255, 0.85);
           padding: 2px 7px;
-          border-radius: 4px;
+          border-radius: 9999px;
+          white-space: nowrap;
+          border: 1px solid rgba(226, 232, 240, 0.6);
         }
 
-        .access-tag.free {
-          background: #ecfdf5;
-          color: #059669;
+        /* Silhouette 3D du livre */
+        .book-silhouette-stage {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex: 1;
+          padding-top: 4px;
         }
 
-        .access-tag.premium {
-          background: #fef3c7;
-          color: #b45309;
+        .book-3d-volume {
+          width: 94px;
+          height: 128px;
+          border-radius: 3px 7px 7px 3px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 8px;
+          box-shadow:
+            -3px 0 5px rgba(0, 0, 0, 0.16),
+            6px 14px 26px -4px rgba(15, 23, 42, 0.26),
+            0 2px 6px rgba(0, 0, 0, 0.06);
+          transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
         }
 
-        /* Card Body */
+        .paper-card:hover .book-3d-volume {
+          transform: scale(1.05) translateY(-2px) rotate(-1deg);
+          box-shadow:
+            -3px 0 6px rgba(0, 0, 0, 0.18),
+            8px 18px 30px -4px rgba(15, 23, 42, 0.32),
+            0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .book-spine-crease {
+          position: absolute;
+          left: 6px;
+          top: 0;
+          bottom: 0;
+          width: 1.5px;
+          background: rgba(255, 255, 255, 0.35);
+          box-shadow: 1px 0 2px rgba(0, 0, 0, 0.15);
+        }
+
+        .book-pages-edge {
+          position: absolute;
+          right: -3px;
+          top: 4px;
+          bottom: 4px;
+          width: 3.5px;
+          background: repeating-linear-gradient(
+            to bottom,
+            #f8fafc 0px,
+            #e2e8f0 1.5px,
+            #ffffff 3px
+          );
+          border-radius: 0 2px 2px 0;
+          box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .book-texture-dots {
+          position: absolute;
+          inset: 0;
+          background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+          background-size: 11px 11px;
+          border-radius: 3px 7px 7px 3px;
+          pointer-events: none;
+        }
+
+        .book-center-emblem {
+          position: relative;
+          z-index: 2;
+          width: 38px;
+          height: 38px;
+          border-radius: 11px;
+          background: rgba(255, 255, 255, 0.18);
+          backdrop-filter: blur(6px);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        /* Pastille flottante de note étoilée */
+        .cover-rating-pill {
+          position: absolute;
+          left: 9px;
+          bottom: 9px;
+          z-index: 4;
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(6px);
+          padding: 2.5px 7px;
+          border-radius: 9999px;
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+        }
+
+        .cover-rating-num {
+          font-size: 11px;
+          font-weight: 700;
+          color: #0f172a;
+          line-height: 1;
+        }
+
+        /* Voile d'effleurement avec bouton Consulter au survol */
+        .cover-hover-action {
+          position: absolute;
+          inset: 0;
+          background: rgba(15, 23, 42, 0.38);
+          backdrop-filter: blur(2px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0;
+          transition: opacity 0.22s ease;
+          z-index: 5;
+        }
+
+        .paper-card:hover .cover-hover-action {
+          opacity: 1;
+        }
+
+        .hover-view-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          padding: 8px 20px;
+          font-size: 13px;
+          font-weight: 700;
+          color: #ffffff;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          border: none;
+          border-radius: 9999px;
+          box-shadow: 0 4px 14px rgba(217, 119, 6, 0.45);
+          cursor: pointer;
+          transform: translateY(4px);
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .paper-card:hover .hover-view-btn {
+          transform: translateY(0);
+        }
+
+        .hover-view-btn:hover {
+          background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%);
+          transform: translateY(-1px) scale(1.03);
+          box-shadow: 0 6px 18px rgba(217, 119, 6, 0.55);
+        }
+
+        /* Card Content & Essentials */
         .paper-card-body {
-          padding: 16px 18px;
+          padding: 12px 14px 14px;
           display: flex;
           flex-direction: column;
           flex: 1;
+          background: #ffffff;
+          box-sizing: border-box;
+          gap: 6px;
         }
 
         .paper-title {
-          font-size: 15px;
+          font-size: 13.5px;
           font-weight: 800;
           color: #0f172a;
-          line-height: 1.4;
-          margin-bottom: 12px;
+          line-height: 1.35;
+          margin: 0;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
-          min-height: 42px;
+          min-height: 36px;
         }
 
-        .paper-meta-details {
+        .paper-author-line {
+          font-size: 11.5px;
+          color: #64748b;
+          margin: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .author-source {
+          font-weight: 700;
+          color: #475569;
+        }
+
+        .subject-dot {
+          color: #94a3b8;
+        }
+
+        .paper-essentials-footer {
+          margin-top: auto;
           display: flex;
-          flex-direction: column;
-          gap: 4px;
-          margin-bottom: 16px;
+          align-items: center;
+          justify-content: space-between;
+          gap: 6px;
           padding-top: 8px;
           border-top: 1px solid #f1f5f9;
         }
 
-        .detail-item {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 12px;
-        }
-
-        .detail-label {
-          color: #94a3b8;
-          font-weight: 600;
-        }
-
-        .detail-value {
-          color: #475569;
+        .format-badge-chip {
+          font-size: 10px;
           font-weight: 700;
-          display: -webkit-box;
-          -webkit-line-clamp: 1;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
+          color: #64748b;
+          background: #f1f5f9;
+          padding: 2.5px 7px;
+          border-radius: 6px;
+          letter-spacing: 0.02em;
         }
 
-        .paper-actions {
-          margin-top: auto;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .consult-doc-btn {
-          width: 100%;
-          height: 38px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-          color: #ffffff;
-          border: none;
+        .access-pill-badge {
+          font-size: 10px;
+          font-weight: 800;
+          padding: 2.5px 8px;
           border-radius: 9999px;
-          font-size: 13px;
-          font-weight: 700;
-          cursor: pointer;
-          box-shadow: 0 3px 10px rgba(217, 119, 6, 0.25);
-          transition: all 0.2s ease;
+          letter-spacing: 0.02em;
         }
 
-        .consult-doc-btn:hover {
-          background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%);
-          box-shadow: 0 6px 14px rgba(217, 119, 6, 0.35);
-          transform: translateY(-1px);
+        .access-pill-badge.access-free {
+          background: #ecfdf5;
+          color: #059669;
+          border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
-        .ai-revise-btn {
+        .access-pill-badge.access-premium,
+        .access-pill-badge.access-subscription {
+          background: #fef3c7;
+          color: #b45309;
+          border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .card-ai-revise-btn {
           width: 100%;
-          height: 34px;
+          height: 30px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 6px;
-          background: #ffffff;
+          gap: 5px;
+          background: #faf5ff;
           color: #7c3aed;
-          border: 1px solid #ddd6fe;
-          border-radius: 9999px;
-          font-size: 12px;
+          border: 1px solid #e9d5ff;
+          border-radius: 8px;
+          font-size: 11px;
           font-weight: 700;
           cursor: pointer;
           transition: all 0.18s ease;
+          margin-top: 2px;
         }
 
-        .ai-revise-btn:hover {
-          background: #f5f3ff;
-          border-color: #c4b5fd;
+        .card-ai-revise-btn:hover {
+          background: #f3e8ff;
+          border-color: #d8b4fe;
           color: #6d28d9;
+          transform: translateY(-1px);
         }
 
         /* Empty state */

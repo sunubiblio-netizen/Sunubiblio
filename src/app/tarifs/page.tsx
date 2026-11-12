@@ -13,6 +13,8 @@ import { PricingFAQ } from '@/components/pricing/PricingFAQ';
 import { PricingCTA } from '@/components/pricing/PricingCTA';
 import { PlanCheckoutModal } from '@/components/pricing/PlanCheckoutModal';
 import { PricingPlan } from '@/types/pricing';
+import { addAdminSubscription } from '@/lib/adminCatalogStore';
+import { MOCK_PROFILE_USER } from '@/data/mockProfileData';
 
 export default function TarifsPage() {
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
@@ -77,7 +79,30 @@ export default function TarifsPage() {
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
         onSuccess={() => {
-          // Can redirect or trigger user profile update in future
+          if (selectedPlan && selectedPlan.price > 0) {
+            const now = new Date();
+            const planIdMap =
+              selectedPlan.slug === 'gold'
+                ? 'gold'
+                : selectedPlan.slug === 'simple'
+                ? 'simple'
+                : 'recommande';
+            addAdminSubscription({
+              id: `sub-live-${Date.now()}`,
+              subscriberName: MOCK_PROFILE_USER.displayName || 'Nouvel Abonné',
+              subscriberEmail: 'membre@sunubiblio.sn',
+              avatarUrl: MOCK_PROFILE_USER.avatarUrl || '/images/user-profile-logo.png',
+              planId: planIdMap,
+              planLabel: `Formule ${selectedPlan.name}`,
+              amountFcfa: selectedPlan.price,
+              paymentMethod: 'Wave',
+              dateFormatted: now.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }),
+              timeFormatted: now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+              status: 'Payé',
+              growthHint: 'Nouveau paiement en ligne • Actif',
+              isNew: true,
+            });
+          }
         }}
       />
 

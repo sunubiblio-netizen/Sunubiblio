@@ -514,12 +514,12 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
         }
 
         .user-bubble {
-          background: linear-gradient(135deg, #4338ca 0%, #4f46e5 50%, #6366f1 100%);
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
           color: #ffffff;
           padding: 12px 18px;
           border-radius: 20px;
           border-bottom-right-radius: 4px;
-          box-shadow: 0 4px 14px rgba(79, 70, 229, 0.18);
+          box-shadow: 0 4px 14px rgba(217, 119, 6, 0.22);
           word-break: break-word;
           overflow-wrap: anywhere;
           min-width: 0;
@@ -565,13 +565,13 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
           width: 28px;
           height: 28px;
           border-radius: 8px;
-          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+          background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
           color: #ffffff;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
-          box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+          box-shadow: 0 2px 6px rgba(245, 158, 11, 0.28);
         }
 
         .assistant-identity-info {
@@ -591,9 +591,9 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
           font-weight: 700;
           padding: 1.5px 8px;
           border-radius: 9999px;
-          background: rgba(99, 102, 241, 0.08);
-          color: #4f46e5;
-          border: 1px solid rgba(99, 102, 241, 0.18);
+          background: #fffbeb;
+          color: #b45309;
+          border: 1px solid rgba(245, 158, 11, 0.28);
         }
 
         .assistant-time {
@@ -884,11 +884,11 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
           gap: 8px;
           margin-top: 12px;
           padding: 8px 12px;
-          background: rgba(99, 102, 241, 0.04);
-          border: 1px dashed rgba(99, 102, 241, 0.25);
+          background: #fffbeb;
+          border: 1px dashed rgba(245, 158, 11, 0.35);
           border-radius: 8px;
           font-size: 11.5px;
-          color: #6366f1;
+          color: #b45309;
         }
 
         /* ACTIONS TOOLBAR */

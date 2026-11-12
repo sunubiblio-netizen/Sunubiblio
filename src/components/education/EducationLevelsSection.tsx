@@ -15,12 +15,7 @@ export const EducationLevelsSection: React.FC<EducationLevelsSectionProps> = ({
   onSelectLevel,
 }) => {
   const handleCardClick = (levelId: EducationCycleId) => {
-    onSelectLevel(selectedLevel === levelId ? 'all' : levelId);
-    // Smooth scroll directly to the catalog section
-    const target = document.getElementById('ressources');
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    onSelectLevel(levelId);
   };
 
   const getLevelIcon = (id: EducationCycleId) => {
