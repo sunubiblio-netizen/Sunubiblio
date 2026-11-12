@@ -224,13 +224,11 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
       <section className="cycle-top-header">
         <div className="container">
           <div className="cycle-identity-bar">
-            {/* Ligne 1 : Session et Statut officiel sur le même niveau */}
+            {/* Ligne 1 : Statut officiel uniquement pour aérer la carte */}
             <div className="identity-top-row">
-              <span className="session-pill">{cycle.sessionLabel}</span>
-
               <span className="status-pill">
                 <span className="status-dot" />
-                <span>{cycle.statusLabel}</span>
+                <span>{cycle.statusLabel.split('•')[0].trim()}</span>
               </span>
             </div>
 
@@ -266,7 +264,7 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M3 21h18M3 7v14M21 7v14M6 11h2M6 15h2M11 11h2M11 15h2M16 11h2M16 15h2M12 3 2 7h20L12 3z"/>
                   </svg>
-                  <span>Organisation pédagogique : <strong>{cycle.organization}</strong></span>
+                  <span><strong>{cycle.organization.split('•')[0].trim()}</strong></span>
                 </p>
               </div>
             </div>
@@ -2523,9 +2521,9 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           }
 
           .cycle-identity-bar {
-            padding: 12px 14px;
-            border-radius: 16px;
-            gap: 10px;
+            padding: 16px 16px;
+            border-radius: 18px;
+            gap: 14px;
             overflow: hidden;
             box-sizing: border-box;
           }
@@ -2600,24 +2598,28 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
 
           .cycle-full-name {
             font-size: 11.5px;
-            line-height: 1.35;
-            margin: 2px 0 0 0;
+            line-height: 1.4;
+            margin: 4px 0 0 0;
             color: #475569;
           }
 
           .cycle-org-line {
-            font-size: 10.5px;
-            line-height: 1.35;
+            font-size: 11px;
+            line-height: 1.4;
             white-space: normal;
             overflow: visible;
             text-overflow: clip;
-            margin-top: 3px;
-            align-items: flex-start;
+            margin-top: 6px;
+            align-items: center;
           }
 
           .cycle-org-line svg {
             flex-shrink: 0;
-            margin-top: 2px;
+            margin-top: 0;
+          }
+
+          .identity-bottom-row {
+            padding-top: 12px;
           }
 
           .identity-bottom-row .glass-info-trigger-btn {
