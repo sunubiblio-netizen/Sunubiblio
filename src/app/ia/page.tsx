@@ -409,24 +409,28 @@ export default function IAPage() {
           padding-bottom: 0;
         }
 
-        /* Décalage fluide quand le volet latéral est ouvert sur Desktop (supprime le grand vide à droite) */
+        /* La zone principale reste TOUJOURS à 100% de largeur pour que la scrollbar reste ancrée tout au bout à droite */
+        .ia-main-content {
+          width: 100% !important;
+          margin-left: 0 !important;
+        }
+
+        /* Décalage fluide intérieur quand le volet latéral est ouvert sur Desktop (la scrollbar ne bouge plus jamais) */
         @media (min-width: 901px) {
-          .ia-page-wrapper.has-sidebar-open .ia-top-toolbar-bar,
-          .ia-page-wrapper.has-sidebar-open .ia-main-content {
-            margin-left: 270px;
-            width: calc(100% - 270px);
+          .ia-page-wrapper.has-sidebar-open .ia-top-toolbar-bar {
+            padding-left: 280px;
+          }
+
+          .ia-page-wrapper.has-sidebar-open :global(.ai-workspace-conversation) {
+            padding-left: 270px;
           }
 
           .ia-page-wrapper.has-sidebar-open :global(.docked-composer-container) {
-            left: 270px;
+            padding-left: 286px;
           }
 
-          .ia-top-toolbar-bar,
-          .ia-main-content,
-          :global(.docked-composer-container) {
-            transition: margin-left 0.24s cubic-bezier(0.16, 1, 0.3, 1),
-                        width 0.24s cubic-bezier(0.16, 1, 0.3, 1),
-                        left 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+          .ia-top-toolbar-bar {
+            transition: padding-left 0.24s cubic-bezier(0.16, 1, 0.3, 1);
           }
         }
 

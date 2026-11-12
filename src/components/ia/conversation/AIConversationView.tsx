@@ -90,6 +90,8 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
           flex-direction: column;
           overflow-y: auto;
           overflow-x: hidden;
+          box-sizing: border-box;
+          transition: padding-left 0.24s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         @media (max-width: 768px) {
@@ -257,6 +259,8 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
           pointer-events: none; /* Allows scrolling behind the transparent fade area */
           padding: 24px 16px calc(env(safe-area-inset-bottom, 0px) + 12px) 16px;
           background: linear-gradient(to top, rgba(255, 255, 255, 1) 72%, rgba(255, 255, 255, 0) 100%);
+          box-sizing: border-box;
+          transition: padding-left 0.24s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .composer-dock-inner {
