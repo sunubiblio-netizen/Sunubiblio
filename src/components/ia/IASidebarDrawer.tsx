@@ -58,7 +58,7 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-            <span>Nouvelle discussion</span>
+            <span>Nouveau chat</span>
           </button>
 
           <button
@@ -160,6 +160,14 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
           display: flex;
           flex-direction: column;
           transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+        }
+
+        @media (max-width: 768px) {
+          .ia-sidebar-drawer {
+            top: calc(86px + env(safe-area-inset-top, 0px));
+            width: min(300px, 86vw);
+            box-shadow: 4px 0 24px rgba(15, 23, 42, 0.12);
+          }
         }
 
         .ia-sidebar-drawer.is-closed {

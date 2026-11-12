@@ -153,21 +153,6 @@ export default function IAPage() {
             </svg>
             <span className="toggle-label desktop-only">Menu SunuIA</span>
           </button>
-
-          {isConversationActive && (
-            <button
-              type="button"
-              onClick={handleResetChat}
-              className="new-chat-top-pill"
-              title="Démarrer une nouvelle discussion"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              <span>Nouveau chat</span>
-            </button>
-          )}
         </div>
 
         {/* Badge d'offre sobre sans chiffre visible (quota généreux automatique) */}
@@ -236,18 +221,19 @@ export default function IAPage() {
           position: relative;
         }
 
-        /* Topbar Permanente Fixe */
+        /* Topbar Permanente Fixe (Menu SunuIA à gauche, Offre à droite, toujours intacte) */
         .ia-top-toolbar-bar {
           position: sticky;
-          top: 72px; /* Sous la navbar */
+          top: 72px; /* Sous la navbar desktop */
           z-index: 95;
           display: flex;
           align-items: center;
           justify-content: space-between;
           padding: 8px 20px;
-          background: rgba(255, 255, 255, 0.96);
+          min-height: 48px;
+          background: rgba(255, 255, 255, 0.98);
           backdrop-filter: blur(8px);
-          border-bottom: 1px solid rgba(241, 245, 249, 0.9);
+          border-bottom: 1px solid rgba(241, 245, 249, 0.95);
         }
 
         .toolbar-left-group {
@@ -265,7 +251,7 @@ export default function IAPage() {
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          padding: 5px 12px;
+          padding: 6px 14px;
           border-radius: 9999px;
           font-size: 12px;
           font-weight: 700;
@@ -326,48 +312,32 @@ export default function IAPage() {
           box-shadow: 0 3px 10px rgba(245, 158, 11, 0.15);
         }
 
-        .new-chat-top-pill {
-          height: 36px;
-          padding: 0 12px;
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          background: #ffffff;
-          border: 1px solid rgba(226, 232, 240, 0.9);
-          border-radius: 9999px;
-          color: #0f172a;
-          font-size: 12px;
-          font-weight: 700;
-          cursor: pointer;
-          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
-          transition: all 0.18s ease;
-        }
-
-        .new-chat-top-pill:hover {
-          background: #f8fafc;
-          border-color: #cbd5e1;
-          transform: translateY(-1px);
-        }
-
         .desktop-only {
           display: inline-block;
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
           .desktop-only {
-            display: none;
+            display: none !important;
           }
           .ia-top-toolbar-bar {
-            top: 60px;
-            padding: 6px 12px;
+            top: calc(86px + env(safe-area-inset-top, 0px));
+            padding: 6px 14px;
+            min-height: 46px;
+            background: #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
           }
           .sidebar-floating-toggle-btn {
             height: 34px;
-            padding: 0 8px;
+            width: 36px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
           }
           .top-subscription-badge {
-            padding: 4px 10px;
-            font-size: 11.5px;
+            padding: 5px 12px;
+            font-size: 12px;
           }
         }
 
