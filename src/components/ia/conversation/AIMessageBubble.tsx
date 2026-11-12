@@ -316,9 +316,9 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
       aria-label={isUser ? 'Votre message' : "Réponse de l'Assistant Sunubiblio"}
     >
       {isUser ? (
-        /* USER MESSAGE: Compact right-aligned capsule without heavy borders */
-        <div className="user-message-container">
-          {message.attachments && message.attachments.length > 0 && (
+        /* USER MESSAGE: Compact right-aligned capsule without heavy borders, or Full-Width Canva on Edit */
+        <div className={`user-message-container ${isEditing ? 'is-editing-mode' : ''}`}>
+          {message.attachments && message.attachments.length > 0 && !isEditing && (
             <div className="user-attachments-tray">
               {message.attachments.map((att) => (
                 <div key={att.id} className={`user-att-pill ${att.type}`}>
@@ -646,6 +646,15 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
           flex-direction: column;
           align-items: flex-end;
           min-width: 0;
+          transition: all 0.2s ease;
+        }
+
+        /* Quand on édite le message, le canva s'étend sur 100% de la largeur comme ChatGPT */
+        .user-message-container.is-editing-mode {
+          align-self: stretch !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          align-items: stretch !important;
         }
 
         .user-attachments-tray {
@@ -1098,71 +1107,75 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
           }
         }
 
-        /* CANVA D'ÉDITION DU MESSAGE UTILISATEUR (Image 3 ChatGPT) */
+        /* CANVA D'ÉDITION DU MESSAGE UTILISATEUR (Exactement comme Image 2 ChatGPT) */
         .user-edit-canva-box {
-          width: 100%;
-          min-width: min(100%, 500px);
-          background: #f4f4f4;
-          border-radius: 18px;
-          padding: 14px 16px;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+          width: 100% !important;
+          max-width: 100% !important;
+          background: #f4f4f4 !important;
+          border-radius: 22px !important;
+          padding: 16px 20px 14px 20px !important;
+          box-sizing: border-box !important;
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 12px !important;
+          box-shadow: none !important;
+          border: 1px solid rgba(0, 0, 0, 0.04) !important;
         }
 
         .edit-canva-textarea {
-          width: 100%;
-          background: transparent;
-          border: none;
-          outline: none;
-          font-family: inherit;
-          font-size: 15px;
-          line-height: 1.5;
-          color: #0f172a;
-          resize: none;
-          padding: 0;
+          width: 100% !important;
+          background: transparent !important;
+          border: none !important;
+          outline: none !important;
+          font-family: inherit !important;
+          font-size: 15.5px !important;
+          line-height: 1.6 !important;
+          color: #0d0d0d !important;
+          resize: none !important;
+          padding: 0 !important;
+          min-height: 54px !important;
+          box-sizing: border-box !important;
         }
 
         .edit-canva-footer-row {
-          display: flex;
-          align-items: center;
-          justify-content: flex-end;
-          gap: 8px;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: flex-end !important;
+          gap: 10px !important;
+          margin-top: 4px !important;
         }
 
         .btn-canva-cancel {
-          padding: 6px 14px;
-          border-radius: 9999px;
-          border: 1px solid #d1d5db;
-          background: #ffffff;
-          font-size: 13px;
-          font-weight: 600;
-          color: #475569;
-          cursor: pointer;
-          transition: all 0.15s ease;
+          padding: 7px 16px !important;
+          border-radius: 9999px !important;
+          border: 1px solid #d1d5db !important;
+          background: #ffffff !important;
+          font-size: 13.5px !important;
+          font-weight: 600 !important;
+          color: #0f172a !important;
+          cursor: pointer !important;
+          transition: all 0.15s ease !important;
         }
 
         .btn-canva-cancel:hover {
-          background: #f1f5f9;
-          color: #0f172a;
+          background: #f1f5f9 !important;
         }
 
         .btn-canva-send {
-          padding: 7px 18px;
-          border-radius: 9999px;
-          border: none;
-          background: #0d0d0d;
-          font-size: 13px;
-          font-weight: 700;
-          color: #ffffff;
-          cursor: pointer;
-          transition: all 0.15s ease;
+          padding: 8px 22px !important;
+          border-radius: 9999px !important;
+          border: none !important;
+          background: #0d0d0d !important;
+          font-size: 13.5px !important;
+          font-weight: 700 !important;
+          color: #ffffff !important;
+          cursor: pointer !important;
+          transition: all 0.15s ease !important;
         }
 
         .btn-canva-send:hover {
-          background: #262626;
-          transform: translateY(-1px);
+          background: #262626 !important;
+          transform: translateY(-1px) !important;
         }
 
         /* MODALE PARTAGER LE PROMPT (Image 4 ChatGPT) */

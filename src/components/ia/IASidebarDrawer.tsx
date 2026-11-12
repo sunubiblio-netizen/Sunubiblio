@@ -415,18 +415,23 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
           bottom: 0;
           left: 0;
           width: 270px;
+          height: calc(100vh - 72px);
+          max-height: calc(100vh - 72px);
           background: #ffffff;
           border-right: 1px solid rgba(226, 232, 240, 0.95);
           box-shadow: 2px 0 16px rgba(15, 23, 42, 0.04);
           z-index: 999;
           display: flex;
           flex-direction: column;
+          overflow: hidden;
           transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
         }
 
         @media (max-width: 768px) {
           .ia-sidebar-drawer {
             top: calc(86px + env(safe-area-inset-top, 0px));
+            height: calc(100vh - 86px - env(safe-area-inset-top, 0px));
+            max-height: calc(100vh - 86px - env(safe-area-inset-top, 0px));
             width: min(300px, 86vw);
             box-shadow: 4px 0 24px rgba(15, 23, 42, 0.12);
           }
@@ -496,7 +501,8 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
         }
 
         .sidebar-scrollable-body {
-          flex: 1;
+          flex: 1 1 0%;
+          min-height: 0;
           overflow-y: auto;
           padding: 14px 10px;
           display: flex;
@@ -741,15 +747,17 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
         }
 
         /* -------------------------------------------------------------
-           FOOTER (Avatar SB + Sunu Biblio Free + Profiter de l'offre)
+           FOOTER (Avatar SB + Sunu Biblio Free + Profiter de l'offre - Style ChatGPT)
         ------------------------------------------------------------- */
         .sidebar-footer {
-          padding: 12px 14px;
-          border-top: 1px solid rgba(241, 245, 249, 0.95);
+          flex-shrink: 0;
+          padding: 12px 14px calc(14px + env(safe-area-inset-bottom, 0px)) 14px;
+          border-top: 1px solid rgba(226, 232, 240, 0.9);
           background: #ffffff;
           display: flex;
           flex-direction: column;
           gap: 10px;
+          z-index: 10;
         }
 
         .sidebar-user-pill {
@@ -792,33 +800,33 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
           font-weight: 500;
         }
 
+        /* Bouton "Profiter de l'offre" soigné et moderne, inspiré de ChatGPT */
         .sidebar-offer-action-btn {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 9px;
+          gap: 8px;
           width: 100%;
           height: 42px;
-          background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%);
-          border: 1.5px solid #f59e0b;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
           border-radius: 9999px;
-          font-size: 13px;
-          font-weight: 800;
-          color: #92400e;
+          font-size: 13.5px;
+          font-weight: 600;
+          color: #0f172a;
           text-decoration: none;
           cursor: pointer;
-          transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-          box-shadow: 0 2px 8px rgba(245, 158, 11, 0.18);
-          position: relative;
-          overflow: hidden;
+          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+          box-sizing: border-box;
         }
 
         .sidebar-offer-action-btn:hover {
-          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-          color: #ffffff;
-          border-color: #d97706;
-          transform: translateY(-1.5px);
-          box-shadow: 0 6px 16px rgba(245, 158, 11, 0.32);
+          background: #f8fafc;
+          border-color: #cbd5e1;
+          color: #020617;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
         }
 
         .sidebar-offer-action-btn:hover .gift-symbol {
@@ -827,8 +835,8 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
 
         .gift-symbol {
           font-size: 15px;
+          line-height: 1;
           transition: transform 0.2s ease;
-          filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
         }
       `}</style>
     </>
