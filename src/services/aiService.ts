@@ -138,7 +138,7 @@ export const AIService = {
 
       case 'assistant':
       default:
-        const lowerContent = params.content.toLowerCase();
+        const lowerContent = params.content.toLowerCase().trim();
         const isPlagiarismIntent = lowerContent.includes('plagiat') || 
           lowerContent.includes('similarit') || 
           lowerContent.includes('mémoire') || 
@@ -150,11 +150,19 @@ export const AIService = {
             `Souhaitez-vous lancer une **vérification de similarité documentaire (antiplagiat)** sur ce fichier ?\n\n` +
             `Notre outil dédié analyse les passages et calcule un score de similarité par rapport aux ressources pédagogiques et institutionnelles de Sunubiblio.\n\n` +
             `👉 **[Ouvrir l'outil Vérification Antiplagiat](/ia/antiplagiat)**`;
+        } else if (lowerContent === 'bonjour' || lowerContent === 'salut' || lowerContent === 'slt' || lowerContent === 'coucou' || lowerContent.startsWith('bonjour') || lowerContent.startsWith('bonsoir')) {
+          generatedText = `Bonjour ! 😊 Comment puis-je vous aider aujourd'hui ?\n\n` +
+            `Vous pouvez me demander d'expliquer une notion complexe, de résumer un document, de préparer un QCM ou d'organiser vos révisions sur Sunubiblio.`;
+        } else if (lowerContent.includes('comment tu vas') || lowerContent.includes('comment vas-tu') || lowerContent.includes('comment tuvas') || lowerContent.includes('ça va')) {
+          generatedText = `Je vais très bien, merci ! 😊 Je suis toujours prêt à vous accompagner dans vos études et vos recherches documentaires.\n\n` +
+            `Sur quel sujet ou devoir souhaitez-vous travailler en ce moment ?`;
         } else {
-          generatedText = `Bonjour ! J'ai bien analysé votre demande :\n\n` +
-            `> "${params.content}"\n\n` +
-            (hasAttachments ? `J'ai également pris en compte les pièces jointes associées : **${attachmentContext}**.\n\n` : '') +
-            `Je suis configuré pour vous assister de façon optimale sur la plateforme Sunubiblio. Que souhaitez-vous approfondir maintenant ? Vous pouvez me demander d'élaborer une fiche de révision, d'extraire les définitions clés, de vérifier la similarité d'un document ou de préparer une évaluation sur mesure.`;
+          generatedText = `J'ai bien pris en compte votre message.` +
+            (hasAttachments ? ` J'ai également analysé les documents joints : **${attachmentContext}**.\n\n` : `\n\n`) +
+            `Je suis configuré pour vous apporter des explications rigoureuses et adaptées aux programmes éducatifs et concours. Que souhaitez-vous approfondir en priorité ?\n\n` +
+            `* **Résumer** ou synthétiser les concepts clés\n` +
+            `* **Expliquer** la démarche méthodologique pas à pas\n` +
+            `* **Créer des exercices** d'entraînement ou un QCM d'évaluation`;
         }
         break;
     }

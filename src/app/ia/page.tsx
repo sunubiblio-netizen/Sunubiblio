@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { IAHeroCentered } from '@/components/ia/IAHeroCentered';
 import { AIComposer } from '@/components/ia/composer/AIComposer';
@@ -26,9 +26,9 @@ export default function IAPage() {
       isPinned: true,
       messages: [
         { id: 'm-1', role: 'user', content: 'bonjour', timestamp: '15:52' },
-        { id: 'm-2', role: 'assistant', content: "Bonjour ! 😊 J'espère que vous allez bien.\n\nComment se passe votre journée ? Ravi de vous retrouver !", timestamp: '15:52' },
-        { id: 'm-3', role: 'user', content: 'salut', timestamp: '15:53' },
-        { id: 'm-4', role: 'assistant', content: "Salut ! 😁 Ravi de vous retrouver. Comment allez-vous aujourd'hui ? On travaille sur Hampathé ou vous avez un nouveau projet en tête ?", timestamp: '15:53' }
+        { id: 'm-2', role: 'assistant', content: "Bonjour ! 😊 Comment puis-je vous aider aujourd'hui ?\n\nVous pouvez me demander d'expliquer une notion complexe, de résumer un document, de préparer un QCM ou d'organiser vos révisions sur Sunubiblio.", timestamp: '15:52' },
+        { id: 'm-3', role: 'user', content: 'comment tuvas', timestamp: '15:53' },
+        { id: 'm-4', role: 'assistant', content: "Je vais très bien, merci ! 😊 Je suis toujours prêt à vous accompagner dans vos études et vos recherches documentaires.\n\nSur quel sujet ou devoir souhaitez-vous travailler en ce moment ?", timestamp: '15:53' }
       ]
     },
     { id: 'chat-salutation-soir', title: 'Salutation du soir', date: 'Aujourd’hui', messages: [] },
@@ -43,6 +43,34 @@ export default function IAPage() {
   ]);
 
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
+
+  // Charger les discussions depuis localStorage au montage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('sunubiblio_ia_threads');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setThreads(parsed);
+          }
+        }
+      } catch (err) {
+        console.error('Erreur chargement localStorage:', err);
+      }
+    }
+  }, []);
+
+  // Sauvegarder automatiquement l'historique dans localStorage à chaque mise à jour (comme ChatGPT)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('sunubiblio_ia_threads', JSON.stringify(threads));
+      } catch (err) {
+        console.error('Erreur sauvegarde localStorage:', err);
+      }
+    }
+  }, [threads]);
 
   const isConversationActive = messages.length > 0;
 
@@ -331,6 +359,27 @@ export default function IAPage() {
           height: calc(100vh - 120px);
           overflow: hidden;
           padding-bottom: 0;
+        }
+
+        /* Décalage fluide quand le volet latéral est ouvert sur Desktop (supprime le grand vide à droite) */
+        @media (min-width: 901px) {
+          .ia-page-wrapper.has-sidebar-open .ia-top-toolbar-bar,
+          .ia-page-wrapper.has-sidebar-open .ia-main-content {
+            margin-left: 270px;
+            width: calc(100% - 270px);
+          }
+
+          .ia-page-wrapper.has-sidebar-open :global(.docked-composer-container) {
+            left: 270px;
+          }
+
+          .ia-top-toolbar-bar,
+          .ia-main-content,
+          :global(.docked-composer-container) {
+            transition: margin-left 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+                        width 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+                        left 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+          }
         }
 
         @media (max-width: 768px) {

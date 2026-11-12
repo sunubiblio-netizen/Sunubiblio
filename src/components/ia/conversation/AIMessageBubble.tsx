@@ -333,8 +333,60 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
             <p className="user-text-content">{message.content}</p>
           </div>
 
-          <div className="user-meta-bar">
-            <span className="meta-time">{message.timestamp}</span>
+          {/* 3 icônes d'actions discrètes au survol sous le message utilisateur (Copier, Partager, Modifier) */}
+          <div className="user-message-actions-row">
+            <button
+              type="button"
+              onClick={handleCopyText}
+              className="btn-user-action-icon"
+              title="Copier le message"
+              aria-label="Copier"
+            >
+              {copied ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.4">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== 'undefined' && navigator.clipboard) {
+                  navigator.clipboard.writeText(message.content);
+                  alert('Texte copié pour partage');
+                }
+              }}
+              className="btn-user-action-icon"
+              title="Partager le message"
+              aria-label="Partager"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              onClick={onRetry}
+              className="btn-user-action-icon"
+              title="Modifier et renvoyer"
+              aria-label="Modifier"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+            </button>
           </div>
         </div>
       ) : (
@@ -524,14 +576,51 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
           overflow-wrap: anywhere;
         }
 
-        .user-meta-bar {
-          margin-top: 4px;
-          padding-right: 4px;
+        /* 3 icônes sous le message utilisateur, invisibles par défaut et affichées au survol (exactement comme ChatGPT) */
+        .user-message-actions-row {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-top: 5px;
+          padding-right: 2px;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.15s ease, transform 0.15s ease;
+          transform: translateY(-2px);
         }
 
-        .meta-time {
-          font-size: 11px;
+        .user-message-container:hover .user-message-actions-row {
+          opacity: 1;
+          pointer-events: auto;
+          transform: translateY(0);
+        }
+
+        .btn-user-action-icon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 26px;
+          height: 26px;
+          padding: 0;
+          background: transparent;
+          border: none;
+          border-radius: 6px;
           color: #94a3b8;
+          cursor: pointer;
+          transition: all 0.12s ease;
+        }
+
+        .btn-user-action-icon:hover {
+          background: #f1f5f9;
+          color: #0f172a;
+        }
+
+        @media (max-width: 640px) {
+          .user-message-actions-row {
+            opacity: 0.85;
+            pointer-events: auto;
+            transform: none;
+          }
         }
 
         /* -------------------------------------------------------------
@@ -620,12 +709,12 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
 
         :global(.msg-quote) {
           margin: 10px 0;
-          padding: 8px 14px;
-          border-left: 3px solid #f59e0b;
-          background: #fffbeb;
-          border-radius: 0 8px 8px 0;
+          padding: 6px 14px;
+          border-left: 3px solid #cbd5e1;
+          background: transparent;
           font-size: 14px;
-          color: #334155;
+          color: #64748b;
+          font-style: italic;
         }
 
         :global(.msg-quote p) {
