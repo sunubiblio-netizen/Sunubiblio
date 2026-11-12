@@ -224,8 +224,12 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
       <section className="cycle-top-header">
         <div className="container">
           <div className="cycle-identity-bar">
-            {/* Ligne 1 : Statut officiel uniquement pour aérer la carte */}
+            {/* Ligne 1 : Session et Statut officiel alignés sur le même niveau */}
             <div className="identity-top-row">
+              {cycle.id !== 'primaire' && (
+                <span className="session-pill">{cycle.sessionLabel}</span>
+              )}
+
               <span className="status-pill">
                 <span className="status-dot" />
                 <span>{cycle.statusLabel.split('•')[0].trim()}</span>
@@ -2529,22 +2533,34 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           }
 
           .identity-top-row {
-            gap: 6px;
-            flex-wrap: wrap;
+            gap: 8px;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+            align-items: center;
           }
 
           .session-pill {
-            font-size: 10.5px;
-            padding: 3px 9px;
-            max-width: 100%;
+            font-size: 9px;
+            padding: 3px 7px;
+            white-space: nowrap;
+            flex-shrink: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
 
           .status-pill {
-            font-size: 10.5px;
-            padding: 3px 9px;
-            max-width: 100%;
-            white-space: normal;
-            line-height: 1.25;
+            font-size: 9px;
+            padding: 3px 7px;
+            gap: 4px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            line-height: 1.2;
+          }
+
+          .status-pill .status-dot {
+            width: 5.5px;
+            height: 5.5px;
           }
 
           .identity-middle-row {
