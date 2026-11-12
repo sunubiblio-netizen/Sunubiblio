@@ -192,9 +192,9 @@ export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
 
         .btn-plus-trigger:hover,
         .btn-plus-trigger.active {
-          background: #eef2ff;
-          color: #4f46e5;
-          border-color: #6366f1;
+          background: #fffbeb;
+          color: #b45309;
+          border-color: #f59e0b;
           transform: scale(1.04);
         }
 
@@ -246,15 +246,15 @@ export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
         }
 
         .menu-item:hover {
-          background: #f8faff;
+          background: #fffbeb;
         }
 
         .menu-item.highlight-item {
-          background: rgba(99, 102, 241, 0.04);
+          background: rgba(245, 158, 11, 0.06);
         }
 
         .menu-item.highlight-item:hover {
-          background: rgba(99, 102, 241, 0.09);
+          background: rgba(245, 158, 11, 0.14);
         }
 
         .item-icon {
@@ -273,18 +273,18 @@ export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
         }
 
         .item-icon.img {
-          background: #fdf2f8;
-          color: #ec4899;
+          background: #fef2f2;
+          color: #e11d48;
         }
 
         .item-icon.lib {
-          background: #f5f3ff;
-          color: #7c3aed;
+          background: #fffbeb;
+          color: #b45309;
         }
 
         .item-icon.txt {
-          background: #faf5ff;
-          color: #9333ea;
+          background: #f8fafc;
+          color: #0f172a;
         }
 
         .item-icon.file {

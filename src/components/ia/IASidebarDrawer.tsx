@@ -576,9 +576,17 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
         }
 
         .sidebar-recent-item-wrap:hover,
-        .sidebar-recent-item-wrap.is-active,
         .sidebar-recent-item-wrap.menu-active {
           background: #f1f5f9;
+        }
+
+        .sidebar-recent-item-wrap.is-active {
+          background: #fffbeb;
+        }
+
+        .sidebar-recent-item-wrap.is-active .recent-title {
+          font-weight: 700;
+          color: #b45309;
         }
 
         .sidebar-recent-item-btn {
@@ -613,7 +621,12 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
           flex-shrink: 0;
         }
 
-        .thread-pin-icon,
+        .thread-pin-icon {
+          color: #f59e0b;
+          display: inline-flex;
+          align-items: center;
+        }
+
         .thread-lock-icon {
           color: #64748b;
           display: inline-flex;
@@ -800,43 +813,48 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
           font-weight: 500;
         }
 
-        /* Bouton "Profiter de l'offre" soigné et moderne, inspiré de ChatGPT */
+        /* Bouton "Profiter de l'offre" stylisé exactement comme "Offre gratuite" avec taille réduite */
+        :global(.sidebar-offer-action-btn),
         .sidebar-offer-action-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          width: 100%;
-          height: 42px;
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          border-radius: 9999px;
-          font-size: 13.5px;
-          font-weight: 600;
-          color: #0f172a;
-          text-decoration: none;
-          cursor: pointer;
-          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
-          box-sizing: border-box;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 6px !important;
+          width: 100% !important;
+          height: 34px !important;
+          padding: 6px 14px !important;
+          background: #f8fafc !important;
+          border: 1px solid #e2e8f0 !important;
+          border-radius: 9999px !important;
+          font-size: 11.5px !important;
+          font-weight: 700 !important;
+          color: #475569 !important;
+          text-decoration: none !important;
+          cursor: pointer !important;
+          user-select: none !important;
+          transition: all 0.18s ease !important;
+          box-sizing: border-box !important;
         }
 
+        :global(.sidebar-offer-action-btn:hover),
         .sidebar-offer-action-btn:hover {
-          background: #f8fafc;
-          border-color: #cbd5e1;
-          color: #020617;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+          background: #fffbeb !important;
+          border-color: #f59e0b !important;
+          color: #b45309 !important;
+          transform: translateY(-1px) !important;
+          box-shadow: 0 2px 8px rgba(245, 158, 11, 0.14) !important;
         }
 
+        :global(.sidebar-offer-action-btn:hover .gift-symbol),
         .sidebar-offer-action-btn:hover .gift-symbol {
-          transform: scale(1.15) rotate(-6deg);
+          transform: scale(1.12) rotate(-4deg) !important;
         }
 
+        :global(.gift-symbol),
         .gift-symbol {
-          font-size: 15px;
-          line-height: 1;
-          transition: transform 0.2s ease;
+          font-size: 13px !important;
+          line-height: 1 !important;
+          transition: transform 0.2s ease !important;
         }
       `}</style>
     </>

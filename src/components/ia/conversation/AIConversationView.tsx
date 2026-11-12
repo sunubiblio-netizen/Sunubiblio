@@ -134,8 +134,8 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
           width: 8px;
           height: 8px;
           border-radius: 50%;
-          background: #6366f1;
-          box-shadow: 0 0 8px #6366f1;
+          background: #10b981;
+          box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
         }
 
         .btn-new-chat-session {
@@ -146,7 +146,7 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
           background: #ffffff;
           border: 1px solid rgba(226, 232, 240, 0.9);
           border-radius: 9999px;
-          color: #4f46e5;
+          color: #0f172a;
           font-size: 12.5px;
           font-weight: 700;
           cursor: pointer;
@@ -155,8 +155,9 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
         }
 
         .btn-new-chat-session:hover {
-          background: #eef2ff;
-          border-color: #6366f1;
+          background: #fffbeb;
+          border-color: #f59e0b;
+          color: #b45309;
           transform: translateY(-1px);
         }
 

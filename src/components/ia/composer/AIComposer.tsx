@@ -281,7 +281,7 @@ export const AIComposer: React.FC<AIComposerProps> = ({
           background: #ffffff;
           border: 1.5px solid rgba(226, 232, 240, 0.95);
           border-radius: 26px;
-          box-shadow: 0 12px 34px -6px rgba(15, 23, 42, 0.07), 0 2px 8px rgba(99, 102, 241, 0.04);
+          box-shadow: 0 12px 34px -6px rgba(15, 23, 42, 0.07), 0 2px 8px rgba(245, 158, 11, 0.04);
           padding: 14px 18px 12px 18px;
           transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }

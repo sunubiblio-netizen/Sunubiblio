@@ -365,8 +365,14 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
                     }
                   }}
                   className="btn-canva-send"
+                  title="Envoyer la modification"
+                  aria-label="Envoyer"
                 >
-                  Envoyer
+                  <span>Envoyer</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="12" y1="19" x2="12" y2="5"></line>
+                    <polyline points="5 12 12 5 19 12"></polyline>
+                  </svg>
                 </button>
               </div>
             </div>
@@ -748,8 +754,8 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
         }
 
         .btn-user-action-icon:hover {
-          background: #f1f5f9;
-          color: #0f172a;
+          background: #fffbeb;
+          color: #b45309;
         }
 
         @media (max-width: 640px) {
@@ -1083,8 +1089,8 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
         }
 
         .btn-action-discrete:hover {
-          background: #f1f5f9;
-          color: #0f172a;
+          background: #fffbeb;
+          color: #b45309;
         }
 
         @media (max-width: 640px) {
@@ -1107,19 +1113,25 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
           }
         }
 
-        /* CANVA D'ÉDITION DU MESSAGE UTILISATEUR (Exactement comme Image 2 ChatGPT) */
+        /* CANVA D'ÉDITION DU MESSAGE UTILISATEUR (Pleine largeur & couleurs Sunubiblio) */
         .user-edit-canva-box {
           width: 100% !important;
           max-width: 100% !important;
-          background: #f4f4f4 !important;
+          background: #ffffff !important;
           border-radius: 22px !important;
           padding: 16px 20px 14px 20px !important;
           box-sizing: border-box !important;
           display: flex !important;
           flex-direction: column !important;
           gap: 12px !important;
-          box-shadow: none !important;
-          border: 1px solid rgba(0, 0, 0, 0.04) !important;
+          box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04) !important;
+          border: 1.5px solid rgba(226, 232, 240, 0.95) !important;
+          transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+        }
+
+        .user-edit-canva-box:focus-within {
+          border-color: #f59e0b !important;
+          box-shadow: 0 6px 22px rgba(245, 158, 11, 0.12), 0 0 0 3px rgba(245, 158, 11, 0.14) !important;
         }
 
         .edit-canva-textarea {
@@ -1130,7 +1142,7 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
           font-family: inherit !important;
           font-size: 15.5px !important;
           line-height: 1.6 !important;
-          color: #0d0d0d !important;
+          color: #0f172a !important;
           resize: none !important;
           padding: 0 !important;
           min-height: 54px !important;
@@ -1148,34 +1160,48 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
         .btn-canva-cancel {
           padding: 7px 16px !important;
           border-radius: 9999px !important;
-          border: 1px solid #d1d5db !important;
+          border: 1px solid #e2e8f0 !important;
           background: #ffffff !important;
           font-size: 13.5px !important;
           font-weight: 600 !important;
-          color: #0f172a !important;
+          color: #64748b !important;
           cursor: pointer !important;
           transition: all 0.15s ease !important;
         }
 
         .btn-canva-cancel:hover {
-          background: #f1f5f9 !important;
+          background: #f8fafc !important;
+          border-color: #cbd5e1 !important;
+          color: #0f172a !important;
         }
 
+        /* Bouton Envoyer du canva : assorti à la flèche de la boîte de dialogue (Navy + Or Sunubiblio) */
         .btn-canva-send {
-          padding: 8px 22px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 7px !important;
+          padding: 8px 20px !important;
           border-radius: 9999px !important;
           border: none !important;
-          background: #0d0d0d !important;
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+          color: #fbbf24 !important;
           font-size: 13.5px !important;
           font-weight: 700 !important;
-          color: #ffffff !important;
           cursor: pointer !important;
-          transition: all 0.15s ease !important;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2) !important;
         }
 
         .btn-canva-send:hover {
-          background: #262626 !important;
-          transform: translateY(-1px) !important;
+          background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+          color: #f59e0b !important;
+          transform: translateY(-1px) scale(1.02) !important;
+          box-shadow: 0 6px 18px rgba(15, 23, 42, 0.28) !important;
+        }
+
+        .btn-canva-send:active {
+          transform: scale(0.97) !important;
         }
 
         /* MODALE PARTAGER LE PROMPT (Image 4 ChatGPT) */
