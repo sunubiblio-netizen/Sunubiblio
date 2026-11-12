@@ -49,22 +49,14 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
             />
           ))}
 
-          {/* Thinking / Generation Animation (Compact & Elegant) */}
+          {/* Thinking / Generation Animation (Discret style ChatGPT) */}
           {isLoading && (
             <div className="assistant-thinking-indicator" role="status" aria-live="polite">
-              <div className="thinking-avatar">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-              </div>
-              <div className="thinking-content">
-                <span className="thinking-name">Assistant Sunubiblio</span>
-                <div className="typing-dots-pill">
-                  <span className="dot" />
-                  <span className="dot" />
-                  <span className="dot" />
-                  <span className="thinking-label">formule votre réponse...</span>
-                </div>
+              <div className="typing-dots-pill">
+                <span className="dot" />
+                <span className="dot" />
+                <span className="dot" />
+                <span className="thinking-label">Génération en cours...</span>
               </div>
             </div>
           )}
@@ -90,14 +82,21 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
         .ai-workspace-conversation {
           position: relative;
           width: 100%;
-          min-height: calc(100vh - 180px);
+          height: calc(100vh - 120px);
           display: flex;
           flex-direction: column;
           align-items: center;
+          overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+          .ai-workspace-conversation {
+            height: calc(100vh - 134px);
+          }
         }
 
         /* -------------------------------------------------------------
-           CENTERED COLUMN (Strictly 800px max, perfectly balanced)
+           CENTERED COLUMN (Strictly 800px max, only this area scrolls)
         ------------------------------------------------------------- */
         .conversation-column {
           width: 100%;
@@ -107,6 +106,9 @@ export const AIConversationView: React.FC<AIConversationViewProps> = ({
           min-width: 0;
           display: flex;
           flex-direction: column;
+          flex: 1;
+          overflow-y: auto;
+          overflow-x: hidden;
         }
 
         .conversation-toolbar {

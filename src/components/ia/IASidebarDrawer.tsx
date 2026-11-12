@@ -1,14 +1,31 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { AIMode } from '@/types/ai';
+import { AIMode, AIMessage } from '@/types/ai';
+
+export interface IAChatThread {
+  id: string;
+  title: string;
+  messages: AIMessage[];
+  isPinned?: boolean;
+  isLocked?: boolean;
+  date: string;
+}
 
 interface IASidebarDrawerProps {
   isOpen: boolean;
   onToggle: () => void;
   onNewChat: () => void;
   onSelectToolMode?: (mode: AIMode) => void;
+  threads?: IAChatThread[];
+  activeThreadId?: string | null;
+  onSelectThread?: (threadId: string) => void;
+  onRenameThread?: (threadId: string, newTitle: string) => void;
+  onTogglePinThread?: (threadId: string) => void;
+  onToggleLockThread?: (threadId: string) => void;
+  onDeleteThread?: (threadId: string) => void;
+  onArchiveThread?: (threadId: string) => void;
 }
 
 export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
@@ -16,7 +33,35 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
   onToggle,
   onNewChat,
   onSelectToolMode,
+  threads = [],
+  activeThreadId,
+  onSelectThread,
+  onRenameThread,
+  onTogglePinThread,
+  onToggleLockThread,
+  onDeleteThread,
+  onArchiveThread,
 }) => {
+  const [menuOpenThreadId, setMenuOpenThreadId] = useState<string | null>(null);
+  const [renamingThreadId, setRenamingThreadId] = useState<string | null>(null);
+  const [renameInput, setRenameInput] = useState('');
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpenThreadId(null);
+      }
+    };
+    if (menuOpenThreadId) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [menuOpenThreadId]);
+
   const tools = [
     { id: 'resumer', mode: 'resumer' as AIMode, label: 'Résumer un document', icon: '📋' },
     { id: 'expliquer', mode: 'expliquer' as AIMode, label: 'Expliquer un cours', icon: '💡' },
@@ -26,12 +71,35 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
     { id: 'antiplagiat', mode: 'antiplagiat' as AIMode, label: 'Vérification Antiplagiat', icon: '🔎' },
   ];
 
-  const recentChats = [
-    { id: 'chat-1', title: 'Synthèse Algèbre & Fonctions', date: 'Aujourd’hui' },
-    { id: 'chat-2', title: 'QCM Histoire-Géographie Bac', date: 'Hier' },
-    { id: 'chat-3', title: 'Explication Physique — Électrostatique', date: 'Il y a 3 jours' },
-    { id: 'chat-4', title: 'Correction Dissertation Philosophie', date: 'Cette semaine' },
-  ];
+  const handleStartRename = (thread: IAChatThread, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setRenamingThreadId(thread.id);
+    setRenameInput(thread.title);
+    setMenuOpenThreadId(null);
+  };
+
+  const handleSaveRename = (threadId: string) => {
+    if (renameInput.trim() && onRenameThread) {
+      onRenameThread(threadId, renameInput.trim());
+    }
+    setRenamingThreadId(null);
+  };
+
+  const handleShare = (thread: IAChatThread, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(`${window.location.origin}/ia?chat=${thread.id}`);
+      alert(`Lien de partage copié : "${thread.title}"`);
+    }
+    setMenuOpenThreadId(null);
+  };
+
+  // Sort threads: pinned ones first, then maintain original order
+  const sortedThreads = [...threads].sort((a, b) => {
+    if (a.isPinned && !b.isPinned) return -1;
+    if (!a.isPinned && b.isPinned) return 1;
+    return 0;
+  });
 
   return (
     <>
@@ -97,37 +165,231 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
             </div>
           </div>
 
-          {/* Section 2 : Discussions & Révisions récentes */}
+          {/* Section 2 : Discussions Récentes avec actions ChatGPT */}
           <div className="sidebar-section-block">
-            <span className="sidebar-section-heading">Discussions Récentes</span>
+            <span className="sidebar-section-heading">Récents</span>
             <div className="sidebar-recents-list">
-              {recentChats.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={onNewChat}
-                  className="sidebar-recent-item"
-                  title={c.title}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                  </svg>
-                  <span className="recent-title">{c.title}</span>
-                </button>
-              ))}
+              {sortedThreads.map((thread) => {
+                const isActive = activeThreadId === thread.id;
+                const isMenuOpen = menuOpenThreadId === thread.id;
+                const isRenaming = renamingThreadId === thread.id;
+
+                return (
+                  <div
+                    key={thread.id}
+                    className={`sidebar-recent-item-wrap ${isActive ? 'is-active' : ''} ${isMenuOpen ? 'menu-active' : ''}`}
+                  >
+                    {isRenaming ? (
+                      <div className="rename-inline-box" onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="text"
+                          value={renameInput}
+                          onChange={(e) => setRenameInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleSaveRename(thread.id);
+                            if (e.key === 'Escape') setRenamingThreadId(null);
+                          }}
+                          autoFocus
+                          className="rename-input"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleSaveRename(thread.id)}
+                          className="rename-btn-check"
+                          title="Valider"
+                        >
+                          ✓
+                        </button>
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => {
+                          if (onSelectThread) onSelectThread(thread.id);
+                        }}
+                        className="sidebar-recent-item-btn"
+                        title={thread.title}
+                        role="button"
+                        tabIndex={0}
+                      >
+                        <span className="recent-title">{thread.title}</span>
+
+                        <div className="thread-badges-right">
+                          {thread.isPinned && (
+                            <span className="thread-pin-icon" title="Épinglé">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                                <line x1="12" y1="17" x2="12" y2="22"></line>
+                                <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
+                              </svg>
+                            </span>
+                          )}
+
+                          {thread.isLocked && (
+                            <span className="thread-lock-icon" title="Chat verrouillé">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                              </svg>
+                            </span>
+                          )}
+
+                          {/* Bouton d'options ... */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setMenuOpenThreadId(isMenuOpen ? null : thread.id);
+                            }}
+                            className="thread-options-trigger-btn"
+                            title="Plus d'options"
+                            aria-label="Options de la discussion"
+                          >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                              <circle cx="12" cy="12" r="2" />
+                              <circle cx="19" cy="12" r="2" />
+                              <circle cx="5" cy="12" r="2" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Menu contextuel déroulant style ChatGPT */}
+                    {isMenuOpen && (
+                      <div ref={menuRef} className="chat-actions-context-menu" role="menu">
+                        <button
+                          type="button"
+                          className="context-menu-item"
+                          onClick={(e) => handleStartRename(thread, e)}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                          </svg>
+                          <span>Renommer</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          className="context-menu-item"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (onTogglePinThread) onTogglePinThread(thread.id);
+                            setMenuOpenThreadId(null);
+                          }}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <line x1="12" y1="17" x2="12" y2="22"></line>
+                            <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
+                          </svg>
+                          <span>{thread.isPinned ? 'Désépingler' : 'Épingler'}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          className="context-menu-item"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (onToggleLockThread) onToggleLockThread(thread.id);
+                            setMenuOpenThreadId(null);
+                          }}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg>
+                          <span>{thread.isLocked ? 'Déverrouiller le chat' : 'Verrouiller le chat'}</span>
+                        </button>
+
+                        <div className="context-menu-divider" />
+
+                        <button
+                          type="button"
+                          className="context-menu-item"
+                          onClick={(e) => handleShare(thread, e)}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                          </svg>
+                          <span>Partager</span>
+                        </button>
+
+                        <div className="context-menu-divider" />
+
+                        <button
+                          type="button"
+                          className="context-menu-item"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (onArchiveThread) onArchiveThread(thread.id);
+                            setMenuOpenThreadId(null);
+                          }}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                            <rect x="1" y="3" width="22" height="5"></rect>
+                            <line x1="10" y1="12" x2="14" y2="12"></line>
+                          </svg>
+                          <span>Archiver</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          className="context-menu-item item-danger"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (onDeleteThread) onDeleteThread(thread.id);
+                            setMenuOpenThreadId(null);
+                          }}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                          </svg>
+                          <span>Supprimer</span>
+                        </button>
+
+                        <div className="context-menu-divider" />
+
+                        <button
+                          type="button"
+                          className="context-menu-item text-muted"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setMenuOpenThreadId(null);
+                          }}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                          </svg>
+                          <span>Déplacer vers un projet ›</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* Pied de Sidebar */}
+        {/* Pied de Sidebar (Exactement comme Image 3 de ChatGPT : Avatar SB + Sunu Biblio Free + Profiter de l'offre) */}
         <div className="sidebar-footer">
           <div className="sidebar-user-pill">
-            <div className="user-avatar-dot">S</div>
+            <div className="user-avatar-sb">SB</div>
             <div className="user-info">
-              <span className="user-name">SunuIA Assistant</span>
-              <span className="user-tier">Modèle Éducatif v2.4</span>
+              <span className="user-name">Sunu Biblio</span>
+              <span className="user-tier">Free</span>
             </div>
           </div>
+
+          <Link href="/tarifs" className="sidebar-offer-action-btn" title="Profiter de l'offre SunuIA">
+            <span className="gift-symbol">🎁</span>
+            <span>Profiter de l'offre</span>
+          </Link>
         </div>
       </aside>
 
@@ -236,40 +498,39 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
         .sidebar-scrollable-body {
           flex: 1;
           overflow-y: auto;
-          padding: 14px;
+          padding: 14px 10px;
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 18px;
         }
 
         .sidebar-section-block {
           display: flex;
           flex-direction: column;
-          gap: 6px;
+          gap: 4px;
         }
 
         .sidebar-section-heading {
-          font-size: 10.5px;
+          font-size: 11px;
           font-weight: 800;
           color: #94a3b8;
           text-transform: uppercase;
           letter-spacing: 0.05em;
-          padding: 0 6px 4px 6px;
+          padding: 0 8px 4px 8px;
         }
 
         .sidebar-tools-list,
         .sidebar-recents-list {
           display: flex;
           flex-direction: column;
-          gap: 3px;
+          gap: 2px;
         }
 
-        .sidebar-tool-link-btn,
-        .sidebar-recent-item {
+        .sidebar-tool-link-btn {
           display: flex;
           align-items: center;
           gap: 10px;
-          padding: 8px 10px;
+          padding: 7px 10px;
           border-radius: 8px;
           border: none;
           background: transparent;
@@ -282,8 +543,7 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
           width: 100%;
         }
 
-        .sidebar-tool-link-btn:hover,
-        .sidebar-recent-item:hover {
+        .sidebar-tool-link-btn:hover {
           background: #f8fafc;
           color: #0f172a;
         }
@@ -299,38 +559,219 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
           text-overflow: ellipsis;
         }
 
+        /* -------------------------------------------------------------
+           RECENT THREAD ITEM & HOVER ACTIONS (ChatGPT style)
+        ------------------------------------------------------------- */
+        .sidebar-recent-item-wrap {
+          position: relative;
+          width: 100%;
+          border-radius: 8px;
+          transition: background 0.15s ease;
+        }
+
+        .sidebar-recent-item-wrap:hover,
+        .sidebar-recent-item-wrap.is-active,
+        .sidebar-recent-item-wrap.menu-active {
+          background: #f1f5f9;
+        }
+
+        .sidebar-recent-item-btn {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 8px 10px;
+          border-radius: 8px;
+          border: none;
+          background: transparent;
+          color: #1e293b;
+          font-size: 13px;
+          font-weight: 500;
+          text-align: left;
+          cursor: pointer;
+          width: 100%;
+          gap: 6px;
+        }
+
         .recent-title {
+          flex: 1;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+          min-width: 0;
         }
 
+        .thread-badges-right {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          flex-shrink: 0;
+        }
+
+        .thread-pin-icon,
+        .thread-lock-icon {
+          color: #64748b;
+          display: inline-flex;
+          align-items: center;
+        }
+
+        .thread-options-trigger-btn {
+          width: 22px;
+          height: 22px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border: none;
+          background: transparent;
+          color: #64748b;
+          border-radius: 4px;
+          cursor: pointer;
+          opacity: 0;
+          transition: all 0.15s ease;
+        }
+
+        .sidebar-recent-item-wrap:hover .thread-options-trigger-btn,
+        .sidebar-recent-item-wrap.is-active .thread-options-trigger-btn,
+        .sidebar-recent-item-wrap.menu-active .thread-options-trigger-btn {
+          opacity: 1;
+        }
+
+        .thread-options-trigger-btn:hover {
+          background: rgba(0, 0, 0, 0.08);
+          color: #0f172a;
+        }
+
+        /* Inline Rename Input */
+        .rename-inline-box {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding: 4px 6px;
+          width: 100%;
+        }
+
+        .rename-input {
+          flex: 1;
+          height: 28px;
+          padding: 0 8px;
+          font-size: 12.5px;
+          border: 1px solid #f59e0b;
+          border-radius: 6px;
+          outline: none;
+          background: #ffffff;
+        }
+
+        .rename-btn-check {
+          width: 26px;
+          height: 26px;
+          border: none;
+          background: #f59e0b;
+          color: #ffffff;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 800;
+          font-size: 13px;
+        }
+
+        /* Context Menu Dropdown */
+        .chat-actions-context-menu {
+          position: absolute;
+          top: 100%;
+          left: 12px;
+          width: 210px;
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.95);
+          box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.08);
+          border-radius: 12px;
+          padding: 5px;
+          z-index: 1010;
+          animation: contextMenuPop 0.15s ease-out;
+        }
+
+        .context-menu-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          width: 100%;
+          padding: 8px 10px;
+          border: none;
+          background: transparent;
+          font-size: 12.5px;
+          font-weight: 600;
+          color: #334155;
+          border-radius: 7px;
+          cursor: pointer;
+          text-align: left;
+          transition: background 0.12s ease;
+        }
+
+        .context-menu-item:hover {
+          background: #f1f5f9;
+          color: #0f172a;
+        }
+
+        .context-menu-item.item-danger {
+          color: #ef4444;
+        }
+
+        .context-menu-item.item-danger:hover {
+          background: #fef2f2;
+          color: #dc2626;
+        }
+
+        .context-menu-item.text-muted {
+          color: #94a3b8;
+          font-size: 12px;
+        }
+
+        .context-menu-divider {
+          height: 1px;
+          background: #f1f5f9;
+          margin: 4px 6px;
+        }
+
+        @keyframes contextMenuPop {
+          from {
+            opacity: 0;
+            transform: scale(0.96) translateY(-4px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+
+        /* -------------------------------------------------------------
+           FOOTER (Avatar SB + Sunu Biblio Free + Profiter de l'offre)
+        ------------------------------------------------------------- */
         .sidebar-footer {
           padding: 12px 14px;
           border-top: 1px solid rgba(241, 245, 249, 0.95);
-          background: #fbfcfe;
+          background: #ffffff;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
         }
 
         .sidebar-user-pill {
           display: flex;
           align-items: center;
           gap: 10px;
-          padding: 6px 8px;
-          border-radius: 10px;
+          padding: 4px 2px;
         }
 
-        .user-avatar-dot {
-          width: 30px;
-          height: 30px;
-          border-radius: 8px;
-          background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+        .user-avatar-sb {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: #334155;
           color: #ffffff;
-          font-weight: 800;
-          font-size: 13px;
+          font-weight: 700;
+          font-size: 12px;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+          letter-spacing: 0.5px;
+          flex-shrink: 0;
         }
 
         .user-info {
@@ -339,19 +780,48 @@ export const IASidebarDrawer: React.FC<IASidebarDrawerProps> = ({
         }
 
         .user-name {
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 700;
           color: #0f172a;
           line-height: 1.2;
         }
 
         .user-tier {
-          font-size: 10px;
+          font-size: 11px;
           color: #64748b;
           font-weight: 500;
+        }
+
+        .sidebar-offer-action-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          width: 100%;
+          height: 38px;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 9999px;
+          font-size: 13px;
+          font-weight: 700;
+          color: #0f172a;
+          text-decoration: none;
+          cursor: pointer;
+          transition: all 0.18s ease;
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+        }
+
+        .sidebar-offer-action-btn:hover {
+          background: #f8fafc;
+          border-color: #cbd5e1;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+        }
+
+        .gift-symbol {
+          font-size: 14px;
         }
       `}</style>
     </>
   );
 };
-

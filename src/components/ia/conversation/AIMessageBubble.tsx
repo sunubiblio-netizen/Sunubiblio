@@ -338,34 +338,9 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
           </div>
         </div>
       ) : (
-        /* ASSISTANT MESSAGE: Natural text flow, ChatGPT / Claude style with Sunubiblio identity */
+        /* ASSISTANT MESSAGE: Natural text flow, ChatGPT pure style without Assistant banner */
         <div className="assistant-message-container">
-          {/* Natural Header: Avatar + Name + Mode */}
-          <div className="assistant-header-row">
-            <div className="assistant-avatar">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-              </svg>
-            </div>
-
-            <div className="assistant-identity-info">
-              <span className="assistant-name">Assistant Sunubiblio</span>
-              {message.mode && message.mode !== 'assistant' && (
-                <span className="assistant-mode-badge">
-                  {message.mode === 'resumer' && 'Synthèse'}
-                  {message.mode === 'expliquer' && 'Explication'}
-                  {message.mode === 'qcm' && 'QCM'}
-                  {message.mode === 'exercices' && 'Exercices'}
-                  {message.mode === 'corriger' && 'Correction'}
-                  {message.mode === 'antiplagiat' && 'Antiplagiat'}
-                </span>
-              )}
-            </div>
-
-            <span className="assistant-time">{message.timestamp}</span>
-          </div>
-
-          {/* Natural Prose Flow - NOT inside an .ai-card dashboard box */}
+          {/* Natural Prose Flow - Clean like ChatGPT */}
           <div className="assistant-prose-body">
             {renderAdvancedMarkdown(message.content)}
 
@@ -396,23 +371,9 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
                 </div>
               </div>
             )}
-
-            {/* Development Preview Architecture Note */}
-            {message.isDevPreview && (
-              <div className="assistant-arch-disclaimer">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="12" y1="16" x2="12" y2="12"></line>
-                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-                <span>
-                  Architecture Sunubiblio AI connectée — Prête pour l'intégration de la passerelle Gemini 1.5 Pro.
-                </span>
-              </div>
-            )}
           </div>
 
-          {/* Discrete Action Toolbar under Assistant response */}
+          {/* Discrete Action Toolbar under Assistant response (ChatGPT style) */}
           <div className="assistant-actions-toolbar">
             <button
               type="button"
@@ -421,21 +382,49 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
               title="Copier toute la réponse"
             >
               {copied ? (
-                <>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                  <span style={{ color: '#16a34a' }}>Copié !</span>
-                </>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
               ) : (
-                <>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                  </svg>
-                  <span>Copier</span>
-                </>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
               )}
+            </button>
+
+            {/* Thumbs up */}
+            <button type="button" className="btn-action-discrete" title="Bonne réponse">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+              </svg>
+            </button>
+
+            {/* Thumbs down */}
+            <button type="button" className="btn-action-discrete" title="Mauvaise réponse">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path>
+              </svg>
+            </button>
+
+            {/* Audio read */}
+            <button type="button" className="btn-action-discrete" title="Écouter la réponse">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+              </svg>
+            </button>
+
+            {/* Share */}
+            <button type="button" className="btn-action-discrete" title="Partager">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
             </button>
 
             {onRetry && (
@@ -445,12 +434,11 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
                 className="btn-action-discrete"
                 title="Régénérer cette réponse"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="1 4 1 10 7 10"></polyline>
                   <polyline points="23 20 23 14 17 14"></polyline>
                   <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
                 </svg>
-                <span>Relancer</span>
               </button>
             )}
           </div>
@@ -514,12 +502,13 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
         }
 
         .user-bubble {
-          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-          color: #ffffff;
-          padding: 12px 18px;
+          background: #f0f4f9;
+          color: #0f172a;
+          padding: 10px 18px;
           border-radius: 20px;
           border-bottom-right-radius: 4px;
-          box-shadow: 0 4px 14px rgba(217, 119, 6, 0.22);
+          border: 1px solid rgba(226, 232, 240, 0.85);
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
           word-break: break-word;
           overflow-wrap: anywhere;
           min-width: 0;
@@ -529,6 +518,7 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
           margin: 0;
           font-size: 15px;
           line-height: 1.55;
+          color: #0f172a;
           white-space: pre-wrap;
           word-break: break-word;
           overflow-wrap: anywhere;
@@ -545,61 +535,13 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
         }
 
         /* -------------------------------------------------------------
-           ASSISTANT MESSAGE STYLING (Natural prose, Claude/ChatGPT spirit)
+           ASSISTANT MESSAGE STYLING (Natural prose, pure ChatGPT style)
         ------------------------------------------------------------- */
         .assistant-message-container {
           width: 100%;
           display: flex;
           flex-direction: column;
           min-width: 0;
-        }
-
-        .assistant-header-row {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          margin-bottom: 8px;
-        }
-
-        .assistant-avatar {
-          width: 28px;
-          height: 28px;
-          border-radius: 8px;
-          background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
-          color: #ffffff;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          box-shadow: 0 2px 6px rgba(245, 158, 11, 0.28);
-        }
-
-        .assistant-identity-info {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .assistant-name {
-          font-size: 14px;
-          font-weight: 700;
-          color: #0f172a;
-        }
-
-        .assistant-mode-badge {
-          font-size: 10.5px;
-          font-weight: 700;
-          padding: 1.5px 8px;
-          border-radius: 9999px;
-          background: #fffbeb;
-          color: #b45309;
-          border: 1px solid rgba(245, 158, 11, 0.28);
-        }
-
-        .assistant-time {
-          font-size: 11.5px;
-          color: #94a3b8;
-          margin-left: auto;
         }
 
         /* PROSE BODY: Natural typography, zero card frame */
@@ -895,29 +837,28 @@ export const AIMessageBubble: React.FC<AIMessageBubbleProps> = ({
         .assistant-actions-toolbar {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 6px;
           margin-top: 10px;
         }
 
         .btn-action-discrete {
           display: inline-flex;
           align-items: center;
-          gap: 5px;
-          padding: 4px 10px;
+          justify-content: center;
+          width: 32px;
+          height: 32px;
+          padding: 0;
           background: transparent;
-          border: 1px solid transparent;
+          border: none;
           border-radius: 8px;
-          font-size: 12px;
-          font-weight: 600;
-          color: #64748b;
+          color: #8e8ea0;
           cursor: pointer;
           transition: all 0.15s ease;
         }
 
         .btn-action-discrete:hover {
           background: #f1f5f9;
-          color: #1e293b;
-          border-color: #e2e8f0;
+          color: #0f172a;
         }
 
         @media (max-width: 640px) {

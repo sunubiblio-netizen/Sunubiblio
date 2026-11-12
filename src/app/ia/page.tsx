@@ -5,7 +5,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { IAHeroCentered } from '@/components/ia/IAHeroCentered';
 import { AIComposer } from '@/components/ia/composer/AIComposer';
 import { AIConversationView } from '@/components/ia/conversation/AIConversationView';
-import { IASidebarDrawer } from '@/components/ia/IASidebarDrawer';
+import { IASidebarDrawer, IAChatThread } from '@/components/ia/IASidebarDrawer';
 import { AIMessage, AIMode, AIAttachment } from '@/types/ai';
 import { AIService } from '@/services/aiService';
 
@@ -16,6 +16,33 @@ export default function IAPage() {
   const [composerKey, setComposerKey] = useState(0); // to reset or prefill composer
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSubscriber] = useState(false); // Mode d'abonnement (false = Offre gratuite, true = SunuIA Pro)
+
+  // Liste des conversations enregistrées (Exactement comme Image 1 de ChatGPT)
+  const [threads, setThreads] = useState<IAChatThread[]>([
+    {
+      id: 'chat-salutation-fr',
+      title: 'Salutation en français',
+      date: 'Aujourd’hui',
+      isPinned: true,
+      messages: [
+        { id: 'm-1', role: 'user', content: 'bonjour', timestamp: '15:52' },
+        { id: 'm-2', role: 'assistant', content: "Bonjour ! 😊 J'espère que vous allez bien.\n\nComment se passe votre journée ? Ravi de vous retrouver !", timestamp: '15:52' },
+        { id: 'm-3', role: 'user', content: 'salut', timestamp: '15:53' },
+        { id: 'm-4', role: 'assistant', content: "Salut ! 😁 Ravi de vous retrouver. Comment allez-vous aujourd'hui ? On travaille sur Hampathé ou vous avez un nouveau projet en tête ?", timestamp: '15:53' }
+      ]
+    },
+    { id: 'chat-salutation-soir', title: 'Salutation du soir', date: 'Aujourd’hui', messages: [] },
+    { id: 'chat-saas', title: 'Changer le nom SaaS', date: 'Hier', messages: [] },
+    { id: 'chat-dashboard', title: 'Créer un tableau de bord intelligent', date: 'Il y a 3 jours', messages: [] },
+    { id: 'chat-hampathe', title: 'Styliser Hampathé', date: 'Cette semaine', messages: [] },
+    { id: 'chat-logo', title: 'Remplacement de nom logo', date: 'Cette semaine', messages: [] },
+    { id: 'chat-reussite', title: 'Attestation de réussite', date: 'Cette semaine', messages: [] },
+    { id: 'chat-pc-lent', title: 'Diagnostiquer PC Lent', date: 'Cette semaine', messages: [] },
+    { id: 'chat-galerie', title: 'Galerie GPT6 interactive', date: 'Cette semaine', messages: [] },
+    { id: 'chat-vert', title: 'Confirmer le design vert', date: 'Cette semaine', messages: [] },
+  ]);
+
+  const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
 
   const isConversationActive = messages.length > 0;
 
@@ -40,11 +67,36 @@ export default function IAPage() {
       status: 'complete',
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
     setIsLoading(true);
 
+    // 2. Gestion de l'historique dans la barre latérale (Image 1)
+    let currentThreadId = activeThreadId;
+    if (!currentThreadId) {
+      // Nouvelle discussion : on génère un titre à partir du premier échange
+      const rawText = payload.content.trim().replace(/\n+/g, ' ');
+      const title = rawText.length > 28 ? rawText.slice(0, 28) + '...' : (rawText.charAt(0).toUpperCase() + rawText.slice(1));
+      const newThreadId = 'chat-' + Date.now();
+      currentThreadId = newThreadId;
+      setActiveThreadId(newThreadId);
+
+      const newThread: IAChatThread = {
+        id: newThreadId,
+        title: title || 'Nouvelle discussion',
+        date: 'Aujourd’hui',
+        messages: [userMsg]
+      };
+      setThreads((prev) => [newThread, ...prev]);
+    } else {
+      // Mise à jour du fil existant
+      setThreads((prev) =>
+        prev.map((t) => (t.id === currentThreadId ? { ...t, messages: [...t.messages, userMsg] } : t))
+      );
+    }
+
     try {
-      // 2. Call AIService
+      // 3. Call AIService
       const aiResponse = await AIService.processRequest({
         content: payload.content,
         mode: payload.mode,
@@ -53,6 +105,9 @@ export default function IAPage() {
       });
 
       setMessages((prev) => [...prev, aiResponse]);
+      setThreads((prev) =>
+        prev.map((t) => (t.id === currentThreadId ? { ...t, messages: [...t.messages, aiResponse] } : t))
+      );
     } catch {
       const errorMsg: AIMessage = {
         id: 'msg-err-' + Date.now(),
@@ -67,21 +122,57 @@ export default function IAPage() {
     }
   };
 
-  // Handle suggestion chip click: prefill composer with prompt and mode
-  const handleSelectSuggestion = (suggestion: { prompt: string; mode: AIMode }) => {
-    setActiveMode(suggestion.mode);
-    // Send directly or prefill
-    handleSendMessage({
-      content: suggestion.prompt,
-      mode: suggestion.mode,
-      attachments: [],
-      isWebSearch: false
-    });
+  // Sélectionner un thread existant depuis la sidebar
+  const handleSelectThread = (threadId: string) => {
+    const thread = threads.find((t) => t.id === threadId);
+    if (thread) {
+      setActiveThreadId(thread.id);
+      setMessages(thread.messages || []);
+      setIsSidebarOpen(false);
+    }
+  };
+
+  // Renommer un thread
+  const handleRenameThread = (threadId: string, newTitle: string) => {
+    setThreads((prev) =>
+      prev.map((t) => (t.id === threadId ? { ...t, title: newTitle } : t))
+    );
+  };
+
+  // Épingler / Désépingler un thread
+  const handleTogglePinThread = (threadId: string) => {
+    setThreads((prev) =>
+      prev.map((t) => (t.id === threadId ? { ...t, isPinned: !t.isPinned } : t))
+    );
+  };
+
+  // Verrouiller / Déverrouiller un thread
+  const handleToggleLockThread = (threadId: string) => {
+    setThreads((prev) =>
+      prev.map((t) => (t.id === threadId ? { ...t, isLocked: !t.isLocked } : t))
+    );
+  };
+
+  // Supprimer un thread
+  const handleDeleteThread = (threadId: string) => {
+    setThreads((prev) => prev.filter((t) => t.id !== threadId));
+    if (activeThreadId === threadId) {
+      handleResetChat();
+    }
+  };
+
+  // Archiver un thread
+  const handleArchiveThread = (threadId: string) => {
+    setThreads((prev) => prev.filter((t) => t.id !== threadId));
+    if (activeThreadId === threadId) {
+      handleResetChat();
+    }
   };
 
   // Reset conversation to initial state
   const handleResetChat = () => {
     setMessages([]);
+    setActiveThreadId(null);
     setIsLoading(false);
     setActiveMode('assistant');
     setComposerKey((prev) => prev + 1);
@@ -126,7 +217,7 @@ export default function IAPage() {
   };
 
   return (
-    <div className={`ia-page-wrapper ${isSidebarOpen ? 'has-sidebar-open' : ''}`}>
+    <div className={`ia-page-wrapper ${isSidebarOpen ? 'has-sidebar-open' : ''} ${isConversationActive ? 'in-conversation' : ''}`}>
       <Navbar />
 
       {/* Menu Déroulant / Volet latéral rétractable comme ChatGPT */}
@@ -135,6 +226,14 @@ export default function IAPage() {
         onToggle={() => setIsSidebarOpen((prev) => !prev)}
         onNewChat={handleResetChat}
         onSelectToolMode={handleSelectToolFromSidebar}
+        threads={threads}
+        activeThreadId={activeThreadId}
+        onSelectThread={handleSelectThread}
+        onRenameThread={handleRenameThread}
+        onTogglePinThread={handleTogglePinThread}
+        onToggleLockThread={handleToggleLockThread}
+        onDeleteThread={handleDeleteThread}
+        onArchiveThread={handleArchiveThread}
       />
 
       {/* Topbar Permanente Fixe (Toujours intacte et visible au même endroit, comme ChatGPT) */}
@@ -219,6 +318,25 @@ export default function IAPage() {
           flex-direction: column;
           background: #ffffff !important;
           position: relative;
+        }
+
+        /* Fixe l'écran pendant la discussion : Seul le fil de conversation défile */
+        .ia-page-wrapper.in-conversation {
+          height: 100vh;
+          max-height: 100vh;
+          overflow: hidden;
+        }
+
+        .ia-page-wrapper.in-conversation .ia-main-content {
+          height: calc(100vh - 120px);
+          overflow: hidden;
+          padding-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+          .ia-page-wrapper.in-conversation .ia-main-content {
+            height: calc(100vh - 134px);
+          }
         }
 
         /* Topbar Permanente Fixe (Menu SunuIA à gauche, Offre à droite, toujours intacte) */

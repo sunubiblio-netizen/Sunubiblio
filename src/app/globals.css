@@ -11,6 +11,33 @@ body[style*="overflow: hidden"] .scroll-navigation-global {
   pointer-events: none !important;
 }
 
+/* ==========================================================================
+   BARRE DE DÉFILEMENT MODERNE ÉPURÉE SUR TOUT LE SITE (Style ChatGPT / Moderne)
+   ========================================================================== */
+html, body, div, main, aside, section, article {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 9999px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.65);
+}
+
 :root {
   /* Base Signature Palette (Couleur de base officielle du site) */
   --base-sun: #fef08a;
