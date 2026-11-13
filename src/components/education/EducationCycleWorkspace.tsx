@@ -189,19 +189,36 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
     };
   }, []);
 
-  // Verrouillage du défilement et masquage des éléments flottants lorsque la modale est active
+  // Verrouillage complet du défilement de l'arrière-plan et masquage des éléments flottants lorsque la modale est active
   useEffect(() => {
     if (isGuideModalOpen || activeReadingDoc) {
+      const scrollY = window.scrollY || window.pageYOffset || 0;
       document.body.classList.add('modal-scroll-locked');
       document.documentElement.classList.add('modal-scroll-locked');
-    } else {
-      document.body.classList.remove('modal-scroll-locked');
-      document.documentElement.classList.remove('modal-scroll-locked');
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+
+      return () => {
+        document.body.classList.remove('modal-scroll-locked');
+        document.documentElement.classList.remove('modal-scroll-locked');
+        document.documentElement.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
     }
-    return () => {
-      document.body.classList.remove('modal-scroll-locked');
-      document.documentElement.classList.remove('modal-scroll-locked');
-    };
+
+    document.body.classList.remove('modal-scroll-locked');
+    document.documentElement.classList.remove('modal-scroll-locked');
   }, [isGuideModalOpen, activeReadingDoc]);
 
   // Filtered documents
@@ -890,24 +907,26 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
                     </div>
                   </button>
 
-                  {guideSectionsOpen.objectives && (
-                    <div className="accordion-body-collapse">
-                      <div className="compact-conditions-list">
-                        {cycle.guide.objectives.map((obj, i) => (
-                          <div key={i} className="compact-condition-row">
-                            <span className="cond-check-bullet">•</span>
-                            <div className="cond-text-group">
-                              <span className="cond-desc" style={{ color: '#334155', margin: 0 }}>{obj}</span>
+                  <div className={`accordion-collapse-wrapper ${guideSectionsOpen.objectives ? 'is-expanded' : ''}`} aria-hidden={!guideSectionsOpen.objectives}>
+                    <div className="accordion-collapse-inner">
+                      <div className="accordion-body-collapse">
+                        <div className="compact-conditions-list">
+                          {cycle.guide.objectives.map((obj, i) => (
+                            <div key={i} className="compact-condition-row">
+                              <span className="cond-check-bullet">•</span>
+                              <div className="cond-text-group">
+                                <span className="cond-desc" style={{ color: '#334155', margin: 0 }}>{obj}</span>
+                              </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="compact-org-chip">
-                        <span className="org-label">Tutelle :</span>
-                        <span className="org-name">{cycle.organization.split('•')[0].trim()}</span>
+                          ))}
+                        </div>
+                        <div className="compact-org-chip">
+                          <span className="org-label">Tutelle :</span>
+                          <span className="org-name">{cycle.organization.split('•')[0].trim()}</span>
+                        </div>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 {/* 2. Examens & Concours */}
@@ -942,20 +961,22 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
                     </div>
                   </button>
 
-                  {guideSectionsOpen.exams && (
-                    <div className="accordion-body-collapse">
-                      <div className="compact-conditions-list">
-                        {cycle.guide.nationalExams.map((exam, i) => (
-                          <div key={i} className="compact-condition-row">
-                            <span className="cond-check-bullet">✓</span>
-                            <div className="cond-text-group">
-                              <span className="cond-title">{exam}</span>
+                  <div className={`accordion-collapse-wrapper ${guideSectionsOpen.exams ? 'is-expanded' : ''}`} aria-hidden={!guideSectionsOpen.exams}>
+                    <div className="accordion-collapse-inner">
+                      <div className="accordion-body-collapse">
+                        <div className="compact-conditions-list">
+                          {cycle.guide.nationalExams.map((exam, i) => (
+                            <div key={i} className="compact-condition-row">
+                              <span className="cond-check-bullet">✓</span>
+                              <div className="cond-text-group">
+                                <span className="cond-title">{exam}</span>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 {/* 3. Matières & Coefficients */}
@@ -990,20 +1011,22 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
                     </div>
                   </button>
 
-                  {guideSectionsOpen.coefficients && (
-                    <div className="accordion-body-collapse">
-                      <div className="compact-subjects-list">
-                        {cycle.guide.coefficients.map((c, i) => (
-                          <div key={i} className="compact-subject-row">
-                            <div className="subject-info-cluster">
-                              <strong className="subject-title">{c.subject}</strong>
+                  <div className={`accordion-collapse-wrapper ${guideSectionsOpen.coefficients ? 'is-expanded' : ''}`} aria-hidden={!guideSectionsOpen.coefficients}>
+                    <div className="accordion-collapse-inner">
+                      <div className="accordion-body-collapse">
+                        <div className="compact-subjects-list">
+                          {cycle.guide.coefficients.map((c, i) => (
+                            <div key={i} className="compact-subject-row">
+                              <div className="subject-info-cluster">
+                                <strong className="subject-title">{c.subject}</strong>
+                              </div>
+                              <span className="subject-count-tag">{c.coef}</span>
                             </div>
-                            <span className="subject-count-tag">{c.coef}</span>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 {/* 4. Conseils des inspecteurs */}
@@ -1040,20 +1063,22 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
                     </div>
                   </button>
 
-                  {guideSectionsOpen.advice && (
-                    <div className="accordion-body-collapse">
-                      <div className="compact-conditions-list">
-                        {cycle.guide.studyAdvice.map((adv, i) => (
-                          <div key={i} className="compact-condition-row">
-                            <span className="cond-check-bullet">✓</span>
-                            <div className="cond-text-group">
-                              <span className="cond-desc" style={{ color: '#334155', margin: 0 }}>{adv}</span>
+                  <div className={`accordion-collapse-wrapper ${guideSectionsOpen.advice ? 'is-expanded' : ''}`} aria-hidden={!guideSectionsOpen.advice}>
+                    <div className="accordion-collapse-inner">
+                      <div className="accordion-body-collapse">
+                        <div className="compact-conditions-list">
+                          {cycle.guide.studyAdvice.map((adv, i) => (
+                            <div key={i} className="compact-condition-row">
+                              <span className="cond-check-bullet">✓</span>
+                              <div className="cond-text-group">
+                                <span className="cond-desc" style={{ color: '#334155', margin: 0 }}>{adv}</span>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -2939,7 +2964,8 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
 
           .sunu-glass-floating-panel {
             max-width: 440px !important;
-            max-height: min(690px, calc(100dvh - 24px)) !important;
+            height: min(520px, calc(100dvh - 28px)) !important;
+            max-height: calc(100dvh - 28px) !important;
             border-radius: 22px !important;
           }
 
@@ -2990,7 +3016,8 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           position: relative;
           width: 100%;
           max-width: 440px;
-          max-height: min(720px, calc(100dvh - 28px));
+          height: min(560px, calc(100dvh - 36px));
+          max-height: calc(100dvh - 36px);
           background: rgba(255, 255, 255, 0.94);
           backdrop-filter: blur(24px);
           -webkit-backdrop-filter: blur(24px);
@@ -3179,7 +3206,7 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          transition: transform 0.2s ease, color 0.15s ease;
+          transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s ease;
           line-height: 1;
         }
 
@@ -3230,22 +3257,28 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           text-overflow: ellipsis;
         }
 
+        .accordion-collapse-wrapper {
+          display: grid;
+          grid-template-rows: 0fr;
+          opacity: 0;
+          transition: grid-template-rows 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+                      opacity 0.35s ease;
+        }
+
+        .accordion-collapse-wrapper.is-expanded {
+          grid-template-rows: 1fr;
+          opacity: 1;
+        }
+
+        .accordion-collapse-inner {
+          overflow: hidden;
+          min-height: 0;
+        }
+
         .accordion-body-collapse {
           border-top: 1px solid rgba(226, 232, 240, 0.7);
           padding: 10px 14px 14px 14px;
           background: #ffffff;
-          animation: accordionExpand 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes accordionExpand {
-          from {
-            opacity: 0;
-            transform: translateY(-4px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
         }
 
         .compact-org-chip {
