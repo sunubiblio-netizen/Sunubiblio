@@ -3228,7 +3228,7 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s ease;
+          transition: transform 0.24s cubic-bezier(0.25, 1, 0.5, 1), color 0.15s ease;
           line-height: 1;
         }
 
@@ -3284,8 +3284,8 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           grid-template-rows: 0fr;
           opacity: 0;
           will-change: grid-template-rows, opacity;
-          transition: grid-template-rows 0.48s cubic-bezier(0.25, 1, 0.5, 1),
-                      opacity 0.38s cubic-bezier(0.25, 1, 0.5, 1);
+          transition: grid-template-rows 0.24s cubic-bezier(0.25, 1, 0.5, 1),
+                      opacity 0.2s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .accordion-collapse-wrapper.is-expanded {
@@ -3303,7 +3303,7 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           padding: 12px 14px 14px 14px;
           background: #ffffff;
           transform: translateY(-4px);
-          transition: transform 0.44s cubic-bezier(0.25, 1, 0.5, 1);
+          transition: transform 0.22s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .accordion-collapse-wrapper.is-expanded .accordion-body-collapse {
