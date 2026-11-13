@@ -4,6 +4,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { EducationCycleDetails, EducationDocumentItem } from '@/data/educationCyclesData';
+import { CountryFlag } from '../contests/CountryFlag';
 
 interface EducationCycleWorkspaceProps {
   cycle: EducationCycleDetails;
@@ -319,7 +320,7 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
                 <div className="cycle-title-header">
                   <div className="cycle-title-flag-group">
                     <h1 className="cycle-name">{cycle.title}</h1>
-                    <span className="flag-badge">🇸🇳</span>
+                    <CountryFlag country="senegal" size="sm" />
                   </div>
                   <span className="diploma-pill">{cycle.examBadge}</span>
                 </div>
