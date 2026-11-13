@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { EducationCycleDetails, EducationDocumentItem } from '@/data/educationCyclesData';
 
@@ -96,6 +97,52 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
   // Interactive Modals
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
   const [activeReadingDoc, setActiveReadingDoc] = useState<EducationDocumentItem | null>(null);
+
+  // État d'ouverture/fermeture des sections accordéon du guide (toutes repliées de base comme Fiche FASTEF)
+  const [guideSectionsOpen, setGuideSectionsOpen] = useState<{
+    objectives: boolean;
+    exams: boolean;
+    coefficients: boolean;
+    advice: boolean;
+  }>({
+    objectives: false,
+    exams: false,
+    coefficients: false,
+    advice: false,
+  });
+
+  const handleOpenGuideModal = () => {
+    setGuideSectionsOpen({
+      objectives: false,
+      exams: false,
+      coefficients: false,
+      advice: false,
+    });
+    setIsGuideModalOpen(true);
+  };
+
+  const toggleGuideSection = (key: 'objectives' | 'exams' | 'coefficients' | 'advice') => {
+    setGuideSectionsOpen((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
+  const areAllGuideSectionsOpen =
+    guideSectionsOpen.objectives &&
+    guideSectionsOpen.exams &&
+    guideSectionsOpen.coefficients &&
+    guideSectionsOpen.advice;
+
+  const toggleAllGuideSections = () => {
+    const nextState = !areAllGuideSectionsOpen;
+    setGuideSectionsOpen({
+      objectives: nextState,
+      exams: nextState,
+      coefficients: nextState,
+      advice: nextState,
+    });
+  };
 
   // Flèche retour flottante fluide en bas à gauche (Identique à FASTEF / Concours)
   const [isBackVisible, setIsBackVisible] = useState(true);
@@ -278,7 +325,7 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
               <button
                 type="button"
                 className="glass-info-trigger-btn"
-                onClick={() => setIsGuideModalOpen(true)}
+                onClick={handleOpenGuideModal}
                 title="Consulter le programme officiel, coefficients et conseils de révision"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -764,86 +811,275 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
         </div>
       </section>
 
-      {/* 5. Modal Guide & Programme Officiel du Cycle */}
-      {isGuideModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsGuideModalOpen(false)}>
-          <div className="guide-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-head">
-              <div className="modal-title-wrap">
-                <span className="modal-sparkle">📜</span>
-                <div>
-                  <h3 className="modal-heading">Guide & Programme Officiel — {cycle.title}</h3>
-                  <p className="modal-sub">{cycle.organization}</p>
-                </div>
+      {/* 5. Modal Guide & Programme Officiel du Cycle (Style Fiche FASTEF - Image 2) */}
+      {isGuideModalOpen && typeof document !== 'undefined' && createPortal(
+        <div
+          className="sunu-glass-panel-overlay"
+          onClick={() => setIsGuideModalOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="guide-glass-modal-title"
+        >
+          <div className="sunu-glass-floating-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="glass-ambient-aura" aria-hidden="true" />
+
+            {/* En-tête Glassmorphism épuré */}
+            <div className="glass-panel-header">
+              <div className="header-title-box">
+                <span className="header-sparkle-dot" aria-hidden="true" />
+                <h2 id="guide-glass-modal-title" className="header-heading">
+                  Guide {cycle.title}
+                </h2>
+                <span className="header-session-badge">Officiel</span>
               </div>
+
               <button
                 type="button"
-                className="modal-close-btn"
+                className="glass-close-btn"
                 onClick={() => setIsGuideModalOpen(false)}
+                aria-label="Fermer le guide"
+                title="Fermer"
               >
-                ✕
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
             </div>
 
-            <div className="modal-body-scroll">
-              {/* Présentation */}
-              <div className="guide-card-block">
-                <h4>🎯 Objectifs Fondamentaux du Cycle</h4>
-                <ul className="guide-list">
-                  {cycle.guide.objectives.map((obj, i) => (
-                    <li key={i}>{obj}</li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Examens Nationaux */}
-              <div className="guide-card-block">
-                <h4>🏆 Examens & Concours Nationaux Préparés</h4>
-                <div className="exam-chips-grid">
-                  {cycle.guide.nationalExams.map((exam, i) => (
-                    <div key={i} className="exam-chip-card">
-                      <span className="chip-icon">🎓</span>
-                      <strong>{exam}</strong>
+            {/* Corps défilable : 4 sections accordéons repliées par défaut */}
+            <div className="glass-panel-scroll-body" tabIndex={0}>
+              <div className="glass-accordions-stack">
+                {/* 1. Objectifs du cycle */}
+                <div className={`sunu-filter-accordion-item ${guideSectionsOpen.objectives ? 'is-open' : ''}`}>
+                  <button
+                    type="button"
+                    className="accordion-header-btn"
+                    onClick={() => toggleGuideSection('objectives')}
+                    aria-expanded={guideSectionsOpen.objectives}
+                  >
+                    <div className="header-left">
+                      <span
+                        className="accordion-chevron"
+                        style={{
+                          transform: guideSectionsOpen.objectives ? 'rotate(90deg)' : 'rotate(0deg)',
+                        }}
+                      >
+                        ›
+                      </span>
+                      <span className="section-svg-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10" />
+                          <circle cx="12" cy="12" r="6" />
+                          <circle cx="12" cy="12" r="2" />
+                        </svg>
+                      </span>
+                      <span className="accordion-title">Objectifs du cycle</span>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Coefficients */}
-              <div className="guide-card-block">
-                <h4>⚖️ Matières Clés & Coefficients Officiels</h4>
-                <div className="coef-table">
-                  {cycle.guide.coefficients.map((c, i) => (
-                    <div key={i} className="coef-row">
-                      <span className="coef-subj">{c.subject}</span>
-                      <span className="coef-val">{c.coef}</span>
+                    <div className="header-right">
+                      <span className="current-value-badge">
+                        {cycle.guide.objectives.length} objectif{cycle.guide.objectives.length > 1 ? 's' : ''}
+                      </span>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </button>
 
-              {/* Conseils Pédagogiques */}
-              <div className="guide-card-block advice-block">
-                <h4>💡 Conseils d’Excellence des Inspecteurs</h4>
-                <ul className="guide-list">
-                  {cycle.guide.studyAdvice.map((adv, i) => (
-                    <li key={i}>{adv}</li>
-                  ))}
-                </ul>
+                  {guideSectionsOpen.objectives && (
+                    <div className="accordion-body-collapse">
+                      <div className="compact-conditions-list">
+                        {cycle.guide.objectives.map((obj, i) => (
+                          <div key={i} className="compact-condition-row">
+                            <span className="cond-check-bullet">•</span>
+                            <div className="cond-text-group">
+                              <span className="cond-desc" style={{ color: '#334155', margin: 0 }}>{obj}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="compact-org-chip">
+                        <span className="org-label">Tutelle :</span>
+                        <span className="org-name">{cycle.organization.split('•')[0].trim()}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 2. Examens & Concours */}
+                <div className={`sunu-filter-accordion-item ${guideSectionsOpen.exams ? 'is-open' : ''}`}>
+                  <button
+                    type="button"
+                    className="accordion-header-btn"
+                    onClick={() => toggleGuideSection('exams')}
+                    aria-expanded={guideSectionsOpen.exams}
+                  >
+                    <div className="header-left">
+                      <span
+                        className="accordion-chevron"
+                        style={{
+                          transform: guideSectionsOpen.exams ? 'rotate(90deg)' : 'rotate(0deg)',
+                        }}
+                      >
+                        ›
+                      </span>
+                      <span className="section-svg-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                          <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                        </svg>
+                      </span>
+                      <span className="accordion-title">Examens & Concours</span>
+                    </div>
+                    <div className="header-right">
+                      <span className="current-value-badge">
+                        {cycle.guide.nationalExams.length} examen{cycle.guide.nationalExams.length > 1 ? 's' : ''}
+                      </span>
+                    </div>
+                  </button>
+
+                  {guideSectionsOpen.exams && (
+                    <div className="accordion-body-collapse">
+                      <div className="compact-conditions-list">
+                        {cycle.guide.nationalExams.map((exam, i) => (
+                          <div key={i} className="compact-condition-row">
+                            <span className="cond-check-bullet">✓</span>
+                            <div className="cond-text-group">
+                              <span className="cond-title">{exam}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. Matières & Coefficients */}
+                <div className={`sunu-filter-accordion-item ${guideSectionsOpen.coefficients ? 'is-open' : ''}`}>
+                  <button
+                    type="button"
+                    className="accordion-header-btn"
+                    onClick={() => toggleGuideSection('coefficients')}
+                    aria-expanded={guideSectionsOpen.coefficients}
+                  >
+                    <div className="header-left">
+                      <span
+                        className="accordion-chevron"
+                        style={{
+                          transform: guideSectionsOpen.coefficients ? 'rotate(90deg)' : 'rotate(0deg)',
+                        }}
+                      >
+                        ›
+                      </span>
+                      <span className="section-svg-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                        </svg>
+                      </span>
+                      <span className="accordion-title">Matières & Coefficients</span>
+                    </div>
+                    <div className="header-right">
+                      <span className="current-value-badge">
+                        {cycle.guide.coefficients.length} matière{cycle.guide.coefficients.length > 1 ? 's' : ''}
+                      </span>
+                    </div>
+                  </button>
+
+                  {guideSectionsOpen.coefficients && (
+                    <div className="accordion-body-collapse">
+                      <div className="compact-subjects-list">
+                        {cycle.guide.coefficients.map((c, i) => (
+                          <div key={i} className="compact-subject-row">
+                            <div className="subject-info-cluster">
+                              <strong className="subject-title">{c.subject}</strong>
+                            </div>
+                            <span className="subject-count-tag">{c.coef}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 4. Conseils des inspecteurs */}
+                <div className={`sunu-filter-accordion-item ${guideSectionsOpen.advice ? 'is-open' : ''}`}>
+                  <button
+                    type="button"
+                    className="accordion-header-btn"
+                    onClick={() => toggleGuideSection('advice')}
+                    aria-expanded={guideSectionsOpen.advice}
+                  >
+                    <div className="header-left">
+                      <span
+                        className="accordion-chevron"
+                        style={{
+                          transform: guideSectionsOpen.advice ? 'rotate(90deg)' : 'rotate(0deg)',
+                        }}
+                      >
+                        ›
+                      </span>
+                      <span className="section-svg-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                          <polyline points="14 2 14 8 20 8" />
+                          <line x1="16" y1="13" x2="8" y2="13" />
+                          <line x1="16" y1="17" x2="8" y2="17" />
+                        </svg>
+                      </span>
+                      <span className="accordion-title">Conseils des inspecteurs</span>
+                    </div>
+                    <div className="header-right">
+                      <span className="current-value-badge">
+                        {cycle.guide.studyAdvice.length} conseil{cycle.guide.studyAdvice.length > 1 ? 's' : ''}
+                      </span>
+                    </div>
+                  </button>
+
+                  {guideSectionsOpen.advice && (
+                    <div className="accordion-body-collapse">
+                      <div className="compact-conditions-list">
+                        {cycle.guide.studyAdvice.map((adv, i) => (
+                          <div key={i} className="compact-condition-row">
+                            <span className="cond-check-bullet">✓</span>
+                            <div className="cond-text-group">
+                              <span className="cond-desc" style={{ color: '#334155', margin: 0 }}>{adv}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div className="modal-footer">
+            {/* Pied de panneau avec actions équilibrées (comme Image 2) */}
+            <div className="glass-panel-footer">
               <button
                 type="button"
-                className="close-guide-btn"
+                className="glass-reset-btn"
+                onClick={toggleAllGuideSections}
+              >
+                {areAllGuideSectionsOpen ? 'Tout replier' : 'Tout déplier'}
+              </button>
+              <button
+                type="button"
+                className="glass-apply-btn"
                 onClick={() => setIsGuideModalOpen(false)}
               >
                 Fermer le guide
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* 6. Modal de Consultation Rapide du Document */}
@@ -2697,6 +2933,475 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
             font-size: 10px;
             padding: 1px 6px;
           }
+
+          /* MODALE GUIDE FLOTTANTE SUR MOBILE (< 860px) - IDENTIQUE À FICHE FASTEF */
+          .sunu-glass-panel-overlay {
+            padding: 12px !important;
+          }
+
+          .sunu-glass-floating-panel {
+            max-width: 440px !important;
+            max-height: min(690px, calc(100dvh - 24px)) !important;
+            border-radius: 22px !important;
+          }
+
+          .glass-panel-header {
+            padding: 12px 16px !important;
+          }
+
+          .header-heading {
+            font-size: 0.98rem !important;
+          }
+
+          .glass-panel-scroll-body {
+            padding: 12px 14px !important;
+          }
+
+          .glass-panel-footer {
+            padding: 10px 14px max(12px, env(safe-area-inset-bottom, 12px)) 14px !important;
+          }
+        }
+
+        /* FROSTED GLASS MODAL (« Guide Officiel Flottant » - IDENTIQUE À FICHE FASTEF) */
+        .sunu-glass-panel-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 100000;
+          background: rgba(15, 23, 42, 0.48);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: max(14px, env(safe-area-inset-top, 14px)) 14px max(14px, env(safe-area-inset-bottom, 14px)) 14px;
+          animation: overlayFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+          touch-action: none;
+          overscroll-behavior: none;
+        }
+
+        @keyframes overlayFadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        .sunu-glass-floating-panel {
+          position: relative;
+          width: 100%;
+          max-width: 440px;
+          max-height: min(720px, calc(100dvh - 28px));
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+          border: 1px solid rgba(255, 255, 255, 0.7);
+          border-radius: 24px;
+          box-shadow: 0 24px 55px -12px rgba(15, 23, 42, 0.28),
+            0 0 0 1px rgba(99, 102, 241, 0.08);
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          overscroll-behavior: contain;
+          user-select: none;
+          animation: glassPop 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes glassPop {
+          from {
+            opacity: 0;
+            transform: scale(0.96) translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+
+        .glass-ambient-aura {
+          position: absolute;
+          top: -100px;
+          right: -100px;
+          width: 300px;
+          height: 300px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 70%);
+          pointer-events: none;
+        }
+
+        .glass-panel-header {
+          position: relative;
+          z-index: 2;
+          padding: 14px 18px;
+          border-bottom: 1px solid rgba(226, 232, 240, 0.75);
+          background: rgba(248, 250, 255, 0.65);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          user-select: none;
+        }
+
+        .header-title-box {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          min-width: 0;
+        }
+
+        .header-sparkle-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          flex-shrink: 0;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+        }
+
+        .header-heading {
+          font-size: 1.05rem;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0;
+          letter-spacing: -0.01em;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .header-session-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 2px 8px;
+          border-radius: 9999px;
+          background: #fef3c7;
+          color: #b45309;
+          border: 1px solid #fde68a;
+          font-size: 11px;
+          font-weight: 800;
+          flex-shrink: 0;
+        }
+
+        .glass-close-btn {
+          width: 30px;
+          height: 30px;
+          border-radius: 9px;
+          background: rgba(241, 245, 249, 0.85);
+          color: #64748b;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          flex-shrink: 0;
+          transition: all 0.15s ease;
+        }
+
+        .glass-close-btn:hover {
+          background: #fee2e2;
+          color: #ef4444;
+        }
+
+        .glass-panel-scroll-body {
+          position: relative;
+          z-index: 1;
+          flex: 1;
+          overflow-y: auto;
+          padding: 14px 18px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          touch-action: pan-y;
+          overscroll-behavior: contain;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .glass-panel-scroll-body::-webkit-scrollbar {
+          width: 5px;
+        }
+
+        .glass-panel-scroll-body::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 9999px;
+        }
+
+        .glass-accordions-stack {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .sunu-filter-accordion-item {
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.85);
+          border-radius: 14px;
+          overflow: hidden;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .sunu-filter-accordion-item.is-open {
+          border-color: rgba(245, 158, 11, 0.45);
+          box-shadow: 0 4px 16px -2px rgba(245, 158, 11, 0.1);
+        }
+
+        .accordion-header-btn {
+          width: 100%;
+          min-height: 48px;
+          padding: 10px 14px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          font-family: inherit;
+          text-align: left;
+          user-select: none;
+          transition: background 0.15s ease;
+        }
+
+        .accordion-header-btn:hover {
+          background: rgba(248, 250, 252, 0.8);
+        }
+
+        .header-left {
+          display: flex;
+          align-items: center;
+          gap: 9px;
+          flex: 1;
+          min-width: 0;
+        }
+
+        .accordion-chevron {
+          font-size: 16px;
+          font-weight: 700;
+          color: #64748b;
+          width: 14px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.2s ease, color 0.15s ease;
+          line-height: 1;
+        }
+
+        .sunu-filter-accordion-item.is-open .accordion-chevron {
+          color: #d97706;
+        }
+
+        .section-svg-icon {
+          color: #0f172a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          transition: color 0.15s ease;
+        }
+
+        .sunu-filter-accordion-item.is-open .section-svg-icon {
+          color: #d97706;
+        }
+
+        .accordion-title {
+          font-size: 13.5px;
+          font-weight: 700;
+          color: #0f172a;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .header-right {
+          display: flex;
+          align-items: center;
+          margin-left: 8px;
+          flex-shrink: 0;
+        }
+
+        .current-value-badge {
+          background: #f1f5f9;
+          color: #475569;
+          border: 1px solid #e2e8f0;
+          font-size: 11px;
+          font-weight: 700;
+          padding: 3px 9px;
+          border-radius: 999px;
+          max-width: 130px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .accordion-body-collapse {
+          border-top: 1px solid rgba(226, 232, 240, 0.7);
+          padding: 10px 14px 14px 14px;
+          background: #ffffff;
+          animation: accordionExpand 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes accordionExpand {
+          from {
+            opacity: 0;
+            transform: translateY(-4px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .compact-org-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 11.5px;
+          color: #475569;
+          background: #f8fafc;
+          padding: 5px 10px;
+          border-radius: 8px;
+          border: 1px solid #e2e8f0;
+          margin-top: 8px;
+        }
+
+        .compact-org-chip .org-label {
+          font-weight: 600;
+          color: #64748b;
+        }
+
+        .compact-org-chip .org-name {
+          font-weight: 700;
+          color: #0f172a;
+        }
+
+        .compact-conditions-list {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .compact-condition-row {
+          background: #f8fafc;
+          border: 1px solid #eef2f6;
+          border-radius: 10px;
+          padding: 8px 10px;
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+        }
+
+        .cond-check-bullet {
+          color: #10b981;
+          font-weight: 800;
+          font-size: 13px;
+          line-height: 1.2;
+        }
+
+        .cond-text-group {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .cond-title {
+          font-size: 12.5px;
+          font-weight: 700;
+          color: #0f172a;
+        }
+
+        .cond-desc {
+          font-size: 11.5px;
+          color: #64748b;
+          margin: 2px 0 0 0;
+          line-height: 1.35;
+        }
+
+        .compact-subjects-list {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .compact-subject-row {
+          background: #f8fafc;
+          border: 1px solid #eef2f6;
+          border-radius: 10px;
+          padding: 8px 10px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+        }
+
+        .subject-info-cluster {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .subject-title {
+          font-size: 12.5px;
+          font-weight: 700;
+          color: #0f172a;
+          display: block;
+        }
+
+        .subject-count-tag {
+          font-size: 10.5px;
+          font-weight: 700;
+          color: #b45309;
+          background: #fef3c7;
+          border: 1px solid #fde68a;
+          padding: 2px 8px;
+          border-radius: 999px;
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+
+        .glass-panel-footer {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 18px max(14px, env(safe-area-inset-bottom, 14px)) 18px;
+          background: rgba(255, 255, 255, 0.85);
+          border-top: 1px solid rgba(226, 232, 240, 0.7);
+          user-select: none;
+        }
+
+        .glass-reset-btn {
+          flex: 1;
+          height: 42px;
+          border-radius: 12px;
+          background: #f1f5f9;
+          border: 1px solid #e2e8f0;
+          font-size: 13px;
+          font-weight: 700;
+          color: #334155;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .glass-reset-btn:hover {
+          background: #e2e8f0;
+          color: #0f172a;
+        }
+
+        .glass-apply-btn {
+          flex: 2;
+          height: 42px;
+          border-radius: 12px;
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          border: none;
+          font-size: 13px;
+          font-weight: 700;
+          color: #ffffff;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.22);
+        }
+
+        .glass-apply-btn:hover {
+          background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+          transform: translateY(-1px);
         }
       `}</style>
     </div>
