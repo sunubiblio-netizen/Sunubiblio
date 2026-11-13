@@ -273,9 +273,7 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           <div className="cycle-identity-bar">
             {/* Ligne 1 : Session et Statut officiel alignés sur le même niveau */}
             <div className="identity-top-row">
-              {cycle.id !== 'primaire' && (
-                <span className="session-pill">{cycle.sessionLabel}</span>
-              )}
+              <span className="session-pill">{cycle.sessionLabel}</span>
 
               <span className="status-pill">
                 <span className="status-dot" />

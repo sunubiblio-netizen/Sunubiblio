@@ -240,7 +240,7 @@ export const EDUCATION_CYCLES_REGISTRY: Record<string, EducationCycleDetails> = 
     subtitle: 'Du CI au CM2 • Préparation CFEE',
     examBadge: 'Préparation CFEE & Entrée en 6e',
     organization: 'Ministère de l’Éducation Nationale (MEN) • Direction de l’Enseignement Élémentaire',
-    sessionLabel: 'Session Examen National 2025',
+    sessionLabel: 'Année Scolaire 2025 - 2026',
     statusLabel: 'Programme officiel sénégalais • Conforme MEN',
     shortDescription: 'Apprentissage fondamental complet : lecture, écriture, calcul, sciences d’observation et entraînement intensif au CFEE.',
     fullDescription: 'L’enseignement élémentaire sénégalais conduit les élèves de l’initiation (CI/CP) à la validation du Certificat de Fin d’Études Élémentaires (CFEE) et au concours d’entrée en sixième (CM2). Accédez ici aux annales officielles du CFEE, manuels de lecture, livrets d’opérations et corrigés détaillés rédigés par les inspecteurs de l’éducation.',
