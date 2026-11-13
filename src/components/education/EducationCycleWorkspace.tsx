@@ -2964,8 +2964,7 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
 
           .sunu-glass-floating-panel {
             max-width: 440px !important;
-            height: min(520px, calc(100dvh - 28px)) !important;
-            max-height: calc(100dvh - 28px) !important;
+            max-height: min(690px, calc(100dvh - 24px)) !important;
             border-radius: 22px !important;
           }
 
@@ -3016,8 +3015,7 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           position: relative;
           width: 100%;
           max-width: 440px;
-          height: min(560px, calc(100dvh - 36px));
-          max-height: calc(100dvh - 36px);
+          max-height: min(720px, calc(100dvh - 28px));
           background: rgba(255, 255, 255, 0.94);
           backdrop-filter: blur(24px);
           -webkit-backdrop-filter: blur(24px);
