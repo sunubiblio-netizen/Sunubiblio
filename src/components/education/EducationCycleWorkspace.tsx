@@ -1509,6 +1509,29 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           text-transform: uppercase;
         }
 
+        /* Design PC soigné et centré comme la carte mobile (sans modifier le mobile) */
+        @media (min-width: 861px) {
+          .cycle-identity-bar {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 18px 22px;
+            gap: 14px;
+            border-radius: 22px;
+            box-shadow: 0 8px 28px -4px rgba(15, 23, 42, 0.06);
+          }
+
+          .identity-bottom-row {
+            padding-top: 12px;
+          }
+
+          .identity-bottom-row .glass-info-trigger-btn {
+            width: 100%;
+            justify-content: center;
+            height: 40px;
+            font-size: 13px;
+          }
+        }
+
         /* 2. Direct Search Capsule (Sticky au défilement en haut, fidèle à FASTEF / Concours) */
         .search-bar-stage {
           position: sticky;

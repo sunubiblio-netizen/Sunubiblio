@@ -1733,6 +1733,31 @@ export const ContestDetailWorkspace: React.FC<ContestDetailWorkspaceProps> = ({
           background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
           padding: 2px 6px;
           border-radius: 9999px;
+        }
+
+        /* Design PC soigné et centré comme la carte mobile (sans modifier le mobile) */
+        @media (min-width: 861px) {
+          .contest-identity-bar {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 18px 22px;
+            gap: 14px;
+            border-radius: 22px;
+            box-shadow: 0 8px 28px -4px rgba(15, 23, 42, 0.06);
+          }
+
+          .identity-bottom-row {
+            padding-top: 10px;
+            border-top: 1px dashed rgba(226, 232, 240, 0.9);
+          }
+
+          .identity-bottom-row .glass-info-trigger-btn {
+            width: 100%;
+            justify-content: center;
+            height: 40px;
+            font-size: 13px;
+          }
+        }
           text-transform: uppercase;
         }
 
