@@ -3040,12 +3040,10 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
         .sunu-glass-floating-panel {
           position: relative;
           width: 100%;
-          max-width: 440px;
-          max-height: min(720px, calc(100dvh - 28px));
-          background: rgba(255, 255, 255, 0.94);
-          backdrop-filter: blur(24px);
-          -webkit-backdrop-filter: blur(24px);
-          border: 1px solid rgba(255, 255, 255, 0.7);
+          max-width: 480px;
+          max-height: min(740px, calc(100dvh - 32px));
+          background: rgba(255, 255, 255, 0.98);
+          border: 1px solid rgba(255, 255, 255, 0.85);
           border-radius: 24px;
           box-shadow: 0 24px 55px -12px rgba(15, 23, 42, 0.28),
             0 0 0 1px rgba(99, 102, 241, 0.08);
@@ -3285,8 +3283,9 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           display: grid;
           grid-template-rows: 0fr;
           opacity: 0;
-          transition: grid-template-rows 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-                      opacity 0.35s ease;
+          will-change: grid-template-rows, opacity;
+          transition: grid-template-rows 0.48s cubic-bezier(0.25, 1, 0.5, 1),
+                      opacity 0.38s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         .accordion-collapse-wrapper.is-expanded {
@@ -3300,9 +3299,15 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
         }
 
         .accordion-body-collapse {
-          border-top: 1px solid rgba(226, 232, 240, 0.7);
-          padding: 10px 14px 14px 14px;
+          border-top: 1px solid rgba(226, 232, 240, 0.75);
+          padding: 12px 14px 14px 14px;
           background: #ffffff;
+          transform: translateY(-4px);
+          transition: transform 0.44s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .accordion-collapse-wrapper.is-expanded .accordion-body-collapse {
+          transform: translateY(0);
         }
 
         .compact-org-chip {
@@ -3331,24 +3336,24 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
         .compact-conditions-list {
           display: flex;
           flex-direction: column;
-          gap: 6px;
+          gap: 8px;
         }
 
         .compact-condition-row {
           background: #f8fafc;
-          border: 1px solid #eef2f6;
-          border-radius: 10px;
-          padding: 8px 10px;
+          border: 1px solid #e2e8f0;
+          border-radius: 11px;
+          padding: 10px 12px;
           display: flex;
           align-items: flex-start;
-          gap: 8px;
+          gap: 9px;
         }
 
         .cond-check-bullet {
           color: #10b981;
           font-weight: 800;
-          font-size: 13px;
-          line-height: 1.2;
+          font-size: 14px;
+          line-height: 1.35;
         }
 
         .cond-text-group {
@@ -3357,33 +3362,35 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
         }
 
         .cond-title {
-          font-size: 12.5px;
+          font-size: 13px;
           font-weight: 700;
           color: #0f172a;
+          line-height: 1.4;
         }
 
         .cond-desc {
-          font-size: 11.5px;
-          color: #64748b;
+          font-size: 12.5px;
+          font-weight: 500;
+          color: #1e293b;
           margin: 2px 0 0 0;
-          line-height: 1.35;
+          line-height: 1.5;
         }
 
         .compact-subjects-list {
           display: flex;
           flex-direction: column;
-          gap: 6px;
+          gap: 8px;
         }
 
         .compact-subject-row {
           background: #f8fafc;
-          border: 1px solid #eef2f6;
-          border-radius: 10px;
-          padding: 8px 10px;
+          border: 1px solid #e2e8f0;
+          border-radius: 11px;
+          padding: 10px 12px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 8px;
+          gap: 10px;
         }
 
         .subject-info-cluster {
@@ -3392,19 +3399,20 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
         }
 
         .subject-title {
-          font-size: 12.5px;
+          font-size: 13px;
           font-weight: 700;
           color: #0f172a;
           display: block;
+          line-height: 1.35;
         }
 
         .subject-count-tag {
-          font-size: 10.5px;
+          font-size: 11px;
           font-weight: 700;
           color: #b45309;
           background: #fef3c7;
           border: 1px solid #fde68a;
-          padding: 2px 8px;
+          padding: 3px 9px;
           border-radius: 999px;
           white-space: nowrap;
           flex-shrink: 0;
