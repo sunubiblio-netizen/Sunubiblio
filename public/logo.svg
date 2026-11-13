@@ -1,27 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="6 6 88 88" fill="none">
   <defs>
-    <!-- Pétale 1 (Haut-Droit) : Or Solaire Rayonnant Sunubiblio -->
+    <!-- Pétale 1 (Haut-Droit) : Or Solaire Lumineux -->
     <linearGradient id="pet1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEF9C3"/>
+      <stop offset="100%" stop-color="#FACC15"/>
+    </linearGradient>
+
+    <!-- Pétale 2 (Bas-Droit) : Or Doré Vif (sans marron) -->
+    <linearGradient id="pet2" x1="100%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#FDE047"/>
       <stop offset="100%" stop-color="#F59E0B"/>
     </linearGradient>
 
-    <!-- Pétale 2 (Bas-Droit) : Ambre Cuivré / Miel Doré Prestigieux -->
-    <linearGradient id="pet2" x1="100%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#F59E0B"/>
-      <stop offset="100%" stop-color="#D97706"/>
-    </linearGradient>
-
-    <!-- Pétale 3 (Bas-Gauche) : Or Aurore Lumineux Doux -->
+    <!-- Pétale 3 (Bas-Gauche) : Or Aurore Éclatant -->
     <linearGradient id="pet3" x1="0%" y1="100%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#FEF08A"/>
       <stop offset="100%" stop-color="#FBBF24"/>
     </linearGradient>
 
-    <!-- Pétale 4 (Haut-Gauche) : Ambre Chaud Profond / Or Flamboyant -->
+    <!-- Pétale 4 (Haut-Gauche) : Ambre Solaire Chaleureux (sans marron foncé) -->
     <linearGradient id="pet4" x1="100%" y1="100%" x2="0%" y2="0%">
-      <stop offset="0%" stop-color="#FBBF24"/>
-      <stop offset="100%" stop-color="#EA580C"/>
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="100%" stop-color="#FB923C"/>
     </linearGradient>
   </defs>
 

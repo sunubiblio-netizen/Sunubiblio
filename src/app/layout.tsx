@@ -16,11 +16,11 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'Sunubiblio - La bibliothèque numérique pour tous vos objectifs',
+  title: 'BAAT - La bibliothèque numérique pour tous vos objectifs',
   description:
     "Plateforme SaaS d'accès universel au savoir, livres numériques, annales de concours, éducation et tuteur IA personnalisé pour réussir vos études en Afrique.",
   keywords: [
-    'Sunubiblio',
+    'BAAT',
     'bibliothèque numérique',
     'concours Sénégal',
     'FASTEF',
@@ -30,16 +30,16 @@ export const metadata: Metadata = {
     'cours en ligne',
     'livres scolaires',
   ],
-  authors: [{ name: 'Sunubiblio' }],
+  authors: [{ name: 'BAAT' }],
   icons: {
     icon: '/logo.svg',
   },
   openGraph: {
-    title: 'Sunubiblio - La bibliothèque numérique pour tous vos objectifs',
+    title: 'BAAT - La bibliothèque numérique pour tous vos objectifs',
     description:
       'Accédez à des milliers de ressources éducatives, de concours, d’exercices et de documents pour réussir vos études.',
     url: 'https://sunubiblio.com',
-    siteName: 'Sunubiblio',
+    siteName: 'BAAT',
     locale: 'fr_FR',
     type: 'website',
   },

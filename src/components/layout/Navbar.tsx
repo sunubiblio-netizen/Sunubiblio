@@ -9,6 +9,7 @@ import { NotificationsPopover } from './NotificationsPopover';
 import { HelpPopover } from './HelpPopover';
 import { ContextualNavigation } from './ContextualNavigation';
 import { SunuIaIcon } from './SunuIaIcon';
+import { BaatWordmark } from '@/components/ui/BaatWordmark';
 
 interface NavbarProps {
   onOpenAuth?: (mode: 'login' | 'register') => void;
@@ -20,7 +21,7 @@ interface NavbarProps {
 const SunubiblioLogo: React.FC<{ size?: number; className?: string }> = ({ size = 32, className = '' }) => (
   <img
     src="/logo.svg"
-    alt="Sunubiblio"
+    alt="BAAT"
     width={size}
     height={size}
     className={className}
@@ -56,19 +57,19 @@ export const Navbar: React.FC<NavbarProps> = ({
           1. HEADER DESKTOP / TABLETTE (Inchangé - Disposition fluide)
           ========================================================= */}
       <div className="container navbar-container navbar-desktop-container desktop-only">
-        {/* GAUCHE : [Logo Sunubiblio] + [Nav Essentielle] */}
+        {/* GAUCHE : [Logo BAAT] + [Nav Essentielle] */}
         <div className="nav-left-group">
-          {/* Logo & Marque Sunubiblio */}
+          {/* Logo & Marque BAAT */}
           <Link
             href="/"
             className="brand-link"
-            title="Sunubiblio — Accueil"
-            aria-label="Sunubiblio — Retour à l'accueil"
+            title="BAAT — Accueil"
+            aria-label="BAAT — Retour à l'accueil"
           >
             <div className="brand-logo-wrap">
               <SunubiblioLogo size={32} />
             </div>
-            <span className="brand-name">Sunubiblio</span>
+            <BaatWordmark height={22} className="brand-wordmark" />
           </Link>
         </div>
 
@@ -138,18 +139,18 @@ export const Navbar: React.FC<NavbarProps> = ({
         className="navbar-mobile-header mobile-only"
         style={{ backgroundColor: '#ffffff' }}
       >
-        {/* LIGNE 1 — IDENTITÉ : Logo & Marque Sunubiblio au-dessus des 3 traits */}
+        {/* LIGNE 1 — IDENTITÉ : Logo & Marque BAAT au-dessus des 3 traits */}
         <div className="mobile-header-identity">
           <Link
             href="/"
             className="mobile-brand-link"
-            title="Sunubiblio — Accueil"
-            aria-label="Sunubiblio — Retour à l'accueil"
+            title="BAAT — Accueil"
+            aria-label="BAAT — Retour à l'accueil"
           >
             <div className="brand-logo-wrap">
               <SunubiblioLogo size={28} />
             </div>
-            <span className="brand-name">Sunubiblio</span>
+            <BaatWordmark height={20} className="brand-wordmark" />
           </Link>
         </div>
 
