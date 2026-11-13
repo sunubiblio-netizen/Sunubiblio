@@ -1510,26 +1510,28 @@ export const EducationCycleWorkspace: React.FC<EducationCycleWorkspaceProps> = (
           text-transform: uppercase;
         }
 
-        /* Design PC soigné et centré comme la carte mobile (sans modifier le mobile) */
+        /* Design PC soigné et centré exactement au niveau de la carte ENA (sans modifier le mobile) */
         @media (min-width: 861px) {
           .cycle-identity-bar {
-            max-width: 680px;
+            max-width: 560px;
             margin: 0 auto;
-            padding: 18px 22px;
-            gap: 14px;
-            border-radius: 22px;
-            box-shadow: 0 8px 28px -4px rgba(15, 23, 42, 0.06);
+            padding: 15px 18px;
+            gap: 10px;
+            border-radius: 20px;
+            box-shadow: 0 6px 22px -4px rgba(15, 23, 42, 0.05);
           }
 
           .identity-bottom-row {
-            padding-top: 12px;
+            padding-top: 2px;
+            border-top: none;
           }
 
           .identity-bottom-row .glass-info-trigger-btn {
             width: 100%;
             justify-content: center;
-            height: 40px;
-            font-size: 13px;
+            height: 36px;
+            font-size: 12.5px;
+            border: 1.5px solid rgba(245, 158, 11, 0.35);
           }
         }
 
