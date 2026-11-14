@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
@@ -37,7 +36,6 @@ const DEFAULT_FILTERS: DocumentFilterState = {
 };
 
 export default function DocumentsPage() {
-  const router = useRouter();
 
   // State with instant initial data
   const [filters, setFilters] = useState<DocumentFilterState>(DEFAULT_FILTERS);
@@ -208,7 +206,7 @@ export default function DocumentsPage() {
             type: 'warning',
           });
           setTimeout(() => {
-            router.push('/tarifs');
+            window.location.href = '/tarifs';
           }, 1800);
           return;
         }
@@ -338,29 +336,7 @@ export default function DocumentsPage() {
             )}
           </section>
 
-          {/* Practical Info Banner */}
-          <section className="documents-info-banner">
-            <div className="info-banner-left">
-              <div className="info-banner-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-              </div>
-              <div>
-                <h4 className="info-banner-title">Conformité et authenticité des documents</h4>
-                <p className="info-banner-desc">
-                  Tous les modèles de lettres et démarches administratives sont mis en conformité avec les usages des institutions et de l'enseignement au Sénégal. Les fichiers protégés sont distribués via des protocoles chiffrés sécurisés.
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              className="btn-secondary info-banner-btn"
-              onClick={() => router.push('/contact')}
-            >
-              Proposer un modèle
-            </button>
-          </section>
+          {/* Practical Info Banner — SUPPRIMÉ par design : page identique à Bibliothèque */}
         </div>
       </main>
 
@@ -413,7 +389,7 @@ export default function DocumentsPage() {
 
         .documents-cards-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: repeat(4, 1fr);
           gap: 24px;
         }
 
@@ -471,77 +447,9 @@ export default function DocumentsPage() {
           color: #64748b;
         }
 
-        .documents-info-banner {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 20px;
-          background: #fffbeb;
-          border: 1px solid rgba(245, 158, 11, 0.25);
-          border-radius: 18px;
-          padding: 24px 28px;
-          margin-top: 48px;
-        }
-
-        .info-banner-left {
-          display: flex;
-          align-items: flex-start;
-          gap: 16px;
-        }
-
-        .info-banner-icon {
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
-          background: rgba(245, 158, 11, 0.15);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-
-        .info-banner-title {
-          font-size: 15px;
-          font-weight: 700;
-          color: #92400e;
-          margin: 0 0 4px 0;
-        }
-
-        .info-banner-desc {
-          font-size: 13px;
-          color: #78350f;
-          line-height: 1.5;
-          margin: 0;
-          max-width: 780px;
-        }
-
-        .info-banner-btn {
-          flex-shrink: 0;
-          padding: 10px 20px;
-          font-size: 13.5px;
-          font-weight: 700;
-          background: #ffffff;
-          border: 1px solid rgba(245, 158, 11, 0.4);
-          color: #b45309;
-          border-radius: 9999px;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .info-banner-btn:hover {
-          background: #f59e0b;
-          color: #ffffff;
-        }
 
         @media (max-width: 768px) {
-          .documents-info-banner {
-            flex-direction: column;
-            align-items: stretch;
-            padding: 20px;
-          }
-          .info-banner-btn {
-            align-self: flex-start;
-          }
+          .documents-info-banner-removed { display: none; }
         }
       `}</style>
     </div>
