@@ -198,45 +198,66 @@ export const MODE_CATEGORIES: ModeCategory[] = [
   },
   {
     id: 'outils_doc',
-    title: 'Outils & Conversion de Documents',
+    title: 'Suite Bureautique & Documents',
     items: [
       {
-        id: 'word_to_pdf',
-        label: 'Word en PDF',
-        badge: 'Conversion',
+        id: 'doc_pdf',
+        label: 'Documents PDF',
+        badge: 'Créer · Modifier · Convertir',
         icon: (
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="17 8 12 3 7 8"></polyline>
-            <line x1="12" y1="3" x2="12" y2="15"></line>
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="M9 15h6"></path>
+            <path d="M9 11h6"></path>
           </svg>
         ),
-        desc: 'Convertir vos .docx et .doc en PDF fidèle et sécurisé'
+        desc: 'Créer un PDF, insérer un fichier, modifier, annoter ou convertir'
       },
       {
-        id: 'pdf_to_word',
-        label: 'PDF en Word',
-        badge: 'Édition',
+        id: 'doc_word',
+        label: 'Documents Word (.docx)',
+        badge: 'Créer · Modifier · Insérer',
         icon: (
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
           </svg>
         ),
-        desc: 'Convertir et extraire vos documents PDF vers Word modifiable'
+        desc: 'Créer ou importer un document Word pour rédiger et modifier'
       },
       {
-        id: 'modifier_pdf',
-        label: 'Modifier un document PDF',
-        badge: 'Outils PDF',
+        id: 'doc_excel',
+        label: 'Feuilles Excel (.xlsx)',
+        badge: 'Créer · Modifier · Calculer',
         icon: (
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 20h9"></path>
-            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="3" y1="9" x2="21" y2="9"></line>
+            <line x1="3" y1="15" x2="21" y2="15"></line>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+            <line x1="15" y1="3" x2="15" y2="21"></line>
           </svg>
         ),
-        desc: 'Annotations, texte, visa, rotation et suppression de pages'
+        desc: 'Créer un tableur, importer une feuille, insérer des formules et calculs'
+      },
+      {
+        id: 'doc_powerpoint',
+        label: 'Présentations PowerPoint (.pptx)',
+        badge: 'Créer · Modifier · Diapos',
+        icon: (
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+            <circle cx="9" cy="9" r="2"></circle>
+            <path d="M15 11l-3-3"></path>
+          </svg>
+        ),
+        desc: 'Générer une présentation, concevoir des slides et structurer'
       }
     ]
   }

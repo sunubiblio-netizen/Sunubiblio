@@ -198,35 +198,45 @@ export const AIService = {
           `3. **Mise en page universitaire :** Police lisible (Times/Arial 12 pt), interligne 1.5 et numérotation des pages.`;
         break;
 
-      // --- OUTILS & CONVERSION DE DOCUMENTS ---
-      case 'word_to_pdf':
-        generatedText = `### 🔄 Conversion Word (.docx / .doc) vers PDF Haute Définition\n\n` +
-          (hasAttachments ? `> **Fichier reçu :** ${attachmentContext}\n\n` : '') +
-          `La conversion vers un format PDF certifié, sécurisé et compatible avec tous les lecteurs d'écran est prête.\n\n` +
-          `* **Polices vectorisées :** Rendu identique et mise en page préservée au pixel près.\n` +
-          `* **Qualité d'impression :** Standard 300 DPI pour les dépôts institutionnels et soutenances.\n` +
-          `* **Métadonnées et titres :** Table des matières cliquable préservée.\n\n` +
-          `*(Vous pouvez glisser votre fichier Word dans la boîte de dialogue ou cliquer sur le trombone pour finaliser le traitement).*`;
+      // --- SUITE BUREAUTIQUE & OUTILS DOCUMENTS ---
+      case 'doc_pdf':
+        generatedText = `### 📄 Documents PDF — Créer · Modifier · Convertir\n\n` +
+          (hasAttachments ? `> **Fichier PDF / Document joint :** ${attachmentContext}\n\n` : '') +
+          `L'assistant de gestion PDF est actif avec toutes les opérations disponibles :\n\n` +
+          `1. **Création assistée :** Génération de documents officiels, attestations, rapports formatés prêts pour impression haute résolution (300 DPI).\n` +
+          `2. **Modification & Annotations :** Ajout de zones de texte, visa, annotations, suppression ou réorganisation de pages.\n` +
+          `3. **Conversion universelle :** Convertir fidèlement un document Word/Image en PDF, ou extraire un PDF vers un format éditable.\n\n` +
+          `*Action immédiate : Indiquez ce que vous souhaitez rédiger, ou glissez votre fichier PDF pour le modifier.*`;
         break;
 
-      case 'pdf_to_word':
-        generatedText = `### 📄 Conversion PDF vers Document Word (.docx) Modifiable\n\n` +
-          (hasAttachments ? `> **Fichier PDF :** ${attachmentContext}\n\n` : '') +
-          `Extraction intelligente et reconstitution du document modifiable :\n\n` +
-          `* **Reconnaissance optique de texte (OCR) :** Détection des paragraphes, polices et titres.\n` +
-          `* **Préservation des tableaux :** Les cellules et grilles sont converties en tableaux Word natifs.\n` +
-          `* **Images & illustrations :** Extraction en résolution native dans le corps du texte.\n\n` +
-          `*(Joignez votre PDF via le bouton trombone pour lancer l'extraction).*`;
+      case 'doc_word':
+        generatedText = `### 📝 Documents Word (.docx) — Créer · Modifier · Insérer\n\n` +
+          (hasAttachments ? `> **Fichier Word joint :** ${attachmentContext}\n\n` : '') +
+          `Outil d'assistance éditoriale Word complet :\n\n` +
+          `1. **Création de document :** Rédaction de plans types, modèles de lettres administratives, contrats, synthèses et devoirs scolaires structurés.\n` +
+          `2. **Modification & Insertion :** Importez votre fichier .docx ou .doc pour corriger la grammaire, enrichir les sections, insérer des tableaux ou reformuler les passages.\n` +
+          `3. **Export propre :** Mise en page automatique avec styles de titres (H1, H2, H3), puces et sommaire.\n\n` +
+          `*Tapez votre consigne ou insérez votre fichier Word pour commencer la rédaction.*`;
         break;
 
-      case 'modifier_pdf':
-        generatedText = `### ✏️ Outil d'Édition & Annotation de PDF\n\n` +
-          (hasAttachments ? `> **Fichier PDF cible :** ${attachmentContext}\n\n` : '') +
-          `Fonctionnalités d'édition disponibles :\n\n` +
-          `* **Annotation & Visa :** Signature électronique, mentions manuscrites, tampon et surlignage.\n` +
-          `* **Organisation des pages :** Rotation, réordonnancement, suppression ou ajout de pages blanches.\n` +
-          `* **Correction de texte :** Modification de coquilles et ajout de zones de texte directement sur le PDF.\n\n` +
-          `*Prêt pour la modification : importez votre document pour débuter les annotations.*`;
+      case 'doc_excel':
+        generatedText = `### 📊 Feuilles Excel (.xlsx) — Créer · Modifier · Calculer\n\n` +
+          (hasAttachments ? `> **Tableur joint :** ${attachmentContext}\n\n` : '') +
+          `Hub de calcul et tableur intelligent :\n\n` +
+          `1. **Création de tableur :** Génération de grilles budgétaires, suivis de notes scolaires, plannings, tableaux d'amortissement et inventaires.\n` +
+          `2. **Formules & Fonctions :** Conception et explication de formules complexes (\`RECHERCHEV\`, \`INDEX/EQUIV\`, \`SOMME.SI.ENS\`, \`SI\`, etc.).\n` +
+          `3. **Analyse & Modification :** Importez un fichier .xlsx pour nettoyer des données, détecter des anomalies ou générer des synthèses statistiques.\n\n` +
+          `*Décrivez le tableau à concevoir ou joignez votre feuille Excel pour l'enrichir.*`;
+        break;
+
+      case 'doc_powerpoint':
+        generatedText = `### 📑 Présentations PowerPoint (.pptx) — Créer · Modifier · Diapos\n\n` +
+          (hasAttachments ? `> **Support de présentation :** ${attachmentContext}\n\n` : '') +
+          `Concepteur de diaporamas et présentations percutantes :\n\n` +
+          `1. **Création complète :** Élaboration du plan de soutenance, découpage diapositive par diapositive (titre, messages clés, points d'accroche).\n` +
+          `2. **Insertion & Enrichissement :** Transformez un cours ou un rapport Word en diaporama prêt à être projeté devant un jury ou une classe.\n` +
+          `3. **Notes de l'orateur :** Rédaction des argumentaires à prononcer à l'oral pour chaque slide.\n\n` +
+          `*Indiquez le sujet de votre présentation, le nombre de slides souhaité ou joignez votre document source.*`;
         break;
 
       case 'assistant':

@@ -13,10 +13,11 @@ export type AIMode =
   | 'article_scientifique'
   | 'manuscrit_livre'
   | 'autre_academique'
-  // Outils PDF & Word
-  | 'word_to_pdf'
-  | 'pdf_to_word'
-  | 'modifier_pdf';
+  // Suite Bureautique & Outils Documents
+  | 'doc_pdf'
+  | 'doc_word'
+  | 'doc_excel'
+  | 'doc_powerpoint';
 
 export type AIAttachmentType = 'document' | 'image' | 'library' | 'text' | 'file';
 
