@@ -11,7 +11,6 @@ import { DocumentsFilters } from '@/components/documents/DocumentsFilters';
 import { DocumentCard } from '@/components/documents/DocumentCard';
 import { DocumentDetailModal } from '@/components/documents/DocumentDetailModal';
 import { DocumentsEmptyState } from '@/components/documents/DocumentsEmptyState';
-import { DocumentToolsSection } from '@/components/documents/tools/DocumentToolsSection';
 import { documentService } from '@/services/documentService';
 import {
   DocumentCategory,
@@ -183,9 +182,6 @@ export default function DocumentsPage() {
 
         {/* 1. Hero Section */}
         <DocumentsHero totalDocuments={totalDocuments} />
-
-        {/* 2. Suite d'outils pour vos documents (Vérification, Word->PDF, Édition PDF, Mes documents) */}
-        <DocumentToolsSection />
 
         {/* Container for Content */}
         <div className="container documents-catalog-container">

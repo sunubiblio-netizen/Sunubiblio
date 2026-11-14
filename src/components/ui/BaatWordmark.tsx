@@ -83,3 +83,4 @@ export const BaatWordmark: React.FC<BaatWordmarkProps> = ({
     </svg>
   );
 };
+

@@ -136,6 +136,99 @@ export const AIService = {
           `- Rapport téléchargeable pour vos soutenances, mémoires et publications universitaires.`;
         break;
 
+      // --- AIDE À L'ÉCRITURE & DIAGNOSTIC ÉTHIQUE ---
+      case 'memoire':
+        generatedText = `### 🎓 Diagnostic & Assistance Rédactionnelle — Mémoire Universitaire (Master 1 & 2)\n\n` +
+          (hasAttachments ? `> **Support analysé :** ${attachmentContext}\n\n` : '') +
+          `Voici l'analyse d'excellence pour votre mémoire :\n\n` +
+          `1. **Problématique & Hypothèses :** La formulation de votre question de recherche centrale doit être précise et délimitée. Vérifiez que chaque hypothèse correspond à une sous-partie de votre plan.\n` +
+          `2. **Rigueur Méthodologique :** Respectez les normes académiques (citations APA ou Vancouver, état de l'art équilibré, séparation nette entre données et interprétations).\n` +
+          `3. **Style & Clarté :** Éliminez le jargon inutile et les tournures passives redondantes pour valoriser vos apports personnels.\n\n` +
+          `*Conseil du jury : Rédigez l'introduction générale et la conclusion générale en tout dernier pour garantir une cohérence parfaite.*`;
+        break;
+
+      case 'these':
+        generatedText = `### 🏛️ Expertise & Diagnostic Éthique — Thèse de Doctorat\n\n` +
+          (hasAttachments ? `> **Travail doctoral :** ${attachmentContext}\n\n` : '') +
+          `Analyse approfondie pour manuscrit de thèse :\n\n` +
+          `1. **Originalité & Contribution Scientifique :** Mise en valeur de votre valeur ajoutée par rapport à la littérature internationale existante.\n` +
+          `2. **Diagnostic Éthique & Intégrité Académique :** Vérification stricte des attributions, absence de reformulations non sourcées et traçabilité des corpus expérimentaux.\n` +
+          `3. **Cohérence Épistémologique :** Alignement strict entre cadre théorique, méthodologie de recueil et analyse critique des résultats.\n\n` +
+          `*Vérification recommandée : Soumettez vos chapitres clés au module Antiplagiat avant le dépôt officiel auprès de l'école doctorale.*`;
+        break;
+
+      case 'rapport_stage':
+        generatedText = `### 💼 Optimisation & Relecture — Rapport de Stage & Professionnel\n\n` +
+          (hasAttachments ? `> **Document de stage :** ${attachmentContext}\n\n` : '') +
+          `Recommandations pour valoriser votre mission professionnelle :\n\n` +
+          `1. **Structure standard recommandée :**\n` +
+          `   - Présentation de l'organisme d'accueil et du secteur d'activité.\n` +
+          `   - Missions confiées, responsabilités et livrables concrets réalisés.\n` +
+          `   - Bilan réflexif : compétences développées, difficultés surmontées et apports pour votre projet d'avenir.\n` +
+          `2. **Livrables & Chiffres clés :** Illustrez vos réalisations avec des indicateurs mesurables (KPIs, gains de temps, statistiques).\n` +
+          `3. **Confidentialité :** Assurez-vous d'avoir anonymisé les données internes sensibles de l'entreprise.`;
+        break;
+
+      case 'article_scientifique':
+        generatedText = `### 📑 Évaluation Formelle — Article Scientifique & Publication\n\n` +
+          (hasAttachments ? `> **Manuscrit :** ${attachmentContext}\n\n` : '') +
+          `Revue formelle selon les critères des comités de lecture (Peer-Review) :\n\n` +
+          `1. **Structure IMRAD :** Vérification de l'enchaînement *Introduction, Méthodologie, Résultats et Discussion*.\n` +
+          `2. **Résumé (Abstract) & Mots-clés :** L'abstract doit résumer en moins de 250 mots le contexte, la méthode, le résultat majeur et la conclusion.\n` +
+          `3. **Qualité des Figures & Tableaux :** Chaque graphique doit être autonome avec légende explicite et unités scientifiques standardisées.\n` +
+          `4. **Intégrité des Sources :** Citez fidèlement les articles précurseurs et récents de votre domaine.`;
+        break;
+
+      case 'manuscrit_livre':
+        generatedText = `### 📖 Stylistique & Correction — Manuscrit de Livre / Essai\n\n` +
+          (hasAttachments ? `> **Ouvrage :** ${attachmentContext}\n\n` : '') +
+          `Diagnostic éditorial et stylistique :\n\n` +
+          `1. **Rythme & Narration :** Fluidité des transitions entre chapitres et maintien de l'intérêt du lecteur.\n` +
+          `2. **Élimination des Scories :** Chasse aux répétitions, pléonasmes et phrases alourdies.\n` +
+          `3. **Cohérence du Ton :** Harmonisation de la voix narrative ou de la posture de l'essayiste.\n\n` +
+          `*Prochaine étape : Souhaitez-vous une réécriture ciblée d'un extrait ou un plan de découpage en chapitres ?*`;
+        break;
+
+      case 'autre_academique':
+        generatedText = `### 📄 Structuration — Document Académique & Devoir de Recherche\n\n` +
+          (hasAttachments ? `> **Document :** ${attachmentContext}\n\n` : '') +
+          `Recommandations méthodologiques pour votre devoir :\n\n` +
+          `1. **Plan logique en parties équilibrées :** Introduction (amorce, sujet, problématique, plan), développement argumenté, conclusion synthétique.\n` +
+          `2. **Précision des références :** Chaque citation doit comporter le nom de l'auteur, l'année et la page de référence.\n` +
+          `3. **Mise en page universitaire :** Police lisible (Times/Arial 12 pt), interligne 1.5 et numérotation des pages.`;
+        break;
+
+      // --- OUTILS & CONVERSION DE DOCUMENTS ---
+      case 'word_to_pdf':
+        generatedText = `### 🔄 Conversion Word (.docx / .doc) vers PDF Haute Définition\n\n` +
+          (hasAttachments ? `> **Fichier reçu :** ${attachmentContext}\n\n` : '') +
+          `La conversion vers un format PDF certifié, sécurisé et compatible avec tous les lecteurs d'écran est prête.\n\n` +
+          `* **Polices vectorisées :** Rendu identique et mise en page préservée au pixel près.\n` +
+          `* **Qualité d'impression :** Standard 300 DPI pour les dépôts institutionnels et soutenances.\n` +
+          `* **Métadonnées et titres :** Table des matières cliquable préservée.\n\n` +
+          `*(Vous pouvez glisser votre fichier Word dans la boîte de dialogue ou cliquer sur le trombone pour finaliser le traitement).*`;
+        break;
+
+      case 'pdf_to_word':
+        generatedText = `### 📄 Conversion PDF vers Document Word (.docx) Modifiable\n\n` +
+          (hasAttachments ? `> **Fichier PDF :** ${attachmentContext}\n\n` : '') +
+          `Extraction intelligente et reconstitution du document modifiable :\n\n` +
+          `* **Reconnaissance optique de texte (OCR) :** Détection des paragraphes, polices et titres.\n` +
+          `* **Préservation des tableaux :** Les cellules et grilles sont converties en tableaux Word natifs.\n` +
+          `* **Images & illustrations :** Extraction en résolution native dans le corps du texte.\n\n` +
+          `*(Joignez votre PDF via le bouton trombone pour lancer l'extraction).*`;
+        break;
+
+      case 'modifier_pdf':
+        generatedText = `### ✏️ Outil d'Édition & Annotation de PDF\n\n` +
+          (hasAttachments ? `> **Fichier PDF cible :** ${attachmentContext}\n\n` : '') +
+          `Fonctionnalités d'édition disponibles :\n\n` +
+          `* **Annotation & Visa :** Signature électronique, mentions manuscrites, tampon et surlignage.\n` +
+          `* **Organisation des pages :** Rotation, réordonnancement, suppression ou ajout de pages blanches.\n` +
+          `* **Correction de texte :** Modification de coquilles et ajout de zones de texte directement sur le PDF.\n\n` +
+          `*Prêt pour la modification : importez votre document pour débuter les annotations.*`;
+        break;
+
       case 'assistant':
       default:
         const lowerContent = params.content.toLowerCase().trim();

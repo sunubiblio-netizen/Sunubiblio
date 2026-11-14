@@ -5,7 +5,18 @@ export type AIMode =
   | 'qcm' 
   | 'exercices' 
   | 'corriger'
-  | 'antiplagiat';
+  | 'antiplagiat'
+  // Aide à l'écriture & diagnostic éthique
+  | 'memoire'
+  | 'these'
+  | 'rapport_stage'
+  | 'article_scientifique'
+  | 'manuscrit_livre'
+  | 'autre_academique'
+  // Outils PDF & Word
+  | 'word_to_pdf'
+  | 'pdf_to_word'
+  | 'modifier_pdf';
 
 export type AIAttachmentType = 'document' | 'image' | 'library' | 'text' | 'file';
 
