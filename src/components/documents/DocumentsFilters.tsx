@@ -5,7 +5,6 @@ import {
   DocumentCategory,
   DocumentCategoryInfo,
   DocumentFilterState,
-  DocumentFormat,
 } from '@/types/document';
 import { SortDropdown, SortOptionItem } from '@/components/ui/SortDropdown';
 
@@ -64,6 +63,9 @@ interface DocumentsFiltersProps {
   categories: DocumentCategoryInfo[];
   availableYears: number[];
   totalResults: number;
+  isFiltersOpen?: boolean;
+  onToggleFilters?: () => void;
+  activeFiltersCount?: number;
 }
 
 export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
@@ -73,20 +75,12 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
   categories,
   availableYears,
   totalResults,
+  isFiltersOpen = false,
+  onToggleFilters,
+  activeFiltersCount = 0,
 }) => {
   const [isCategoryBarOpen, setIsCategoryBarOpen] = useState(false);
-  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const ribbonRef = useRef<HTMLDivElement>(null);
-
-  // Active filters count
-  const activeCount = useMemo(() => {
-    let count = 0;
-    if (filters.category !== 'all') count++;
-    if (filters.format !== 'all') count++;
-    if (filters.year !== 'all') count++;
-    if (filters.accessLevel !== 'all') count++;
-    return count;
-  }, [filters]);
 
   // Ribbon scroll helper
   const scrollRibbon = (direction: 'left' | 'right') => {
@@ -103,35 +97,25 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
     ];
   }, [categories]);
 
-  // Formats list
-  const formatsList: { id: DocumentFormat | 'all'; label: string }[] = [
-    { id: 'all', label: 'Tous formats' },
-    { id: 'PDF', label: 'PDF' },
-    { id: 'DOCX', label: 'Word (DOCX)' },
-    { id: 'XLSX', label: 'Excel (XLSX)' },
-    { id: 'Autre', label: 'Autre format' },
-  ];
-
   return (
     <div className="doc-grid-header-wrapper">
       {/* Top Header Row (Identique à Bibliothèque : Filtres + bouton + à gauche, Trier par à droite) */}
       <div className="grid-header">
         <div className="grid-header-left">
-          {/* Bouton Filtres élégant */}
+          {/* Bouton Filtres élégant (masqué sur desktop quand la sidebar est ouverte, visible sur mobile ou quand sidebar repliée) */}
           <button
             type="button"
-            className={`open-filters-pill-btn ${isFilterPanelOpen ? 'active' : ''}`}
-            onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
-            aria-expanded={isFilterPanelOpen}
-            aria-label="Ouvrir les filtres avancés"
-            title="Ouvrir les filtres avancés"
+            className={`open-filters-pill-btn ${isFiltersOpen ? 'desktop-hidden' : ''}`}
+            onClick={onToggleFilters}
+            aria-label="Ouvrir les filtres"
+            title="Ouvrir les filtres"
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
             </svg>
             <span>Filtres</span>
-            {activeCount > 0 && (
-              <span className="filter-pill-badge">{activeCount}</span>
+            {activeFiltersCount > 0 && (
+              <span className="filter-pill-badge">{activeFiltersCount}</span>
             )}
           </button>
 
@@ -208,99 +192,8 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
         </div>
       )}
 
-      {/* Panneau dépliant des filtres au clic sur [Filtres] */}
-      {isFilterPanelOpen && (
-        <div className="filter-collapsible-panel">
-          <div className="filter-panel-inner">
-            {/* Format */}
-            <div className="filter-group">
-              <span className="filter-group-title">Format de fichier</span>
-              <div className="filter-pills-row">
-                {formatsList.map((f) => (
-                  <button
-                    key={f.id}
-                    type="button"
-                    className={`filter-sub-pill ${filters.format === f.id ? 'active' : ''}`}
-                    onClick={() => onFilterChange({ format: f.id, page: 1 })}
-                  >
-                    {f.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Années */}
-            {availableYears.length > 0 && (
-              <div className="filter-group">
-                <span className="filter-group-title">Année de publication</span>
-                <div className="filter-pills-row">
-                  <button
-                    type="button"
-                    className={`filter-sub-pill ${filters.year === 'all' ? 'active' : ''}`}
-                    onClick={() => onFilterChange({ year: 'all', page: 1 })}
-                  >
-                    Toutes
-                  </button>
-                  {availableYears.slice(0, 6).map((yr) => (
-                    <button
-                      key={yr}
-                      type="button"
-                      className={`filter-sub-pill ${filters.year === yr ? 'active' : ''}`}
-                      onClick={() => onFilterChange({ year: yr, page: 1 })}
-                    >
-                      {yr}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Accès */}
-            <div className="filter-group">
-              <span className="filter-group-title">Niveau d'accès</span>
-              <div className="filter-pills-row">
-                <button
-                  type="button"
-                  className={`filter-sub-pill ${filters.accessLevel === 'all' ? 'active' : ''}`}
-                  onClick={() => onFilterChange({ accessLevel: 'all', page: 1 })}
-                >
-                  Tous
-                </button>
-                <button
-                  type="button"
-                  className={`filter-sub-pill ${filters.accessLevel === 'free' ? 'active' : ''}`}
-                  onClick={() => onFilterChange({ accessLevel: 'free', page: 1 })}
-                >
-                  Gratuit
-                </button>
-                <button
-                  type="button"
-                  className={`filter-sub-pill ${filters.accessLevel === 'premium' ? 'active' : ''}`}
-                  onClick={() => onFilterChange({ accessLevel: 'premium', page: 1 })}
-                >
-                  Abonnement
-                </button>
-              </div>
-            </div>
-
-            {/* Reset button if filters active */}
-            {activeCount > 0 && (
-              <div className="filter-reset-row">
-                <button type="button" className="filter-reset-action" onClick={onResetFilters}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                    <path d="M3 3v5h5" />
-                  </svg>
-                  <span>Réinitialiser tous les filtres</span>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Active Filter Pills Row */}
-      {activeCount > 0 && !isFilterPanelOpen && (
+      {activeFiltersCount > 0 && !isFiltersOpen && (
         <div className="active-pills-row">
           <span className="pills-title">Filtres actifs :</span>
           <div className="pills-list">
@@ -318,7 +211,7 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
             )}
             {filters.format !== 'all' && (
               <span className="active-filter-pill">
-                <span>Format : {filters.format.toUpperCase()}</span>
+                <span>Format : {filters.format}</span>
                 <button
                   type="button"
                   onClick={() => onFilterChange({ format: 'all', page: 1 })}
@@ -405,10 +298,10 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
           transform: translateY(-1px);
         }
 
-        .open-filters-pill-btn.active {
-          background: #fffdf5;
-          border-color: #d97706;
-          color: #b45309;
+        @media (min-width: 1025px) {
+          .open-filters-pill-btn.desktop-hidden {
+            display: none !important;
+          }
         }
 
         .filter-pill-badge {
@@ -560,91 +453,6 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
           height: 6px;
           border-radius: 50%;
           background: #ffffff;
-        }
-
-        /* Panneau dépliant des filtres */
-        .filter-collapsible-panel {
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          border-radius: 16px;
-          padding: 20px 22px;
-          margin-bottom: 20px;
-          box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
-          animation: ribbonExpand 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .filter-panel-inner {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .filter-group {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .filter-group-title {
-          font-size: 12px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-          color: #64748b;
-        }
-
-        .filter-pills-row {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          flex-wrap: wrap;
-        }
-
-        .filter-sub-pill {
-          padding: 6px 14px;
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-          border-radius: 9999px;
-          font-size: 12.5px;
-          font-weight: 600;
-          color: #475569;
-          cursor: pointer;
-          transition: all 0.15s ease;
-        }
-
-        .filter-sub-pill:hover {
-          background: #fffdf5;
-          border-color: #f59e0b;
-          color: #92400e;
-        }
-
-        .filter-sub-pill.active {
-          background: #fffbeb;
-          border-color: #d97706;
-          color: #b45309;
-          font-weight: 700;
-        }
-
-        .filter-reset-row {
-          padding-top: 10px;
-          border-top: 1px solid #f1f5f9;
-        }
-
-        .filter-reset-action {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          background: none;
-          border: none;
-          color: #dc2626;
-          font-size: 12.5px;
-          font-weight: 600;
-          cursor: pointer;
-          padding: 4px 0;
-        }
-
-        .filter-reset-action:hover {
-          text-decoration: underline;
         }
 
         /* Active Pills Row */

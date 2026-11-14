@@ -7,6 +7,7 @@ import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import { AuthModal } from '@/components/ui/AuthModal';
 import { DocumentsHero } from '@/components/documents/DocumentsHero';
 import { DocumentsFilters } from '@/components/documents/DocumentsFilters';
+import { DocumentFilterSidebar } from '@/components/documents/DocumentFilterSidebar';
 import { DocumentCard } from '@/components/documents/DocumentCard';
 import { DocumentDetailModal } from '@/components/documents/DocumentDetailModal';
 import { DocumentsEmptyState } from '@/components/documents/DocumentsEmptyState';
@@ -43,6 +44,8 @@ export default function DocumentsPage() {
   const [adminDocuments, setAdminDocuments] = useState<UsefulDocument[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [onlyFavorites, setOnlyFavorites] = useState(false);
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const [isDesktopFiltersOpen, setIsDesktopFiltersOpen] = useState(false);
 
   // Modals state
   const [selectedDoc, setSelectedDoc] = useState<UsefulDocument | null>(null);
@@ -177,6 +180,25 @@ export default function DocumentsPage() {
     setOnlyFavorites(false);
   };
 
+  const handleToggleFilters = () => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 1024) {
+      setFilterDrawerOpen((prev) => !prev);
+    } else {
+      setIsDesktopFiltersOpen((prev) => !prev);
+    }
+  };
+
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filters.searchQuery) count++;
+    if (filters.category !== 'all') count++;
+    if (filters.format !== 'all') count++;
+    if (filters.year !== 'all') count++;
+    if (filters.accessLevel !== 'all') count++;
+    if (onlyFavorites) count++;
+    return count;
+  }, [filters, onlyFavorites]);
+
   const handleToggleFavorite = (docId: string, isFav: boolean) => {
     setFavorites((prev) => {
       if (isFav) {
@@ -269,74 +291,93 @@ export default function DocumentsPage() {
 
         {/* Container for Content */}
         <div className="container documents-catalog-container">
-          {/* 2. Unified Search & Filters */}
-          <DocumentsFilters
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            onResetFilters={handleResetFilters}
-            categories={categories}
-            availableYears={availableYears}
-            totalResults={totalResults}
-          />
+          <div className="documents-layout">
+            {/* Colonne Filtres (Exactement identique à Bibliothèque) */}
+            <DocumentFilterSidebar
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onResetFilters={handleResetFilters}
+              activeFiltersCount={activeFiltersCount}
+              categories={categories}
+              availableYears={availableYears}
+              isOpen={filterDrawerOpen}
+              onClose={() => setFilterDrawerOpen(false)}
+              isDesktopOpen={isDesktopFiltersOpen}
+              onToggleDesktop={() => setIsDesktopFiltersOpen((prev) => !prev)}
+            />
 
-          {/* 3. Document Grid or Empty State with 3D Book Cover Cards */}
-          <section className="documents-results-section" aria-live="polite">
-            {paginatedDocuments.length === 0 ? (
-              <DocumentsEmptyState
-                searchQuery={filters.searchQuery}
-                categoryLabel={
-                  filters.category !== 'all'
-                    ? categories.find((c) => c.id === filters.category)?.label
-                    : undefined
-                }
+            {/* Colonne droite : Contrôles + Grille */}
+            <div className="documents-right-col">
+              <DocumentsFilters
+                filters={filters}
+                onFilterChange={handleFilterChange}
                 onResetFilters={handleResetFilters}
+                categories={categories}
+                availableYears={availableYears}
+                totalResults={totalResults}
+                isFiltersOpen={isDesktopFiltersOpen}
+                onToggleFilters={handleToggleFilters}
+                activeFiltersCount={activeFiltersCount}
               />
-            ) : (
-              <>
-                <div className="documents-cards-grid">
-                  {paginatedDocuments.map((doc) => (
-                    <DocumentCard
-                      key={doc.id}
-                      document={{
-                        ...doc,
-                        isFavorite: favorites.includes(doc.id),
-                      }}
-                      onViewDetails={(item) => setSelectedDoc(item)}
-                      onDownload={handleDownload}
-                      onToggleFavorite={handleToggleFavorite}
-                    />
-                  ))}
-                </div>
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="documents-pagination">
-                    <button
-                      type="button"
-                      className="pagination-btn"
-                      disabled={filters.page <= 1}
-                      onClick={() => handleFilterChange({ page: filters.page - 1 })}
-                    >
-                      ← Précédent
-                    </button>
-                    <span className="pagination-info">
-                      Page <strong>{filters.page}</strong> sur <strong>{totalPages}</strong>
-                    </span>
-                    <button
-                      type="button"
-                      className="pagination-btn"
-                      disabled={filters.page >= totalPages}
-                      onClick={() => handleFilterChange({ page: filters.page + 1 })}
-                    >
-                      Suivant →
-                    </button>
-                  </div>
+              {/* 3. Document Grid or Empty State with 3D Book Cover Cards */}
+              <section className="documents-results-section" aria-live="polite">
+                {paginatedDocuments.length === 0 ? (
+                  <DocumentsEmptyState
+                    searchQuery={filters.searchQuery}
+                    categoryLabel={
+                      filters.category !== 'all'
+                        ? categories.find((c) => c.id === filters.category)?.label
+                        : undefined
+                    }
+                    onResetFilters={handleResetFilters}
+                  />
+                ) : (
+                  <>
+                    <div className="documents-cards-grid">
+                      {paginatedDocuments.map((doc) => (
+                        <DocumentCard
+                          key={doc.id}
+                          document={{
+                            ...doc,
+                            isFavorite: favorites.includes(doc.id),
+                          }}
+                          onViewDetails={(item) => setSelectedDoc(item)}
+                          onDownload={handleDownload}
+                          onToggleFavorite={handleToggleFavorite}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                      <div className="documents-pagination">
+                        <button
+                          type="button"
+                          className="pagination-btn"
+                          disabled={filters.page <= 1}
+                          onClick={() => handleFilterChange({ page: filters.page - 1 })}
+                        >
+                          ← Précédent
+                        </button>
+                        <span className="pagination-info">
+                          Page <strong>{filters.page}</strong> sur <strong>{totalPages}</strong>
+                        </span>
+                        <button
+                          type="button"
+                          className="pagination-btn"
+                          disabled={filters.page >= totalPages}
+                          onClick={() => handleFilterChange({ page: filters.page + 1 })}
+                        >
+                          Suivant →
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
-              </>
-            )}
-          </section>
-
-          {/* Practical Info Banner — SUPPRIMÉ par design : page identique à Bibliothèque */}
+              </section>
+            </div>
+          </div>
         </div>
       </main>
 
@@ -383,6 +424,18 @@ export default function DocumentsPage() {
           max-width: 1360px;
         }
 
+        .documents-layout {
+          display: flex;
+          align-items: flex-start;
+          gap: 28px;
+          width: 100%;
+        }
+
+        .documents-right-col {
+          flex: 1;
+          min-width: 0;
+        }
+
         .documents-results-section {
           margin-top: 20px;
         }
@@ -393,16 +446,33 @@ export default function DocumentsPage() {
           gap: 24px;
         }
 
+        /* Quand la colonne Filtres est ouverte à gauche sur desktop */
+        .documents-layout:has(.doc-filter-sidebar:not(.desktop-closed)) .documents-cards-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        @media (min-width: 1440px) {
+          .documents-layout:has(.doc-filter-sidebar:not(.desktop-closed)) .documents-cards-grid {
+            grid-template-columns: repeat(4, 1fr);
+          }
+        }
+
         @media (max-width: 1080px) and (min-width: 641px) {
           .documents-cards-grid {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, 1fr) !important;
             gap: 18px;
+          }
+        }
+
+        @media (max-width: 1024px) {
+          .documents-layout {
+            display: block;
           }
         }
 
         @media (max-width: 640px) {
           .documents-cards-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr !important;
             gap: 16px;
           }
           .documents-catalog-container {
