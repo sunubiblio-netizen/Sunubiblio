@@ -13,7 +13,6 @@ export type AppCategoryKey =
   | 'principales'
   | 'cours_rdv'
   | 'ressources_doc'
-  | 'commerce'
   | 'services';
 
 export interface AppLauncherItemData {
@@ -51,13 +50,8 @@ export const APP_LAUNCHER_CATEGORIES: AppCategoryData[] = [
   },
   {
     key: 'ressources_doc',
-    title: 'RESSOURCES & ESPACE PERSONNEL',
-    description: 'Archives académiques, documents enregistrés, textes de tradition et notes',
-  },
-  {
-    key: 'commerce',
-    title: 'COMMERCE',
-    description: 'Marketplace d’ouvrages, achat et vente de résumés certifiés',
+    title: 'ESPACE PERSONNEL & SAVOIRS',
+    description: 'Textes de tradition spirituelle et bloc-notes personnel',
   },
   {
     key: 'services',
@@ -178,30 +172,8 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
   },
 
   // ==========================================
-  // 4. RESSOURCES & ESPACE PERSONNEL
+  // 3. ESPACE PERSONNEL & SAVOIRS
   // ==========================================
-  {
-    id: 'ressources',
-    name: 'Ressources',
-    shortDescription: 'Supports d’archives',
-    href: '/bibliotheque',
-    iconId: 'ressources',
-    category: 'ressources_doc',
-    order: 1,
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'mes-documents',
-    name: 'Mes documents',
-    shortDescription: 'Fichiers enregistrés',
-    href: '/documents',
-    iconId: 'mes_documents',
-    category: 'ressources_doc',
-    order: 2,
-    enabled: true,
-    available: true,
-  },
   {
     id: 'religion',
     name: 'Religion',
@@ -209,7 +181,7 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     href: '/religion',
     iconId: 'religion',
     category: 'ressources_doc',
-    order: 3,
+    order: 1,
     enabled: true,
     available: true,
   },
@@ -220,61 +192,13 @@ export const APP_LAUNCHER_ITEMS: AppLauncherItemData[] = [
     href: '/documents',
     iconId: 'notes',
     category: 'ressources_doc',
-    order: 4,
-    enabled: true,
-    available: true,
-  },
-
-  // ==========================================
-  // 5. COMMERCE
-  // ==========================================
-  {
-    id: 'marketplace',
-    name: 'Marketplace',
-    shortDescription: 'Achat & vente',
-    href: '/marketplace',
-    iconId: 'marketplace',
-    category: 'commerce',
-    order: 1,
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'vendre-un-livre',
-    name: 'Vendre un livre',
-    shortDescription: 'Déposer une annonce',
-    href: '/marketplace',
-    iconId: 'vendre_livre',
-    category: 'commerce',
     order: 2,
     enabled: true,
     available: true,
   },
-  {
-    id: 'mes-ventes',
-    name: 'Mes ventes',
-    shortDescription: 'Commandes reçues',
-    href: '/marketplace',
-    iconId: 'mes_ventes',
-    category: 'commerce',
-    order: 3,
-    enabled: true,
-    available: true,
-  },
-  {
-    id: 'mes-achats',
-    name: 'Mes achats',
-    shortDescription: 'Ouvrages acquis',
-    href: '/marketplace',
-    iconId: 'mes_achats',
-    category: 'commerce',
-    order: 4,
-    enabled: true,
-    available: true,
-  },
 
   // ==========================================
-  // 6. MON COMPTE & SERVICES
+  // 4. MON COMPTE & SERVICES
   // ==========================================
   {
     id: 'tarifs',
