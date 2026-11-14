@@ -19,6 +19,11 @@ import {
   UsefulDocument,
 } from '@/types/document';
 import { DOCUMENT_CATEGORIES, INITIAL_DOCUMENTS } from '@/data/mockDocuments';
+import {
+  getPublishedAdminItems,
+  mapAdminItemToUsefulDocument,
+  ADMIN_CATALOG_UPDATED_EVENT,
+} from '@/lib/adminCatalogStore';
 
 const DEFAULT_FILTERS: DocumentFilterState = {
   searchQuery: '',
@@ -37,14 +42,9 @@ export default function DocumentsPage() {
   // State with instant initial data
   const [filters, setFilters] = useState<DocumentFilterState>(DEFAULT_FILTERS);
   const [categories, setCategories] = useState<DocumentCategoryInfo[]>(DOCUMENT_CATEGORIES);
-  const [documents, setDocuments] = useState<UsefulDocument[]>(
-    INITIAL_DOCUMENTS.slice(0, DEFAULT_FILTERS.perPage)
-  );
-  const [totalDocuments, setTotalDocuments] = useState(INITIAL_DOCUMENTS.length);
-  const [totalPages, setTotalPages] = useState(
-    Math.ceil(INITIAL_DOCUMENTS.length / DEFAULT_FILTERS.perPage)
-  );
-  const [isLoading, setIsLoading] = useState(false);
+  const [adminDocuments, setAdminDocuments] = useState<UsefulDocument[]>([]);
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [onlyFavorites, setOnlyFavorites] = useState(false);
 
   // Modals state
   const [selectedDoc, setSelectedDoc] = useState<UsefulDocument | null>(null);
@@ -55,12 +55,32 @@ export default function DocumentsPage() {
     type: 'success' | 'warning' | 'error';
   } | null>(null);
 
-  // Available distinct years from documents
-  const availableYears = useMemo(() => {
-    const yearsSet = new Set<number>(INITIAL_DOCUMENTS.map((d) => d.year));
-    return Array.from(yearsSet).sort((a, b) => b - a);
+  // 1. Synchronisation automatique avec le Back-Office Administrateur
+  // Récupère tout document publié (même 1 ou 2 pages, rapports, modèles, guides)
+  // en excluant uniquement les fascicules spécifiques aux concours.
+  useEffect(() => {
+    const syncAdminDocs = () => {
+      const items = getPublishedAdminItems()
+        .filter((item) => !(item.destination === 'concours' && item.documentKind === 'fascicule'))
+        .map(mapAdminItemToUsefulDocument);
+      setAdminDocuments(items);
+    };
+
+    syncAdminDocs();
+    window.addEventListener(ADMIN_CATALOG_UPDATED_EVENT, syncAdminDocs);
+    return () => window.removeEventListener(ADMIN_CATALOG_UPDATED_EVENT, syncAdminDocs);
   }, []);
 
+  // 2. Fusion de la base documentaire (Admin + Initiale)
+  const allUsefulDocuments = useMemo(() => {
+    return [...adminDocuments, ...INITIAL_DOCUMENTS];
+  }, [adminDocuments]);
+
+  // Distinct years available
+  const availableYears = useMemo(() => {
+    const yearsSet = new Set<number>(allUsefulDocuments.map((d) => d.year));
+    return Array.from(yearsSet).sort((a, b) => b - a);
+  }, [allUsefulDocuments]);
 
   // Load categories
   useEffect(() => {
@@ -69,24 +89,76 @@ export default function DocumentsPage() {
     });
   }, []);
 
-  // Load documents on filters change
-  const fetchDocuments = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const res = await documentService.filterDocuments(filters);
-      setDocuments(res.items);
-      setTotalDocuments(res.total);
-      setTotalPages(res.totalPages);
-    } catch (err) {
-      console.error('Erreur chargement documents:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [filters]);
+  // 3. Filtrage en mémoire ultra-réactif
+  const filteredAndSortedDocuments = useMemo(() => {
+    let result = [...allUsefulDocuments];
 
-  useEffect(() => {
-    fetchDocuments();
-  }, [fetchDocuments]);
+    // Favoris uniquement
+    if (onlyFavorites) {
+      result = result.filter((d) => favorites.includes(d.id));
+    }
+
+    // Recherche texte
+    if (filters.searchQuery && filters.searchQuery.trim()) {
+      const q = filters.searchQuery.toLowerCase().trim();
+      result = result.filter((d) => {
+        const matchTitle = d.title.toLowerCase().includes(q);
+        const matchDesc = d.description.toLowerCase().includes(q);
+        const matchType = d.type.toLowerCase().includes(q);
+        const matchIssuer = d.issuer ? d.issuer.toLowerCase().includes(q) : false;
+        const matchTags = d.tags ? d.tags.some((t) => t.toLowerCase().includes(q)) : false;
+        return matchTitle || matchDesc || matchType || matchIssuer || matchTags;
+      });
+    }
+
+    // Filtre Catégorie
+    if (filters.category !== 'all') {
+      result = result.filter((d) => d.category === filters.category);
+    }
+
+    // Filtre Format
+    if (filters.format !== 'all') {
+      const fmt = filters.format.toUpperCase();
+      result = result.filter((d) => d.format.toUpperCase() === fmt);
+    }
+
+    // Filtre Année
+    if (filters.year !== 'all') {
+      result = result.filter((d) => d.year === filters.year);
+    }
+
+    // Filtre Niveau d'accès
+    if (filters.accessLevel !== 'all') {
+      result = result.filter((d) => d.accessLevel === filters.accessLevel);
+    }
+
+    // Tri
+    switch (filters.sortBy) {
+      case 'recent':
+        result.sort((a, b) => (b.year || 0) - (a.year || 0));
+        break;
+      case 'downloads':
+        result.sort((a, b) => (b.downloadsCount || 0) - (a.downloadsCount || 0));
+        break;
+      case 'title':
+        result.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case 'pertinence':
+      default:
+        result.sort((a, b) => (b.isPopular ? 1 : 0) - (a.isPopular ? 1 : 0));
+        break;
+    }
+
+    return result;
+  }, [allUsefulDocuments, filters, onlyFavorites, favorites]);
+
+  // Pagination
+  const totalResults = filteredAndSortedDocuments.length;
+  const totalPages = Math.max(1, Math.ceil(totalResults / filters.perPage));
+  const paginatedDocuments = useMemo(() => {
+    const start = (filters.page - 1) * filters.perPage;
+    return filteredAndSortedDocuments.slice(start, start + filters.perPage);
+  }, [filteredAndSortedDocuments, filters.page, filters.perPage]);
 
   // Handler helpers
   const handleOpenAuth = (mode: 'login' | 'register') => {
@@ -104,6 +176,17 @@ export default function DocumentsPage() {
 
   const handleResetFilters = () => {
     setFilters(DEFAULT_FILTERS);
+    setOnlyFavorites(false);
+  };
+
+  const handleToggleFavorite = (docId: string, isFav: boolean) => {
+    setFavorites((prev) => {
+      if (isFav) {
+        return prev.includes(docId) ? prev : [...prev, docId];
+      } else {
+        return prev.filter((id) => id !== docId);
+      }
+    });
   };
 
   // Secure download handler with server authorization check
@@ -144,7 +227,6 @@ export default function DocumentsPage() {
         type: 'success',
       });
 
-      // Simulation of secure signed file trigger
       setTimeout(() => {
         setDownloadToast({
           message: `Document « ${doc.title} » téléchargé avec succès.`,
@@ -180,29 +262,28 @@ export default function DocumentsPage() {
           </div>
         )}
 
-        {/* 1. Hero Section */}
-        <DocumentsHero totalDocuments={totalDocuments} />
+        {/* 1. Hero Section & Sticky Search Capsule (Exactement comme Bibliothèque) */}
+        <DocumentsHero
+          initialSearch={filters.searchQuery}
+          onSearch={(query) => handleFilterChange({ searchQuery: query, page: 1 })}
+          totalDocuments={totalResults}
+        />
 
         {/* Container for Content */}
         <div className="container documents-catalog-container">
-          {/* 2. Unified Search & Filters (Identical to Education module) */}
+          {/* 2. Unified Search & Filters */}
           <DocumentsFilters
             filters={filters}
             onFilterChange={handleFilterChange}
             onResetFilters={handleResetFilters}
             categories={categories}
             availableYears={availableYears}
-            totalResults={totalDocuments}
+            totalResults={totalResults}
           />
 
-          {/* 4. Document Grid or Empty State */}
+          {/* 3. Document Grid or Empty State with 3D Book Cover Cards */}
           <section className="documents-results-section" aria-live="polite">
-            {isLoading ? (
-              <div className="documents-loading-skeleton">
-                <div className="skeleton-spinner" />
-                <p>Chargement des documents certifiés...</p>
-              </div>
-            ) : documents.length === 0 ? (
+            {paginatedDocuments.length === 0 ? (
               <DocumentsEmptyState
                 searchQuery={filters.searchQuery}
                 categoryLabel={
@@ -215,12 +296,16 @@ export default function DocumentsPage() {
             ) : (
               <>
                 <div className="documents-cards-grid">
-                  {documents.map((doc) => (
+                  {paginatedDocuments.map((doc) => (
                     <DocumentCard
                       key={doc.id}
-                      document={doc}
+                      document={{
+                        ...doc,
+                        isFavorite: favorites.includes(doc.id),
+                      }}
                       onViewDetails={(item) => setSelectedDoc(item)}
                       onDownload={handleDownload}
+                      onToggleFavorite={handleToggleFavorite}
                     />
                   ))}
                 </div>
@@ -257,7 +342,7 @@ export default function DocumentsPage() {
           <section className="documents-info-banner">
             <div className="info-banner-left">
               <div className="info-banner-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
               </div>
@@ -301,6 +386,164 @@ export default function DocumentsPage() {
 
       {/* Mobile Bottom Navigation */}
       <MobileBottomNav />
+
+      <style jsx>{`
+        .documents-page-root {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          background: #ffffff !important;
+          position: relative;
+        }
+
+        .documents-page-main {
+          flex: 1;
+          background: #ffffff !important;
+        }
+
+        .documents-catalog-container {
+          padding-top: 24px;
+          padding-bottom: 60px;
+          max-width: 1360px;
+        }
+
+        .documents-results-section {
+          margin-top: 20px;
+        }
+
+        .documents-cards-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 24px;
+        }
+
+        @media (max-width: 1080px) and (min-width: 641px) {
+          .documents-cards-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .documents-cards-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+          }
+          .documents-catalog-container {
+            padding-top: 16px;
+            padding-bottom: 80px;
+          }
+        }
+
+        .documents-pagination {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 16px;
+          margin-top: 36px;
+        }
+
+        .pagination-btn {
+          padding: 8px 18px;
+          border-radius: 9999px;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          color: #1e293b;
+          font-size: 13.5px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+          background: #fffbeb;
+          border-color: #f59e0b;
+          color: #b45309;
+        }
+
+        .pagination-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .pagination-info {
+          font-size: 13px;
+          color: #64748b;
+        }
+
+        .documents-info-banner {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
+          background: #fffbeb;
+          border: 1px solid rgba(245, 158, 11, 0.25);
+          border-radius: 18px;
+          padding: 24px 28px;
+          margin-top: 48px;
+        }
+
+        .info-banner-left {
+          display: flex;
+          align-items: flex-start;
+          gap: 16px;
+        }
+
+        .info-banner-icon {
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          background: rgba(245, 158, 11, 0.15);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .info-banner-title {
+          font-size: 15px;
+          font-weight: 700;
+          color: #92400e;
+          margin: 0 0 4px 0;
+        }
+
+        .info-banner-desc {
+          font-size: 13px;
+          color: #78350f;
+          line-height: 1.5;
+          margin: 0;
+          max-width: 780px;
+        }
+
+        .info-banner-btn {
+          flex-shrink: 0;
+          padding: 10px 20px;
+          font-size: 13.5px;
+          font-weight: 700;
+          background: #ffffff;
+          border: 1px solid rgba(245, 158, 11, 0.4);
+          color: #b45309;
+          border-radius: 9999px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .info-banner-btn:hover {
+          background: #f59e0b;
+          color: #ffffff;
+        }
+
+        @media (max-width: 768px) {
+          .documents-info-banner {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 20px;
+          }
+          .info-banner-btn {
+            align-self: flex-start;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -7,6 +7,7 @@
 import { AnalyzedStagingItem } from './smartDocumentAnalyzer';
 import { Resource, EducationCycle, ResourceFormat } from '@/types/library';
 import { EducationResource } from '@/types/education';
+import { UsefulDocument, DocumentCategory } from '@/types/document';
 
 const STORAGE_KEY = 'sunubiblio_pro_admin_catalog_v1';
 const SUBSCRIPTIONS_STORAGE_KEY = 'sunubiblio_pro_subscriptions_v1';
@@ -324,3 +325,48 @@ export function mapAdminItemToEducationResource(
     featured: true,
   };
 }
+
+/**
+ * Convertit un élément publié dans le Back-Office en `UsefulDocument` pour l'espace Documents (`/documents`)
+ * Exclut spécifiquement les fascicules de concours qui vont dans `/concours`.
+ */
+export function mapAdminItemToUsefulDocument(item: AnalyzedStagingItem): UsefulDocument {
+  let docFormat: 'PDF' | 'DOCX' | 'XLSX' | 'Autre' = 'PDF';
+  const name = (item.fileName || '').toLowerCase();
+  if (name.endsWith('.docx') || name.endsWith('.doc')) docFormat = 'DOCX';
+  else if (name.endsWith('.xlsx') || name.endsWith('.xls')) docFormat = 'XLSX';
+
+  let cat: Exclude<DocumentCategory, 'all'> = 'administratifs';
+  if (item.documentCategory) {
+    cat = (item.documentCategory as Exclude<DocumentCategory, 'all'>) || 'administratifs';
+  } else if (item.documentKind === 'livre' || item.documentKind === 'cours') {
+    cat = 'scolaires';
+  } else if (item.documentKind === 'annale') {
+    cat = 'textes-officiels';
+  } else if (item.documentKind === 'document') {
+    cat = 'guides';
+  }
+
+  return {
+    id: item.id,
+    title: item.title,
+    description: item.description || `Document officiel ${item.title} certifié conforme pour vos démarches et révisions.`,
+    category: cat,
+    type: item.documentKind === 'fascicule' ? 'Fascicule officiel' : 'Document certifié',
+    format: docFormat,
+    year: item.year || new Date().getFullYear(),
+    fileSize: item.fileSizeFormatted || `${Math.max(45, (item.pagesCount || 1) * 65)} Ko`,
+    pageCount: item.pagesCount || 1,
+    accessLevel: item.accessLevel === 'free' ? 'free' : 'premium',
+    issuer: item.institution || item.author || 'Sunubiblio BAAT',
+    downloadsCount: 145,
+    isPopular: true,
+    isNew: true,
+    tags: [item.subject, item.grade, item.documentKind].filter(Boolean),
+    rating: 4.9,
+    author: item.author,
+    coverImage: item.coverImage,
+    coverGradient: item.coverGradient,
+  };
+}
+

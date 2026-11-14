@@ -138,163 +138,55 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
   }, [filters, categoryOptions, formatOptions, yearOptions, onFilterChange]);
 
   return (
-    <>
-      {/* Barre de recherche sticky */}
-      <div className="doc-search-bar">
-        <div className="search-input-wrapper">
-          <svg
-            className="search-leading-icon"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Rechercher par titre, type (demande de stage, bourse, modèle de CV)..."
-            value={filters.searchQuery}
-            onChange={(e) => onFilterChange({ searchQuery: e.target.value, page: 1 })}
-          />
-          {filters.searchQuery && (
-            <button
-              type="button"
-              className="clear-search-btn"
-              onClick={() => onFilterChange({ searchQuery: '', page: 1 })}
-              aria-label="Effacer la recherche"
-            >
-              ✕
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="doc-unified-filters-wrapper">
-        {/* Barre unifiée de filtres compacts */}
-        <FilterBar
-          mainFilters={[
-            {
-              id: 'doc-category',
-              label: 'Catégorie',
-              value: filters.category,
-              options: categoryOptions,
-              onChange: (val) => onFilterChange({ category: val as DocumentCategory, page: 1 }),
-              placeholder: 'Toutes catégories',
-              enableSearch: categories.length > 5,
-              searchPlaceholder: 'Filtrer les catégories...',
-            },
-            {
-              id: 'doc-format',
-              label: 'Format',
-              value: filters.format,
-              options: formatOptions,
-              onChange: (val) => onFilterChange({ format: val as DocumentFormat | 'all', page: 1 }),
-              placeholder: 'Tous formats',
-            },
-            {
-              id: 'doc-year',
-              label: 'Année',
-              value: String(filters.year),
-              options: yearOptions,
-              onChange: (val) => onFilterChange({ year: val === 'all' ? 'all' : Number(val), page: 1 }),
-              placeholder: 'Toutes années',
-            },
-          ]}
-          sort={{
-            value: filters.sortBy,
-            onChange: (val) => onFilterChange({ sortBy: val as DocumentFilterState['sortBy'], page: 1 }),
-            options: sortOptions,
-          }}
-          totalResults={totalResults}
-          resultsLabel={totalResults <= 1 ? 'document trouvé' : 'documents trouvés'}
-          activeChips={activeChips}
-          onResetAll={activeChips.length > 0 ? onResetFilters : undefined}
-          mobileSections={mobileSections}
-          mobileTitle="Filtres documents"
-        />
-      </div>
+    <div className="doc-unified-filters-wrapper">
+      {/* Barre unifiée de filtres compacts */}
+      <FilterBar
+        mainFilters={[
+          {
+            id: 'doc-category',
+            label: 'Catégorie',
+            value: filters.category,
+            options: categoryOptions,
+            onChange: (val) => onFilterChange({ category: val as DocumentCategory, page: 1 }),
+            placeholder: 'Toutes catégories',
+            enableSearch: categories.length > 5,
+            searchPlaceholder: 'Filtrer les catégories...',
+          },
+          {
+            id: 'doc-format',
+            label: 'Format',
+            value: filters.format,
+            options: formatOptions,
+            onChange: (val) => onFilterChange({ format: val as DocumentFormat | 'all', page: 1 }),
+            placeholder: 'Tous formats',
+          },
+          {
+            id: 'doc-year',
+            label: 'Année',
+            value: String(filters.year),
+            options: yearOptions,
+            onChange: (val) => onFilterChange({ year: val === 'all' ? 'all' : Number(val), page: 1 }),
+            placeholder: 'Toutes années',
+          },
+        ]}
+        sort={{
+          value: filters.sortBy,
+          onChange: (val) => onFilterChange({ sortBy: val as DocumentFilterState['sortBy'], page: 1 }),
+          options: sortOptions,
+        }}
+        totalResults={totalResults}
+        resultsLabel={totalResults <= 1 ? 'document trouvé' : 'documents trouvés'}
+        activeChips={activeChips}
+        onResetAll={activeChips.length > 0 ? onResetFilters : undefined}
+        mobileSections={mobileSections}
+        mobileTitle="Filtres documents"
+      />
 
       <style jsx>{`
         .doc-unified-filters-wrapper {
           margin-bottom: 24px;
         }
-
-        .doc-search-bar {
-          position: sticky;
-          top: 118px;
-          z-index: 80;
-          background: rgba(255, 255, 255, 0.94);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          padding: 8px 0 10px 0;
-          margin-bottom: 6px;
-        }
-
-        @media (max-width: 860px) {
-          .doc-search-bar {
-            top: calc(128px + env(safe-area-inset-top, 0px));
-          }
-        }
-
-        .search-input-wrapper {
-          position: relative;
-          width: 100%;
-          display: flex;
-          align-items: center;
-        }
-
-        .search-leading-icon {
-          position: absolute;
-          left: 14px;
-          color: #94a3b8;
-          pointer-events: none;
-        }
-
-        .search-input {
-          width: 100%;
-          height: 44px;
-          padding: 0 40px 0 42px;
-          background: #ffffff;
-          border: 1.5px solid #e2e8f0;
-          border-radius: 12px;
-          font-size: 13.5px;
-          color: #0f172a;
-          outline: none;
-          transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
-        }
-
-        .search-input:focus {
-          border-color: #6366f1;
-          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
-        }
-
-        .clear-search-btn {
-          position: absolute;
-          right: 12px;
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          background: rgba(148, 163, 184, 0.2);
-          color: #64748b;
-          border: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          font-size: 11px;
-        }
-
-        .clear-search-btn:hover {
-          background: #ef4444;
-          color: #ffffff;
-        }
       `}</style>
-    </>
+    </div>
   );
 };

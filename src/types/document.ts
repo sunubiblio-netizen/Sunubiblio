@@ -43,6 +43,11 @@ export interface UsefulDocument {
   tags: string[];
   summaryOutline?: string[]; // Sections clés du document
   usageAdvice?: string; // Conseil pratique d'utilisation
+  coverImage?: string;
+  coverGradient?: string;
+  rating?: number;
+  author?: string;
+  isFavorite?: boolean;
 }
 
 export interface DocumentFilterState {

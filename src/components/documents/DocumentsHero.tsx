@@ -1,34 +1,292 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 
 interface DocumentsHeroProps {
-  totalDocuments: number;
+  initialSearch?: string;
+  onSearch: (query: string) => void;
+  totalDocuments?: number;
 }
 
-export const DocumentsHero: React.FC<DocumentsHeroProps> = ({ totalDocuments }) => {
-  return (
-    <section className="documents-hero-section">
-      <div className="container">
-        {/* Badge Pill in standard site theme */}
-        <div className="documents-hero-badge-wrap">
-          <div className="documents-hero-badge">
-            <span className="badge-dot" />
-            <span>Espace Documents & Modèles Officiels</span>
-          </div>
-          <span className="documents-hero-count">
-            {totalDocuments} ressource{totalDocuments > 1 ? 's' : ''} vérifiée{totalDocuments > 1 ? 's' : ''}
-          </span>
-        </div>
+export const DocumentsHero: React.FC<DocumentsHeroProps> = ({
+  initialSearch = '',
+  onSearch,
+  totalDocuments = 0,
+}) => {
+  const [query, setQuery] = useState(initialSearch);
 
-        <h1 className="documents-hero-title">
-          Documents <span className="gradient-hero-text">utiles</span>
-        </h1>
-        <p className="documents-hero-subtitle">
-          Retrouvez facilement les documents dont vous avez besoin : démarches administratives,
-          guides pratiques, formulaires types, textes réglementaires et modèles de référence.
-        </p>
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch(query.trim());
+  };
+
+  return (
+    <>
+      <section className="lib-hero-wrapper">
+        <div className="container lib-hero-container">
+          {/* Pill Badge matching Bibliothèque */}
+          <div className="lib-hero-badge">
+            <span className="badge-pulse-dot" />
+            <span>Documents officiels & modèles certifiés</span>
+            {totalDocuments > 0 && (
+              <span className="badge-count-tag">
+                • {totalDocuments} disponible{totalDocuments > 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
+
+          {/* Title with warm golden-amber gradient accent */}
+          <h1 className="lib-hero-title">
+            Explorez les <span className="lib-title-accent">documents</span> utiles BAAT
+          </h1>
+
+          {/* Catchy subtitle */}
+          <p className="lib-hero-subtitle">
+            Retrouvez facilement tous vos documents de référence : démarches administratives,
+            guides pratiques, formulaires types, textes réglementaires et modèles de lettres officiels.
+          </p>
+        </div>
+      </section>
+
+      {/* Search Bar Capsule (Sticky au défilement en haut de l'écran, identique à Bibliothèque) */}
+      <div className="lib-search-sticky-stage">
+        <div className="container lib-search-sticky-container">
+          <form onSubmit={handleSubmit} className="lib-search-capsule">
+            <div className="lib-search-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              className="lib-search-input"
+              placeholder="Rechercher par titre, type de document, mots-clés ou administration..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Rechercher dans les documents"
+            />
+            {query && (
+              <button
+                type="button"
+                className="lib-search-clear"
+                onClick={() => {
+                  setQuery('');
+                  onSearch('');
+                }}
+                aria-label="Effacer la recherche"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            )}
+            <button type="submit" className="lib-search-btn">
+              <span>Rechercher</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </button>
+          </form>
+        </div>
       </div>
-    </section>
+
+      <style jsx>{`
+        .lib-hero-wrapper {
+          position: relative;
+          padding: 48px 0 18px 0;
+          background: #ffffff;
+          border-bottom: none;
+        }
+
+        .lib-search-sticky-stage {
+          position: sticky;
+          top: 73px;
+          z-index: 80;
+          width: 100%;
+          padding: 8px 0 18px 0;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+
+        .lib-search-sticky-container {
+          display: flex;
+          justify-content: center;
+          max-width: 920px;
+          margin: 0 auto;
+        }
+
+        .lib-hero-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          max-width: 920px;
+          margin: 0 auto;
+          position: relative;
+          z-index: 1;
+        }
+
+        .lib-hero-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 14px;
+          background: rgba(245, 158, 11, 0.08);
+          border: 1px solid rgba(245, 158, 11, 0.25);
+          border-radius: 9999px;
+          font-size: 12.5px;
+          font-weight: 700;
+          color: #b45309;
+          margin-bottom: 16px;
+        }
+
+        .badge-pulse-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #f59e0b;
+          box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+        }
+
+        .badge-count-tag {
+          font-weight: 500;
+          color: #92400e;
+        }
+
+        .lib-hero-title {
+          font-size: clamp(28px, 4vw, 42px);
+          font-weight: 800;
+          color: #0f172a;
+          line-height: 1.18;
+          letter-spacing: -0.03em;
+          margin-bottom: 14px;
+        }
+
+        .lib-title-accent {
+          background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .lib-hero-subtitle {
+          font-size: clamp(15px, 2vw, 17px);
+          color: #64748b;
+          line-height: 1.55;
+          max-width: 680px;
+          margin-bottom: 0;
+        }
+
+        /* Search Capsule */
+        .lib-search-capsule {
+          width: 100%;
+          max-width: 720px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          background: #ffffff;
+          padding: 6px 8px 6px 22px;
+          min-height: 56px;
+          border-radius: 9999px;
+          border: 1.5px solid rgba(226, 232, 240, 0.95);
+          box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.05), 0 2px 8px rgba(15, 23, 42, 0.02);
+          transition: all 0.2s ease;
+        }
+
+        .lib-search-capsule:focus-within {
+          border-color: rgba(245, 158, 11, 0.6);
+          box-shadow: 0 12px 32px -4px rgba(245, 158, 11, 0.12), 0 0 0 3px rgba(254, 240, 138, 0.35);
+          transform: translateY(-1px);
+        }
+
+        .lib-search-icon {
+          color: #94a3b8;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .lib-search-input {
+          flex: 1;
+          font-size: 15px;
+          font-weight: 500;
+          color: #0f172a;
+          background: transparent;
+          min-width: 0;
+          border: none;
+          outline: none;
+        }
+
+        .lib-search-input::placeholder {
+          color: #94a3b8;
+          font-weight: 400;
+        }
+
+        .lib-search-clear {
+          color: #94a3b8;
+          padding: 6px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.15s ease;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+        }
+
+        .lib-search-clear:hover {
+          color: #0f172a;
+          background: #f1f5f9;
+        }
+
+        .lib-search-btn {
+          flex-shrink: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          height: 44px;
+          padding: 0 22px;
+          border-radius: 9999px;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          color: #ffffff;
+          font-size: 14.5px;
+          font-weight: 700;
+          border: none;
+          box-shadow: 0 4px 14px rgba(217, 119, 6, 0.25);
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .lib-search-btn:hover {
+          background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+          box-shadow: 0 6px 18px rgba(217, 119, 6, 0.35);
+          transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+          .lib-hero-wrapper {
+            padding: 32px 0 12px 0;
+          }
+          .lib-search-capsule {
+            padding: 4px 6px 4px 16px;
+            min-height: 48px;
+          }
+          .lib-search-btn {
+            height: 38px;
+            padding: 0 16px;
+            font-size: 13.5px;
+          }
+          .lib-search-btn span {
+            display: none;
+          }
+        }
+      `}</style>
+    </>
   );
 };
