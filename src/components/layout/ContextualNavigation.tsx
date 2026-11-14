@@ -19,18 +19,6 @@ interface ContextConfig {
 }
 
 const CONTEXT_CONFIGS: ContextConfig[] = [
-  // 1. Documents & Outils
-  {
-    rootPath: '/documents',
-    badge: 'Boîte à Outils',
-    title: 'Documents & Traitement',
-    tabs: [
-      { id: 'catalogue', label: 'Tous les Documents', href: '/documents' },
-      { id: 'outils', label: 'Outils PDF & Word', href: '/documents#outils' },
-      { id: 'mes-docs', label: 'Mes Documents traités', href: '/documents#mes-documents' },
-      { id: 'verification', label: 'Vérificateur d’authenticité', href: '/documents#verification' },
-    ],
-  },
   // 3. IA Sunubiblio
   {
     rootPath: '/ia',

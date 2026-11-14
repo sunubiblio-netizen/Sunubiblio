@@ -61,14 +61,40 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({
     switch (document.accessLevel) {
       case 'premium':
         return (
-          <span className="access-badge sub">
+          <span
+            className="access-badge sub"
+            style={{
+              fontSize: '9.5px',
+              fontWeight: 700,
+              padding: '2px 6px',
+              borderRadius: '5px',
+              color: '#b45309',
+              background: '#fef3c7',
+              border: '1px solid rgba(245, 158, 11, 0.35)',
+              whiteSpace: 'nowrap',
+              lineHeight: 1.2,
+            }}
+          >
             Abonnement
           </span>
         );
       case 'free':
       default:
         return (
-          <span className="access-badge free">
+          <span
+            className="access-badge free"
+            style={{
+              fontSize: '9.5px',
+              fontWeight: 700,
+              padding: '2px 6px',
+              borderRadius: '5px',
+              color: '#d97706',
+              background: '#fffbeb',
+              border: '1px solid rgba(245, 158, 11, 0.3)',
+              whiteSpace: 'nowrap',
+              lineHeight: 1.2,
+            }}
+          >
             Gratuit
           </span>
         );
@@ -428,74 +454,67 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({
           line-height: 1;
         }
 
-        /* Hover Action Overlay */
+        /* Hover Action Overlay (Exactement identique à Bibliothèque) */
         .cover-hover-action {
           position: absolute;
           inset: 0;
-          background: rgba(15, 23, 42, 0.32);
+          background: rgba(15, 23, 42, 0.35);
           backdrop-filter: blur(2px);
           display: flex;
           align-items: center;
           justify-content: center;
           opacity: 0;
-          pointer-events: none;
-          transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-          z-index: 4;
+          transition: opacity 0.2s ease;
+          z-index: 5;
         }
 
         .document-card:hover .cover-hover-action {
           opacity: 1;
-          pointer-events: auto;
         }
 
         .hover-view-btn {
-          display: flex;
+          display: inline-flex;
           align-items: center;
           gap: 6px;
-          padding: 7px 16px;
-          background: #ffffff;
-          color: #0f172a;
-          border: none;
-          border-radius: 9999px;
-          font-size: 12px;
+          padding: 7.5px 18px;
+          font-size: 12.5px;
           font-weight: 700;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+          color: #ffffff;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          border: 1px solid rgba(255, 255, 255, 0.35);
+          box-shadow: 0 6px 18px rgba(217, 119, 6, 0.45);
+          border-radius: 9999px;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
           cursor: pointer;
-          transform: translateY(4px);
-          transition: all 0.2s ease;
-        }
-
-        .document-card:hover .hover-view-btn {
-          transform: translateY(0);
         }
 
         .hover-view-btn:hover {
-          background: #fffbeb;
-          color: #b45309;
-          transform: scale(1.04);
+          background: linear-gradient(135deg, #fbbf24 0%, #ea580c 100%);
+          transform: scale(1.05);
+          box-shadow: 0 8px 24px rgba(217, 119, 6, 0.6);
         }
 
-        /* Card Content */
+        /* Card Content (Compact, Équilibré comme Bibliothèque) */
         .card-body {
-          padding: 14px 14px 14px;
+          padding: 10px 11px 11px;
           display: flex;
           flex-direction: column;
           flex: 1;
-          justify-content: space-between;
           background: #ffffff;
         }
 
         .card-title {
-          font-size: 13.5px;
+          font-size: 13px;
           font-weight: 700;
           color: #0f172a;
-          line-height: 1.35;
-          margin: 0 0 5px 0;
+          line-height: 1.32;
+          margin: 0 0 2px;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
-          min-height: 36px;
+          min-height: 35px;
+          letter-spacing: -0.01em;
           transition: color 0.15s ease;
         }
 
@@ -504,9 +523,9 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({
         }
 
         .card-author {
-          font-size: 11.5px;
+          font-size: 11px;
           color: #64748b;
-          margin: 0 0 12px 0;
+          margin: 0 0 8px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -521,35 +540,40 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({
           color: #94a3b8;
         }
 
-        /* Essentials Footer */
+        /* Badges Footer: Level/Pages à gauche, Badge Accès complètement à droite */
         .card-footer {
+          margin-top: auto;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding-top: 10px;
-          border-top: 1px solid #f1f5f9;
+          width: 100%;
+          gap: 6px;
+          padding-top: 2px;
+          border-top: none;
         }
 
         .grade-pill {
-          font-size: 10px;
+          font-size: 9.5px;
           font-weight: 700;
-          padding: 3px 8px;
-          border-radius: 6px;
-          background: #f1f5f9;
           color: #475569;
-          max-width: 140px;
+          background: #f1f5f9;
+          border: 1px solid rgba(203, 213, 225, 0.8);
+          padding: 2px 6px;
+          border-radius: 5px;
           white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          line-height: 1.2;
+          flex-shrink: 0;
         }
 
         .access-badge {
           font-size: 9.5px;
           font-weight: 700;
-          padding: 2px 7px;
+          padding: 2px 6px;
           border-radius: 5px;
           white-space: nowrap;
           line-height: 1.2;
+          margin-left: auto;
+          flex-shrink: 0;
         }
 
         .access-badge.free {
