@@ -1,19 +1,61 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import {
   DocumentCategory,
   DocumentCategoryInfo,
   DocumentFilterState,
   DocumentFormat,
 } from '@/types/document';
-import {
-  FilterBar,
-  FilterOption,
-  SortItem,
-  ActiveFilterItem,
-  FilterGlassSection,
-} from '@/components/ui/filters';
+import { SortDropdown, SortOptionItem } from '@/components/ui/SortDropdown';
+
+const DOC_SORT_OPTIONS: SortOptionItem<DocumentFilterState['sortBy']>[] = [
+  {
+    value: 'pertinence',
+    label: 'Pertinence',
+    description: 'Documents recommandés',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    ),
+  },
+  {
+    value: 'recent',
+    label: 'Plus récents',
+    description: 'Dernières parutions',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
+      </svg>
+    ),
+  },
+  {
+    value: 'downloads',
+    label: 'Téléchargements',
+    description: 'Les plus consultés',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </svg>
+    ),
+  },
+  {
+    value: 'title',
+    label: 'Titre (A-Z)',
+    description: 'Ordre alphabétique',
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="21" y1="6" x2="3" y2="6" />
+        <line x1="15" y1="12" x2="3" y2="12" />
+        <line x1="9" y1="18" x2="3" y2="18" />
+      </svg>
+    ),
+  },
+];
 
 interface DocumentsFiltersProps {
   filters: DocumentFilterState;
@@ -32,159 +74,637 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
   availableYears,
   totalResults,
 }) => {
-  // 1. Options pour les filtres
-  const categoryOptions: FilterOption[] = useMemo(() => {
+  const [isCategoryBarOpen, setIsCategoryBarOpen] = useState(false);
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const ribbonRef = useRef<HTMLDivElement>(null);
+
+  // Active filters count
+  const activeCount = useMemo(() => {
+    let count = 0;
+    if (filters.category !== 'all') count++;
+    if (filters.format !== 'all') count++;
+    if (filters.year !== 'all') count++;
+    if (filters.accessLevel !== 'all') count++;
+    return count;
+  }, [filters]);
+
+  // Ribbon scroll helper
+  const scrollRibbon = (direction: 'left' | 'right') => {
+    if (ribbonRef.current) {
+      const scrollAmount = direction === 'left' ? -220 : 220;
+      ribbonRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  const allCategories = useMemo(() => {
     return [
-      { value: 'all', label: 'Toutes les catégories' },
-      ...categories.map((cat) => ({
-        value: cat.id,
-        label: cat.label,
-        subtitle: cat.description,
-      })),
+      { id: 'all', label: 'Tous les documents' },
+      ...categories.map((c) => ({ id: c.id, label: c.label })),
     ];
   }, [categories]);
 
-  const formatOptions: FilterOption[] = useMemo(() => {
-    return [
-      { value: 'all', label: 'Tous les formats' },
-      { value: 'pdf', label: 'PDF téléchargeable', badge: 'PDF' },
-      { value: 'doc', label: 'Word / DOCX modifiable', badge: 'Word' },
-      { value: 'xls', label: 'Tableur Excel', badge: 'Excel' },
-      { value: 'formulaire', label: 'Formulaire officiel', badge: 'Formulaire' },
-      { value: 'modele', label: 'Modèle prêt à l’emploi', badge: 'Modèle' },
-    ];
-  }, []);
-
-  const yearOptions: FilterOption[] = useMemo(() => {
-    return [
-      { value: 'all', label: 'Toutes les années' },
-      ...availableYears.map((yr) => ({
-        value: String(yr),
-        label: `Année ${yr}`,
-      })),
-    ];
-  }, [availableYears]);
-
-  const sortOptions: SortItem<DocumentFilterState['sortBy']>[] = useMemo(() => {
-    return [
-      { value: 'pertinence', label: 'Pertinence' },
-      { value: 'recent', label: 'Plus récents' },
-      { value: 'downloads', label: 'Plus téléchargés' },
-      { value: 'title', label: 'Ordre alphabétique' },
-    ];
-  }, []);
-
-  // 2. Chips actifs supprimables
-  const activeChips: ActiveFilterItem[] = useMemo(() => {
-    const list: ActiveFilterItem[] = [];
-
-    if (filters.category !== 'all') {
-      const label = categories.find((c) => c.id === filters.category)?.label || filters.category;
-      list.push({
-        id: 'category',
-        label,
-        categoryLabel: 'Catégorie',
-        onRemove: () => onFilterChange({ category: 'all', page: 1 }),
-      });
-    }
-
-    if (filters.format !== 'all') {
-      const label = formatOptions.find((f) => f.value === filters.format)?.label || filters.format;
-      list.push({
-        id: 'format',
-        label,
-        categoryLabel: 'Format',
-        onRemove: () => onFilterChange({ format: 'all', page: 1 }),
-      });
-    }
-
-    if (filters.year !== 'all') {
-      list.push({
-        id: 'year',
-        label: `${filters.year}`,
-        categoryLabel: 'Année',
-        onRemove: () => onFilterChange({ year: 'all', page: 1 }),
-      });
-    }
-
-    return list;
-  }, [filters, categories, formatOptions, onFilterChange]);
-
-  // 3. Sections pour le Panneau Mobile Glassmorphism
-  const mobileSections: FilterGlassSection[] = useMemo(() => {
-    return [
-      {
-        id: 'category',
-        title: 'Catégorie de documents',
-        selectedValue: filters.category,
-        onSelect: (val) => onFilterChange({ category: val as DocumentCategory, page: 1 }),
-        options: categoryOptions.map((c) => ({ id: c.value, label: c.label, badge: c.badge })),
-      },
-      {
-        id: 'format',
-        title: 'Format de fichier',
-        selectedValue: filters.format,
-        onSelect: (val) => onFilterChange({ format: val as DocumentFormat | 'all', page: 1 }),
-        options: formatOptions.map((f) => ({ id: f.value, label: f.label, badge: f.badge })),
-      },
-      {
-        id: 'year',
-        title: 'Année de publication',
-        selectedValue: String(filters.year),
-        onSelect: (val) => onFilterChange({ year: val === 'all' ? 'all' : Number(val), page: 1 }),
-        options: yearOptions.map((y) => ({ id: y.value, label: y.label })),
-      },
-    ];
-  }, [filters, categoryOptions, formatOptions, yearOptions, onFilterChange]);
+  // Formats list
+  const formatsList: { id: DocumentFormat | 'all'; label: string }[] = [
+    { id: 'all', label: 'Tous formats' },
+    { id: 'PDF', label: 'PDF' },
+    { id: 'DOCX', label: 'Word (DOCX)' },
+    { id: 'XLSX', label: 'Excel (XLSX)' },
+    { id: 'Autre', label: 'Autre format' },
+  ];
 
   return (
-    <div className="doc-unified-filters-wrapper">
-      {/* Barre unifiée de filtres compacts */}
-      <FilterBar
-        mainFilters={[
-          {
-            id: 'doc-category',
-            label: 'Catégorie',
-            value: filters.category,
-            options: categoryOptions,
-            onChange: (val) => onFilterChange({ category: val as DocumentCategory, page: 1 }),
-            placeholder: 'Toutes catégories',
-            enableSearch: categories.length > 5,
-            searchPlaceholder: 'Filtrer les catégories...',
-          },
-          {
-            id: 'doc-format',
-            label: 'Format',
-            value: filters.format,
-            options: formatOptions,
-            onChange: (val) => onFilterChange({ format: val as DocumentFormat | 'all', page: 1 }),
-            placeholder: 'Tous formats',
-          },
-          {
-            id: 'doc-year',
-            label: 'Année',
-            value: String(filters.year),
-            options: yearOptions,
-            onChange: (val) => onFilterChange({ year: val === 'all' ? 'all' : Number(val), page: 1 }),
-            placeholder: 'Toutes années',
-          },
-        ]}
-        sort={{
-          value: filters.sortBy,
-          onChange: (val) => onFilterChange({ sortBy: val as DocumentFilterState['sortBy'], page: 1 }),
-          options: sortOptions,
-        }}
-        totalResults={totalResults}
-        resultsLabel={totalResults <= 1 ? 'document trouvé' : 'documents trouvés'}
-        activeChips={activeChips}
-        onResetAll={activeChips.length > 0 ? onResetFilters : undefined}
-        mobileSections={mobileSections}
-        mobileTitle="Filtres documents"
-      />
+    <div className="doc-grid-header-wrapper">
+      {/* Top Header Row (Identique à Bibliothèque : Filtres + bouton + à gauche, Trier par à droite) */}
+      <div className="grid-header">
+        <div className="grid-header-left">
+          {/* Bouton Filtres élégant */}
+          <button
+            type="button"
+            className={`open-filters-pill-btn ${isFilterPanelOpen ? 'active' : ''}`}
+            onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
+            aria-expanded={isFilterPanelOpen}
+            aria-label="Ouvrir les filtres avancés"
+            title="Ouvrir les filtres avancés"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
+            <span>Filtres</span>
+            {activeCount > 0 && (
+              <span className="filter-pill-badge">{activeCount}</span>
+            )}
+          </button>
+
+          {/* Bouton '+' transparent pour ouvrir/fermer le ruban des catégories */}
+          <button
+            type="button"
+            className={`cat-plus-toggle-btn ${isCategoryBarOpen ? 'active' : ''}`}
+            onClick={() => setIsCategoryBarOpen(!isCategoryBarOpen)}
+            aria-expanded={isCategoryBarOpen}
+            aria-label={isCategoryBarOpen ? 'Masquer les catégories' : 'Afficher les catégories'}
+            title={isCategoryBarOpen ? 'Masquer les catégories' : 'Explorer les catégories de documents'}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="grid-header-right">
+          <SortDropdown
+            value={filters.sortBy}
+            onChange={(val) => onFilterChange({ sortBy: val, page: 1 })}
+            options={DOC_SORT_OPTIONS}
+            labelPrefix="Trier par :"
+            align="right"
+          />
+        </div>
+      </div>
+
+      {/* Ruban horizontal fluide des catégories (ouvert au clic sur le '+') */}
+      {isCategoryBarOpen && (
+        <div className="cat-fluid-ribbon-wrapper">
+          <button
+            type="button"
+            className="ribbon-arrow-btn prev"
+            onClick={() => scrollRibbon('left')}
+            aria-label="Faire défiler vers la gauche"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+
+          <div className="cat-fluid-ribbon-track" ref={ribbonRef}>
+            {allCategories.map((cat) => {
+              const isActive = filters.category === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  className={`cat-ribbon-pill ${isActive ? 'active' : ''}`}
+                  onClick={() => {
+                    onFilterChange({ category: isActive ? 'all' : (cat.id as DocumentCategory), page: 1 });
+                  }}
+                >
+                  {isActive && <span className="pill-active-dot" />}
+                  <span>{cat.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            className="ribbon-arrow-btn next"
+            onClick={() => scrollRibbon('right')}
+            aria-label="Faire défiler vers la droite"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {/* Panneau dépliant des filtres au clic sur [Filtres] */}
+      {isFilterPanelOpen && (
+        <div className="filter-collapsible-panel">
+          <div className="filter-panel-inner">
+            {/* Format */}
+            <div className="filter-group">
+              <span className="filter-group-title">Format de fichier</span>
+              <div className="filter-pills-row">
+                {formatsList.map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    className={`filter-sub-pill ${filters.format === f.id ? 'active' : ''}`}
+                    onClick={() => onFilterChange({ format: f.id, page: 1 })}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Années */}
+            {availableYears.length > 0 && (
+              <div className="filter-group">
+                <span className="filter-group-title">Année de publication</span>
+                <div className="filter-pills-row">
+                  <button
+                    type="button"
+                    className={`filter-sub-pill ${filters.year === 'all' ? 'active' : ''}`}
+                    onClick={() => onFilterChange({ year: 'all', page: 1 })}
+                  >
+                    Toutes
+                  </button>
+                  {availableYears.slice(0, 6).map((yr) => (
+                    <button
+                      key={yr}
+                      type="button"
+                      className={`filter-sub-pill ${filters.year === yr ? 'active' : ''}`}
+                      onClick={() => onFilterChange({ year: yr, page: 1 })}
+                    >
+                      {yr}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Accès */}
+            <div className="filter-group">
+              <span className="filter-group-title">Niveau d'accès</span>
+              <div className="filter-pills-row">
+                <button
+                  type="button"
+                  className={`filter-sub-pill ${filters.accessLevel === 'all' ? 'active' : ''}`}
+                  onClick={() => onFilterChange({ accessLevel: 'all', page: 1 })}
+                >
+                  Tous
+                </button>
+                <button
+                  type="button"
+                  className={`filter-sub-pill ${filters.accessLevel === 'free' ? 'active' : ''}`}
+                  onClick={() => onFilterChange({ accessLevel: 'free', page: 1 })}
+                >
+                  Gratuit
+                </button>
+                <button
+                  type="button"
+                  className={`filter-sub-pill ${filters.accessLevel === 'premium' ? 'active' : ''}`}
+                  onClick={() => onFilterChange({ accessLevel: 'premium', page: 1 })}
+                >
+                  Abonnement
+                </button>
+              </div>
+            </div>
+
+            {/* Reset button if filters active */}
+            {activeCount > 0 && (
+              <div className="filter-reset-row">
+                <button type="button" className="filter-reset-action" onClick={onResetFilters}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                  </svg>
+                  <span>Réinitialiser tous les filtres</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Active Filter Pills Row */}
+      {activeCount > 0 && !isFilterPanelOpen && (
+        <div className="active-pills-row">
+          <span className="pills-title">Filtres actifs :</span>
+          <div className="pills-list">
+            {filters.category !== 'all' && (
+              <span className="active-filter-pill">
+                <span>Catégorie : {categories.find((c) => c.id === filters.category)?.label || filters.category}</span>
+                <button
+                  type="button"
+                  onClick={() => onFilterChange({ category: 'all', page: 1 })}
+                  className="pill-remove-btn"
+                >
+                  ✕
+                </button>
+              </span>
+            )}
+            {filters.format !== 'all' && (
+              <span className="active-filter-pill">
+                <span>Format : {filters.format.toUpperCase()}</span>
+                <button
+                  type="button"
+                  onClick={() => onFilterChange({ format: 'all', page: 1 })}
+                  className="pill-remove-btn"
+                >
+                  ✕
+                </button>
+              </span>
+            )}
+            {filters.year !== 'all' && (
+              <span className="active-filter-pill">
+                <span>Année : {filters.year}</span>
+                <button
+                  type="button"
+                  onClick={() => onFilterChange({ year: 'all', page: 1 })}
+                  className="pill-remove-btn"
+                >
+                  ✕
+                </button>
+              </span>
+            )}
+            {filters.accessLevel !== 'all' && (
+              <span className="active-filter-pill">
+                <span>Accès : {filters.accessLevel === 'premium' ? 'Abonnement' : 'Gratuit'}</span>
+                <button
+                  type="button"
+                  onClick={() => onFilterChange({ accessLevel: 'all', page: 1 })}
+                  className="pill-remove-btn"
+                >
+                  ✕
+                </button>
+              </span>
+            )}
+            <button type="button" className="pill-reset-all" onClick={onResetFilters}>
+              Effacer tout
+            </button>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
-        .doc-unified-filters-wrapper {
-          margin-bottom: 24px;
+        .doc-grid-header-wrapper {
+          margin-bottom: 20px;
+        }
+
+        .grid-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 16px;
+          gap: 16px;
+        }
+
+        .grid-header-left {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          position: relative;
+        }
+
+        .open-filters-pill-btn {
+          height: 38px;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 0 16px;
+          border-radius: 9999px;
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          color: #1e293b;
+          font-size: 13.5px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          white-space: nowrap;
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+        }
+
+        .open-filters-pill-btn:hover {
+          background: #fffdf5;
+          border-color: #eab308;
+          color: #854d0e;
+          box-shadow: 0 4px 12px rgba(234, 179, 8, 0.12);
+          transform: translateY(-1px);
+        }
+
+        .open-filters-pill-btn.active {
+          background: #fffdf5;
+          border-color: #d97706;
+          color: #b45309;
+        }
+
+        .filter-pill-badge {
+          background: #d97706;
+          color: #ffffff;
+          font-size: 11px;
+          font-weight: 800;
+          padding: 1px 7px;
+          border-radius: 9999px;
+          line-height: 1.3;
+        }
+
+        .cat-plus-toggle-btn {
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          background: #ffffff;
+          border: 1.5px solid #e2e8f0;
+          color: #475569;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+        }
+
+        .cat-plus-toggle-btn:hover {
+          background: #fffdf5;
+          border-color: #eab308;
+          color: #854d0e;
+          box-shadow: 0 4px 12px rgba(234, 179, 8, 0.12);
+          transform: translateY(-1px);
+        }
+
+        .cat-plus-toggle-btn.active {
+          background: #fefce8;
+          border-color: #eab308;
+          color: #854d0e;
+          box-shadow: 0 2px 8px rgba(234, 179, 8, 0.18);
+        }
+
+        .cat-plus-toggle-btn.active svg {
+          transform: rotate(45deg);
+          transition: transform 0.22s ease;
+        }
+
+        .cat-plus-toggle-btn svg {
+          transition: transform 0.22s ease;
+        }
+
+        .grid-header-right {
+          display: flex;
+          align-items: center;
+        }
+
+        /* Ruban horizontal fluide des catégories */
+        .cat-fluid-ribbon-wrapper {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-bottom: 18px;
+          padding: 8px 10px;
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.85);
+          border-radius: 9999px;
+          box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+          animation: ribbonExpand 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes ribbonExpand {
+          from {
+            opacity: 0;
+            transform: translateY(-8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .ribbon-arrow-btn {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          border: 1px solid #e2e8f0;
+          background: #ffffff;
+          color: #64748b;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          flex-shrink: 0;
+          transition: all 0.18s ease;
+        }
+
+        .ribbon-arrow-btn:hover {
+          background: #fffbeb;
+          border-color: #f59e0b;
+          color: #b45309;
+        }
+
+        .cat-fluid-ribbon-track {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          overflow-x: auto;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          padding: 2px 4px;
+          scroll-behavior: smooth;
+        }
+
+        .cat-fluid-ribbon-track::-webkit-scrollbar {
+          display: none;
+        }
+
+        .cat-ribbon-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 7px 14px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 9999px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #475569;
+          white-space: nowrap;
+          cursor: pointer;
+          transition: all 0.18s ease;
+        }
+
+        .cat-ribbon-pill:hover {
+          background: #fffdf5;
+          border-color: #f59e0b;
+          color: #92400e;
+        }
+
+        .cat-ribbon-pill.active {
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          border-color: #d97706;
+          color: #ffffff;
+          box-shadow: 0 4px 10px rgba(217, 119, 6, 0.25);
+        }
+
+        .pill-active-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #ffffff;
+        }
+
+        /* Panneau dépliant des filtres */
+        .filter-collapsible-panel {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 16px;
+          padding: 20px 22px;
+          margin-bottom: 20px;
+          box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+          animation: ribbonExpand 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .filter-panel-inner {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .filter-group {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .filter-group-title {
+          font-size: 12px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          color: #64748b;
+        }
+
+        .filter-pills-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .filter-sub-pill {
+          padding: 6px 14px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 9999px;
+          font-size: 12.5px;
+          font-weight: 600;
+          color: #475569;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .filter-sub-pill:hover {
+          background: #fffdf5;
+          border-color: #f59e0b;
+          color: #92400e;
+        }
+
+        .filter-sub-pill.active {
+          background: #fffbeb;
+          border-color: #d97706;
+          color: #b45309;
+          font-weight: 700;
+        }
+
+        .filter-reset-row {
+          padding-top: 10px;
+          border-top: 1px solid #f1f5f9;
+        }
+
+        .filter-reset-action {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: none;
+          border: none;
+          color: #dc2626;
+          font-size: 12.5px;
+          font-weight: 600;
+          cursor: pointer;
+          padding: 4px 0;
+        }
+
+        .filter-reset-action:hover {
+          text-decoration: underline;
+        }
+
+        /* Active Pills Row */
+        .active-pills-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 16px;
+          flex-wrap: wrap;
+        }
+
+        .pills-title {
+          font-size: 12px;
+          font-weight: 600;
+          color: #64748b;
+        }
+
+        .pills-list {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .active-filter-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 4px 10px;
+          background: #fffbeb;
+          border: 1px solid rgba(245, 158, 11, 0.4);
+          border-radius: 9999px;
+          font-size: 12px;
+          color: #92400e;
+          font-weight: 600;
+        }
+
+        .pill-remove-btn {
+          background: none;
+          border: none;
+          color: #b45309;
+          cursor: pointer;
+          font-size: 11px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+        }
+
+        .pill-reset-all {
+          background: none;
+          border: none;
+          font-size: 12px;
+          color: #64748b;
+          text-decoration: underline;
+          cursor: pointer;
+        }
+
+        .pill-reset-all:hover {
+          color: #0f172a;
         }
       `}</style>
     </div>
