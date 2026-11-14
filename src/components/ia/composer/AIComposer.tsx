@@ -5,6 +5,7 @@ import { AIMode, AIAttachment } from '@/types/ai';
 import { AIAttachmentList } from './AIAttachmentList';
 import { AIAttachmentMenu } from './AIAttachmentMenu';
 import { AIModeSelector } from './AIModeSelector';
+import { AILanguageSelector } from './AILanguageSelector';
 import { AILibraryPickerModal } from './AILibraryPickerModal';
 import { AIPasteTextModal } from './AIPasteTextModal';
 import { AIService } from '@/services/aiService';
@@ -15,6 +16,7 @@ interface AIComposerProps {
     mode: AIMode;
     attachments: AIAttachment[];
     isWebSearch: boolean;
+    language?: string;
   }) => void;
   initialMode?: AIMode;
   disabled?: boolean;
@@ -31,6 +33,7 @@ export const AIComposer: React.FC<AIComposerProps> = ({
 }) => {
   const [content, setContent] = useState('');
   const [mode, setMode] = useState<AIMode>(initialMode);
+  const [language, setLanguage] = useState<string>('fr');
   const [attachments, setAttachments] = useState<AIAttachment[]>([]);
   const [isWebSearch, setIsWebSearch] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -134,7 +137,8 @@ export const AIComposer: React.FC<AIComposerProps> = ({
       content: trimmed || (attachments.length > 0 ? `Analyse de ${attachments.map(a => a.name).join(', ')}` : ''),
       mode,
       attachments,
-      isWebSearch
+      isWebSearch,
+      language,
     });
 
     setContent('');
@@ -224,15 +228,17 @@ export const AIComposer: React.FC<AIComposerProps> = ({
 
         {/* Bottom Actions Bar inside Composer */}
         <div className="composer-actions-bar">
-          {/* Left Actions */}
+          {/* Left Actions: [+] (avec Web Search à l'intérieur) + [Assistant Mode] + [Langue 20 pays] */}
           <div className="left-controls">
-            {/* "+" button menu */}
+            {/* "+" button menu avec option Recherche Web intégrée */}
             <AIAttachmentMenu
               onSelectDocument={() => docInputRef.current?.click()}
               onSelectImage={() => imgInputRef.current?.click()}
               onOpenLibraryPicker={() => setIsLibraryModalOpen(true)}
               onOpenPasteText={() => setIsPasteTextModalOpen(true)}
               onSelectFile={() => fileInputRef.current?.click()}
+              isWebSearch={isWebSearch}
+              onToggleWebSearch={() => setIsWebSearch((prev) => !prev)}
             />
 
             {/* Discrete Mode Selector */}
@@ -241,21 +247,11 @@ export const AIComposer: React.FC<AIComposerProps> = ({
               onSelectMode={setMode}
             />
 
-            {/* Web Search Explicit Toggle */}
-            <button
-              type="button"
-              onClick={() => setIsWebSearch(!isWebSearch)}
-              className={`btn-web-search-toggle ${isWebSearch ? 'active' : ''}`}
-              title={isWebSearch ? 'Recherche Web activée' : 'Activer la recherche sur Internet pour enrichir la réponse'}
-              aria-pressed={isWebSearch}
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="2" y1="12" x2="22" y2="12"></line>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-              </svg>
-              <span className="web-search-label">Web</span>
-            </button>
+            {/* Sélecteur de langue internationale (remplace le bouton Web à côté d'Assistant) */}
+            <AILanguageSelector
+              currentLanguage={language}
+              onSelectLanguage={setLanguage}
+            />
           </div>
 
           {/* Right Action: Send Button */}

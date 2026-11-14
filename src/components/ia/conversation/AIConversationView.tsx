@@ -13,6 +13,7 @@ interface AIConversationViewProps {
     mode: AIMode;
     attachments: AIAttachment[];
     isWebSearch: boolean;
+    language?: string;
   }) => void;
   onResetChat: () => void;
   onRetryLast?: () => void;

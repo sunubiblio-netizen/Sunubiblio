@@ -38,6 +38,7 @@ export const AIService = {
     mode: AIMode;
     attachments?: AIAttachment[];
     isWebSearch?: boolean;
+    language?: string;
   }): Promise<AIMessage> {
     // Simulation du temps de traitement réseau (1.2s)
     await new Promise((resolve) => setTimeout(resolve, 1200));
@@ -48,6 +49,7 @@ export const AIService = {
       ? params.attachments!.map(a => `« ${a.name} » (${a.type === 'library' ? 'Ressource Bibliothèque' : 'Document'})`).join(', ')
       : '';
 
+    const lang = params.language || 'fr';
     let generatedText = '';
     const sources = params.isWebSearch ? [
       {
@@ -64,7 +66,175 @@ export const AIService = {
       }
     ] : undefined;
 
-    switch (params.mode) {
+    // Réponse multilingue native selon la langue choisie par l'utilisateur
+    if (lang === 'en') {
+      switch (params.mode) {
+        case 'resumer':
+          generatedText = `### 📋 Summary & Key Points\n\n` +
+            (hasAttachments ? `> **Analyzed Document:** ${attachmentContext}\n\n` : '') +
+            `Here is the structured summary of your request:\n\n` +
+            `1. **Core Subject:** The primary concepts highlight foundational academic principles and practical takeaways.\n` +
+            `2. **Key Arguments:**\n` +
+            `   - Rigorous definition of critical terms and methodological context.\n` +
+            `   - Articulation of main arguments supported by concrete examples.\n` +
+            `   - Synthesis of conclusions with exam-oriented focus.\n\n` +
+            `3. **Study Recommendation:** Prioritize reviewing foundational formulas and key definitions.`;
+          break;
+        case 'expliquer':
+          generatedText = `### 💡 Clear Pedagogical Explanation\n\n` +
+            `To fully understand **${params.content.slice(0, 50)}...**, let's unpack this concept step by step:\n\n` +
+            `* **Core Principle:** Think of this notion like a structured hierarchy where each premise validates the next.\n` +
+            `* **Why It Matters:** In the curriculum, this topic serves as a recurring question in exams and competitive tests.\n` +
+            `* **Concrete Example:** In practice, start by cataloging the given variables, then apply the theorem systematically.\n\n` +
+            `*Would you like a step-by-step guided exercise or an illustrative diagram?*`;
+          break;
+        case 'qcm':
+          generatedText = `### 📝 Practice Quiz & Self-Assessment\n\n` +
+            (hasAttachments ? `> **Source reference:** ${attachmentContext}\n\n` : '') +
+            `Here are 3 practice questions to evaluate your understanding:\n\n` +
+            `**Question 1:** What is the primary foundational rule in this context?\n` +
+            `- [ ] A) Inverse proportionality principle\n` +
+            `- [x] B) Law of equilibrium and conservation *(Correct answer)*\n` +
+            `- [ ] C) Thermal dispersion hypothesis\n\n` +
+            `**Question 2:** Under which condition does this standard theorem hold?\n` +
+            `- [x] A) Steady-state or stationary conditions only *(Correct answer)*\n` +
+            `- [ ] B) Under arbitrary fluctuations\n` +
+            `- [ ] C) Without domain restrictions`;
+          break;
+        case 'exercices':
+          generatedText = `### 🎯 Practice Exercises\n\n` +
+            `Here is a progressive exercise set tailored for exam preparation:\n\n` +
+            `**Exercise 1 (Foundational - 10 min):**\n` +
+            `Check key definitions and compute the baseline nominal value from given parameters.\n\n` +
+            `**Exercise 2 (Intermediate - 25 min):**\n` +
+            `Analyze an applied case study involving two interdependent variables.\n\n` +
+            `**Exercise 3 (Exam Level - 40 min):**\n` +
+            `Comprehensive synthesis problem combining data analysis and essay argumentation.`;
+          break;
+        case 'corriger':
+          generatedText = `### ✍️ Detailed Correction & Analysis\n\n` +
+            `Here is the pedagogical feedback on your submitted work:\n\n` +
+            `* **Strengths:** Logical structure and clear understanding of the core question.\n` +
+            `* **Points for Improvement:** Clarify transitions and ensure all units or citations are explicitly stated.\n` +
+            `* **Recommended Score / Grade:** 16 / 20. Very good academic foundation!`;
+          break;
+        case 'antiplagiat':
+          generatedText = `### 🔍 Similarity & Plagiarism Audit\n\n` +
+            (hasAttachments ? `> **File inspected:** ${attachmentContext}\n\n` : '') +
+            `**Similarity Index:** **4.2%** *(Academic standard < 10% — Fully Approved)*\n\n` +
+            `* **Identified Sources:** Standard bibliographic citations and common technical terminology.\n` +
+            `* **Originality:** 95.8% original drafting. Document is ready for academic submission.`;
+          break;
+        default:
+          generatedText = `Hello! 😊 I have received your request.` +
+            (hasAttachments ? ` I also analyzed the attached files: **${attachmentContext}**.\n\n` : `\n\n`) +
+            `I am your BAAT AI Assistant. How can I best help you succeed in your studies or academic writing today?`;
+          break;
+      }
+    } else if (lang === 'es') {
+      switch (params.mode) {
+        case 'resumer':
+          generatedText = `### 📋 Resumen y Puntos Clave\n\n` +
+            (hasAttachments ? `> **Documento analizado:** ${attachmentContext}\n\n` : '') +
+            `Aquí tienes el resumen estructurado de tu solicitud:\n\n` +
+            `1. **Tema Principal:** Conceptos esenciales y sus aplicaciones metodológicas.\n` +
+            `2. **Líneas Directrices:** Definición rigurosa, argumentos centrales y síntesis práctica.\n` +
+            `3. **Recomendación:** Repasa las fórmulas fundamentales y las definiciones clave.`;
+          break;
+        default:
+          generatedText = `¡Hola! 😊 He recibido tu consulta.` +
+            (hasAttachments ? ` También he analizado los documentos adjuntos: **${attachmentContext}**.\n\n` : `\n\n`) +
+            `Soy tu asistente BAAT IA. ¿En qué tema o ejercicio te gustaría trabajar hoy?`;
+          break;
+      }
+    } else if (lang === 'pt') {
+      generatedText = `### 🎓 Assistente BAAT IA (Português)\n\n` +
+        `Olá! 😊 Recebi a sua mensagem e estou pronto para ajudar nos seus estudos e redação acadêmica.\n\n` +
+        (hasAttachments ? `> **Arquivo anexado:** ${attachmentContext}\n\n` : '') +
+        `Posso resumir conteúdos, explicar conceitos passo a passo ou propor exercícios práticos. Como prefere começar?`;
+    } else if (lang === 'de') {
+      generatedText = `### 🎓 BAAT KI-Assistent (Deutsch)\n\n` +
+        `Hallo! 😊 Ich habe Ihre Anfrage erhalten und unterstütze Sie gerne bei Ihrem Studium und Ihren akademischen Arbeiten.\n\n` +
+        (hasAttachments ? `> **Angehängte Datei:** ${attachmentContext}\n\n` : '') +
+        `Ich kann Konzepte zusammenfassen, Schritt für Schritt erklären oder Übungen erstellen. Womit möchten Sie fortfahren?`;
+    } else if (lang === 'ar') {
+      generatedText = `### 🎓 المساعد الذكي BAAT (العربية)\n\n` +
+        `مرحباً بك! 😊 تم استلام طلبك وأنا على أتم الاستعداد لمساعدتك في دراستك وبحوثك الأكاديمية.\n\n` +
+        (hasAttachments ? `> **المستند المرفق:** ${attachmentContext}\n\n` : '') +
+        `يمكنني تلخيص الدروس، وشرح المفاهيم المعقدة خطوة بخطوة، أو إنشاء اختبارات وتمارين تدريبية. كيف تحب أن نبدأ؟`;
+    } else if (lang === 'zh') {
+      generatedText = `### 🎓 BAAT 智能学术助手 (中文)\n\n` +
+        `您好！😊 已收到您的请求。我随时准备协助您的学业学习与学术写作。\n\n` +
+        (hasAttachments ? `> **附件文件：** ${attachmentContext}\n\n` : '') +
+        `我可以为您提炼总结核心要点、逐步讲解复杂概念，或生成备考练习题。请问我们先从哪一项开始？`;
+    } else if (lang === 'hi') {
+      generatedText = `### 🎓 BAAT AI सहायक (हिन्दी)\n\n` +
+        `नमस्ते! 😊 आपका संदेश प्राप्त हुआ। मैं आपकी पढ़ाई और शैक्षणिक तैयारी में सहायता के लिए तैयार हूँ।\n\n` +
+        (hasAttachments ? `> **संलग्न दस्तावेज़:** ${attachmentContext}\n\n` : '') +
+        `मैं किसी भी विषय को संक्षेप में प्रस्तुत कर सकता हूँ, चरण-दर-चरण समझा सकता हूँ या अभ्यास प्रश्न तैयार कर सकता हूँ।`;
+    } else if (lang === 'ru') {
+      generatedText = `### 🎓 ИИ-Ассистент BAAT (Русский)\n\n` +
+        `Здравствуйте! 😊 Ваш запрос успешно принят. Я готов помочь вам в учебе и исследовательской работе.\n\n` +
+        (hasAttachments ? `> **Прикрепленный файл:** ${attachmentContext}\n\n` : '') +
+        `Я могу составить краткое резюме, подробно объяснить тему или подготовить проверочные тесты. С чего начнем?`;
+    } else if (lang === 'ja') {
+      generatedText = `### 🎓 BAAT AI アシスタント (日本語)\n\n` +
+        `こんにちは！😊 メッセージを受け付けました。学習や学術レポートの作成をサポートいたします。\n\n` +
+        (hasAttachments ? `> **添付ファイル：** ${attachmentContext}\n\n` : '') +
+        `要点の要約、段階的な概念の解説、試験対策の練習問題の作成など、どのようなサポートをご希望ですか？`;
+    } else if (lang === 'it') {
+      generatedText = `### 🎓 Assistente IA BAAT (Italiano)\n\n` +
+        `Ciao! 😊 Ho ricevuto la tua richiesta e sono pronto ad aiutarti nello studio e nella redazione accademica.\n\n` +
+        (hasAttachments ? `> **Documento allegato:** ${attachmentContext}\n\n` : '') +
+        `Posso riassumere i tuoi testi, spiegare concetti complessi passo dopo passo o preparare quiz ed esercizi. Da dove vorresti iniziare?`;
+    } else if (lang === 'tr') {
+      generatedText = `### 🎓 BAAT Yapay Zeka Asistanı (Türkçe)\n\n` +
+        `Merhaba! 😊 Mesajınızı aldım ve derslerinizde, akademik çalışmalarınızda size yardımcı olmaya hazırım.\n\n` +
+        (hasAttachments ? `> **Eklenen dosya:** ${attachmentContext}\n\n` : '') +
+        `Konuları özetleyebilir, adım adım açıklayabilir veya test ve alıştırmalar hazırlayabilirim. Nasıl başlayalım?`;
+    } else if (lang === 'ko') {
+      generatedText = `### 🎓 BAAT AI 학습 어시스턴트 (한국어)\n\n` +
+        `안녕하세요! 😊 요청을 확인했습니다. 학업 및 연구 문서 작성에 최선을 다해 도움을 드리겠습니다.\n\n` +
+        (hasAttachments ? `> **첨부 파일:** ${attachmentContext}\n\n` : '') +
+        `핵심 요약, 단계별 개념 설명, 실전 연습 문제 생성 등 어떤 작업을 진행하시겠습니까?`;
+    } else if (lang === 'nl') {
+      generatedText = `### 🎓 BAAT AI-Assistent (Nederlands)\n\n` +
+        `Hallo! 😊 Ik heb je bericht ontvangen en help je graag bij je studie en academisch werk.\n\n` +
+        (hasAttachments ? `> **Bijgevoegd bestand:** ${attachmentContext}\n\n` : '') +
+        `Ik kan teksten samenvatten, concepten stap voor stap uitleggen of oefeningen maken.`;
+    } else if (lang === 'id') {
+      generatedText = `### 🎓 Asisten AI BAAT (Bahasa Indonesia)\n\n` +
+        `Halo! 😊 Pesan Anda telah diterima. Saya siap mendampingi studi dan penulisan akademis Anda.\n\n` +
+        (hasAttachments ? `> **Lampiran:** ${attachmentContext}\n\n` : '') +
+        `Saya dapat merangkum materi, menjelaskan konsep secara terperinci, atau membuat latihan soal.`;
+    } else if (lang === 'pl') {
+      generatedText = `### 🎓 Asystent AI BAAT (Polski)\n\n` +
+        `Cześć! 😊 Otrzymałem Twoją wiadomość i chętnie pomogę w nauce oraz pracach naukowych.\n\n` +
+        (hasAttachments ? `> **Załącznik:** ${attachmentContext}\n\n` : '') +
+        `Mogę podsumować tekst, wyjaśnić trudne zagadnienia lub przygotować ćwiczenia.`;
+    } else if (lang === 'vi') {
+      generatedText = `### 🎓 Trợ lý AI BAAT (Tiếng Việt)\n\n` +
+        `Xin chào! 😊 Tôi đã nhận được yêu cầu của bạn và sẵn sàng hỗ trợ việc học tập và nghiên cứu.\n\n` +
+        (hasAttachments ? `> **Tệp đính kèm:** ${attachmentContext}\n\n` : '') +
+        `Tôi có thể tóm tắt nội dung, giải thích khái niệm chi tiết hoặc tạo bài tập ôn luyện.`;
+    } else if (lang === 'sw') {
+      generatedText = `### 🎓 Msaidizi wa AI BAAT (Kiswahili)\n\n` +
+        `Hujambo! 😊 Nimepokea ujumbe wako na niko tayari kukusaidia katika masomo yako na uandishi wa kitaaluma.\n\n` +
+        (hasAttachments ? `> **Faili iliyoambatishwa:** ${attachmentContext}\n\n` : '') +
+        `Naweza kufanya muhtasari, kueleza mada kwa hatua, au kutengeneza maswali ya mazoezi.`;
+    } else if (lang === 'fa') {
+      generatedText = `### 🎓 دستیار هوش مصنوعی BAAT (فارسی)\n\n` +
+        `سلام! 😊 پیام شما دریافت شد و آماده‌ام در مطالعات و نگارش دانشگاهی به شما کمک کنم.\n\n` +
+        (hasAttachments ? `> **فایل پیوست:** ${attachmentContext}\n\n` : '') +
+        `می‌توانم مطالب را خلاصه کنم، مفاهیم را گام به گام شرح دهم یا تمرینات آموزشی طراحی کنم.`;
+    } else if (lang === 'sv') {
+      generatedText = `### 🎓 BAAT AI-Assistent (Svenska)\n\n` +
+        `Hej! 😊 Jag har tagit emot ditt meddelande och är redo att hjälpa dig med dina studier och uppsatser.\n\n` +
+        (hasAttachments ? `> **Bifogad fil:** ${attachmentContext}\n\n` : '') +
+        `Jag kan sammanfatta texter, förklara begrepp steg för steg eller skapa övningsfrågor.`;
+    } else {
+      // Français (par défaut)
+      switch (params.mode) {
       case 'resumer':
         generatedText = `### 📋 Synthèse et Points Essentiels\n\n` +
           (hasAttachments ? `> **Document analysé :** ${attachmentContext}\n\n` : '') +
@@ -268,6 +438,7 @@ export const AIService = {
             `* **Créer des exercices** d'entraînement ou un QCM d'évaluation`;
         }
         break;
+      }
     }
 
     return {
@@ -277,6 +448,7 @@ export const AIService = {
       timestamp,
       mode: params.mode,
       isWebSearch: params.isWebSearch,
+      language: lang,
       sources,
       status: 'complete',
       isDevPreview: true

@@ -8,6 +8,8 @@ interface AIAttachmentMenuProps {
   onOpenLibraryPicker: () => void;
   onOpenPasteText: () => void;
   onSelectFile: () => void;
+  isWebSearch?: boolean;
+  onToggleWebSearch?: () => void;
 }
 
 export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
@@ -16,6 +18,8 @@ export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
   onOpenLibraryPicker,
   onOpenPasteText,
   onSelectFile,
+  isWebSearch = false,
+  onToggleWebSearch,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -45,10 +49,10 @@ export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`btn-plus-trigger ${isOpen ? 'active' : ''}`}
-        aria-label="Ajouter un document, une image ou une ressource"
+        className={`btn-plus-trigger ${isOpen ? 'active' : ''} ${isWebSearch ? 'has-web-active' : ''}`}
+        aria-label="Ajouter un document, une image ou activer la recherche Web"
         aria-expanded={isOpen}
-        title="Ajouter du contenu (+)"
+        title="Ajouter du contenu ou recherche web (+)"
       >
         <svg 
           width="19" 
@@ -64,13 +68,50 @@ export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
+
+        {isWebSearch && <span className="web-active-indicator" title="Recherche web activée" />}
       </button>
 
       {isOpen && (
         <div className="menu-dropdown-popover" role="menu">
           <div className="menu-header">
-            <span>Ajouter au contexte IA</span>
+            <span>Recherche & Ressources IA</span>
           </div>
+
+          {/* Option Recherche Web intégrée dans le menu + */}
+          {onToggleWebSearch && (
+            <button
+              type="button"
+              role="menuitemcheckbox"
+              aria-checked={isWebSearch}
+              className={`menu-item menu-web-item ${isWebSearch ? 'active' : ''}`}
+              onClick={() => {
+                onToggleWebSearch();
+              }}
+            >
+              <div className={`item-icon web ${isWebSearch ? 'active' : ''}`}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+              </div>
+              <div className="item-text">
+                <div className="item-title-row">
+                  <span className="item-title">Recherche Web</span>
+                  <span className={`web-badge ${isWebSearch ? 'on' : 'off'}`}>
+                    {isWebSearch ? 'Activé' : 'Désactivé'}
+                  </span>
+                </div>
+                <span className="item-desc">Actualités et données internet en direct</span>
+              </div>
+              <div className={`toggle-pill ${isWebSearch ? 'checked' : ''}`}>
+                <div className="toggle-dot" />
+              </div>
+            </button>
+          )}
+
+          <div className="menu-divider" />
 
           <button
             type="button"
@@ -107,7 +148,7 @@ export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
             </div>
             <div className="item-text">
               <span className="item-title">Ajouter une image</span>
-              <span className="item-desc">Photo, capture d'exercice, schéma</span>
+              <span className="item-desc">Photo, capture d&apos;exercice, schéma</span>
             </div>
           </button>
 
@@ -125,7 +166,7 @@ export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
             </div>
             <div className="item-text">
               <span className="item-title">Choisir dans la bibliothèque</span>
-              <span className="item-desc">Livre, cours, annale Sunubiblio</span>
+              <span className="item-desc">Livre, cours, annale BAAT</span>
             </div>
           </button>
 
@@ -175,6 +216,7 @@ export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
         }
 
         .btn-plus-trigger {
+          position: relative;
           width: 38px;
           height: 38px;
           border-radius: 50%;
@@ -198,6 +240,23 @@ export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
           transform: scale(1.04);
         }
 
+        .btn-plus-trigger.has-web-active {
+          background: #eef2ff;
+          color: #4f46e5;
+          border-color: #a5b4fc;
+        }
+
+        .web-active-indicator {
+          position: absolute;
+          top: 1px;
+          right: 1px;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #4f46e5;
+          border: 2px solid #ffffff;
+        }
+
         .plus-icon {
           transition: transform 0.2s ease;
         }
@@ -210,7 +269,7 @@ export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
           position: absolute;
           bottom: calc(100% + 12px);
           left: 0;
-          width: 290px;
+          width: 304px;
           background: #ffffff;
           border: 1px solid rgba(226, 232, 240, 0.9);
           border-radius: 18px;
@@ -227,8 +286,12 @@ export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
           text-transform: uppercase;
           letter-spacing: 0.05em;
           color: #94a3b8;
-          border-bottom: 1px solid #f1f5f9;
-          margin-bottom: 4px;
+        }
+
+        .menu-divider {
+          height: 1px;
+          background: #f1f5f9;
+          margin: 6px 4px;
         }
 
         .menu-item {
@@ -247,6 +310,91 @@ export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
 
         .menu-item:hover {
           background: #fffbeb;
+        }
+
+        .menu-web-item {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          margin-bottom: 2px;
+        }
+
+        .menu-web-item.active {
+          background: #eef2ff;
+          border-color: #c7d2fe;
+        }
+
+        .menu-web-item:hover {
+          background: #f1f5f9;
+        }
+
+        .menu-web-item.active:hover {
+          background: #e0e7ff;
+        }
+
+        .item-icon.web {
+          background: #e2e8f0;
+          color: #64748b;
+        }
+
+        .item-icon.web.active {
+          background: #4f46e5;
+          color: #ffffff;
+        }
+
+        .item-title-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+        }
+
+        .web-badge {
+          font-size: 10px;
+          font-weight: 700;
+          text-transform: uppercase;
+          padding: 2px 6px;
+          border-radius: 6px;
+          letter-spacing: 0.04em;
+        }
+
+        .web-badge.on {
+          background: #4f46e5;
+          color: #ffffff;
+        }
+
+        .web-badge.off {
+          background: #e2e8f0;
+          color: #64748b;
+        }
+
+        .toggle-pill {
+          width: 34px;
+          height: 20px;
+          border-radius: 9999px;
+          background: #cbd5e1;
+          display: flex;
+          align-items: center;
+          padding: 2px;
+          transition: background-color 0.2s ease;
+          flex-shrink: 0;
+          margin-left: auto;
+        }
+
+        .toggle-pill.checked {
+          background: #4f46e5;
+        }
+
+        .toggle-dot {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: #ffffff;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+          transition: transform 0.2s ease;
+        }
+
+        .toggle-pill.checked .toggle-dot {
+          transform: translateX(14px);
         }
 
         .menu-item.highlight-item {
@@ -295,6 +443,7 @@ export const AIAttachmentMenu: React.FC<AIAttachmentMenuProps> = ({
         .item-text {
           display: flex;
           flex-direction: column;
+          flex: 1;
           min-width: 0;
         }
 

@@ -80,6 +80,7 @@ export default function IAPage() {
     mode: AIMode;
     attachments: AIAttachment[];
     isWebSearch: boolean;
+    language?: string;
   }) => {
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -92,6 +93,7 @@ export default function IAPage() {
       mode: payload.mode,
       attachments: payload.attachments,
       isWebSearch: payload.isWebSearch,
+      language: payload.language,
       status: 'complete',
     };
 
@@ -130,6 +132,7 @@ export default function IAPage() {
         mode: payload.mode,
         attachments: payload.attachments,
         isWebSearch: payload.isWebSearch,
+        language: payload.language,
       });
 
       setMessages((prev) => [...prev, aiResponse]);
@@ -230,6 +233,7 @@ export default function IAPage() {
         mode: targetMsg.mode || activeMode,
         attachments: targetMsg.attachments || [],
         isWebSearch: !!targetMsg.isWebSearch,
+        language: targetMsg.language,
       });
 
       const finalMessages = [...trimmedMessages, aiResponse];
@@ -287,6 +291,7 @@ export default function IAPage() {
         mode: lastUserMsg.mode || 'assistant',
         attachments: lastUserMsg.attachments || [],
         isWebSearch: !!lastUserMsg.isWebSearch,
+        language: lastUserMsg.language,
       });
     }
   };

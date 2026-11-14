@@ -55,6 +55,7 @@ export interface AIMessage {
   mode?: AIMode;
   attachments?: AIAttachment[];
   isWebSearch?: boolean;
+  language?: string;
   sources?: AIMessageSource[];
   status?: 'sending' | 'thinking' | 'complete' | 'error';
   isDevPreview?: boolean;
