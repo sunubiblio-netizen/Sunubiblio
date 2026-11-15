@@ -288,24 +288,45 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
 
   const totalPages = Math.ceil(totalCount / filters.perPage) || 1;
 
-  // Category separation: top 5 + collapsible remaining
-  const topCategories = QUICK_CATEGORY_ITEMS.slice(0, 5);
-  const otherCategories = QUICK_CATEGORY_ITEMS.slice(5);
-  const filteredCategories = categorySearchQuery.trim()
-    ? QUICK_CATEGORY_ITEMS.filter((c) =>
+  // Exact 4 categories first as requested: Livres, Cours, Annales, Exercices, then the rest
+  const LIBRARY_CATEGORIES_ORDERED = [
+    { id: 'livres', label: 'Livres' },
+    { id: 'cours', label: 'Cours' },
+    { id: 'annales', label: 'Annales' },
+    { id: 'exercices', label: 'Exercices' },
+    { id: 'documents', label: 'Documents' },
+    { id: 'informatique', label: 'Informatique' },
+    { id: 'sciences', label: 'Sciences' },
+    { id: 'business', label: 'Business & Entrepreneuriat' },
+    { id: 'litterature', label: 'Littérature' },
+    { id: 'finance', label: 'Finance & Management' },
+    { id: 'dev_perso', label: 'Développement personnel' },
+    { id: 'religion', label: 'Religion & Spiritualité' },
+  ];
+
+  // Exact 4 formats first as requested: Fascicules, Cours structuré, Annales, Cahiers d'exercices, then the rest
+  const LIBRARY_FORMATS_ORDERED = [
+    { id: 'livre', label: 'Fascicules', desc: 'Fascicule / Manuel PDF' },
+    { id: 'cours', label: 'Cours structuré', desc: 'Support de cours structuré' },
+    { id: 'annales', label: 'Annales', desc: 'Sujets d’examen officiels' },
+    { id: 'exercices', label: 'Cahiers d’exercices', desc: 'Série d’exercices corrigés' },
+    { id: 'fiche', label: 'Fiche synthétique', desc: 'Fiche mémo & synthèse' },
+    { id: 'epreuve', label: 'Épreuve officielle', desc: 'Épreuve officielle concours' },
+  ];
+
+  const displayedCategories = categorySearchQuery.trim()
+    ? LIBRARY_CATEGORIES_ORDERED.filter((c) =>
         c.label.toLowerCase().includes(categorySearchQuery.toLowerCase())
       )
-    : null;
+    : LIBRARY_CATEGORIES_ORDERED;
 
-  // Format separation: top 3 + collapsible remaining
-  const selectableFormats = RESOURCE_TYPES.filter((r) => r.id !== 'all');
-  const topFormats = selectableFormats.slice(0, 3);
-  const otherFormats = selectableFormats.slice(3);
-  const filteredFormats = formatSearchQuery.trim()
-    ? selectableFormats.filter((r) =>
-        r.label.toLowerCase().includes(formatSearchQuery.toLowerCase())
+  const displayedFormats = formatSearchQuery.trim()
+    ? LIBRARY_FORMATS_ORDERED.filter(
+        (f) =>
+          f.label.toLowerCase().includes(formatSearchQuery.toLowerCase()) ||
+          f.desc.toLowerCase().includes(formatSearchQuery.toLowerCase())
       )
-    : null;
+    : LIBRARY_FORMATS_ORDERED;
 
   return (
     <section className="resource-grid-section">
@@ -425,10 +446,10 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
 
               {/* Options */}
               <div className="popover-options-scroll">
-                {/* 1. Catégorie avec mini barre de recherche intégrée */}
+                {/* 1. Catégorie avec mini barre de recherche et défilement fluide */}
                 {mobileActiveTab === 'category' && (
                   <div className="popover-options-group">
-                    {/* Mini barre de recherche remplaçant le bouton Toutes les catégories */}
+                    {/* Mini barre de recherche */}
                     <div className="popover-search-box">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="11" cy="11" r="8" />
@@ -461,9 +482,10 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
                       ) : null}
                     </div>
 
-                    {filteredCategories ? (
-                      filteredCategories.length > 0 ? (
-                        filteredCategories.map((cat) => {
+                    {/* Liste défilable au doigt (4 catégories visibles au même niveau que format, le reste défilable) */}
+                    <div className="popover-items-scrollable">
+                      {displayedCategories.length > 0 ? (
+                        displayedCategories.map((cat) => {
                           const isSelected = filters.category === cat.id;
                           return (
                             <button
@@ -491,85 +513,12 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
                         })
                       ) : (
                         <div className="popover-no-results">Aucune catégorie trouvée</div>
-                      )
-                    ) : (
-                      <>
-                        {/* Top 5 catégories : Livres, Cours, Annales, Exercices, Documents */}
-                        {topCategories.map((cat) => {
-                          const isSelected = filters.category === cat.id;
-                          return (
-                            <button
-                              key={cat.id}
-                              type="button"
-                              className={`popover-option-item ${isSelected ? 'selected' : ''}`}
-                              onClick={() => onFilterChange({ category: cat.id, page: 1 })}
-                            >
-                              <div className="option-icon-box">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                                </svg>
-                              </div>
-                              <span className="option-main-label">{cat.label}</span>
-                              {isSelected && (
-                                <div className="option-check-pill">
-                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12" />
-                                  </svg>
-                                </div>
-                              )}
-                            </button>
-                          );
-                        })}
-
-                        {/* Déroulant élégant pour les autres catégories */}
-                        <button
-                          type="button"
-                          className={`popover-more-toggle-btn ${isMoreCategoriesOpen ? 'open' : ''}`}
-                          onClick={() => setIsMoreCategoriesOpen(!isMoreCategoriesOpen)}
-                        >
-                          <span>{isMoreCategoriesOpen ? 'Moins de catégories' : 'Autres catégories (Informatique, Sciences...)'}</span>
-                          <svg className={`chevron-icon ${isMoreCategoriesOpen ? 'rotated' : ''}`} width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="6 9 12 15 18 9" />
-                          </svg>
-                        </button>
-
-                        {isMoreCategoriesOpen && (
-                          <div className="popover-more-list">
-                            {otherCategories.map((cat) => {
-                              const isSelected = filters.category === cat.id;
-                              return (
-                                <button
-                                  key={cat.id}
-                                  type="button"
-                                  className={`popover-option-item ${isSelected ? 'selected' : ''}`}
-                                  onClick={() => onFilterChange({ category: cat.id, page: 1 })}
-                                >
-                                  <div className="option-icon-box">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                                    </svg>
-                                  </div>
-                                  <span className="option-main-label">{cat.label}</span>
-                                  {isSelected && (
-                                    <div className="option-check-pill">
-                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                        <polyline points="20 6 9 17 4 12" />
-                                      </svg>
-                                    </div>
-                                  )}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </>
-                    )}
+                      )}
+                    </div>
                   </div>
                 )}
 
-                {/* 2. Format avec recherche et déroulant */}
+                {/* 2. Format avec mini barre de recherche et défilement fluide */}
                 {mobileActiveTab === 'type' && (
                   <div className="popover-options-group">
                     <div className="popover-search-box">
@@ -604,9 +553,10 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
                       ) : null}
                     </div>
 
-                    {filteredFormats ? (
-                      filteredFormats.length > 0 ? (
-                        filteredFormats.map((rt) => {
+                    {/* Liste défilable au doigt (4 formats visibles : Fascicules, Cours structuré, Annales, Cahiers d'exercices) */}
+                    <div className="popover-items-scrollable">
+                      {displayedFormats.length > 0 ? (
+                        displayedFormats.map((rt) => {
                           const isSelected = filters.resourceType === rt.id;
                           return (
                             <button
@@ -621,7 +571,10 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
                                   <polyline points="14 2 14 8 20 8" />
                                 </svg>
                               </div>
-                              <span className="option-main-label">{rt.label}</span>
+                              <div className="option-text-group">
+                                <span className="option-main-label">{rt.label}</span>
+                                <span className="option-desc-label">{rt.desc}</span>
+                              </div>
                               {isSelected && (
                                 <div className="option-check-pill">
                                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -634,83 +587,8 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
                         })
                       ) : (
                         <div className="popover-no-results">Aucun format trouvé</div>
-                      )
-                    ) : (
-                      <>
-                        {topFormats.map((rt) => {
-                          const isSelected = filters.resourceType === rt.id;
-                          return (
-                            <button
-                              key={rt.id}
-                              type="button"
-                              className={`popover-option-item ${isSelected ? 'selected' : ''}`}
-                              onClick={() => onFilterChange({ resourceType: rt.id, page: 1 })}
-                            >
-                              <div className="option-icon-box">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                  <polyline points="14 2 14 8 20 8" />
-                                </svg>
-                              </div>
-                              <span className="option-main-label">{rt.label}</span>
-                              {isSelected && (
-                                <div className="option-check-pill">
-                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12" />
-                                  </svg>
-                                </div>
-                              )}
-                            </button>
-                          );
-                        })}
-
-                        {otherFormats.length > 0 && (
-                          <>
-                            <button
-                              type="button"
-                              className={`popover-more-toggle-btn ${isMoreFormatsOpen ? 'open' : ''}`}
-                              onClick={() => setIsMoreFormatsOpen(!isMoreFormatsOpen)}
-                            >
-                              <span>{isMoreFormatsOpen ? 'Moins de formats' : 'Autres formats (Fiches, Épreuves...)'}</span>
-                              <svg className={`chevron-icon ${isMoreFormatsOpen ? 'rotated' : ''}`} width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="6 9 12 15 18 9" />
-                              </svg>
-                            </button>
-
-                            {isMoreFormatsOpen && (
-                              <div className="popover-more-list">
-                                {otherFormats.map((rt) => {
-                                  const isSelected = filters.resourceType === rt.id;
-                                  return (
-                                    <button
-                                      key={rt.id}
-                                      type="button"
-                                      className={`popover-option-item ${isSelected ? 'selected' : ''}`}
-                                      onClick={() => onFilterChange({ resourceType: rt.id, page: 1 })}
-                                    >
-                                      <div className="option-icon-box">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                          <polyline points="14 2 14 8 20 8" />
-                                        </svg>
-                                      </div>
-                                      <span className="option-main-label">{rt.label}</span>
-                                      {isSelected && (
-                                        <div className="option-check-pill">
-                                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                            <polyline points="20 6 9 17 4 12" />
-                                          </svg>
-                                        </div>
-                                      )}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </>
-                    )}
+                      )}
+                    </div>
                   </div>
                 )}
 
@@ -1155,49 +1033,16 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           font-size: 12px;
         }
 
-        /* Bouton déroulant pour le reste des catégories */
-        .popover-more-toggle-btn {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          width: 100%;
-          padding: 7px 9px;
-          margin-top: 3px;
-          border-radius: 8px;
-          background: #f8fafc;
-          border: 1px dashed #cbd5e1;
-          color: #64748b;
-          font-size: 11.5px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.15s ease;
-        }
-
-        .popover-more-toggle-btn:hover {
-          background: #fffbeb;
-          border-color: #f59e0b;
-          color: #b45309;
-        }
-
-        .popover-more-toggle-btn.open {
-          background: #fffdf5;
-          border-color: #f59e0b;
-          color: #854d0e;
-        }
-
-        .popover-more-toggle-btn .chevron-icon {
-          transition: transform 0.2s ease;
-        }
-
-        .popover-more-toggle-btn .chevron-icon.rotated {
-          transform: rotate(180deg);
-        }
-
-        .popover-more-list {
+        /* Liste défilable au doigt pour les éléments */
+        .popover-items-scrollable {
+          max-height: 180px;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
           display: flex;
           flex-direction: column;
           gap: 3px;
-          padding-top: 4px;
+          padding-right: 2px;
         }
 
         .popover-options-scroll {

@@ -84,9 +84,7 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
   const [activeControl, setActiveControl] = useState<ActiveControl>('none');
   const [mobileActiveTab, setMobileActiveTab] = useState<'category' | 'format' | 'access'>('category');
   const [categorySearchQuery, setCategorySearchQuery] = useState('');
-  const [isMoreCategoriesOpen, setIsMoreCategoriesOpen] = useState(false);
   const [formatSearchQuery, setFormatSearchQuery] = useState('');
-  const [isMoreFormatsOpen, setIsMoreFormatsOpen] = useState(false);
   
   const ribbonRef = useRef<HTMLDivElement>(null);
   const mobilePopoverRef = useRef<HTMLDivElement>(null);
@@ -225,25 +223,22 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
     { id: 'premium', label: 'Réservé Abonnés', desc: 'Accès avec formule active' },
   ];
 
-  // Document category separation: top 5 + collapsible remaining
+  // Catégories et formats défilables au doigt de manière fluide
   const actualCategories = categories.map((c) => ({ id: c.id, label: c.label }));
-  const topDocCategories = actualCategories.slice(0, 5);
-  const otherDocCategories = actualCategories.slice(5);
-  const filteredDocCategories = categorySearchQuery.trim()
+  const displayedDocCategories = categorySearchQuery.trim()
     ? actualCategories.filter((c) =>
         c.label.toLowerCase().includes(categorySearchQuery.toLowerCase())
       )
-    : null;
+    : actualCategories;
 
-  // Format separation: top 2 + collapsible remaining
   const actualFormats = formatsList.filter((f) => f.id !== 'all');
-  const topDocFormats = actualFormats.slice(0, 2); // PDF, DOCX
-  const otherDocFormats = actualFormats.slice(2); // XLSX, Autre
-  const filteredDocFormats = formatSearchQuery.trim()
-    ? actualFormats.filter((f) =>
-        f.label.toLowerCase().includes(formatSearchQuery.toLowerCase())
+  const displayedDocFormats = formatSearchQuery.trim()
+    ? actualFormats.filter(
+        (f) =>
+          f.label.toLowerCase().includes(formatSearchQuery.toLowerCase()) ||
+          f.desc.toLowerCase().includes(formatSearchQuery.toLowerCase())
       )
-    : null;
+    : actualFormats;
 
   return (
     <div className="doc-grid-header-wrapper">
@@ -399,9 +394,10 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
                       ) : null}
                     </div>
 
-                    {filteredDocCategories ? (
-                      filteredDocCategories.length > 0 ? (
-                        filteredDocCategories.map((cat) => {
+                    {/* Liste défilable au doigt (4 catégories visibles au même niveau que format, le reste défilable) */}
+                    <div className="popover-items-scrollable">
+                      {displayedDocCategories.length > 0 ? (
+                        displayedDocCategories.map((cat) => {
                           const isSelected = filters.category === cat.id;
                           return (
                             <button
@@ -429,83 +425,8 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
                         })
                       ) : (
                         <div className="popover-no-results">Aucune catégorie trouvée</div>
-                      )
-                    ) : (
-                      <>
-                        {topDocCategories.map((cat) => {
-                          const isSelected = filters.category === cat.id;
-                          return (
-                            <button
-                              key={cat.id}
-                              type="button"
-                              className={`popover-option-item ${isSelected ? 'selected' : ''}`}
-                              onClick={() => onFilterChange({ category: cat.id as DocumentCategory | 'all', page: 1 })}
-                            >
-                              <div className="option-icon-box">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                                </svg>
-                              </div>
-                              <span className="option-main-label">{cat.label}</span>
-                              {isSelected && (
-                                <div className="option-check-pill">
-                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12" />
-                                  </svg>
-                                </div>
-                              )}
-                            </button>
-                          );
-                        })}
-
-                        {otherDocCategories.length > 0 && (
-                          <>
-                            <button
-                              type="button"
-                              className={`popover-more-toggle-btn ${isMoreCategoriesOpen ? 'open' : ''}`}
-                              onClick={() => setIsMoreCategoriesOpen(!isMoreCategoriesOpen)}
-                            >
-                              <span>{isMoreCategoriesOpen ? 'Moins de catégories' : 'Autres catégories (Modèles, Textes...)'}</span>
-                              <svg className={`chevron-icon ${isMoreCategoriesOpen ? 'rotated' : ''}`} width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="6 9 12 15 18 9" />
-                              </svg>
-                            </button>
-
-                            {isMoreCategoriesOpen && (
-                              <div className="popover-more-list">
-                                {otherDocCategories.map((cat) => {
-                                  const isSelected = filters.category === cat.id;
-                                  return (
-                                    <button
-                                      key={cat.id}
-                                      type="button"
-                                      className={`popover-option-item ${isSelected ? 'selected' : ''}`}
-                                      onClick={() => onFilterChange({ category: cat.id as DocumentCategory | 'all', page: 1 })}
-                                    >
-                                      <div className="option-icon-box">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                                        </svg>
-                                      </div>
-                                      <span className="option-main-label">{cat.label}</span>
-                                      {isSelected && (
-                                        <div className="option-check-pill">
-                                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                            <polyline points="20 6 9 17 4 12" />
-                                          </svg>
-                                        </div>
-                                      )}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </>
-                    )}
+                      )}
+                    </div>
                   </div>
                 )}
 
@@ -544,9 +465,10 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
                       ) : null}
                     </div>
 
-                    {filteredDocFormats ? (
-                      filteredDocFormats.length > 0 ? (
-                        filteredDocFormats.map((f) => {
+                    {/* Liste défilable au doigt (4 formats visibles au même niveau que catégorie, le reste défilable) */}
+                    <div className="popover-items-scrollable">
+                      {displayedDocFormats.length > 0 ? (
+                        displayedDocFormats.map((f) => {
                           const isSelected = filters.format === f.id;
                           return (
                             <button
@@ -577,89 +499,8 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
                         })
                       ) : (
                         <div className="popover-no-results">Aucun format trouvé</div>
-                      )
-                    ) : (
-                      <>
-                        {topDocFormats.map((f) => {
-                          const isSelected = filters.format === f.id;
-                          return (
-                            <button
-                              key={f.id}
-                              type="button"
-                              className={`popover-option-item ${isSelected ? 'selected' : ''}`}
-                              onClick={() => onFilterChange({ format: f.id, page: 1 })}
-                            >
-                              <div className="option-icon-box">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                  <polyline points="14 2 14 8 20 8" />
-                                </svg>
-                              </div>
-                              <div className="option-text-group">
-                                <span className="option-main-label">{f.label}</span>
-                                <span className="option-desc-label">{f.desc}</span>
-                              </div>
-                              {isSelected && (
-                                <div className="option-check-pill">
-                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12" />
-                                  </svg>
-                                </div>
-                              )}
-                            </button>
-                          );
-                        })}
-
-                        {otherDocFormats.length > 0 && (
-                          <>
-                            <button
-                              type="button"
-                              className={`popover-more-toggle-btn ${isMoreFormatsOpen ? 'open' : ''}`}
-                              onClick={() => setIsMoreFormatsOpen(!isMoreFormatsOpen)}
-                            >
-                              <span>{isMoreFormatsOpen ? 'Moins de formats' : 'Autres formats (Excel, Autres...)'}</span>
-                              <svg className={`chevron-icon ${isMoreFormatsOpen ? 'rotated' : ''}`} width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="6 9 12 15 18 9" />
-                              </svg>
-                            </button>
-
-                            {isMoreFormatsOpen && (
-                              <div className="popover-more-list">
-                                {otherDocFormats.map((f) => {
-                                  const isSelected = filters.format === f.id;
-                                  return (
-                                    <button
-                                      key={f.id}
-                                      type="button"
-                                      className={`popover-option-item ${isSelected ? 'selected' : ''}`}
-                                      onClick={() => onFilterChange({ format: f.id, page: 1 })}
-                                    >
-                                      <div className="option-icon-box">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                          <polyline points="14 2 14 8 20 8" />
-                                        </svg>
-                                      </div>
-                                      <div className="option-text-group">
-                                        <span className="option-main-label">{f.label}</span>
-                                        <span className="option-desc-label">{f.desc}</span>
-                                      </div>
-                                      {isSelected && (
-                                        <div className="option-check-pill">
-                                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                            <polyline points="20 6 9 17 4 12" />
-                                          </svg>
-                                        </div>
-                                      )}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </>
-                    )}
+                      )}
+                    </div>
                   </div>
                 )}
 
@@ -1167,49 +1008,16 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
           font-size: 12px;
         }
 
-        /* Bouton déroulant pour le reste des catégories */
-        .popover-more-toggle-btn {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          width: 100%;
-          padding: 7px 9px;
-          margin-top: 3px;
-          border-radius: 8px;
-          background: #f8fafc;
-          border: 1px dashed #cbd5e1;
-          color: #64748b;
-          font-size: 11.5px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.15s ease;
-        }
-
-        .popover-more-toggle-btn:hover {
-          background: #fffbeb;
-          border-color: #f59e0b;
-          color: #b45309;
-        }
-
-        .popover-more-toggle-btn.open {
-          background: #fffdf5;
-          border-color: #f59e0b;
-          color: #854d0e;
-        }
-
-        .popover-more-toggle-btn .chevron-icon {
-          transition: transform 0.2s ease;
-        }
-
-        .popover-more-toggle-btn .chevron-icon.rotated {
-          transform: rotate(180deg);
-        }
-
-        .popover-more-list {
+        /* Liste défilable au doigt pour les éléments */
+        .popover-items-scrollable {
+          max-height: 180px;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
           display: flex;
           flex-direction: column;
           gap: 3px;
-          padding-top: 4px;
+          padding-right: 2px;
         }
 
         /* Liste des options */
