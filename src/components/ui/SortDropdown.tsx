@@ -15,6 +15,8 @@ interface SortDropdownProps<T extends string> {
   options: SortOptionItem<T>[];
   labelPrefix?: string;
   align?: 'left' | 'right';
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function SortDropdown<T extends string>({
@@ -23,15 +25,48 @@ export function SortDropdown<T extends string>({
   options,
   labelPrefix = 'Trier par :',
   align = 'right',
+  isOpen: controlledIsOpen,
+  onOpenChange,
 }: SortDropdownProps<T>) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isControlled = typeof controlledIsOpen === 'boolean';
+  const isOpen = isControlled ? controlledIsOpen : internalIsOpen;
+
+  const setIsOpen = (next: boolean | ((prev: boolean) => boolean)) => {
+    const nextVal = typeof next === 'function' ? next(isOpen) : next;
+    if (!isControlled) {
+      setInternalIsOpen(nextVal);
+    }
+    if (onOpenChange) {
+      onOpenChange(nextVal);
+    }
+  };
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const activeOption = options.find((opt) => opt.value === value) || options[0];
 
+  // Auto-scroll slightly down on mobile when opened so the full dropdown card is visible
+  useEffect(() => {
+    if (isOpen && typeof window !== 'undefined' && window.innerWidth <= 1024) {
+      const timer = setTimeout(() => {
+        if (dropdownRef.current) {
+          const rect = dropdownRef.current.getBoundingClientRect();
+          const popoverHeight = 250;
+          const safeBottom = window.innerHeight - 80; // above mobile bottom navigation
+          if (rect.bottom + popoverHeight > safeBottom) {
+            const scrollDistance = Math.min(160, rect.bottom + popoverHeight - safeBottom + 20);
+            window.scrollBy({ top: scrollDistance, behavior: 'smooth' });
+          }
+        }
+      }, 60);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
   // Close when clicking outside
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
@@ -42,9 +77,11 @@ export function SortDropdown<T extends string>({
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
     };
   }, [isOpen]);
 
@@ -404,14 +441,30 @@ export function SortDropdown<T extends string>({
           flex-shrink: 0;
         }
 
-        /* Mobile & Tablet adjustments: align to left edge so it never overflows offscreen */
-        @media (max-width: 640px) {
-          .dropdown-popover-card.align-right,
+        /* Mobile & Tablet adjustments */
+        @media (max-width: 768px) {
+          .dropdown-popover-card.align-right {
+            right: 0 !important;
+            left: auto !important;
+            width: 220px !important;
+            max-width: calc(100vw - 32px) !important;
+          }
           .dropdown-popover-card.align-left {
             left: 0 !important;
             right: auto !important;
-            width: 230px !important;
+            width: 220px !important;
             max-width: calc(100vw - 32px) !important;
+          }
+          .dropdown-popover-card {
+            max-height: calc(100vh - 220px) !important;
+            display: flex !important;
+            flex-direction: column !important;
+          }
+          .popover-options-list {
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            overscroll-behavior: contain !important;
+            padding-right: 2px !important;
           }
         }
       `}</style>

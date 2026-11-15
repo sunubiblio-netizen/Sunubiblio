@@ -80,31 +80,69 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
   onToggleFilters,
   activeFiltersCount = 0,
 }) => {
-  const [isCategoryBarOpen, setIsCategoryBarOpen] = useState(false);
-  const [isMobilePopoverOpen, setIsMobilePopoverOpen] = useState(false);
+  type ActiveControl = 'none' | 'filters' | 'categories' | 'sort';
+  const [activeControl, setActiveControl] = useState<ActiveControl>('none');
   const [mobileActiveTab, setMobileActiveTab] = useState<'category' | 'format' | 'year' | 'access'>('category');
   
   const ribbonRef = useRef<HTMLDivElement>(null);
   const mobilePopoverRef = useRef<HTMLDivElement>(null);
 
+  const isMobilePopoverOpen = activeControl === 'filters';
+  const isCategoryBarOpen = activeControl === 'categories';
+  const isSortOpen = activeControl === 'sort';
+
+  // Click on "Filtres" button: on mobile it opens the floating popover; on desktop it toggles the sidebar
+  const handleFiltresClick = () => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 1024) {
+      if (activeControl === 'filters') {
+        setActiveControl('none');
+      } else {
+        setActiveControl('filters');
+        setTimeout(() => {
+          window.scrollBy({ top: 140, behavior: 'smooth' });
+        }, 60);
+      }
+    } else {
+      if (onToggleFilters) onToggleFilters();
+    }
+  };
+
+  const handleToggleCategories = () => {
+    if (activeControl === 'categories') {
+      setActiveControl('none');
+    } else {
+      setActiveControl('categories');
+    }
+  };
+
+  const handleSortOpenChange = (open: boolean) => {
+    if (open) {
+      setActiveControl('sort');
+    } else if (activeControl === 'sort') {
+      setActiveControl('none');
+    }
+  };
+
   // Close mobile popover when clicking outside or pressing Escape
   useEffect(() => {
     function handleClickOutside(event: MouseEvent | TouchEvent) {
+      const target = event.target as Node;
       if (
+        activeControl === 'filters' &&
         mobilePopoverRef.current &&
-        !mobilePopoverRef.current.contains(event.target as Node)
+        !mobilePopoverRef.current.contains(target)
       ) {
-        setIsMobilePopoverOpen(false);
+        setActiveControl('none');
       }
     }
 
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        setIsMobilePopoverOpen(false);
+      if (event.key === 'Escape' && activeControl !== 'none') {
+        setActiveControl('none');
       }
     }
 
-    if (isMobilePopoverOpen) {
+    if (activeControl !== 'none') {
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('touchstart', handleClickOutside);
       document.addEventListener('keydown', handleKeyDown);
@@ -114,24 +152,7 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
       document.removeEventListener('touchstart', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isMobilePopoverOpen]);
-
-  // Click on "Filtres" button: on mobile it opens the floating popover; on desktop it toggles the sidebar
-  const handleFiltresClick = () => {
-    if (typeof window !== 'undefined' && window.innerWidth <= 1024) {
-      setIsMobilePopoverOpen((prev) => !prev);
-    } else {
-      if (onToggleFilters) onToggleFilters();
-    }
-  };
-
-  // Ribbon scroll helper
-  const scrollRibbon = (direction: 'left' | 'right') => {
-    if (ribbonRef.current) {
-      const scrollAmount = direction === 'left' ? -220 : 220;
-      ribbonRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
+  }, [activeControl]);
 
   const allCategories = useMemo(() => {
     return [
@@ -194,7 +215,7 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
           <button
             type="button"
             className={`cat-plus-toggle-btn ${isCategoryBarOpen ? 'active' : ''}`}
-            onClick={() => setIsCategoryBarOpen(!isCategoryBarOpen)}
+            onClick={handleToggleCategories}
             aria-expanded={isCategoryBarOpen}
             aria-label={isCategoryBarOpen ? 'Masquer les catégories' : 'Afficher les catégories'}
             title={isCategoryBarOpen ? 'Masquer les catégories' : 'Explorer les catégories de documents'}
@@ -434,7 +455,7 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
                 <button
                   type="button"
                   className="popover-apply-btn"
-                  onClick={() => setIsMobilePopoverOpen(false)}
+                  onClick={() => setActiveControl('none')}
                 >
                   <span>Afficher les {totalResults} document{totalResults > 1 ? 's' : ''}</span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
@@ -454,24 +475,15 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
             options={DOC_SORT_OPTIONS}
             labelPrefix="Trier par :"
             align="right"
+            isOpen={isSortOpen}
+            onOpenChange={handleSortOpenChange}
           />
         </div>
       </div>
 
-      {/* Ruban horizontal fluide des catégories (ouvert au clic sur le '+') */}
+      {/* Ruban horizontal fluide des catégories (sans flèches < >, défilement tactile fluide au doigt) */}
       {isCategoryBarOpen && (
         <div className="cat-fluid-ribbon-wrapper">
-          <button
-            type="button"
-            className="ribbon-arrow-btn prev"
-            onClick={() => scrollRibbon('left')}
-            aria-label="Faire défiler vers la gauche"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-
           <div className="cat-fluid-ribbon-track" ref={ribbonRef}>
             {allCategories.map((cat) => {
               const isActive = filters.category === cat.id;
@@ -490,17 +502,6 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
               );
             })}
           </div>
-
-          <button
-            type="button"
-            className="ribbon-arrow-btn next"
-            onClick={() => scrollRibbon('right')}
-            aria-label="Faire défiler vers la droite"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
         </div>
       )}
 
@@ -703,6 +704,9 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
           z-index: 500;
           width: 295px;
           max-width: calc(100vw - 32px);
+          max-height: calc(100vh - 210px);
+          display: flex;
+          flex-direction: column;
           background: #ffffff;
           border: 1px solid rgba(226, 232, 240, 0.95);
           border-radius: 14px;
@@ -820,8 +824,12 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
 
         /* Liste des options */
         .popover-options-scroll {
-          max-height: 250px;
+          flex: 1;
+          max-height: calc(100vh - 350px);
+          min-height: 120px;
           overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
           padding: 6px 2px;
           display: flex;
           flex-direction: column;
@@ -948,14 +956,14 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
         .cat-fluid-ribbon-wrapper {
           display: flex;
           align-items: center;
-          gap: 6px;
           margin-bottom: 18px;
-          padding: 8px 10px;
+          padding: 6px 8px;
           background: #ffffff;
           border: 1px solid rgba(226, 232, 240, 0.85);
           border-radius: 9999px;
           box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
           animation: ribbonExpand 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+          overflow: hidden;
         }
 
         @keyframes ribbonExpand {
@@ -969,36 +977,18 @@ export const DocumentsFilters: React.FC<DocumentsFiltersProps> = ({
           }
         }
 
-        .ribbon-arrow-btn {
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          border: 1px solid #e2e8f0;
-          background: #ffffff;
-          color: #64748b;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          flex-shrink: 0;
-          transition: all 0.18s ease;
-        }
-
-        .ribbon-arrow-btn:hover {
-          background: #fffbeb;
-          border-color: #f59e0b;
-          color: #b45309;
-        }
-
         .cat-fluid-ribbon-track {
+          flex: 1;
           display: flex;
           align-items: center;
           gap: 8px;
           overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
           scrollbar-width: none;
           -ms-overflow-style: none;
           padding: 2px 4px;
           scroll-behavior: smooth;
+          touch-action: pan-x;
         }
 
         .cat-fluid-ribbon-track::-webkit-scrollbar {

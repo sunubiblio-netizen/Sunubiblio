@@ -93,30 +93,70 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
   onToggleFilters,
   activeFiltersCount,
 }) => {
-  const [isCategoryBarOpen, setIsCategoryBarOpen] = useState(false);
-  const [isMobileFilterPopoverOpen, setIsMobileFilterPopoverOpen] = useState(false);
+  type ActiveControl = 'none' | 'filters' | 'categories' | 'sort';
+  const [activeControl, setActiveControl] = useState<ActiveControl>('none');
   const [mobileActiveTab, setMobileActiveTab] = useState<'category' | 'type' | 'access'>('category');
   const ribbonRef = useRef<HTMLDivElement>(null);
   const mobileFilterRef = useRef<HTMLDivElement>(null);
 
-  // Close mobile filter popover when clicking outside or pressing Escape
+  const isMobileFilterPopoverOpen = activeControl === 'filters';
+  const isCategoryBarOpen = activeControl === 'categories';
+  const isSortOpen = activeControl === 'sort';
+
+  // Toggle Filters: mutual close & auto-scroll down on mobile
+  const handleToggleFilters = () => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 1024) {
+      if (activeControl === 'filters') {
+        setActiveControl('none');
+      } else {
+        setActiveControl('filters');
+        setTimeout(() => {
+          window.scrollBy({ top: 140, behavior: 'smooth' });
+        }, 60);
+      }
+    } else {
+      if (onToggleFilters) onToggleFilters();
+    }
+  };
+
+  // Toggle '+' category ribbon
+  const handleToggleCategories = () => {
+    if (activeControl === 'categories') {
+      setActiveControl('none');
+    } else {
+      setActiveControl('categories');
+    }
+  };
+
+  // Sort dropdown open handler
+  const handleSortOpenChange = (open: boolean) => {
+    if (open) {
+      setActiveControl('sort');
+    } else if (activeControl === 'sort') {
+      setActiveControl('none');
+    }
+  };
+
+  // Close when clicking outside or pressing Escape
   useEffect(() => {
     function handleClickOutside(event: MouseEvent | TouchEvent) {
+      const target = event.target as Node;
       if (
+        activeControl === 'filters' &&
         mobileFilterRef.current &&
-        !mobileFilterRef.current.contains(event.target as Node)
+        !mobileFilterRef.current.contains(target)
       ) {
-        setIsMobileFilterPopoverOpen(false);
+        setActiveControl('none');
       }
     }
 
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        setIsMobileFilterPopoverOpen(false);
+      if (event.key === 'Escape' && activeControl !== 'none') {
+        setActiveControl('none');
       }
     }
 
-    if (isMobileFilterPopoverOpen) {
+    if (activeControl !== 'none') {
       document.addEventListener('mousedown', handleClickOutside);
       document.addEventListener('touchstart', handleClickOutside);
       document.addEventListener('keydown', handleKeyDown);
@@ -126,14 +166,7 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
       document.removeEventListener('touchstart', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isMobileFilterPopoverOpen]);
-
-  const scrollRibbon = (direction: 'left' | 'right') => {
-    if (ribbonRef.current) {
-      const scrollOffset = direction === 'left' ? -220 : 220;
-      ribbonRef.current.scrollBy({ left: scrollOffset, behavior: 'smooth' });
-    }
-  };
+  }, [activeControl]);
 
   // Active filter badges
   const activePills: { key: string; label: string; remove: () => void }[] = [];
@@ -213,13 +246,7 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           <button
             type="button"
             className={`open-filters-pill-btn ${isFiltersOpen ? 'desktop-hidden' : ''} ${isMobileFilterPopoverOpen ? 'active' : ''}`}
-            onClick={() => {
-              if (typeof window !== 'undefined' && window.innerWidth <= 1024) {
-                setIsMobileFilterPopoverOpen((prev) => !prev);
-              } else {
-                if (onToggleFilters) onToggleFilters();
-              }
-            }}
+            onClick={handleToggleFilters}
             aria-label="Ouvrir les filtres"
             title="Ouvrir les filtres"
             aria-expanded={isMobileFilterPopoverOpen}
@@ -250,7 +277,7 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           <button
             type="button"
             className={`cat-plus-toggle-btn ${isCategoryBarOpen ? 'active' : ''}`}
-            onClick={() => setIsCategoryBarOpen(!isCategoryBarOpen)}
+            onClick={handleToggleCategories}
             aria-expanded={isCategoryBarOpen}
             aria-label={isCategoryBarOpen ? 'Masquer les catégories' : 'Afficher les catégories'}
             title={isCategoryBarOpen ? 'Masquer les catégories' : 'Explorer les catégories (Livres, Cours, Annales...)'}
@@ -435,7 +462,7 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
                 <button
                   type="button"
                   className="popover-apply-btn"
-                  onClick={() => setIsMobileFilterPopoverOpen(false)}
+                  onClick={() => setActiveControl('none')}
                 >
                   <span>Afficher les {totalCount} résultat{totalCount > 1 ? 's' : ''}</span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
@@ -455,24 +482,15 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
             options={LIBRARY_SORT_OPTIONS}
             labelPrefix="Trier par :"
             align="right"
+            isOpen={isSortOpen}
+            onOpenChange={handleSortOpenChange}
           />
         </div>
       </div>
 
-      {/* Ruban horizontal fluide des catégories (ouvert au clic sur le '+', défilable avec fluidité) */}
+      {/* Ruban horizontal fluide des catégories (sans flèches < >, défilement tactile fluide au doigt) */}
       {isCategoryBarOpen && (
         <div className="cat-fluid-ribbon-wrapper">
-          <button
-            type="button"
-            className="ribbon-arrow-btn prev"
-            onClick={() => scrollRibbon('left')}
-            aria-label="Faire défiler vers la gauche"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-
           <div className="cat-fluid-ribbon-track" ref={ribbonRef}>
             {QUICK_CATEGORY_ITEMS.map((cat) => {
               const isActive = filters.category === cat.id;
@@ -493,17 +511,6 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
               );
             })}
           </div>
-
-          <button
-            type="button"
-            className="ribbon-arrow-btn next"
-            onClick={() => scrollRibbon('right')}
-            aria-label="Faire défiler vers la droite"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
         </div>
       )}
 
@@ -650,6 +657,9 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           z-index: 500;
           width: 295px;
           max-width: calc(100vw - 32px);
+          max-height: calc(100vh - 210px);
+          display: flex;
+          flex-direction: column;
           background: #ffffff;
           border: 1px solid rgba(226, 232, 240, 0.95);
           border-radius: 14px;
@@ -765,8 +775,12 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
         }
 
         .popover-options-scroll {
-          max-height: 250px;
+          flex: 1;
+          max-height: calc(100vh - 350px);
+          min-height: 120px;
           overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
           padding: 6px 2px;
           display: flex;
           flex-direction: column;
@@ -915,15 +929,15 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
         .cat-fluid-ribbon-wrapper {
           display: flex;
           align-items: center;
-          gap: 6px;
           margin-bottom: 20px;
-          padding: 8px 10px;
+          padding: 6px 8px;
           background: #ffffff;
           border: 1px solid rgba(226, 232, 240, 0.85);
           border-radius: var(--radius-full);
           box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
           animation: ribbonExpand 0.22s cubic-bezier(0.16, 1, 0.3, 1);
           position: relative;
+          overflow: hidden;
         }
 
         @keyframes ribbonExpand {
@@ -943,10 +957,12 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           align-items: center;
           gap: 8px;
           overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
           scroll-behavior: smooth;
           scrollbar-width: none;
           -ms-overflow-style: none;
           padding: 2px 4px;
+          touch-action: pan-x;
         }
 
         .cat-fluid-ribbon-track::-webkit-scrollbar {
