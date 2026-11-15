@@ -2,8 +2,12 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { religionService } from '@/services/religionService';
-import { INITIAL_RELIGION_RESOURCES } from '@/data/mockReligion';
-import { PedagogyClientView } from './PedagogyClientView';
+import {
+  RELIGION_TRADITIONS,
+  RELIGION_BRANCHES,
+  INITIAL_RELIGION_RESOURCES,
+} from '@/data/mockReligion';
+import { TraditionClientPage } from './TraditionClientPage';
 
 interface PageProps {
   params: {
@@ -20,19 +24,22 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const data = await religionService.getPedagogicalData(params.slug);
-  if (!data) {
-    return {
-      title: 'Tradition introuvable | Sunubiblio',
-    };
-  }
+  const traditionId =
+    params.slug === 'spiritualites-africaines'
+      ? 'religions-traditionnelles-africaines'
+      : params.slug;
+  const tradition = RELIGION_TRADITIONS.find((t) => t.id === traditionId);
+
+  const title = tradition ? tradition.title : data?.hero.title || 'Tradition Spirituelle';
+  const desc = tradition ? tradition.description : data?.hero.tagline || 'Ressources et ouvrages sacrés.';
 
   return {
-    title: `${data.hero.title} — Histoire, Textes, Croyances & Ressources | Sunubiblio`,
-    description: `${data.hero.tagline} Découvrez les fondements, les figures majeures et explorez les ressources numériques sur Sunubiblio.`,
+    title: `${title} — Livres, Traités, Exégèses & Patrimoine | Sunubiblio`,
+    description: `${desc} Consultez les manuscrits, traités historiques et textes de référence sur Sunubiblio.`,
     openGraph: {
-      title: `${data.hero.title} — Sunubiblio`,
-      description: data.hero.tagline,
-      url: `https://sunubiblio.sn/religion/${data.slug}`,
+      title: `${title} — Sunubiblio`,
+      description: desc,
+      url: `https://sunubiblio.sn/religion/${params.slug}`,
       siteName: 'Sunubiblio',
       locale: 'fr_FR',
       type: 'website',
@@ -40,22 +47,36 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function ReligionPedagogyPage({ params }: PageProps) {
-  const data = await religionService.getPedagogicalData(params.slug);
+export default async function ReligionTraditionPage({ params }: PageProps) {
+  const slug = params.slug.toLowerCase().trim();
+  const traditionId =
+    slug === 'spiritualites-africaines'
+      ? 'religions-traditionnelles-africaines'
+      : slug;
 
-  if (!data) {
+  const tradition = RELIGION_TRADITIONS.find((t) => t.id === traditionId);
+
+  if (!tradition) {
     notFound();
   }
 
+  // Get pedagogical data (may be null if not defined yet)
+  const pedagogicalData = await religionService.getPedagogicalData(slug);
+
+  // Get branches for this tradition
+  const branches = RELIGION_BRANCHES.filter((b) => b.traditionId === traditionId);
+
   // Get resources specifically for this tradition
   const traditionResources = INITIAL_RELIGION_RESOURCES.filter(
-    (r) => r.traditionId === data.traditionId
+    (r) => r.traditionId === traditionId
   );
 
   return (
-    <PedagogyClientView
-      data={data}
+    <TraditionClientPage
+      tradition={tradition}
+      branches={branches}
       resources={traditionResources}
+      pedagogicalData={pedagogicalData}
     />
   );
 }

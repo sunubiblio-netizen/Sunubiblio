@@ -79,6 +79,10 @@ export interface ReligionTradition {
   branchesCount: number;
   resourceCount: number;
   isSenegalPriority?: boolean;
+  image?: string;
+  imagePosition?: string;
+  grades?: string[];
+  route?: string;
 }
 
 export interface ReligionBranch {
