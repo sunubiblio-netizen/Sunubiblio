@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Resource, FilterState, SortOption } from '@/types/library';
+import { RESOURCE_TYPES, ACCESS_LEVELS } from '@/data/mockLibrary';
 import { ResourceCard } from './ResourceCard';
 import { EmptyState } from './EmptyState';
 import { LibraryPagination } from './LibraryPagination';
@@ -93,7 +94,39 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
   activeFiltersCount,
 }) => {
   const [isCategoryBarOpen, setIsCategoryBarOpen] = useState(false);
-  const ribbonRef = React.useRef<HTMLDivElement>(null);
+  const [isMobileFilterPopoverOpen, setIsMobileFilterPopoverOpen] = useState(false);
+  const [mobileActiveTab, setMobileActiveTab] = useState<'category' | 'type' | 'access'>('category');
+  const ribbonRef = useRef<HTMLDivElement>(null);
+  const mobileFilterRef = useRef<HTMLDivElement>(null);
+
+  // Close mobile filter popover when clicking outside or pressing Escape
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
+      if (
+        mobileFilterRef.current &&
+        !mobileFilterRef.current.contains(event.target as Node)
+      ) {
+        setIsMobileFilterPopoverOpen(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsMobileFilterPopoverOpen(false);
+      }
+    }
+
+    if (isMobileFilterPopoverOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isMobileFilterPopoverOpen]);
 
   const scrollRibbon = (direction: 'left' | 'right') => {
     if (ribbonRef.current) {
@@ -175,21 +208,21 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
     <section className="resource-grid-section">
       {/* Top Header Row (Aéré, spacieux, bouton Filtres + bouton + transparent à gauche, Tri à droite) */}
       <div className="grid-header">
-        <div className="grid-header-left">
+        <div className="grid-header-left" ref={mobileFilterRef}>
           {/* Bouton Filtres élégant (toujours visible sur mobile, et sur desktop quand la sidebar est fermée) */}
           <button
             type="button"
-            className={`open-filters-pill-btn ${isFiltersOpen ? 'desktop-hidden' : ''}`}
+            className={`open-filters-pill-btn ${isFiltersOpen ? 'desktop-hidden' : ''} ${isMobileFilterPopoverOpen ? 'active' : ''}`}
             onClick={() => {
               if (typeof window !== 'undefined' && window.innerWidth <= 1024) {
-                if (onOpenMobileFilters) onOpenMobileFilters();
-                else if (onToggleFilters) onToggleFilters();
+                setIsMobileFilterPopoverOpen((prev) => !prev);
               } else {
                 if (onToggleFilters) onToggleFilters();
               }
             }}
             aria-label="Ouvrir les filtres"
             title="Ouvrir les filtres"
+            aria-expanded={isMobileFilterPopoverOpen}
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
@@ -198,6 +231,19 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
             {activeFiltersCount !== undefined && activeFiltersCount > 0 && (
               <span className="filter-pill-badge">{activeFiltersCount}</span>
             )}
+            <svg
+              className={`filter-chevron ${isMobileFilterPopoverOpen ? 'rotated' : ''}`}
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
           </button>
 
           {/* Bouton '+' transparent pour ouvrir/fermer les catégories */}
@@ -214,6 +260,192 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
           </button>
+
+          {/* =========================================================
+              POPOVER FLOTTANT DE FILTRES SUR MOBILE (Exactement comme Pertinence)
+              ========================================================= */}
+          {isMobileFilterPopoverOpen && (
+            <div className="mobile-filter-popover-card" role="dialog" aria-modal="true">
+              {/* Header */}
+              <div className="popover-header">
+                <div className="popover-header-title-group">
+                  <span className="popover-header-title">Filtrer la bibliothèque</span>
+                  {activeFiltersCount !== undefined && activeFiltersCount > 0 && (
+                    <span className="popover-header-badge">{activeFiltersCount}</span>
+                  )}
+                </div>
+                {activeFiltersCount !== undefined && activeFiltersCount > 0 && (
+                  <button
+                    type="button"
+                    className="popover-reset-btn"
+                    onClick={onResetFilters}
+                  >
+                    Réinitialiser
+                  </button>
+                )}
+              </div>
+
+              {/* Onglets horizontaux */}
+              <div className="popover-tabs-nav">
+                <button
+                  type="button"
+                  className={`popover-tab-btn ${mobileActiveTab === 'category' ? 'active' : ''}`}
+                  onClick={() => setMobileActiveTab('category')}
+                >
+                  <span>Catégorie</span>
+                  {filters.category !== 'all' && <span className="tab-dot" />}
+                </button>
+                <button
+                  type="button"
+                  className={`popover-tab-btn ${mobileActiveTab === 'type' ? 'active' : ''}`}
+                  onClick={() => setMobileActiveTab('type')}
+                >
+                  <span>Format</span>
+                  {filters.resourceType !== 'all' && <span className="tab-dot" />}
+                </button>
+                <button
+                  type="button"
+                  className={`popover-tab-btn ${mobileActiveTab === 'access' ? 'active' : ''}`}
+                  onClick={() => setMobileActiveTab('access')}
+                >
+                  <span>Accès</span>
+                  {filters.accessLevel !== 'all' && <span className="tab-dot" />}
+                </button>
+              </div>
+
+              {/* Options */}
+              <div className="popover-options-scroll">
+                {/* 1. Catégorie */}
+                {mobileActiveTab === 'category' && (
+                  <div className="popover-options-group">
+                    <button
+                      type="button"
+                      className={`popover-option-item ${filters.category === 'all' ? 'selected' : ''}`}
+                      onClick={() => onFilterChange({ category: 'all', page: 1 })}
+                    >
+                      <div className="option-icon-box">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                        </svg>
+                      </div>
+                      <span className="option-main-label">Toutes les catégories</span>
+                      {filters.category === 'all' && (
+                        <div className="option-check-pill">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        </div>
+                      )}
+                    </button>
+                    {QUICK_CATEGORY_ITEMS.map((cat) => {
+                      const isSelected = filters.category === cat.id;
+                      return (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          className={`popover-option-item ${isSelected ? 'selected' : ''}`}
+                          onClick={() => onFilterChange({ category: cat.id, page: 1 })}
+                        >
+                          <div className="option-icon-box">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                            </svg>
+                          </div>
+                          <span className="option-main-label">{cat.label}</span>
+                          {isSelected && (
+                            <div className="option-check-pill">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* 2. Format / Type */}
+                {mobileActiveTab === 'type' && (
+                  <div className="popover-options-group">
+                    {RESOURCE_TYPES.map((rt) => {
+                      const isSelected = filters.resourceType === rt.id;
+                      return (
+                        <button
+                          key={rt.id}
+                          type="button"
+                          className={`popover-option-item ${isSelected ? 'selected' : ''}`}
+                          onClick={() => onFilterChange({ resourceType: rt.id, page: 1 })}
+                        >
+                          <div className="option-icon-box">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                              <polyline points="14 2 14 8 20 8" />
+                            </svg>
+                          </div>
+                          <span className="option-main-label">{rt.label}</span>
+                          {isSelected && (
+                            <div className="option-check-pill">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* 3. Accès */}
+                {mobileActiveTab === 'access' && (
+                  <div className="popover-options-group">
+                    {ACCESS_LEVELS.map((acc) => {
+                      const isSelected = filters.accessLevel === acc.id;
+                      return (
+                        <button
+                          key={acc.id}
+                          type="button"
+                          className={`popover-option-item ${isSelected ? 'selected' : ''}`}
+                          onClick={() => onFilterChange({ accessLevel: acc.id, page: 1 })}
+                        >
+                          <div className="option-icon-box">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          </div>
+                          <span className="option-main-label">{acc.label}</span>
+                          {isSelected && (
+                            <div className="option-check-pill">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Bottom Apply Action */}
+              <div className="popover-footer-actions">
+                <button
+                  type="button"
+                  className="popover-apply-btn"
+                  onClick={() => setIsMobileFilterPopoverOpen(false)}
+                >
+                  <span>Afficher les {totalCount} résultat{totalCount > 1 ? 's' : ''}</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="grid-header-right">
@@ -378,10 +610,266 @@ export const ResourceGrid: React.FC<ResourceGridProps> = ({
           transform: translateY(-1px);
         }
 
+        .open-filters-pill-btn.active {
+          border-color: #f59e0b;
+          color: #854d0e;
+          background: #fffdf5;
+          box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+        }
+
+        .filter-chevron {
+          color: #94a3b8;
+          transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          margin-left: -2px;
+        }
+
+        .filter-chevron.rotated {
+          transform: rotate(180deg);
+          color: #d97706;
+        }
+
         @media (min-width: 1025px) {
           .open-filters-pill-btn.desktop-hidden {
             display: none !important;
           }
+          .filter-chevron {
+            display: none !important;
+          }
+          .mobile-filter-popover-card {
+            display: none !important;
+          }
+        }
+
+        /* =========================================================
+           POPOVER FLOTTANT SUR MOBILE (Exactement comme Pertinence)
+           ========================================================= */
+        .mobile-filter-popover-card {
+          position: absolute;
+          top: calc(100% + 6px);
+          left: 0;
+          z-index: 500;
+          width: 295px;
+          max-width: calc(100vw - 32px);
+          background: #ffffff;
+          border: 1px solid rgba(226, 232, 240, 0.95);
+          border-radius: 14px;
+          box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.16),
+            0 2px 8px rgba(15, 23, 42, 0.04);
+          padding: 10px;
+          animation: popoverFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes popoverFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-4px) scale(0.98);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        .popover-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 4px 6px 8px 6px;
+          border-bottom: 1px solid #f1f5f9;
+        }
+
+        .popover-header-title-group {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .popover-header-title {
+          font-size: 11px;
+          font-weight: 700;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+
+        .popover-header-badge {
+          background: #eab308;
+          color: #713f12;
+          font-size: 10px;
+          font-weight: 800;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .popover-reset-btn {
+          background: none;
+          border: none;
+          font-size: 11px;
+          font-weight: 700;
+          color: #d97706;
+          cursor: pointer;
+          padding: 2px 4px;
+        }
+
+        .popover-reset-btn:hover {
+          text-decoration: underline;
+        }
+
+        .popover-tabs-nav {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          padding: 8px 2px;
+          border-bottom: 1px solid #f1f5f9;
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
+
+        .popover-tabs-nav::-webkit-scrollbar {
+          display: none;
+        }
+
+        .popover-tab-btn {
+          flex: 1;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          padding: 5px 8px;
+          border-radius: 8px;
+          border: none;
+          background: #f8fafc;
+          color: #64748b;
+          font-size: 11.5px;
+          font-weight: 600;
+          cursor: pointer;
+          white-space: nowrap;
+          transition: all 0.15s ease;
+        }
+
+        .popover-tab-btn.active {
+          background: #fffbeb;
+          color: #b45309;
+          font-weight: 700;
+        }
+
+        .tab-dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: #f59e0b;
+        }
+
+        .popover-options-scroll {
+          max-height: 250px;
+          overflow-y: auto;
+          padding: 6px 2px;
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+        }
+
+        .popover-options-group {
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+        }
+
+        .popover-option-item {
+          display: flex;
+          align-items: center;
+          gap: 9px;
+          width: 100%;
+          padding: 7px 9px;
+          border-radius: 10px;
+          background: transparent;
+          border: 1px solid transparent;
+          text-align: left;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .popover-option-item:hover {
+          background: #f8fafc;
+        }
+
+        .popover-option-item.selected {
+          background: #fefce8;
+          border-color: rgba(234, 179, 8, 0.35);
+        }
+
+        .option-icon-box {
+          width: 26px;
+          height: 26px;
+          border-radius: 8px;
+          background: #f8fafc;
+          color: #64748b;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          transition: all 0.15s ease;
+        }
+
+        .popover-option-item.selected .option-icon-box {
+          background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+          color: #713f12;
+          box-shadow: 0 2px 6px rgba(234, 179, 8, 0.25);
+        }
+
+        .option-main-label {
+          font-size: 12.5px;
+          font-weight: 600;
+          color: #1e293b;
+          line-height: 1.25;
+          flex: 1;
+        }
+
+        .popover-option-item.selected .option-main-label {
+          color: #854d0e;
+          font-weight: 700;
+        }
+
+        .option-check-pill {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: rgba(234, 179, 8, 0.2);
+          flex-shrink: 0;
+        }
+
+        .popover-footer-actions {
+          padding-top: 8px;
+          border-top: 1px solid #f1f5f9;
+          margin-top: 4px;
+        }
+
+        .popover-apply-btn {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          padding: 8px 12px;
+          border-radius: 10px;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          border: none;
+          color: #ffffff;
+          font-size: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);
+        }
+
+        .popover-apply-btn:active {
+          transform: scale(0.98);
         }
 
         .cat-plus-toggle-btn {

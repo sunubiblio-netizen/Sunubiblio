@@ -423,42 +423,10 @@ export const DocumentFilterSidebar: React.FC<DocumentFilterSidebarProps> = ({
           font-weight: 700 !important;
         }
 
-        /* Mobile View */
+        /* Mobile View: Complètement masqué sur mobile car les filtres s'affichent sous forme de popover élégant comme Pertinence */
         @media (max-width: 1024px) {
           .doc-filter-sidebar {
-            display: none;
-          }
-
-          .doc-filter-sidebar.mobile-open {
-            display: flex !important;
-            flex-direction: column !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            bottom: 0 !important;
-            width: 320px !important;
-            max-width: 88vw !important;
-            height: 100vh !important;
-            background: #ffffff !important;
-            z-index: 2200 !important;
-            overflow-y: auto !important;
-            -webkit-overflow-scrolling: touch !important;
-            box-shadow: 0 20px 48px rgba(15, 23, 42, 0.28) !important;
-            animation: slideDrawer 0.24s cubic-bezier(0.16, 1, 0.3, 1) !important;
-            padding: 20px 18px 24px !important;
-          }
-
-          .mobile-close-btn {
-            display: flex !important;
-          }
-        }
-
-        @keyframes slideDrawer {
-          from {
-            transform: translateX(-100%);
-          }
-          to {
-            transform: translateX(0);
+            display: none !important;
           }
         }
       `}</style>
