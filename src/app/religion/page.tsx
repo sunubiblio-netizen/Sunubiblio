@@ -68,11 +68,14 @@ export default function ReligionPage() {
           min-height: 100vh;
           display: flex;
           flex-direction: column;
-          background: #fdfcf9;
+          background: #ffffff !important;
+          position: relative;
         }
 
         .religion-main {
           flex: 1;
+          position: relative;
+          background: #ffffff !important;
         }
       `}</style>
     </div>

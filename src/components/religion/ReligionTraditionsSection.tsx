@@ -23,53 +23,45 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
     router.push(`/religion/${slug}`);
   };
 
-  // Les grandes traditions avec visuels
+  // Les 6 grandes traditions dans l'ordre exact demandé par l'utilisateur:
+  // 1: Islam, 2: Christianisme, 3: Judaïsme, 4: Bouddhisme, 5: Hindouisme, 6: Spiritualités africaines
   const DISPLAYED_IDS: ReligionTraditionId[] = [
     'islam',
     'christianisme',
-    'religions-traditionnelles-africaines',
     'judaisme',
     'bouddhisme',
     'hindouisme',
+    'religions-traditionnelles-africaines',
   ];
 
   const primaryTraditions = DISPLAYED_IDS.map((id) =>
     traditions.find((t) => t.id === id)
   ).filter(Boolean) as ReligionTradition[];
 
-  const renderIcon = (iconName: string, color: string) => {
+  const renderIcon = (iconName: string) => {
     switch (iconName) {
       case 'crescent':
         return (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
           </svg>
         );
       case 'cross':
         return (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="3" x2="12" y2="21" />
             <line x1="6" y1="8" x2="18" y2="8" />
           </svg>
         );
-      case 'tree':
-        return (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 22v-7" />
-            <path d="M17 14a5 5 0 0 0-10 0" />
-            <path d="M19 10a7 7 0 0 0-14 0" />
-            <path d="M21 6a9 9 0 0 0-18 0" />
-          </svg>
-        );
       case 'star-david':
         return (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <polygon points="12 2 15 8 21 9 17 14 18 20 12 17 6 20 7 14 3 9 9 8 12 2" />
           </svg>
         );
       case 'wheel':
         return (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="9" />
             <circle cx="12" cy="12" r="3" />
             <line x1="12" y1="3" x2="12" y2="9" />
@@ -79,11 +71,20 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
           </svg>
         );
       case 'lotus':
-      default:
         return (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 3a9 9 0 0 1 9 9c0 5-4 9-9 9s-9-4-9-9a9 9 0 0 1 9-9Z" />
             <path d="M12 8a4 4 0 0 1 4 4c0 2.2-1.8 4-4 4s-4-1.8-4-4a4 4 0 0 1 4-4Z" />
+          </svg>
+        );
+      case 'tree':
+      default:
+        return (
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22v-7" />
+            <path d="M17 14a5 5 0 0 0-10 0" />
+            <path d="M19 10a7 7 0 0 0-14 0" />
+            <path d="M21 6a9 9 0 0 0-18 0" />
           </svg>
         );
     }
@@ -92,7 +93,7 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
   return (
     <section className="religion-traditions-section-wrap" id="traditions">
       <div className="container">
-        {/* En-tête centré inspiré d'Éducation */}
+        {/* En-tête centré rigoureusement identique à Éducation */}
         <div className="traditions-center-header">
           <div className="traditions-badge-pill">
             <span className="badge-pulse-dot" />
@@ -108,7 +109,7 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
           </p>
         </div>
 
-        {/* Grille de 6 Cartes Immersives avec Image d'arrière-plan */}
+        {/* Grille de 6 Cartes Immersives (Même structure, dimension, typographie et effets que Éducation) */}
         <div className="traditions-cards-grid">
           {primaryTraditions.map((trad) => {
             const hasBanner = Boolean(trad.image);
@@ -128,7 +129,7 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
                 }}
                 aria-label={`Découvrir la tradition ${trad.title}`}
               >
-                {/* Image d'arrière-plan avec fondu dégradé doux (style Éducation) */}
+                {/* Image d'arrière-plan avec fondu dégradé doux vers le blanc pur (#ffffff) */}
                 {trad.image && (
                   <div className="rel-card-backdrop" aria-hidden="true">
                     <img
@@ -159,7 +160,7 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
                             }
                       }
                     >
-                      {renderIcon(trad.iconName, trad.image ? '#ffffff' : trad.accentColor)}
+                      {renderIcon(trad.iconName)}
                     </div>
 
                     <span
@@ -167,15 +168,13 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
                       style={
                         trad.image
                           ? {
-                              background: 'rgba(15, 23, 42, 0.45)',
+                              background: 'transparent',
                               color: '#ffffff',
-                              backdropFilter: 'blur(8px)',
-                              borderColor: 'rgba(255, 255, 255, 0.25)',
+                              boxShadow: 'none',
                             }
                           : {
                               color: trad.accentColor,
                               background: trad.bgLight,
-                              borderColor: trad.borderColor,
                             }
                       }
                     >
@@ -183,13 +182,13 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
                     </span>
                   </div>
 
-                  {/* Card Title & Subtitle */}
+                  {/* Card Title & Subtitle avec pillule floue protectrice identique à Éducation */}
                   <div className="rel-card-title-wrap">
                     <h3 className="rel-card-title">{trad.title}</h3>
                   </div>
                   <div className="rel-card-subtitle">{trad.subtitle}</div>
 
-                  {/* Description */}
+                  {/* Description concise */}
                   <p className="rel-card-desc">{trad.description}</p>
 
                   {/* Courants / Branches Preview Pills */}
@@ -231,8 +230,9 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
 
       <style jsx>{`
         .religion-traditions-section-wrap {
-          padding: 56px 0 64px;
-          background: transparent;
+          padding: 64px 0 54px;
+          background: #ffffff !important;
+          position: relative;
         }
 
         .traditions-center-header {
@@ -241,7 +241,7 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
           align-items: center;
           text-align: center;
           max-width: 720px;
-          margin: 0 auto 46px;
+          margin: 0 auto 48px;
         }
 
         .traditions-badge-pill {
@@ -249,8 +249,8 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
           align-items: center;
           gap: 7px;
           padding: 6px 14px;
-          background: rgba(217, 119, 6, 0.08);
-          border: 1px solid rgba(217, 119, 6, 0.25);
+          background: rgba(245, 158, 11, 0.08);
+          border: 1px solid rgba(245, 158, 11, 0.25);
           border-radius: 9999px;
           font-size: 12.5px;
           font-weight: 700;
@@ -262,8 +262,8 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
           width: 7px;
           height: 7px;
           border-radius: 50%;
-          background: #d97706;
-          box-shadow: 0 0 8px rgba(217, 119, 6, 0.6);
+          background: #f59e0b;
+          box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
         }
 
         .traditions-main-title {
@@ -289,7 +289,7 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
           margin: 0;
         }
 
-        /* 6 Cards Grid (Exactement comme Éducation) */
+        /* 6 Cards Grid (Strictement identique à Éducation) */
         .traditions-cards-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
@@ -360,25 +360,8 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
           );
         }
 
-        .rel-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
-          border-color: rgba(217, 119, 6, 0.4);
-        }
-
         .rel-card:hover .rel-backdrop-img {
           transform: scale(1.04);
-        }
-
-        .rel-card:hover .rel-card-title {
-          color: #d97706;
-        }
-
-        .rel-card:hover .rel-action-arrow {
-          transform: translateX(4px);
-          color: #d97706;
-          border-color: #d97706;
-          background: #fffbeb;
         }
 
         .rel-card-body {
@@ -389,10 +372,20 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
           flex: 1;
         }
 
+        .rel-card:hover {
+          transform: translateY(-4px);
+          border-color: rgba(245, 158, 11, 0.45);
+          box-shadow: 0 16px 32px -8px rgba(217, 119, 6, 0.12);
+        }
+
         .rel-card-top {
           display: flex;
           align-items: center;
           justify-content: space-between;
+          margin-bottom: 14px;
+        }
+
+        .has-banner .rel-card-top {
           margin-bottom: 58px;
         }
 
@@ -403,52 +396,116 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
-          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+          transition: transform 0.2s ease;
+          border: none;
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+        }
+
+        .has-banner .rel-card-icon {
+          width: 26px;
+          height: 26px;
+          background: transparent !important;
+          box-shadow: none !important;
+          border-radius: 0;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+          color: #ffffff;
+        }
+
+        .has-banner .rel-card-icon svg {
+          width: 22px;
+          height: 22px;
+        }
+
+        .rel-card:hover .rel-card-icon {
+          transform: scale(1.06);
         }
 
         .rel-card-badge {
           font-size: 11px;
           font-weight: 700;
-          padding: 4px 10px;
-          border-radius: 9999px;
-          letter-spacing: 0.02em;
-          border: 1px solid transparent;
+          padding: 6px 12px;
+          border-radius: 8px;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          border: none;
+          box-shadow: 0 2px 10px rgba(15, 23, 42, 0.1);
+        }
+
+        .has-banner .rel-card-badge {
+          background: transparent !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.06em;
+          text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+          color: #ffffff;
         }
 
         .rel-card-title-wrap {
-          margin-bottom: 3px;
+          display: inline-flex;
+          align-items: center;
+          align-self: flex-start;
+          background: rgba(255, 255, 255, 0.72);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border: 1px solid rgba(255, 255, 255, 0.85);
+          border-radius: 9px;
+          padding: 2px 10px;
+          margin: 0 0 5px -2px;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+          transition: all 0.25s ease;
+        }
+
+        .rel-card:hover .rel-card-title-wrap {
+          background: rgba(255, 255, 255, 0.9);
+          border-color: rgba(245, 158, 11, 0.35);
+          box-shadow: 0 4px 12px rgba(217, 119, 6, 0.08);
         }
 
         .rel-card-title {
           font-size: 20px;
           font-weight: 800;
-          color: #0f172a;
+          color: #b45309;
+          background: linear-gradient(135deg, #9a3412 0%, #d97706 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
           margin: 0;
-          line-height: 1.3;
-          transition: color 0.2s ease;
+          letter-spacing: -0.025em;
+          line-height: 1.25;
+          transition: all 0.25s ease;
+        }
+
+        .rel-card:hover .rel-card-title {
+          background: linear-gradient(135deg, #ea580c 0%, #f59e0b 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
         }
 
         .rel-card-subtitle {
           font-size: 12.5px;
           font-weight: 600;
-          color: #64748b;
-          margin-bottom: 12px;
+          color: #475569;
+          margin-bottom: 6px;
+          letter-spacing: -0.01em;
         }
 
         .rel-card-desc {
           font-size: 13px;
-          line-height: 1.55;
-          color: #475569;
-          margin: 0 0 16px 0;
-          flex: 1;
+          line-height: 1.45;
+          color: #64748b;
+          margin: 0 0 14px 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .rel-grades-row {
           display: flex;
-          flex-wrap: wrap;
+          align-items: center;
           gap: 6px;
-          margin-bottom: 20px;
+          flex-wrap: wrap;
+          margin-bottom: 12px;
         }
 
         .rel-grade-pill {
@@ -456,15 +513,13 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
           font-weight: 600;
           color: #475569;
           background: #f1f5f9;
-          border: 1px solid #e2e8f0;
-          padding: 3px 8px;
+          padding: 3px 9px;
           border-radius: 6px;
         }
 
         .rel-grade-more {
-          color: #b45309;
-          background: #fef3c7;
-          border-color: rgba(245, 158, 11, 0.3);
+          color: #475569;
+          background: #e2e8f0;
           font-weight: 700;
         }
 
@@ -478,22 +533,33 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
         }
 
         .rel-action-label {
-          font-size: 12.5px;
+          font-size: 13px;
           font-weight: 700;
           color: #0f172a;
+          transition: color 0.15s ease;
+        }
+
+        .rel-card:hover .rel-action-label {
+          color: #d97706;
         }
 
         .rel-action-arrow {
           width: 28px;
           height: 28px;
-          border-radius: 8px;
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
-          color: #64748b;
+          border-radius: 50%;
+          background: rgba(245, 158, 11, 0.12);
+          color: #d97706;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: all 0.2s ease;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .rel-card:hover .rel-action-arrow {
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          color: #ffffff;
+          box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+          transform: translateX(3px);
         }
 
         @media (max-width: 1024px) {
@@ -504,7 +570,7 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
 
         @media (max-width: 640px) {
           .religion-traditions-section-wrap {
-            padding: 40px 0 48px;
+            padding: 44px 0 36px;
           }
 
           .traditions-main-title {
@@ -514,14 +580,6 @@ export const ReligionTraditionsSection: React.FC<ReligionTraditionsSectionProps>
           .traditions-cards-grid {
             grid-template-columns: 1fr;
             gap: 16px;
-          }
-
-          .rel-card {
-            padding: 20px;
-          }
-
-          .rel-card-top {
-            margin-bottom: 46px;
           }
         }
       `}</style>

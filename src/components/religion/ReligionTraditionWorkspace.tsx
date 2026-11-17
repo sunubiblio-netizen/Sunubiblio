@@ -1093,7 +1093,7 @@ export const ReligionTraditionWorkspace: React.FC<ReligionTraditionWorkspaceProp
       <style jsx>{`
         .rel-tradition-view {
           min-height: 100vh;
-          background: #fdfcf9;
+          background: #ffffff !important;
           padding-bottom: 80px;
         }
 
